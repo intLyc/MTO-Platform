@@ -81,7 +81,7 @@ classdef drawFigure < handle
 
             end
 
-            xlim([0, max_x]);
+            xlim([1, max_x]);
 
         end
 
