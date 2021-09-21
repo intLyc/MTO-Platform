@@ -2,11 +2,11 @@ classdef drawFigure < handle
 
     properties
         x_cell % contains {x1, x2, ...}
-        y_cell 
+        y_cell % contains {y1, y2, ...}
+        title_str
         xlabel_str
         ylabel_str
-        legend_cell
-        title_str
+        legend_cell % contains {legend1, legend2}
         save_dir = './'
         figure_type = 'png'
     end
@@ -18,17 +18,25 @@ classdef drawFigure < handle
             obj.y_cell = y_cell;
         end
 
+        function obj = setTitle(obj, title_str)
+            obj.title_str = title_str;
+        end
+
         function obj = setXYlabel(obj, xlabel_str, ylabel_str)
             obj.xlabel_str = xlabel_str;
             obj.ylabel_str = ylabel_str;
         end
 
-        function obj = setLegend(obj, legend_cell)
-            obj.legend_cell = legend_cell;
+        function obj = setXLabel(obj, xlabel_str)
+            obj.xlabel_str = xlabel_str;
         end
 
-        function obj = setTitle(obj, title_str)
-            obj.title_str = title_str;
+        function obj = setYLabel(obj, ylabel_str)
+            obj.ylabel_str = ylabel_str;
+        end
+
+        function obj = setLegend(obj, legend_cell)
+            obj.legend_cell = legend_cell;
         end
 
         function obj = setSaveDir(obj, save_dir)
@@ -40,6 +48,44 @@ classdef drawFigure < handle
         end
 
         function obj = draw(obj)
+            fig = figure();
+
+            for i = 1:length(obj.x_cell)
+                plot(obj.x_cell{i}, obj.y_cell{i}, ':', 'LineWidth', 3);
+                hold on;
+            end
+
+            if ~isempty(obj.title_str)
+                title(strrep(obj.title_str, '_', '\_'));
+            end
+
+            if ~isempty(obj.xlabel_str)
+                xlabel(strrep(obj.xlabel_str, '_', '\_'));
+            end
+
+            if ~isempty(obj.ylabel_str)
+                ylabel(strrep(obj.ylabel_str, '_', '\_'));
+            end
+
+            if ~isempty(obj.legend_cell)
+                legend(strrep(obj.legend_cell, '_', '\_'));
+            end
+
+            max_x = 0;
+
+            for i = 1:length(obj.x_cell)
+
+                if obj.x_cell{i}(end) > max_x
+                    max_x = obj.x_cell{i}(end);
+                end
+
+            end
+
+            xlim([0, max_x]);
+
+        end
+
+        function obj = save(obj)
             fig = figure('Visible', 'off');
 
             for i = 1:length(obj.x_cell)
@@ -47,10 +93,22 @@ classdef drawFigure < handle
                 hold on;
             end
 
-            title(strrep(obj.title_str, '_', '\_'));
-            xlabel(strrep(obj.xlabel_str, '_', '\_'));
-            ylabel(strrep(obj.ylabel_str, '_', '\_'));
-            legend(strrep(obj.legend_cell, '_', '\_'));
+            if ~isempty(obj.title_str)
+                title(strrep(obj.title_str, '_', '\_'));
+            end
+
+            if ~isempty(obj.xlabel_str)
+                xlabel(strrep(obj.xlabel_str, '_', '\_'));
+            end
+
+            if ~isempty(obj.ylabel_str)
+                ylabel(strrep(obj.ylabel_str, '_', '\_'));
+            end
+
+            if ~isempty(obj.legend_cell)
+                legend(strrep(obj.legend_cell, '_', '\_'));
+            end
+
             max_x = 0;
 
             for i = 1:length(obj.x_cell)
