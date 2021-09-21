@@ -1,43 +1,56 @@
 classdef Algorithm < handle
 
     properties
-        name
-        pop_size
-        iter_num
-        eva_num
+        name % algorithm's name
+        pop_size % population size
+        iter_num % num of max iteration
+        eva_num % num of max evaluation
     end
 
     methods
 
         function obj = Algorithm(name)
+            % algorithm constructor
+            % cannot be changed
+
             obj.name = name;
         end
 
         function obj = setPreRun(obj, pre_run_list)
+            % set pre run parameter pre_run_list [pop_size, iter_num, eva_num]
+            % cannot be changed
+
             obj.pop_size = pre_run_list(1);
             obj.iter_num = pre_run_list(2);
             obj.eva_num = pre_run_list(3);
         end
 
         function name = getName(obj)
+            % get algorithm's name
+            % cannot be changed
+
             name = obj.name;
         end
 
         function setName(obj, name)
+            % set algorithm's name
+            % cannot be changed
+
             obj.name = name;
         end
 
-        function parameter = getParameter(obj)
+    end
 
-        end
+    methods (Abstract)
 
-        function obj = setParameter(obj, parameter_cell)
+        getParameter(obj) % get algorithm's parameter
+        % return parameter, contains {para1, value1, para2, value2, ...} (string)
 
-        end
+        setParameter(obj, parameter_cell) % set algorithm's parameter
+        % arg parameter_cell, contains {value1, value2, ...} (string)
 
-        function data = run(obj, Tasks)
-
-        end
+        run(obj, Tasks) % run this tasks with algorithm,
+        % return data, contains data.clock_time, data.convergence
 
     end
 

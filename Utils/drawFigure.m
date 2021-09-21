@@ -1,8 +1,8 @@
 classdef drawFigure < handle
 
     properties
-        x_cell
-        y_cell
+        x_cell % contains {x1, x2, ...}
+        y_cell 
         xlabel_str
         ylabel_str
         legend_cell
