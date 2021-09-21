@@ -39,12 +39,11 @@ classdef MFEA < Algorithm
 
             tic % 计时开始
 
-            % 保证种群数量为2的整数倍
-            if mod(pop, 2) ~= 0
-                pop = pop + 1;
-            end
-
             no_of_tasks = length(Tasks); % 任务数量
+
+            if mod(pop, no_of_tasks) ~= 0
+                pop = pop + no_of_tasks - mod(pop, no_of_tasks);
+            end
 
             % 保证任务数量大于1
             if no_of_tasks <= 1

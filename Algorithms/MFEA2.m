@@ -39,11 +39,11 @@ classdef MFEA2 < Algorithm
 
             tic
 
-            if mod(pop, 2) ~= 0
-                pop = pop + 1;
-            end
-
             no_of_tasks = length(Tasks);
+
+            if mod(pop, no_of_tasks) ~= 0
+                pop = pop + no_of_tasks - mod(pop, no_of_tasks);
+            end
 
             if no_of_tasks <= 1
                 error('At least 2 tasks required for MFEA2');

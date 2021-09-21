@@ -51,11 +51,11 @@ classdef MFPSO < Algorithm
 
             tic
 
-            if mod(pop, 2) ~= 0
-                pop = pop + 1;
-            end
-
             no_of_tasks = length(Tasks);
+
+            if mod(pop, no_of_tasks) ~= 0
+                pop = pop + no_of_tasks - mod(pop, no_of_tasks);
+            end
 
             if no_of_tasks <= 1
                 error('At least 2 tasks required for MFEA');
@@ -149,13 +149,13 @@ classdef MFPSO < Algorithm
                 if ~mod(ite, 10) && noImpove >= 20
                     %restart
                     for i = 1:pop
-                        population(i) = velocityUpdate(population(i), gbest, rmp, w11, c11, c22, c33);
+                        population(i) = velocityUpdate(population(i), gbest, rmp, w11, c11, c22, c33, no_of_tasks);
                     end
 
                 else
 
                     for i = 1:pop
-                        population(i) = velocityUpdate(population(i), gbest, rmp, w1, c1, c2, c3);
+                        population(i) = velocityUpdate(population(i), gbest, rmp, w1, c1, c2, c3, no_of_tasks);
                     end
 
                 end

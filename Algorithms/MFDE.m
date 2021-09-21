@@ -40,11 +40,11 @@ classdef MFDE < Algorithm
 
             tic
 
-            if mod(pop, 2) ~= 0
-                pop = pop + 1;
-            end
-
             no_of_tasks = length(Tasks);
+
+            if mod(pop, no_of_tasks) ~= 0
+                pop = pop + no_of_tasks - mod(pop, no_of_tasks);
+            end
 
             if no_of_tasks <= 1
                 error('At least 2 tasks required for MFDE');
@@ -70,7 +70,7 @@ classdef MFDE < Algorithm
                 population(i).skill_factor = 0;
             end
 
-            parfor i = 1:pop
+            for i = 1:pop
                 [population(i), calls_per_individual(i)] = evaluate(population(i), Tasks, p_il, no_of_tasks, options);
             end
 
@@ -124,53 +124,55 @@ classdef MFDE < Algorithm
                 generation = generation + 1;
                 count = 1;
 
-                asf = []; bsf = [];
+                group = cell([1, no_of_tasks]); % replace the 2 task MFDE asf and bsf
 
                 for j = 1:pop
-
-                    if population(j).skill_factor == 1 % TODO
-                        asf = [asf, j];
-                    else
-                        bsf = [bsf, j];
-                    end
-
+                    group{population(j).skill_factor} = [group{population(j).skill_factor}, j];
                 end
-
-                group = {asf, bsf};
 
                 for i = 1:pop
                     x = population(i).rnvec; % 提取个体基因型
 
-                    asf = cell2mat(group(population(i).skill_factor));
-                    bsf = cell2mat(group(2 / population(i).skill_factor));
+                    isf = population(i).skill_factor;
 
-                    B = randperm(length(asf));
-                    C = randperm(length(bsf));
-                    asf = asf(B);
-                    bsf = bsf(C);
+                    igroup = group{isf};
+                    A = randperm(length(igroup));
+                    igroup = igroup(A);
 
                     childsf = 0;
 
-                    for j = 1:length(asf)
+                    for j = 1:length(igroup)
 
-                        if asf(j) == i
-                            asf(j) = [];
+                        if igroup(j) == i
+                            igroup(j) = [];
                             break;
                         end
 
                     end
 
-                    p1 = asf(1);
+                    p1 = igroup(1);
 
                     urmp = rand(1);
 
                     if urmp <= rmp
-                        p2 = bsf(2);
-                        p3 = bsf(3);
+                        other = [];
+
+                        for sf = 1:length(group)
+
+                            if sf ~= isf
+                                other = [other, group{sf}];
+                            end
+
+                        end
+
+                        other = other(randperm(length(other)));
+
+                        p2 = other(2);
+                        p3 = other(3);
                         childsf = 1;
                     else
-                        p2 = asf(2);
-                        p3 = asf(3);
+                        p2 = igroup(2);
+                        p3 = igroup(3);
                     end
 
                     % 变异操作 Mutation
@@ -200,14 +202,14 @@ classdef MFDE < Algorithm
                     else
                         u = rand(1);
                         child(count).skill_factor(u <= 0.5) = population(i).skill_factor;
-                        child(count).skill_factor(u > 0.5) = 2 / population(i).skill_factor;
+                        child(count).skill_factor(u > 0.5) = randi([1, no_of_tasks]);
                     end
 
                     count = count + 1;
 
                 end
 
-                parfor i = 1:pop
+                for i = 1:pop
                     [child(i), calls_per_individual(i)] = evaluate(child(i), Tasks, p_il, no_of_tasks, options);
                 end
 

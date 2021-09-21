@@ -78,15 +78,15 @@ classdef Particle
         end
 
         % velocity update
-        function object = velocityUpdate(object, gbest, rmp, w1, c1, c2, c3)
+        function object = velocityUpdate(object, gbest, rmp, w1, c1, c2, c3, no_of_tasks)
             len = length(object.velocity);
 
             if rand() < rmp
                 object.velocity = w1 * object.velocity + c1 * rand(1, len) .* (object.pbest - object.rnvec) ...
-                    +c2 * rand(1, len) .* (gbest(object.skill_factor, :) - object.rnvec) + c3 * rand(1, len) .* (gbest(2 / object.skill_factor, :) - object.rnvec);
+                    +c2 * rand(1, len) .* (gbest(object.skill_factor, :) - object.rnvec) + c3 * rand(1, len) .* (gbest(randi([1, no_of_tasks]), :) - object.rnvec);
 
                 if rand() < 0.5
-                    object.skill_factor = 2 / object.skill_factor;
+                    object.skill_factor = randi([1, no_of_tasks]);
                 end
 
             else
