@@ -1,2 +1,5 @@
-## temporary Project file ignore
+# temporary save data file
 data_*
+
+# macos trash
+.DS_Store
