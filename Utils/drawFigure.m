@@ -119,7 +119,7 @@ classdef drawFigure < handle
 
             end
 
-            xlim([0, max_x]);
+            xlim([1, max_x]);
 
             file_name = [obj.save_dir, obj.title_str, '.', obj.figure_type];
 
