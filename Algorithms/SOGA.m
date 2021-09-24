@@ -71,7 +71,7 @@ classdef SOGA < Algorithm
 
                 generation = 1;
 
-                while generation <= gen && TotalEvaluations(generation) < int32(eva_num / no_of_tasks)
+                while generation < gen && TotalEvaluations(generation) < int32(eva_num / no_of_tasks)
                     generation = generation + 1;
                     indorder = randperm(sub_pop);
                     count = 1;
