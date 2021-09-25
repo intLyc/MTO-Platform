@@ -30,7 +30,6 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         TShowTypeDropDown             matlab.ui.control.DropDown
         TP24GridLayout                matlab.ui.container.GridLayout
         TStartButton                  matlab.ui.control.Button
-        TIterationSlider              matlab.ui.control.Slider
         TUIAxes                       matlab.ui.control.UIAxes
         ExperimentModuleTab           matlab.ui.container.Tab
         ExperimentsGridLayout         matlab.ui.container.GridLayout
@@ -354,28 +353,9 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             type = app.TShowTypeDropDown.Value;
             switch type
                 case 'Tasks Figure'
-                    app.TIterationSlider.Enable = false;
                     app.TupdateTasksFigure();
                 case 'Convergence'
-                    app.TIterationSlider.Enable = false;
                     app.TupdateConvergence();
-                case 'Population'
-                    app.TIterationSlider.Enable = true;
-                    app.TupdatePopulation()
-            end
-            app.TupdateIterationUIAxes();
-            drawnow;
-        end
-        
-        function TupdateIterationUIAxes(app)
-            % update UI Axes based on Iteration Slider
-            
-            type = app.TShowTypeDropDown.Value;
-            switch type
-                case 'Tasks Figure'
-                case 'Convergence'
-                case 'Population'
-                    app.TupdatePopulation();
             end
         end
         
@@ -448,12 +428,6 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                 grid(app.TUIAxes, 'on');
             end
             legend(app.TUIAxes, app.Tdata.tasks_name);
-        end
-        
-        function TupdatePopulation(app)
-            % update population
-            
-            % TODO
         end
         
         function VresetTable(app, algo_cell, prob_cell, tasks_num_list)
@@ -872,11 +846,6 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.TupdateValueUIAxes();
         end
 
-        % Value changing function: TIterationSlider
-        function TIterationSliderValueChanging(app, event)
-            app.TupdateIterationUIAxes();
-        end
-
         % Button pushed function: TStartButton
         function TStartButtonPushed(app, event)
             % start this test
@@ -894,19 +863,21 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             tasks_name = app.TProblemTree.Children(1).NodeData.getTasksName();
             
             % main test loop
-            app.Tprintlog([newline, '#===== Test Start =====#']);
-            tStart = tic;
-            app.Tprintlog( ['----- Problem: ', prob_name, ' -----']);
+            app.Tprintlog('----------------------------------');
+            app.Tprintlog(['Problem: ', prob_name]);
+            app.Tprintlog(['Algorithm: ', algo_name]);
+            app.Tprintlog(['Pop Size: ', num2str(app.Tpop_size)]);
             
             % get this experiment's parameters
-            app.Tprintlog([algo_name, ' is running']);
             switch app.TEndTypeDropDown.Value
                 case 'Iteration'
                     iter_num = app.Tend_num;
                     eva_num = inf;
+                    app.Tprintlog(['Iteration: ', num2str(app.Tend_num)]);
                 case 'Evaluation'
                     iter_num = inf;
                     eva_num = app.Tend_num;
+                    app.Tprintlog(['Evaluation: ', num2str(app.Tend_num)]);
             end
             pre_run_list = [app.Tpop_size, iter_num, eva_num];
             
@@ -918,9 +889,11 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.Tdata.tasks_name = tasks_name;
             app.TupdateUIAxes();
             
-            tEnd = toc(tStart);
-            app.Tprintlog(['<--- Use Time: ', char(duration([0, 0, tEnd])), ' --->']);
-            app.Tprintlog(['#==== Test Finished ====#', newline]);
+            app.Tprintlog('<--- Best Fitness --->');
+            for task = 1:tasks_num
+                app.Tprintlog([tasks_name{task}, ': ', num2str(app.Tdata.convergence(task,end))]);
+            end
+            app.Tprintlog('----------------------------------');
             app.TstartEnable(true);
         end
 
@@ -1749,7 +1722,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % Create TP2GridLayout
             app.TP2GridLayout = uigridlayout(app.TPanel2);
             app.TP2GridLayout.ColumnWidth = {'1x'};
-            app.TP2GridLayout.RowHeight = {'fit', '1x', 'fit', 'fit'};
+            app.TP2GridLayout.RowHeight = {'fit', '1x', 'fit'};
             app.TP2GridLayout.BackgroundColor = [1 1 1];
 
             % Create TP21GridLayout
@@ -1763,7 +1736,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
 
             % Create TShowTypeDropDown
             app.TShowTypeDropDown = uidropdown(app.TP21GridLayout);
-            app.TShowTypeDropDown.Items = {'Tasks Figure', 'Convergence', 'Population'};
+            app.TShowTypeDropDown.Items = {'Tasks Figure', 'Convergence'};
             app.TShowTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @TShowTypeDropDownValueChanged, true);
             app.TShowTypeDropDown.BackgroundColor = [1 1 1];
             app.TShowTypeDropDown.Layout.Row = 1;
@@ -1775,7 +1748,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.TP24GridLayout.ColumnWidth = {'1x', 70, '1x'};
             app.TP24GridLayout.RowHeight = {'1x'};
             app.TP24GridLayout.Padding = [0 0 0 0];
-            app.TP24GridLayout.Layout.Row = 4;
+            app.TP24GridLayout.Layout.Row = 3;
             app.TP24GridLayout.Layout.Column = 1;
             app.TP24GridLayout.BackgroundColor = [1 1 1];
 
@@ -1787,12 +1760,6 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.TStartButton.Layout.Row = 1;
             app.TStartButton.Layout.Column = 2;
             app.TStartButton.Text = 'Start';
-
-            % Create TIterationSlider
-            app.TIterationSlider = uislider(app.TP2GridLayout);
-            app.TIterationSlider.ValueChangingFcn = createCallbackFcn(app, @TIterationSliderValueChanging, true);
-            app.TIterationSlider.Layout.Row = 3;
-            app.TIterationSlider.Layout.Column = 1;
 
             % Create TUIAxes
             app.TUIAxes = uiaxes(app.TP2GridLayout);
