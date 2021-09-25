@@ -14,21 +14,23 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         TLogsClearButton              matlab.ui.control.Button
         TPopSizeEditField             matlab.ui.control.NumericEditField
         TPopSizeEditFieldLabel        matlab.ui.control.Label
-        TIterNumEditField             matlab.ui.control.NumericEditField
-        TIterNumEditFieldLabel        matlab.ui.control.Label
+        TEndNumEditField              matlab.ui.control.NumericEditField
+        TEndNumEditFieldLabel         matlab.ui.control.Label
         AlgorithmDropDownLabel        matlab.ui.control.Label
         TAlgorithmDropDown            matlab.ui.control.DropDown
         TAlgorithmTree                matlab.ui.container.Tree
         TProblemTree                  matlab.ui.container.Tree
         TProblemDropDown              matlab.ui.control.DropDown
         ProblemDropDownLabel          matlab.ui.control.Label
+        EndTypeLabel_2                matlab.ui.control.Label
+        TEndTypeDropDown              matlab.ui.control.DropDown
         TPanel2                       matlab.ui.container.Panel
         TP2GridLayout                 matlab.ui.container.GridLayout
-        IterationSliderLabel          matlab.ui.control.Label
-        TIterationSlider              matlab.ui.control.Slider
+        TP21GridLayout                matlab.ui.container.GridLayout
         TShowTypeDropDown             matlab.ui.control.DropDown
+        TP24GridLayout                matlab.ui.container.GridLayout
         TStartButton                  matlab.ui.control.Button
-        TStopButton                   matlab.ui.control.Button
+        TIterationSlider              matlab.ui.control.Slider
         TUIAxes                       matlab.ui.control.UIAxes
         ExperimentModuleTab           matlab.ui.container.Tab
         ExperimentsGridLayout         matlab.ui.container.GridLayout
@@ -53,7 +55,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         EProblemsListBox              matlab.ui.control.ListBox
         ProblemsListBox_2Label        matlab.ui.control.Label
         EndTypeLabel                  matlab.ui.control.Label
-        EEndConditionDropDown         matlab.ui.control.DropDown
+        EEndTypeDropDown              matlab.ui.control.DropDown
         EPanel2                       matlab.ui.container.Panel
         EP2GridLayout                 matlab.ui.container.GridLayout
         EStartButton                  matlab.ui.control.Button
@@ -80,11 +82,12 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         VTimeTableGridLayout          matlab.ui.container.GridLayout
         VTimeUITable                  matlab.ui.control.Table
         VConvergenceTab               matlab.ui.container.Tab
-        VConvergenceGridLayout        matlab.ui.container.GridLayout
-        ConvergenceDropDownLabel      matlab.ui.control.Label
+        VCGridLayout                  matlab.ui.container.GridLayout
+        VC1GridLayout                 matlab.ui.container.GridLayout
         VConvergenceProblemsDropDown  matlab.ui.control.DropDown
-        VYLimTypeDropDown             matlab.ui.control.DropDown
+        ConvergenceLabel              matlab.ui.control.Label
         YLimTypeDropDownLabel         matlab.ui.control.Label
+        VYLimTypeDropDown             matlab.ui.control.DropDown
         VConvergenceProblemsDropDownLabel  matlab.ui.control.Label
         VConvergenceUIAxes            matlab.ui.control.UIAxes
         VPanel2                       matlab.ui.container.Panel
@@ -128,7 +131,14 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
     end
 
     properties (Access = public)
+        algo_load % cell of algorithms loaded from folder
+        prob_load % cell of problems loaded from folder
         data % data
+        
+        % Test Module
+        Tpop_size % number of population size
+        Tend_num % number of iteration num
+        Tdata
         
         % Experiment Module
         Ereps % number of independent runs
@@ -136,14 +146,63 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         Eend_num % number of end condition
         Eresult % (problem, algorithm){wallclock, rep * convergence}
         Estop_flag % stop button clicked flag
-        
-        % Test Module
-        Tpop_size % number of population size
-        Titer_num % number of iteration num
-        Tstop_flag % stop button clicked flag
     end
     
     methods (Access = public)
+        
+        function readAlgoProb(app)
+            % load the algorithms and problems list
+            
+            app.algo_load = {};
+            app.prob_load = {};
+            
+            % read algorithms
+            algo_folders = split(genpath(fullfile(fileparts(mfilename('fullpath')),'Algorithms')),pathsep);
+            for i = 1:length(algo_folders)
+                files = what(algo_folders{i});
+                files = files.m;
+                for j = 1:length(files)
+                    f = fopen(files{j});
+                    str = regexp(fgetl(f),'<\s{0,}.*','match');
+                    if contains(str, 'Algorithm')
+                        app.algo_load = [app.algo_load, files{j}(1:end-2)];
+                    end
+                end
+            end
+            
+            % read problems
+            prob_folders = split(genpath(fullfile(fileparts(mfilename('fullpath')),'Problems')),pathsep);
+            for i = 1:length(prob_folders)
+                files = what(prob_folders{i});
+                files = files.m;
+                for j = 1:length(files)
+                    f = fopen(files{j});
+                    str = regexp(fgetl(f),'<\s{0,}.*','match');
+                    if contains(str, 'Problem')
+                        app.prob_load = [app.prob_load, files{j}(1:end-2)];
+                    end
+                end
+            end
+            
+        end
+        
+        function TloadAlgoProb(app)
+            % load the algorithms and problems
+            
+            app.TAlgorithmDropDown.Items = {};
+            app.TProblemDropDown.Items = {};
+            app.TAlgorithmDropDown.Items = app.algo_load;
+            app.TProblemDropDown.Items = app.prob_load;
+        end
+        
+        function EloadAlgoProb(app)
+            % load the algorithms and problems
+            
+            app.EAlgorithmsListBox.Items(:) = [];
+            app.EProblemsListBox.Items(:) = [];
+            app.EAlgorithmsListBox.Items = app.algo_load;
+            app.EProblemsListBox.Items = app.prob_load;
+        end
         
         function Eprintlog(app, str)
             % print log to Experiments logs text area
@@ -193,54 +252,33 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             scroll(app.MLogsTextArea, 'bottom');
         end
         
-        function EloadAlgoProb(app)
-            % load the algorithms and problems
-            
-            app.EAlgorithmsListBox.Items(:) = [];
-            app.EProblemsListBox.Items(:) = [];
-            algo_load = {};
-            prob_load = {};
-            algo_dir = dir('Algorithms/*m');
-            prob_dir = dir('Problems/*.m');
-            
-            % Algorithms
-            for i=1:length(algo_dir)
-                algo_load  = [algo_load, algo_dir(i).name(1:end-2)];
-            end
-            algo_load(strcmp(algo_load, 'Algorithm')) = [];
-            app.EAlgorithmsListBox.Items = algo_load;
-            
-            % Problems
-            for i=1:length(prob_dir)
-                prob_load  = [prob_load, prob_dir(i).name(1:end-2)];
-            end
-            prob_load(strcmp(prob_load, 'Problem')) = [];
-            app.EProblemsListBox.Items = prob_load;
+        function TstartEnable(app, value)
+            app.TStartButton.Enable = value;
+            app.TPopSizeEditField.Enable = value;
+            app.TEndTypeDropDown.Enable = value;
+            app.TEndNumEditField.Enable = value;
+            app.TAlgorithmDropDown.Enable = value;
+            app.TAlgorithmTree.Enable = value;
+            app.TProblemDropDown.Enable = value;
+            app.TProblemTree.Enable = value;
         end
         
-        function TloadAlgoProb(app)
-            % load the algorithms and problems
-            
-            app.TAlgorithmDropDown.Items = {};
-            app.TProblemDropDown.Items = {};
-            algo_load = {};
-            prob_load = {};
-            algo_dir = dir('Algorithms/*m');
-            prob_dir = dir('Problems/*.m');
-            
-            % Algorithms
-            for i=1:length(algo_dir)
-                algo_load  = [algo_load, algo_dir(i).name(1:end-2)];
-            end
-            algo_load(strcmp(algo_load, 'Algorithm')) = [];
-            app.TAlgorithmDropDown.Items = algo_load;
-            
-            % Problems
-            for i=1:length(prob_dir)
-                prob_load  = [prob_load, prob_dir(i).name(1:end-2)];
-            end
-            prob_load(strcmp(prob_load, 'Problem')) = [];
-            app.TProblemDropDown.Items = prob_load;
+        function EstartEnable(app, value)
+            app.EStartButton.Enable = value;
+            app.ERepsEditField.Enable = value;
+            app.EPopSizeEditField.Enable = value;
+            app.EEndTypeDropDown.Enable = value;
+            app.EEndNumEditField.Enable = value;
+            app.EAlgorithmsAddButton.Enable = value;
+            app.EProblemsAddButton.Enable = value;
+            app.EAlgorithmsListBox.Enable = value;
+            app.EProblemsListBox.Enable = value;
+            app.EAlgorithmsDelButton.Enable = value;
+            app.EProblemsDelButton.Enable = value;
+            app.EAlgorithmsTree.Enable = value;
+            app.EProblemsTree.Enable = value;
+            app.EPauseButton.Enable = ~value;
+            app.EStopButton.Enable = ~value;
         end
         
         function EcheckPauseStopStatus(app)
@@ -256,6 +294,166 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             if strcmp(app.EPauseButton.Text, 'Resume')
                 waitfor(app.EPauseButton,'Text', 'Pause');
             end
+        end
+        
+        function TupdateAlgorithm(app)
+            % update algorithm tree
+            
+            app.TAlgorithmTree.Children.delete;
+            
+            algo_name = app.TAlgorithmDropDown.Value;
+            eval(['algo_obj = ', algo_name, '("', algo_name, '");']);
+            algo_node = uitreenode(app.TAlgorithmTree);
+            algo_node.Text = algo_obj.getName();
+            algo_node.NodeData = algo_obj;
+            algo_node.ContextMenu = app.ESelectedProbContextMenu;
+            
+            % child parameter node
+            parameter = algo_obj.getParameter();
+            for p = 1:2:length(parameter)
+                para_name_node = uitreenode(algo_node);
+                para_name_node.Text = ['[ ', parameter{p}, ' ]'];
+                para_name_node.NodeData = para_name_node.Text;
+                para_name_node.ContextMenu = app.ESelectedAlgoContextMenu;
+                para_value_node = uitreenode(algo_node);
+                para_value_node.Text = parameter{p+1};
+                para_value_node.ContextMenu = app.ESelectedAlgoContextMenu;
+            end
+        end
+        
+        function TupdateProblem(app)
+            % update problem tree
+            
+            app.TProblemTree.Children.delete;
+            
+            prob_name = app.TProblemDropDown.Value;
+            eval(['prob_obj = ', prob_name, '("',prob_name, '");']);
+            prob_node = uitreenode(app.TProblemTree);
+            prob_node.Text = prob_obj.getName();
+            prob_node.NodeData = prob_obj;
+            prob_node.ContextMenu = app.ESelectedProbContextMenu;
+            
+            
+            % child parameter node
+            parameter = prob_obj.getParameter();
+            for p = 1:2:length(parameter)
+                para_name_node = uitreenode(prob_node);
+                para_name_node.Text = ['[ ', parameter{p}, ' ]'];
+                para_name_node.NodeData = para_name_node.Text;
+                para_name_node.ContextMenu = app.ESelectedProbContextMenu;
+                para_value_node = uitreenode(prob_node);
+                para_value_node.Text = parameter{p+1};
+                para_value_node.ContextMenu = app.ESelectedProbContextMenu;
+            end
+        end
+        
+        function TupdateUIAxes(app)
+            % update UI Axes
+            
+            cla(app.TUIAxes, 'reset');
+            type = app.TShowTypeDropDown.Value;
+            switch type
+                case 'Tasks Figure'
+                    app.TIterationSlider.Enable = false;
+                    app.TupdateTasksFigure();
+                case 'Convergence'
+                    app.TIterationSlider.Enable = false;
+                    app.TupdateConvergence();
+                case 'Population'
+                    app.TIterationSlider.Enable = true;
+                    app.TupdatePopulation()
+            end
+            app.TupdateIterationUIAxes();
+            drawnow;
+        end
+        
+        function TupdateIterationUIAxes(app)
+            % update UI Axes based on Iteration Slider
+            
+            type = app.TShowTypeDropDown.Value;
+            switch type
+                case 'Tasks Figure'
+                case 'Convergence'
+                case 'Population'
+                    app.TupdatePopulation();
+            end
+        end
+        
+        function TupdateTasksFigure(app)
+            % update selected problem tasks figure
+            
+            Tasks = app.TProblemTree.Children(1).NodeData.getTasks();
+            tasks_name = app.TProblemTree.Children(1).NodeData.tasks_name;
+            no_of_tasks = length(Tasks);
+            
+            x = 0:1/200:1;
+            f = zeros(size(x));
+            
+            legend_cell = {};
+            color = colororder;
+            for no = 1:no_of_tasks
+                
+                for i = 1:length(x)
+                    minrange = Tasks(no).Lb(1);
+                    maxrange = Tasks(no).Ub(1);
+                    y = maxrange - minrange;
+                    vars = y .* x(i) + minrange;
+                    f(i) = Tasks(no).fnc(vars);
+                end
+                
+                fmin = min(f);
+                fmax = max(f);
+                f = (f - fmin) / (fmax - fmin);
+                p1 = plot(app.TUIAxes, x, f);
+                p1.Color = color(no, :);
+                p1.LineWidth = 1;
+                hold(app.TUIAxes, 'on');
+                
+                xmin = x(f == min(f));
+                fmin = min(f);
+                p2 = plot(app.TUIAxes, xmin, fmin, '^');
+                p2.MarkerSize = 8;
+                p2.MarkerFaceColor = p1.Color;
+                p2.MarkerEdgeColor = p1.Color;
+                hold(app.TUIAxes, 'on');
+                
+                legend_cell = [legend_cell, tasks_name{no}, [tasks_name{no}(1), ' optima']];
+            end
+            legend(app.TUIAxes, legend_cell);
+        end
+        
+        function TupdateConvergence(app)
+            % update convergence
+            
+            % check app.data
+            if isempty(app.Tdata)
+                return;
+            end
+            
+            % draw
+            marker_list = {'o', '*', 'x', '^', 's', 'v', 'd', '<', '>', 'p', 'h'};
+            for task = 1:app.Tdata.tasks_num
+                convergence = app.Tdata.convergence(task, :);
+                x = 1:size(convergence,2);
+                y = log(convergence);
+                
+                p = plot(app.TUIAxes, x, y, ['-', marker_list{task}]);
+                p.LineWidth = 1.5;
+                p.MarkerIndices = 1:round(x(end)/10):x(end);
+                p.MarkerSize = 8;
+                hold(app.TUIAxes, 'on');
+                
+                xlabel(app.TUIAxes, 'Iteration');
+                ylabel(app.TUIAxes, 'log(fitness)');
+                grid(app.TUIAxes, 'on');
+            end
+            legend(app.TUIAxes, app.Tdata.tasks_name);
+        end
+        
+        function TupdatePopulation(app)
+            % update population
+            
+            % TODO
         end
         
         function VresetTable(app, algo_cell, prob_cell, tasks_num_list)
@@ -414,7 +612,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % update convergence axes
             
             % clear axes
-            app.VConvergenceUIAxes.reset();
+            cla(app.VConvergenceUIAxes, 'reset');
             
             % check app.data
             if isempty(app.data)
@@ -457,35 +655,6 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             ylabel(app.VConvergenceUIAxes, app.VYLimTypeDropDown.Value);
             xlim(app.VConvergenceUIAxes, [1, max_x]);
             grid(app.VConvergenceUIAxes, 'on');
-        end
-        
-        function EstartEnable(app, value)
-            app.EStartButton.Enable = value;
-            app.ERepsEditField.Enable = value;
-            app.EPopSizeEditField.Enable = value;
-            app.EEndConditionDropDown.Enable = value;
-            app.EEndNumEditField.Enable = value;
-            app.EAlgorithmsAddButton.Enable = value;
-            app.EProblemsAddButton.Enable = value;
-            app.EAlgorithmsListBox.Enable = value;
-            app.EProblemsListBox.Enable = value;
-            app.EAlgorithmsDelButton.Enable = value;
-            app.EProblemsDelButton.Enable = value;
-            app.EAlgorithmsTree.Enable = value;
-            app.EProblemsTree.Enable = value;
-            app.EPauseButton.Enable = ~value;
-            app.EStopButton.Enable = ~value;
-        end
-        
-        function TstartEnable(app, value)
-            app.TStartButton.Enable = value;
-            app.TPopSizeEditField.Enable = value;
-            app.TIterNumEditField.Enable = value;
-            app.TAlgorithmDropDown.Enable = value;
-            app.TAlgorithmTree.Enable = value;
-            app.TProblemDropDown.Enable = value;
-            app.TProblemTree = value;
-            app.TStopButton.Enable = ~value;
         end
         
         function result = McheckData(app)
@@ -577,56 +746,6 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             save([dir_name, file_name], 'data_save');
         end
         
-        function TupdateAlgorithm(app)
-            % update algorithm tree
-            
-            app.TAlgorithmTree.Children.delete;
-            
-            algo_name = app.TAlgorithmDropDown.Value;
-            eval(['algo_obj = ', algo_name, '("', algo_name, '");']);
-            algo_node = uitreenode(app.TAlgorithmTree);
-            algo_node.Text = algo_obj.getName();
-            algo_node.NodeData = algo_obj;
-            algo_node.ContextMenu = app.ESelectedProbContextMenu;
-            
-            % child parameter node
-            parameter = algo_obj.getParameter();
-            for p = 1:2:length(parameter)
-                para_name_node = uitreenode(algo_node);
-                para_name_node.Text = ['[ ', parameter{p}, ' ]'];
-                para_name_node.NodeData = para_name_node.Text;
-                para_name_node.ContextMenu = app.ESelectedAlgoContextMenu;
-                para_value_node = uitreenode(algo_node);
-                para_value_node.Text = parameter{p+1};
-                para_value_node.ContextMenu = app.ESelectedAlgoContextMenu;
-            end
-        end
-        
-        function TupdateProblem(app)
-            % update problem tree
-            
-            app.TProblemTree.Children.delete;
-            
-            prob_name = app.TProblemDropDown.Value;
-            eval(['prob_obj = ', prob_name, '("',prob_name, '");']);
-            prob_node = uitreenode(app.TProblemTree);
-            prob_node.Text = prob_obj.getName();
-            prob_node.NodeData = prob_obj;
-            prob_node.ContextMenu = app.ESelectedProbContextMenu;
-                
-            
-            % child parameter node
-            parameter = prob_obj.getParameter();
-            for p = 1:2:length(parameter)
-                para_name_node = uitreenode(prob_node);
-                para_name_node.Text = ['[ ', parameter{p}, ' ]'];
-                para_name_node.NodeData = para_name_node.Text;
-                para_name_node.ContextMenu = app.ESelectedProbContextMenu;
-                para_value_node = uitreenode(prob_node);
-                para_value_node.Text = parameter{p+1};
-                para_value_node.ContextMenu = app.ESelectedProbContextMenu;
-            end
-        end
     end
 
     % Callbacks that handle component events
@@ -641,60 +760,168 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             addpath(genpath('./Problems/'));
             addpath(genpath('./Utils/'));
             
+            app.readAlgoProb();
             app.EloadAlgoProb();
             app.TloadAlgoProb();
             app.TupdateAlgorithm();
             app.TupdateProblem();
+            app.TupdateUIAxes();
             app.VresetTable({}, {}, []);
             
             % read default value
             app.Ereps = app.ERepsEditField.Value;
             app.Epop_size = app.EPopSizeEditField.Value;
             app.Eend_num = app.EEndNumEditField.Value;
+            app.Tpop_size = app.TPopSizeEditField.Value;
+            app.Tend_num = app.TEndNumEditField.Value;
+        end
+
+        % Value changed function: TPopSizeEditField
+        function TPopSizeEditFieldValueChanged(app, event)
+            % update pop_size parameter
+            
+            app.Tpop_size = app.TPopSizeEditField.Value;
+        end
+
+        % Value changed function: TEndNumEditField
+        function TEndNumEditFieldValueChanged(app, event)
+            % update end_num parameter
+            
+            app.Tend_num = app.TEndNumEditField.Value;
         end
 
         % Value changed function: TAlgorithmDropDown
         function TAlgorithmDropDownValueChanged(app, event)
             app.TupdateAlgorithm();
+            app.Tdata = [];
+            app.TupdateUIAxes();
         end
 
         % Node text changed function: TAlgorithmTree
         function TAlgorithmTreeNodeTextChanged(app, event)
-            node = event.Node;
+            % update algorithm obj parameter
             
+            node = event.Node;
+            if isa(node.Parent, 'matlab.ui.container.Tree')
+                % this is algorithm name node
+                node.NodeData.name = node.Text;
+            else
+                % this is parameter node
+                parameter = {};
+                % the first node text is parameter name, can't change
+                for x = 1:2:length(node.Parent.Children)
+                    node.Parent.Children(x).Text = node.Parent.Children(x).NodeData;
+                end
+                % the second node text is parameter value
+                for x = 2:2:length(node.Parent.Children)
+                    parameter = [parameter, node.Parent.Children(x).Text];
+                end
+                node.Parent.NodeData.setParameter(parameter);
+            end
+            app.Tdata = [];
+            app.TupdateUIAxes();
         end
 
         % Value changed function: TProblemDropDown
         function TProblemDropDownValueChanged(app, event)
             app.TupdateProblem();
+            app.Tdata = [];
+            app.TupdateUIAxes();
         end
 
         % Node text changed function: TProblemTree
         function TProblemTreeNodeTextChanged(app, event)
+            % update problem obj parameter
+            
             node = event.Node;
+            if isa(node.Parent, 'matlab.ui.container.Tree')
+                % this is problem node
+                node.NodeData.name = node.Text;
+            else
+                % this is parameter node
+                parameter = {};
+                % the first node text is parameter name, can't change
+                for x = 1:2:length(node.Parent.Children)
+                    node.Parent.Children(x).Text = node.Parent.Children(x).NodeData;
+                end
+                % the second node text is parameter value
+                for x = 2:2:length(node.Parent.Children)
+                    parameter = [parameter, node.Parent.Children(x).Text];
+                end
+                node.Parent.NodeData.setParameter(parameter);
+            end
             
+            app.Tdata = [];
+            app.TupdateUIAxes();
         end
 
-        % Button pushed function: TStartButton
-        function TStartButtonPushed(app, event)
+        % Button pushed function: TLogsClearButton
+        function TLogsClearButtonPushed(app, event)
+            % clear logs text area
             
-        end
-
-        % Button pushed function: TStopButton
-        function TStopButtonPushed(app, event)
-            
+            app.TLogsTextArea.Value = '';
         end
 
         % Value changed function: TShowTypeDropDown
         function TShowTypeDropDownValueChanged(app, event)
-            value = app.TShowTypeDropDown.Value;
-            
+            app.TupdateUIAxes();
+        end
+
+        % Callback function
+        function TValueDropDownValueChanged(app, event)
+            app.TupdateValueUIAxes();
         end
 
         % Value changing function: TIterationSlider
         function TIterationSliderValueChanging(app, event)
-            changingValue = event.Value;
+            app.TupdateIterationUIAxes();
+        end
+
+        % Button pushed function: TStartButton
+        function TStartButtonPushed(app, event)
+            % start this test
             
+            % off the start button
+            app.TstartEnable(false);
+            
+            % clear the temporary data
+            app.Tdata = [];
+            
+            % read selected algorithms and problems
+            algo_name = app.TAlgorithmTree.Children(1).Text;
+            prob_name = app.TProblemTree.Children(1).Text;
+            tasks_num = app.TProblemTree.Children(1).NodeData.getTasksNumber();
+            tasks_name = app.TProblemTree.Children(1).NodeData.getTasksName();
+            
+            % main test loop
+            app.Tprintlog([newline, '#===== Test Start =====#']);
+            tStart = tic;
+            app.Tprintlog( ['----- Problem: ', prob_name, ' -----']);
+            
+            % get this experiment's parameters
+            app.Tprintlog([algo_name, ' is running']);
+            switch app.TEndTypeDropDown.Value
+                case 'Iteration'
+                    iter_num = app.Tend_num;
+                    eva_num = inf;
+                case 'Evaluation'
+                    iter_num = inf;
+                    eva_num = app.Tend_num;
+            end
+            pre_run_list = [app.Tpop_size, iter_num, eva_num];
+            
+            % run
+            app.Tdata = singleRun(app.TAlgorithmTree.Children(1).NodeData, app.TProblemTree.Children(1).NodeData, pre_run_list);
+            app.Tdata.algo_name = algo_name;
+            app.Tdata.prob_name = prob_name;
+            app.Tdata.tasks_num = tasks_num;
+            app.Tdata.tasks_name = tasks_name;
+            app.TupdateUIAxes();
+            
+            tEnd = toc(tStart);
+            app.Tprintlog(['<--- Use Time: ', char(duration([0, 0, tEnd])), ' --->']);
+            app.Tprintlog(['#==== Test Finished ====#', newline]);
+            app.TstartEnable(true);
         end
 
         % Value changed function: ERepsEditField
@@ -836,10 +1063,10 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % reset table and convergence
             app.VresetTable(algo_cell, prob_cell, tasks_num_list);
             app.VresetConvergenceProblemsDropDown(prob_cell, tasks_num_list);
-            app.VConvergenceUIAxes.reset();
+            cla(app.VConvergenceUIAxes, 'reset');
             
-            % main test loop
-            log_str = [newline, '#====== Experiments Start ======#'];
+            % main experiment loop
+            log_str = [newline, '#====== Experiment Start ======#'];
             app.Eprintlog(log_str);
             app.Vprintlog(log_str);
             app.Eprintlog('== See result in <View Table> ==')
@@ -860,7 +1087,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                         log_str = [app.EAlgorithmsTree.Children(algo).Text, ' is running'];
                         app.Eprintlog(log_str);
                         app.Vprintlog(log_str);
-                        switch app.EEndConditionDropDown.Value
+                        switch app.EEndTypeDropDown.Value
                             case 'Iteration'
                                 iter_num = app.Eend_num;
                                 eva_num = inf;
@@ -894,7 +1121,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             log_str = ['<----- All Use Time: ', char(duration([0, 0, tEnd])), ' ----->'];
             app.Eprintlog(log_str);
             app.Vprintlog(log_str);
-            log_str = ['#==== Experiments Finished ====#', newline];
+            log_str = ['#==== Experiment Finished ====#', newline];
             app.Eprintlog(log_str);
             app.Vprintlog(log_str);
             
@@ -926,7 +1153,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             
             app.EstartEnable(true);
             app.Estop_flag = true;
-            log_str = '#====== Experiments Stopped ======#';
+            log_str = '#====== Experiment Stopped ======#';
             app.Eprintlog(log_str);
             app.Vprintlog(log_str);
         end
@@ -1054,13 +1281,6 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % save data
             data_save = app.data;
             save([dir_name, file_name], 'data_save');
-        end
-
-        % Button pushed function: TLogsClearButton
-        function TLogsClearButtonPushed(app, event)
-            % clear logs text area
-            
-            app.TLogsTextArea.Value = '';
         end
 
         % Value changed function: VYLimTypeDropDown
@@ -1365,7 +1585,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % Create MTOPlatformUIFigure and hide until all components are created
             app.MTOPlatformUIFigure = uifigure('Visible', 'off');
             app.MTOPlatformUIFigure.Color = [1 1 1];
-            app.MTOPlatformUIFigure.Position = [100 100 802 741];
+            app.MTOPlatformUIFigure.Position = [100 100 897 708];
             app.MTOPlatformUIFigure.Name = 'MTO Platform';
             app.MTOPlatformUIFigure.WindowStyle = 'modal';
 
@@ -1388,7 +1608,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
 
             % Create TestGridLayout
             app.TestGridLayout = uigridlayout(app.TestModuleTab);
-            app.TestGridLayout.ColumnWidth = {'1x', '2.5x'};
+            app.TestGridLayout.ColumnWidth = {'fit', '2.5x'};
             app.TestGridLayout.RowHeight = {'1x'};
             app.TestGridLayout.BackgroundColor = [1 1 1];
 
@@ -1401,7 +1621,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % Create TP1GridLayout
             app.TP1GridLayout = uigridlayout(app.TPanel1);
             app.TP1GridLayout.ColumnWidth = {'fit', '1x', 70};
-            app.TP1GridLayout.RowHeight = {'fit', 'fit', 'fit', '1x', 'fit', '1x', 'fit', '1.5x'};
+            app.TP1GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x', 'fit', '1.5x'};
             app.TP1GridLayout.BackgroundColor = [1 1 1];
 
             % Create TLogsTextArea
@@ -1409,13 +1629,13 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.TLogsTextArea.Editable = 'off';
             app.TLogsTextArea.HorizontalAlignment = 'center';
             app.TLogsTextArea.WordWrap = 'off';
-            app.TLogsTextArea.Layout.Row = 8;
+            app.TLogsTextArea.Layout.Row = 9;
             app.TLogsTextArea.Layout.Column = [1 3];
 
             % Create LogsTextArea_2Label_2
             app.LogsTextArea_2Label_2 = uilabel(app.TP1GridLayout);
             app.LogsTextArea_2Label_2.FontWeight = 'bold';
-            app.LogsTextArea_2Label_2.Layout.Row = 7;
+            app.LogsTextArea_2Label_2.Layout.Row = 8;
             app.LogsTextArea_2Label_2.Layout.Column = 1;
             app.LogsTextArea_2Label_2.Text = 'Logs';
 
@@ -1423,16 +1643,17 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.TLogsClearButton = uibutton(app.TP1GridLayout, 'push');
             app.TLogsClearButton.ButtonPushedFcn = createCallbackFcn(app, @TLogsClearButtonPushed, true);
             app.TLogsClearButton.BackgroundColor = [1 1 0.702];
-            app.TLogsClearButton.Layout.Row = 7;
+            app.TLogsClearButton.Layout.Row = 8;
             app.TLogsClearButton.Layout.Column = 3;
             app.TLogsClearButton.Text = 'Clear';
 
             % Create TPopSizeEditField
             app.TPopSizeEditField = uieditfield(app.TP1GridLayout, 'numeric');
+            app.TPopSizeEditField.ValueChangedFcn = createCallbackFcn(app, @TPopSizeEditFieldValueChanged, true);
             app.TPopSizeEditField.HorizontalAlignment = 'center';
             app.TPopSizeEditField.Layout.Row = 1;
             app.TPopSizeEditField.Layout.Column = [2 3];
-            app.TPopSizeEditField.Value = 100;
+            app.TPopSizeEditField.Value = 20;
 
             % Create TPopSizeEditFieldLabel
             app.TPopSizeEditFieldLabel = uilabel(app.TP1GridLayout);
@@ -1441,24 +1662,25 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.TPopSizeEditFieldLabel.Layout.Column = 1;
             app.TPopSizeEditFieldLabel.Text = 'Pop Size';
 
-            % Create TIterNumEditField
-            app.TIterNumEditField = uieditfield(app.TP1GridLayout, 'numeric');
-            app.TIterNumEditField.HorizontalAlignment = 'center';
-            app.TIterNumEditField.Layout.Row = 2;
-            app.TIterNumEditField.Layout.Column = [2 3];
-            app.TIterNumEditField.Value = 1000;
+            % Create TEndNumEditField
+            app.TEndNumEditField = uieditfield(app.TP1GridLayout, 'numeric');
+            app.TEndNumEditField.ValueChangedFcn = createCallbackFcn(app, @TEndNumEditFieldValueChanged, true);
+            app.TEndNumEditField.HorizontalAlignment = 'center';
+            app.TEndNumEditField.Layout.Row = 3;
+            app.TEndNumEditField.Layout.Column = [2 3];
+            app.TEndNumEditField.Value = 100;
 
-            % Create TIterNumEditFieldLabel
-            app.TIterNumEditFieldLabel = uilabel(app.TP1GridLayout);
-            app.TIterNumEditFieldLabel.FontWeight = 'bold';
-            app.TIterNumEditFieldLabel.Layout.Row = 2;
-            app.TIterNumEditFieldLabel.Layout.Column = 1;
-            app.TIterNumEditFieldLabel.Text = 'Iter Num';
+            % Create TEndNumEditFieldLabel
+            app.TEndNumEditFieldLabel = uilabel(app.TP1GridLayout);
+            app.TEndNumEditFieldLabel.FontWeight = 'bold';
+            app.TEndNumEditFieldLabel.Layout.Row = 3;
+            app.TEndNumEditFieldLabel.Layout.Column = 1;
+            app.TEndNumEditFieldLabel.Text = 'End Num';
 
             % Create AlgorithmDropDownLabel
             app.AlgorithmDropDownLabel = uilabel(app.TP1GridLayout);
             app.AlgorithmDropDownLabel.FontWeight = 'bold';
-            app.AlgorithmDropDownLabel.Layout.Row = 3;
+            app.AlgorithmDropDownLabel.Layout.Row = 4;
             app.AlgorithmDropDownLabel.Layout.Column = 1;
             app.AlgorithmDropDownLabel.Text = 'Algorithm';
 
@@ -1467,7 +1689,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.TAlgorithmDropDown.Items = {};
             app.TAlgorithmDropDown.ValueChangedFcn = createCallbackFcn(app, @TAlgorithmDropDownValueChanged, true);
             app.TAlgorithmDropDown.BackgroundColor = [1 1 1];
-            app.TAlgorithmDropDown.Layout.Row = 3;
+            app.TAlgorithmDropDown.Layout.Row = 4;
             app.TAlgorithmDropDown.Layout.Column = [2 3];
             app.TAlgorithmDropDown.Value = {};
 
@@ -1476,7 +1698,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.TAlgorithmTree.Multiselect = 'on';
             app.TAlgorithmTree.NodeTextChangedFcn = createCallbackFcn(app, @TAlgorithmTreeNodeTextChanged, true);
             app.TAlgorithmTree.Editable = 'on';
-            app.TAlgorithmTree.Layout.Row = 4;
+            app.TAlgorithmTree.Layout.Row = 5;
             app.TAlgorithmTree.Layout.Column = [1 3];
 
             % Create TProblemTree
@@ -1484,7 +1706,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.TProblemTree.Multiselect = 'on';
             app.TProblemTree.NodeTextChangedFcn = createCallbackFcn(app, @TProblemTreeNodeTextChanged, true);
             app.TProblemTree.Editable = 'on';
-            app.TProblemTree.Layout.Row = 6;
+            app.TProblemTree.Layout.Row = 7;
             app.TProblemTree.Layout.Column = [1 3];
 
             % Create TProblemDropDown
@@ -1492,16 +1714,31 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.TProblemDropDown.Items = {};
             app.TProblemDropDown.ValueChangedFcn = createCallbackFcn(app, @TProblemDropDownValueChanged, true);
             app.TProblemDropDown.BackgroundColor = [1 1 1];
-            app.TProblemDropDown.Layout.Row = 5;
+            app.TProblemDropDown.Layout.Row = 6;
             app.TProblemDropDown.Layout.Column = [2 3];
             app.TProblemDropDown.Value = {};
 
             % Create ProblemDropDownLabel
             app.ProblemDropDownLabel = uilabel(app.TP1GridLayout);
             app.ProblemDropDownLabel.FontWeight = 'bold';
-            app.ProblemDropDownLabel.Layout.Row = 5;
+            app.ProblemDropDownLabel.Layout.Row = 6;
             app.ProblemDropDownLabel.Layout.Column = 1;
             app.ProblemDropDownLabel.Text = 'Problem';
+
+            % Create EndTypeLabel_2
+            app.EndTypeLabel_2 = uilabel(app.TP1GridLayout);
+            app.EndTypeLabel_2.FontWeight = 'bold';
+            app.EndTypeLabel_2.Layout.Row = 2;
+            app.EndTypeLabel_2.Layout.Column = 1;
+            app.EndTypeLabel_2.Text = 'End Type';
+
+            % Create TEndTypeDropDown
+            app.TEndTypeDropDown = uidropdown(app.TP1GridLayout);
+            app.TEndTypeDropDown.Items = {'Iteration', 'Evaluation'};
+            app.TEndTypeDropDown.BackgroundColor = [1 1 1];
+            app.TEndTypeDropDown.Layout.Row = 2;
+            app.TEndTypeDropDown.Layout.Column = [2 3];
+            app.TEndTypeDropDown.Value = 'Iteration';
 
             % Create TPanel2
             app.TPanel2 = uipanel(app.TestGridLayout);
@@ -1511,55 +1748,56 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
 
             % Create TP2GridLayout
             app.TP2GridLayout = uigridlayout(app.TPanel2);
-            app.TP2GridLayout.ColumnWidth = {70, 70, '1x', 'fit'};
-            app.TP2GridLayout.RowHeight = {'fit', '1x', 'fit'};
+            app.TP2GridLayout.ColumnWidth = {'1x'};
+            app.TP2GridLayout.RowHeight = {'fit', '1x', 'fit', 'fit'};
             app.TP2GridLayout.BackgroundColor = [1 1 1];
 
-            % Create IterationSliderLabel
-            app.IterationSliderLabel = uilabel(app.TP2GridLayout);
-            app.IterationSliderLabel.HorizontalAlignment = 'right';
-            app.IterationSliderLabel.Layout.Row = 3;
-            app.IterationSliderLabel.Layout.Column = 1;
-            app.IterationSliderLabel.Text = 'Iteration';
+            % Create TP21GridLayout
+            app.TP21GridLayout = uigridlayout(app.TP2GridLayout);
+            app.TP21GridLayout.ColumnWidth = {'1x', 'fit', 'fit'};
+            app.TP21GridLayout.RowHeight = {'1x'};
+            app.TP21GridLayout.Padding = [0 0 0 0];
+            app.TP21GridLayout.Layout.Row = 1;
+            app.TP21GridLayout.Layout.Column = 1;
+            app.TP21GridLayout.BackgroundColor = [1 1 1];
+
+            % Create TShowTypeDropDown
+            app.TShowTypeDropDown = uidropdown(app.TP21GridLayout);
+            app.TShowTypeDropDown.Items = {'Tasks Figure', 'Convergence', 'Population'};
+            app.TShowTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @TShowTypeDropDownValueChanged, true);
+            app.TShowTypeDropDown.BackgroundColor = [1 1 1];
+            app.TShowTypeDropDown.Layout.Row = 1;
+            app.TShowTypeDropDown.Layout.Column = 2;
+            app.TShowTypeDropDown.Value = 'Tasks Figure';
+
+            % Create TP24GridLayout
+            app.TP24GridLayout = uigridlayout(app.TP2GridLayout);
+            app.TP24GridLayout.ColumnWidth = {'1x', 70, '1x'};
+            app.TP24GridLayout.RowHeight = {'1x'};
+            app.TP24GridLayout.Padding = [0 0 0 0];
+            app.TP24GridLayout.Layout.Row = 4;
+            app.TP24GridLayout.Layout.Column = 1;
+            app.TP24GridLayout.BackgroundColor = [1 1 1];
+
+            % Create TStartButton
+            app.TStartButton = uibutton(app.TP24GridLayout, 'push');
+            app.TStartButton.ButtonPushedFcn = createCallbackFcn(app, @TStartButtonPushed, true);
+            app.TStartButton.BusyAction = 'cancel';
+            app.TStartButton.BackgroundColor = [0.6706 0.949 0.6706];
+            app.TStartButton.Layout.Row = 1;
+            app.TStartButton.Layout.Column = 2;
+            app.TStartButton.Text = 'Start';
 
             % Create TIterationSlider
             app.TIterationSlider = uislider(app.TP2GridLayout);
             app.TIterationSlider.ValueChangingFcn = createCallbackFcn(app, @TIterationSliderValueChanging, true);
             app.TIterationSlider.Layout.Row = 3;
-            app.TIterationSlider.Layout.Column = [2 4];
-
-            % Create TShowTypeDropDown
-            app.TShowTypeDropDown = uidropdown(app.TP2GridLayout);
-            app.TShowTypeDropDown.Items = {'Convergence', 'Tasks Figure', 'Population'};
-            app.TShowTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @TShowTypeDropDownValueChanged, true);
-            app.TShowTypeDropDown.BackgroundColor = [1 1 1];
-            app.TShowTypeDropDown.Layout.Row = 1;
-            app.TShowTypeDropDown.Layout.Column = 4;
-            app.TShowTypeDropDown.Value = 'Convergence';
-
-            % Create TStartButton
-            app.TStartButton = uibutton(app.TP2GridLayout, 'push');
-            app.TStartButton.ButtonPushedFcn = createCallbackFcn(app, @TStartButtonPushed, true);
-            app.TStartButton.BusyAction = 'cancel';
-            app.TStartButton.BackgroundColor = [0.6706 0.949 0.6706];
-            app.TStartButton.Layout.Row = 1;
-            app.TStartButton.Layout.Column = 1;
-            app.TStartButton.Text = 'Start';
-
-            % Create TStopButton
-            app.TStopButton = uibutton(app.TP2GridLayout, 'push');
-            app.TStopButton.ButtonPushedFcn = createCallbackFcn(app, @TStopButtonPushed, true);
-            app.TStopButton.BusyAction = 'cancel';
-            app.TStopButton.BackgroundColor = [1 0.6 0.6];
-            app.TStopButton.Enable = 'off';
-            app.TStopButton.Layout.Row = 1;
-            app.TStopButton.Layout.Column = 2;
-            app.TStopButton.Text = 'Stop';
+            app.TIterationSlider.Layout.Column = 1;
 
             % Create TUIAxes
             app.TUIAxes = uiaxes(app.TP2GridLayout);
             app.TUIAxes.Layout.Row = 2;
-            app.TUIAxes.Layout.Column = [1 4];
+            app.TUIAxes.Layout.Column = 1;
 
             % Create ExperimentModuleTab
             app.ExperimentModuleTab = uitab(app.MTOPlatformTabGroup);
@@ -1728,13 +1966,13 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EndTypeLabel.Layout.Column = 1;
             app.EndTypeLabel.Text = 'End Type';
 
-            % Create EEndConditionDropDown
-            app.EEndConditionDropDown = uidropdown(app.EP1GridLayout);
-            app.EEndConditionDropDown.Items = {'Iteration', 'Evaluation'};
-            app.EEndConditionDropDown.BackgroundColor = [1 1 1];
-            app.EEndConditionDropDown.Layout.Row = 3;
-            app.EEndConditionDropDown.Layout.Column = [2 3];
-            app.EEndConditionDropDown.Value = 'Iteration';
+            % Create EEndTypeDropDown
+            app.EEndTypeDropDown = uidropdown(app.EP1GridLayout);
+            app.EEndTypeDropDown.Items = {'Iteration', 'Evaluation'};
+            app.EEndTypeDropDown.BackgroundColor = [1 1 1];
+            app.EEndTypeDropDown.Layout.Row = 3;
+            app.EEndTypeDropDown.Layout.Column = [2 3];
+            app.EEndTypeDropDown.Value = 'Iteration';
 
             % Create EPanel2
             app.EPanel2 = uipanel(app.ExperimentsGridLayout);
@@ -1914,21 +2152,23 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.VConvergenceTab.Title = 'Convergence';
             app.VConvergenceTab.BackgroundColor = [1 1 1];
 
-            % Create VConvergenceGridLayout
-            app.VConvergenceGridLayout = uigridlayout(app.VConvergenceTab);
-            app.VConvergenceGridLayout.ColumnWidth = {'1x', 'fit', 'fit', 'fit', 'fit'};
-            app.VConvergenceGridLayout.RowHeight = {'fit', '1x'};
-            app.VConvergenceGridLayout.BackgroundColor = [1 1 1];
+            % Create VCGridLayout
+            app.VCGridLayout = uigridlayout(app.VConvergenceTab);
+            app.VCGridLayout.ColumnWidth = {'1x'};
+            app.VCGridLayout.RowHeight = {'fit', '1x'};
+            app.VCGridLayout.BackgroundColor = [1 1 1];
 
-            % Create ConvergenceDropDownLabel
-            app.ConvergenceDropDownLabel = uilabel(app.VConvergenceGridLayout);
-            app.ConvergenceDropDownLabel.FontWeight = 'bold';
-            app.ConvergenceDropDownLabel.Layout.Row = 1;
-            app.ConvergenceDropDownLabel.Layout.Column = 1;
-            app.ConvergenceDropDownLabel.Text = '  Convergence';
+            % Create VC1GridLayout
+            app.VC1GridLayout = uigridlayout(app.VCGridLayout);
+            app.VC1GridLayout.ColumnWidth = {'1x', 'fit', 'fit', 'fit', 'fit'};
+            app.VC1GridLayout.RowHeight = {'1x'};
+            app.VC1GridLayout.Padding = [0 0 0 0];
+            app.VC1GridLayout.Layout.Row = 1;
+            app.VC1GridLayout.Layout.Column = 1;
+            app.VC1GridLayout.BackgroundColor = [1 1 1];
 
             % Create VConvergenceProblemsDropDown
-            app.VConvergenceProblemsDropDown = uidropdown(app.VConvergenceGridLayout);
+            app.VConvergenceProblemsDropDown = uidropdown(app.VC1GridLayout);
             app.VConvergenceProblemsDropDown.Items = {'Problem '};
             app.VConvergenceProblemsDropDown.ValueChangedFcn = createCallbackFcn(app, @VConvergenceProblemsDropDownValueChanged, true);
             app.VConvergenceProblemsDropDown.BackgroundColor = [1 1 1];
@@ -1936,8 +2176,22 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.VConvergenceProblemsDropDown.Layout.Column = 5;
             app.VConvergenceProblemsDropDown.Value = 'Problem ';
 
+            % Create ConvergenceLabel
+            app.ConvergenceLabel = uilabel(app.VC1GridLayout);
+            app.ConvergenceLabel.FontWeight = 'bold';
+            app.ConvergenceLabel.Layout.Row = 1;
+            app.ConvergenceLabel.Layout.Column = 1;
+            app.ConvergenceLabel.Text = 'Convergence';
+
+            % Create YLimTypeDropDownLabel
+            app.YLimTypeDropDownLabel = uilabel(app.VC1GridLayout);
+            app.YLimTypeDropDownLabel.FontWeight = 'bold';
+            app.YLimTypeDropDownLabel.Layout.Row = 1;
+            app.YLimTypeDropDownLabel.Layout.Column = 2;
+            app.YLimTypeDropDownLabel.Text = 'YLim Type';
+
             % Create VYLimTypeDropDown
-            app.VYLimTypeDropDown = uidropdown(app.VConvergenceGridLayout);
+            app.VYLimTypeDropDown = uidropdown(app.VC1GridLayout);
             app.VYLimTypeDropDown.Items = {'log(fitness)', 'fitness'};
             app.VYLimTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @VYLimTypeDropDownValueChanged, true);
             app.VYLimTypeDropDown.BackgroundColor = [1 1 1];
@@ -1945,26 +2199,19 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.VYLimTypeDropDown.Layout.Column = 3;
             app.VYLimTypeDropDown.Value = 'log(fitness)';
 
-            % Create YLimTypeDropDownLabel
-            app.YLimTypeDropDownLabel = uilabel(app.VConvergenceGridLayout);
-            app.YLimTypeDropDownLabel.FontWeight = 'bold';
-            app.YLimTypeDropDownLabel.Layout.Row = 1;
-            app.YLimTypeDropDownLabel.Layout.Column = 2;
-            app.YLimTypeDropDownLabel.Text = 'YLim Type';
-
             % Create VConvergenceProblemsDropDownLabel
-            app.VConvergenceProblemsDropDownLabel = uilabel(app.VConvergenceGridLayout);
+            app.VConvergenceProblemsDropDownLabel = uilabel(app.VC1GridLayout);
             app.VConvergenceProblemsDropDownLabel.FontWeight = 'bold';
             app.VConvergenceProblemsDropDownLabel.Layout.Row = 1;
             app.VConvergenceProblemsDropDownLabel.Layout.Column = 4;
             app.VConvergenceProblemsDropDownLabel.Text = 'Problem';
 
             % Create VConvergenceUIAxes
-            app.VConvergenceUIAxes = uiaxes(app.VConvergenceGridLayout);
+            app.VConvergenceUIAxes = uiaxes(app.VCGridLayout);
             xlabel(app.VConvergenceUIAxes, 'Iteration')
             ylabel(app.VConvergenceUIAxes, 'fitness')
             app.VConvergenceUIAxes.Layout.Row = 2;
-            app.VConvergenceUIAxes.Layout.Column = [1 5];
+            app.VConvergenceUIAxes.Layout.Column = 1;
 
             % Create VPanel2
             app.VPanel2 = uipanel(app.ViewTableGridLayout);
@@ -2168,8 +2415,8 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.ESelectedAlgoContextMenu.ContextMenuOpeningFcn = createCallbackFcn(app, @ESelectedAlgoContextMenuOpening, true);
             
             % Assign app.ESelectedAlgoContextMenu
-            app.EAlgorithmsTree.ContextMenu = app.ESelectedAlgoContextMenu;
             app.TAlgorithmTree.ContextMenu = app.ESelectedAlgoContextMenu;
+            app.EAlgorithmsTree.ContextMenu = app.ESelectedAlgoContextMenu;
 
             % Create SelectedAlgoSelectAllMenu
             app.SelectedAlgoSelectAllMenu = uimenu(app.ESelectedAlgoContextMenu);
@@ -2190,8 +2437,8 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.ESelectedProbContextMenu = uicontextmenu(app.MTOPlatformUIFigure);
             
             % Assign app.ESelectedProbContextMenu
-            app.EProblemsTree.ContextMenu = app.ESelectedProbContextMenu;
             app.TProblemTree.ContextMenu = app.ESelectedProbContextMenu;
+            app.EProblemsTree.ContextMenu = app.ESelectedProbContextMenu;
 
             % Create SelectedProbSelectAllMenu
             app.SelectedProbSelectAllMenu = uimenu(app.ESelectedProbContextMenu);
