@@ -139,9 +139,9 @@ classdef MFEA2 < Algorithm
                 indorder = randperm(pop);
                 count = 1;
 
-                for i = 1:pop / 2
+                for i = 1:ceil(pop / 2)
                     p1 = indorder(i);
-                    p2 = indorder(i + (pop / 2));
+                    p2 = indorder(i + (floor(pop / 2)));
                     child(count) = Chromosome_MFEA2();
                     child(count + 1) = Chromosome_MFEA2();
 
@@ -273,7 +273,7 @@ classdef MFEA2 < Algorithm
                 rmpval(generation) = rmp; %
 
                 intpopulation(1:pop) = population;
-                intpopulation(pop + 1:2 * pop) = child;
+                intpopulation(pop + 1:2 * pop) = child(1:pop);
                 factorial_cost = zeros(1, 2 * pop);
 
                 for i = 1:no_of_tasks

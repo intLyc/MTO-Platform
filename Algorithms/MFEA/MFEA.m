@@ -136,10 +136,10 @@ classdef MFEA < Algorithm
                 indorder = randperm(pop); % 随机排列
                 count = 1;
 
-                for i = 1:pop / 2
+                for i = 1:ceil(pop / 2)
                     % 选取双亲生成子代
                     p1 = indorder(i);
-                    p2 = indorder(i + (pop / 2));
+                    p2 = indorder(i + (floor(pop / 2)));
                     child(count) = Chromosome_MFEA();
                     child(count + 1) = Chromosome_MFEA();
 
@@ -196,7 +196,7 @@ classdef MFEA < Algorithm
 
                 % 合并两代种群
                 intpopulation(1:pop) = population;
-                intpopulation(pop + 1:2 * pop) = child;
+                intpopulation(pop + 1:2 * pop) = child(1:pop);
                 factorial_cost = zeros(1, 2 * pop);
 
                 for i = 1:no_of_tasks

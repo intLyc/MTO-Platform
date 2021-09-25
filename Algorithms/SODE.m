@@ -20,7 +20,7 @@ classdef SODE < Algorithm
             obj.selection_process = parameter_cell{1};
             obj.p_il = str2double(parameter_cell{2});
             obj.F = str2double(parameter_cell{3});
-            obj.pCR = str2double(parameter_cell{4})
+            obj.pCR = str2double(parameter_cell{4});
         end
 
         function data = run(obj, Tasks, pre_run_list)
@@ -86,10 +86,10 @@ classdef SODE < Algorithm
 
                         A(A == i) = []; % 当前个体所排位置腾空（产生变异中间体时当前个体不参与）
                         p1 = A(1);
-                        p2 = A(2);
-                        p3 = A(3);
+                        p2 = A(mod(2 - 1, length(A)) + 1);
+                        p3 = A(mod(3 - 1, length(A)) + 1);
                         % 变异操作 Mutation
-                        %                 beta=unifrnd(beta_min,beta_max,VarSize); % 随机产生缩放因子
+                        % beta=unifrnd(beta_min,beta_max,VarSize); % 随机产生缩放因子
                         y = population(p1).rnvec + F * (population(p2).rnvec - population(p3).rnvec); % 产生中间体
                         % 防止中间体越界
                         y = max(y, lb);

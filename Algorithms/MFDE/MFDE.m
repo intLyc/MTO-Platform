@@ -150,29 +150,40 @@ classdef MFDE < Algorithm
 
                     end
 
-                    p1 = igroup(1);
+                    if ~isempty(igroup)
+                        p1 = igroup(1);
+                    else
+                        p1 = other(1);
+                    end
 
                     urmp = rand(1);
 
-                    if urmp <= rmp
-                        other = [];
+                    other = [];
 
-                        for sf = 1:length(group)
+                    for sf = 1:length(group)
 
-                            if sf ~= isf
-                                other = [other, group{sf}];
-                            end
-
+                        if sf ~= isf
+                            other = [other, group{sf}];
                         end
 
-                        other = other(randperm(length(other)));
+                    end
 
-                        p2 = other(2);
-                        p3 = other(3);
+                    other = other(randperm(length(other)));
+
+                    if urmp <= rmp
+                        p2 = other(mod(2 - 1, length(other)) + 1);
+                        p3 = other(mod(3 - 1, length(other)) + 1);
                         childsf = 1;
                     else
-                        p2 = igroup(2);
-                        p3 = igroup(3);
+
+                        if ~isempty(igroup)
+                            p2 = igroup(mod(2 - 1, length(igroup)) + 1);
+                            p3 = igroup(mod(3 - 1, length(igroup)) + 1);
+                        else
+                            p2 = other(mod(2 - 1, length(other)) + 1);
+                            p3 = other(mod(3 - 1, length(other)) + 1);
+                        end
+
                     end
 
                     % ±äÒì²Ù×÷ Mutation
