@@ -37,6 +37,13 @@ classdef Problem < handle
             num = length(obj.dims);
         end
 
+        function tasks_name = getTasksName(obj)
+            % get problem's tasks name
+            % cannot be changed
+
+            tasks_name = obj.tasks_name;
+        end
+
         function parameter = getParameter(obj)
             % get problem's parameter {task1 name, task1 dim, ...}
             % cannot be changed

@@ -12,5 +12,9 @@ function obj = Rosenbrock(var)
         sum = sum + new;
     end
 
+    if dim == 1
+        sum = 100 * (var(1) - var(1)^2)^2 + (var(1) - 1)^2;
+    end
+
     obj = sum;
 end

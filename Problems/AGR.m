@@ -19,13 +19,13 @@ classdef AGR < Problem
 
             Tasks(2).dims = obj.dims(2); % dimensionality of Task 1
             Tasks(2).fnc = @(x)Griewank(x, 1, 0);
-            Tasks(2).Lb = -100 * ones(1, obj.dims(1)); % Upper bound of Task 1
-            Tasks(2).Ub = 100 * ones(1, obj.dims(1)); % Lower bound of Task 1
+            Tasks(2).Lb = -100 * ones(1, obj.dims(2)); % Upper bound of Task 1
+            Tasks(2).Ub = 100 * ones(1, obj.dims(2)); % Lower bound of Task 1
 
             Tasks(3).dims = obj.dims(3); % dimensionality of Task 2
             Tasks(3).fnc = @(x)Rastrigin(x, 1, 0);
-            Tasks(3).Lb = -50 * ones(1, obj.dims(2)); % Upper bound of Task 2
-            Tasks(3).Ub = 50 * ones(1, obj.dims(2)); % Lower bound of Task 2
+            Tasks(3).Lb = -50 * ones(1, obj.dims(3)); % Upper bound of Task 2
+            Tasks(3).Ub = 50 * ones(1, obj.dims(3)); % Lower bound of Task 2
         end
 
     end
