@@ -88,10 +88,27 @@ classdef drawFigure < handle
         function obj = save(obj)
             fig = figure('Visible', 'off');
 
+            max_x = 0;
+
             for i = 1:length(obj.x_cell)
-                plot(obj.x_cell{i}, obj.y_cell{i}, ':', 'LineWidth', 3);
+
+                if obj.x_cell{i}(end) > max_x
+                    max_x = obj.x_cell{i}(end);
+                end
+
+            end
+
+            marker_list = {'o', '*', 'x', '^', 's', 'v', 'd', '<', '>', 'p', 'h'};
+
+            for i = 1:length(obj.x_cell)
+                p = plot(obj.x_cell{i}, obj.y_cell{i}, ['-', marker_list{i}]);
+                p.LineWidth = 1;
+                p.MarkerIndices = 1:round(max_x / 10):max_x;
+                p.MarkerSize = 6;
                 hold on;
             end
+
+            xlim([1, max_x]);
 
             if ~isempty(obj.title_str)
                 title(strrep(obj.title_str, '_', '\_'));
@@ -108,18 +125,6 @@ classdef drawFigure < handle
             if ~isempty(obj.legend_cell)
                 legend(strrep(obj.legend_cell, '_', '\_'));
             end
-
-            max_x = 0;
-
-            for i = 1:length(obj.x_cell)
-
-                if obj.x_cell{i}(end) > max_x
-                    max_x = obj.x_cell{i}(end);
-                end
-
-            end
-
-            xlim([1, max_x]);
 
             file_name = [obj.save_dir, obj.title_str, '.', obj.figure_type];
 
