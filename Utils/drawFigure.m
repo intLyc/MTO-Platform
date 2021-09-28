@@ -128,6 +128,8 @@ classdef drawFigure < handle
 
             file_name = [obj.save_dir, obj.title_str, '.', obj.figure_type];
 
+            set(gca, 'looseInset', [0 0 0 0]);
+
             if strcmp(obj.figure_type, 'eps')
                 saveas(fig, file_name, 'psc2');
             else
