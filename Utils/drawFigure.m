@@ -47,44 +47,6 @@ classdef drawFigure < handle
             obj.figure_type = figure_type;
         end
 
-        function obj = draw(obj)
-            fig = figure();
-
-            for i = 1:length(obj.x_cell)
-                plot(obj.x_cell{i}, obj.y_cell{i}, ':', 'LineWidth', 3);
-                hold on;
-            end
-
-            if ~isempty(obj.title_str)
-                title(strrep(obj.title_str, '_', '\_'));
-            end
-
-            if ~isempty(obj.xlabel_str)
-                xlabel(strrep(obj.xlabel_str, '_', '\_'));
-            end
-
-            if ~isempty(obj.ylabel_str)
-                ylabel(strrep(obj.ylabel_str, '_', '\_'));
-            end
-
-            if ~isempty(obj.legend_cell)
-                legend(strrep(obj.legend_cell, '_', '\_'));
-            end
-
-            max_x = 0;
-
-            for i = 1:length(obj.x_cell)
-
-                if obj.x_cell{i}(end) > max_x
-                    max_x = obj.x_cell{i}(end);
-                end
-
-            end
-
-            xlim([1, max_x]);
-
-        end
-
         function obj = save(obj)
             fig = figure('Visible', 'off');
 
@@ -104,7 +66,7 @@ classdef drawFigure < handle
                 p = plot(obj.x_cell{i}, obj.y_cell{i}, ['-', marker_list{i}]);
                 p.LineWidth = 1;
                 p.MarkerIndices = 1:round(max_x / 10):max_x;
-                p.MarkerSize = 6;
+                p.MarkerSize = 5;
                 hold on;
             end
 
@@ -128,7 +90,7 @@ classdef drawFigure < handle
 
             file_name = [obj.save_dir, obj.title_str, '.', obj.figure_type];
 
-            print('-depsc', file_name);
+            exportgraphics(fig, file_name);
 
         end
 
