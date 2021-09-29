@@ -71,24 +71,40 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         VPanel1                       matlab.ui.container.Panel
         VP1GridLayout                 matlab.ui.container.GridLayout
         VTableTabGroup                matlab.ui.container.TabGroup
-        VFitnessTab                   matlab.ui.container.Tab
-        VFitnessGridLayout            matlab.ui.container.GridLayout
-        VFitnessUITable               matlab.ui.control.Table
+        VFitnessAveTab                matlab.ui.container.Tab
+        VFitnessAveGridLayout         matlab.ui.container.GridLayout
+        VFitnessAveUITable            matlab.ui.control.Table
         VFitnessStdTab                matlab.ui.container.Tab
         VFitnessStdGridLayout         matlab.ui.container.GridLayout
         VFitnessStdUITable            matlab.ui.control.Table
-        VTimeTab                      matlab.ui.container.Tab
-        VTimeTableGridLayout          matlab.ui.container.GridLayout
-        VTimeUITable                  matlab.ui.control.Table
-        VConvergenceTab               matlab.ui.container.Tab
+        VTimeUsedTab                  matlab.ui.container.Tab
+        VTimeUsedTableGridLayout      matlab.ui.container.GridLayout
+        VTimeUsedUITable              matlab.ui.control.Table
+        VConvergenceTrendTab          matlab.ui.container.Tab
         VCGridLayout                  matlab.ui.container.GridLayout
         VC1GridLayout                 matlab.ui.container.GridLayout
-        VConvergenceProblemsDropDown  matlab.ui.control.DropDown
+        VProblemsDropDown             matlab.ui.control.DropDown
         ConvergenceLabel              matlab.ui.control.Label
         YLimTypeDropDownLabel         matlab.ui.control.Label
         VYLimTypeDropDown             matlab.ui.control.DropDown
-        VConvergenceProblemsDropDownLabel  matlab.ui.control.Label
-        VConvergenceUIAxes            matlab.ui.control.UIAxes
+        VProblemsDropDownLabel        matlab.ui.control.Label
+        VConvergenceTrendUIAxes       matlab.ui.control.UIAxes
+        VWilcoxonRankSumTestTab       matlab.ui.container.Tab
+        VWGridLayout                  matlab.ui.container.GridLayout
+        VWilcoxonUITable              matlab.ui.control.Table
+        VW1GridLayout                 matlab.ui.container.GridLayout
+        YourAlgorithmDropDownLabel    matlab.ui.control.Label
+        VWilcoxonAlgorithmDropDown    matlab.ui.control.DropDown
+        VWilcoxonRankSumTestLabel     matlab.ui.control.Label
+        ShowTypeLabel                 matlab.ui.control.Label
+        VWilcoxonShowTypeDropDown     matlab.ui.control.DropDown
+        VFriedmansTestTab             matlab.ui.container.Tab
+        VFGridLayout                  matlab.ui.container.GridLayout
+        VFriedmanUITable              matlab.ui.control.Table
+        VF1GridLayout                 matlab.ui.container.GridLayout
+        YourAlgorithmDropDown_2Label  matlab.ui.control.Label
+        VFriedmanAlgorithmDropDown    matlab.ui.control.DropDown
+        VFriedmansTestLabel           matlab.ui.control.Label
         VPanel2                       matlab.ui.container.Panel
         VP2GridLayout                 matlab.ui.container.GridLayout
         VLogsTextArea                 matlab.ui.control.TextArea
@@ -102,7 +118,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         VTableTypeDropDown            matlab.ui.control.DropDown
         VSaveResultButton             matlab.ui.control.Button
         VLoadDataButton               matlab.ui.control.Button
-        MergeDataTab                  matlab.ui.container.Tab
+        DataProcessTab                matlab.ui.container.Tab
         MergeDataGridLayout           matlab.ui.container.GridLayout
         MPanel1                       matlab.ui.container.Panel
         MP1GridLayout                 matlab.ui.container.GridLayout
@@ -145,6 +161,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         Eend_num % number of end condition
         Eresult % (problem, algorithm){wallclock, rep * convergence}
         Estop_flag % stop button clicked flag
+        
     end
     
     methods (Access = public)
@@ -439,15 +456,21 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                     prob_row_cell = [prob_row_cell, [prob_cell{prob}, num2str(task)]];
                 end
             end
-            app.VFitnessUITable.ColumnName = algo_cell;
+            app.VFitnessAveUITable.ColumnName = algo_cell;
             app.VFitnessStdUITable.ColumnName = algo_cell;
-            app.VTimeUITable.ColumnName = algo_cell;
-            app.VFitnessUITable.RowName = prob_row_cell;
+            app.VTimeUsedUITable.ColumnName = algo_cell;
+            app.VWilcoxonUITable.ColumnName = algo_cell;
+            app.VFriedmanUITable.ColumnName = algo_cell;
+            app.VFitnessAveUITable.RowName = prob_row_cell;
             app.VFitnessStdUITable.RowName = prob_row_cell;
-            app.VTimeUITable.RowName = prob_cell;
-            app.VFitnessUITable.Data = [];
+            app.VTimeUsedUITable.RowName = prob_cell;
+            app.VWilcoxonUITable.RowName = prob_row_cell;
+            app.VFriedmanUITable.RowName = prob_row_cell;
+            app.VFitnessAveUITable.Data = [];
             app.VFitnessStdUITable.Data = [];
-            app.VTimeUITable.Data = [];
+            app.VTimeUsedUITable.Data = [];
+            app.VWilcoxonUITable.Data = [];
+            app.VFriedmanUITable.Data = [];
         end
         
         function VupdateTable(app, data)
@@ -461,45 +484,45 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                         convergence_task = data.result(prob, algo).convergence(task:tasks_num:end, :);
                         mean_end = mean(convergence_task(:, end));
                         std_end = std(convergence_task(:, end));
-                        app.VFitnessUITable.Data(row_i, algo) = mean_end;
+                        app.VFitnessAveUITable.Data(row_i, algo) = mean_end;
                         app.VFitnessStdUITable.Data(row_i, algo) = std_end;
                         row_i = row_i + 1;
                     end
-                    app.VTimeUITable.Data(prob, algo) = data.result(prob, algo).clock_time;
+                    app.VTimeUsedUITable.Data(prob, algo) = data.result(prob, algo).clock_time;
                 end
             end
             
             % highlight best value
-            app.VFitnessUITable.removeStyle();
+            app.VFitnessAveUITable.removeStyle();
             app.VFitnessStdUITable.removeStyle();
-            app.VTimeUITable.removeStyle();
-            highlight = uistyle('BackgroundColor', [0.67,0.95,0.67]);
-            worstlight = uistyle('BackgroundColor', [1.00,0.60,0.60]);
+            app.VTimeUsedUITable.removeStyle();
+            high_color = uistyle('BackgroundColor', [0.67,0.95,0.67]);
+            low_color = uistyle('BackgroundColor', [1.00,0.60,0.60]);
             row_i = 1;
             for prob = 1:length(data.prob_cell)
                 tasks_num = data.tasks_num_list(prob);
                 for task = 1:tasks_num
                     % best
-                    [~, index] = min(app.VFitnessUITable.Data(row_i, :));
-                    app.VFitnessUITable.addStyle(highlight, 'cell', [row_i, index]);
+                    [~, index] = min(app.VFitnessAveUITable.Data(row_i, :));
+                    app.VFitnessAveUITable.addStyle(high_color, 'cell', [row_i, index]);
                     [~, index] = min(app.VFitnessStdUITable.Data(row_i, :));
-                    app.VFitnessStdUITable.addStyle(highlight, 'cell', [row_i, index]);
+                    app.VFitnessStdUITable.addStyle(high_color, 'cell', [row_i, index]);
                     
                     % worst
-                    [~, index] = max(app.VFitnessUITable.Data(row_i, :));
-                    app.VFitnessUITable.addStyle(worstlight, 'cell', [row_i, index]);
+                    [~, index] = max(app.VFitnessAveUITable.Data(row_i, :));
+                    app.VFitnessAveUITable.addStyle(low_color, 'cell', [row_i, index]);
                     [~, index] = max(app.VFitnessStdUITable.Data(row_i, :));
-                    app.VFitnessStdUITable.addStyle(worstlight, 'cell', [row_i, index]);
+                    app.VFitnessStdUITable.addStyle(low_color, 'cell', [row_i, index]);
                     
                     row_i = row_i + 1;
                 end
                 % best
-                [~, index] = min(app.VTimeUITable.Data(prob, :));
-                app.VTimeUITable.addStyle(highlight, 'cell', [prob, index]);
+                [~, index] = min(app.VTimeUsedUITable.Data(prob, :));
+                app.VTimeUsedUITable.addStyle(high_color, 'cell', [prob, index]);
                 
                 % worst
-                [~, index] = max(app.VTimeUITable.Data(prob, :));
-                app.VTimeUITable.addStyle(worstlight, 'cell', [prob, index]);
+                [~, index] = max(app.VTimeUsedUITable.Data(prob, :));
+                app.VTimeUsedUITable.addStyle(low_color, 'cell', [prob, index]);
             end
             drawnow;
         end
@@ -514,23 +537,23 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                     convergence_task = app.Eresult(prob, algo).convergence(task:tasks_num:end, :);
                     mean_end = mean(convergence_task(:, end));
                     std_end = std(convergence_task(:, end));
-                    app.VFitnessUITable.Data(row_i, algo) = mean_end;
+                    app.VFitnessAveUITable.Data(row_i, algo) = mean_end;
                     app.VFitnessStdUITable.Data(row_i, algo) = std_end;
                     row_i = row_i + 1;
                 end
-                app.VTimeUITable.Data(prob, algo) = app.Eresult(prob, algo).clock_time;
+                app.VTimeUsedUITable.Data(prob, algo) = app.Eresult(prob, algo).clock_time;
             end
             
             % highlight best value
             row_i = sum(tasks_num_list(1:prob-1)) + 1;
-            highlight = uistyle('BackgroundColor', [0.67,0.95,0.67]);
-            worstlight = uistyle('BackgroundColor', [1.00,0.60,0.60]);
+            high_color = uistyle('BackgroundColor', [0.67,0.95,0.67]);
+            low_color = uistyle('BackgroundColor', [1.00,0.60,0.60]);
             tasks_num = tasks_num_list(prob);
             for task = 1:tasks_num
-                target_index = app.VFitnessUITable.StyleConfigurations.TargetIndex;
+                target_index = app.VFitnessAveUITable.StyleConfigurations.TargetIndex;
                 style_row = reshape([target_index{:}], [2, length(target_index)]);
                 if ~isempty(find(style_row(1, :) == row_i, 1))
-                    app.VFitnessUITable.removeStyle(find(style_row(1, :) == row_i));
+                    app.VFitnessAveUITable.removeStyle(find(style_row(1, :) == row_i));
                 end
                 target_index = app.VFitnessStdUITable.StyleConfigurations.TargetIndex;
                 style_row = reshape([target_index{:}], [2, length(target_index)]);
@@ -539,30 +562,30 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                 end
                 
                 % best
-                [~, index] = min(app.VFitnessUITable.Data(row_i, :));
-                app.VFitnessUITable.addStyle(highlight, 'cell', [row_i, index]);
+                [~, index] = min(app.VFitnessAveUITable.Data(row_i, :));
+                app.VFitnessAveUITable.addStyle(high_color, 'cell', [row_i, index]);
                 [~, index] = min(app.VFitnessStdUITable.Data(row_i, :));
-                app.VFitnessStdUITable.addStyle(highlight, 'cell', [row_i, index]);
+                app.VFitnessStdUITable.addStyle(high_color, 'cell', [row_i, index]);
                 
                 % worst
-                [~, index] = max(app.VFitnessUITable.Data(row_i, :));
-                app.VFitnessUITable.addStyle(worstlight, 'cell', [row_i, index]);
+                [~, index] = max(app.VFitnessAveUITable.Data(row_i, :));
+                app.VFitnessAveUITable.addStyle(low_color, 'cell', [row_i, index]);
                 [~, index] = max(app.VFitnessStdUITable.Data(row_i, :));
-                app.VFitnessStdUITable.addStyle(worstlight, 'cell', [row_i, index]);
+                app.VFitnessStdUITable.addStyle(low_color, 'cell', [row_i, index]);
                 row_i = row_i + 1;
             end
-            target_index = app.VTimeUITable.StyleConfigurations.TargetIndex;
+            target_index = app.VTimeUsedUITable.StyleConfigurations.TargetIndex;
             style_row = reshape([target_index{:}], [2, length(target_index)]);
             if ~isempty(find(style_row(1, :) == prob, 1))
-                app.VTimeUITable.removeStyle(find(style_row(1, :) == prob));
+                app.VTimeUsedUITable.removeStyle(find(style_row(1, :) == prob));
             end
             % best
-            [~, index] = min(app.VTimeUITable.Data(prob, :));
-            app.VTimeUITable.addStyle(highlight, 'cell', [prob, index]);
+            [~, index] = min(app.VTimeUsedUITable.Data(prob, :));
+            app.VTimeUsedUITable.addStyle(high_color, 'cell', [prob, index]);
             
             % worst
-            [~, index] = max(app.VTimeUITable.Data(prob, :));
-            app.VTimeUITable.addStyle(worstlight, 'cell', [prob, index]);
+            [~, index] = max(app.VTimeUsedUITable.Data(prob, :));
+            app.VTimeUsedUITable.addStyle(low_color, 'cell', [prob, index]);
             
             drawnow;
         end
@@ -578,15 +601,15 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                     prob_row_index = [prob_row_index, [prob, task]];
                 end
             end
-            app.VConvergenceProblemsDropDown.Items = prob_row_cell;
-            app.VConvergenceProblemsDropDown.ItemsData = prob_row_index;
+            app.VProblemsDropDown.Items = prob_row_cell;
+            app.VProblemsDropDown.ItemsData = prob_row_index;
         end
         
         function VupdateConvergenceAxes(app)
             % update convergence axes
             
             % clear axes
-            cla(app.VConvergenceUIAxes, 'reset');
+            cla(app.VConvergenceTrendUIAxes, 'reset');
             
             % check app.data
             if isempty(app.data)
@@ -594,7 +617,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             end
             
             % draw
-            value = app.VConvergenceProblemsDropDown.Value;
+            value = app.VProblemsDropDown.Value;
             prob = value(1);
             task = value(2);
             tasks_num = app.data.tasks_num_list(prob);
@@ -618,17 +641,108 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             end
             marker_list = {'o', '*', 'x', '^', 's', 'v', 'd', '<', '>', 'p', 'h'};
             for i = 1:length(x_cell)
-                p = plot(app.VConvergenceUIAxes, x_cell{i}, y_cell{i}, ['-', marker_list{i}]);
+                p = plot(app.VConvergenceTrendUIAxes, x_cell{i}, y_cell{i}, ['-', marker_list{i}]);
                 p.LineWidth = 1.5;
                 p.MarkerIndices = 1:round(max_x/10):max_x;
                 p.MarkerSize = 8;
-                hold(app.VConvergenceUIAxes, 'on');
+                hold(app.VConvergenceTrendUIAxes, 'on');
             end
-            legend(app.VConvergenceUIAxes, strrep(app.data.algo_cell, '_', '\_'));
-            xlabel(app.VConvergenceUIAxes, 'Iteration');
-            ylabel(app.VConvergenceUIAxes, app.VYLimTypeDropDown.Value);
-            xlim(app.VConvergenceUIAxes, [1, max_x]);
-            grid(app.VConvergenceUIAxes, 'on');
+            legend(app.VConvergenceTrendUIAxes, strrep(app.data.algo_cell, '_', '\_'));
+            xlabel(app.VConvergenceTrendUIAxes, 'Iteration');
+            ylabel(app.VConvergenceTrendUIAxes, app.VYLimTypeDropDown.Value);
+            xlim(app.VConvergenceTrendUIAxes, [1, max_x]);
+            grid(app.VConvergenceTrendUIAxes, 'on');
+        end
+        
+        function VresetWilcoxonAlgorithmDropDown(app, algo_cell)
+            % reset convergence problems drop down
+            
+            algo_index = [];
+            for algo = 1:length(algo_cell)
+                algo_index = [algo_index, algo];
+            end
+            app.VWilcoxonAlgorithmDropDown.Items = algo_cell;
+            app.VWilcoxonAlgorithmDropDown.ItemsData = algo_index;
+        end
+        
+        function VupdateWilcoxonTable(app, data)
+            % update Wilcoxon Rank Sum Test Table
+            
+            show_type = app.VWilcoxonShowTypeDropDown.Value;
+            app.VWilcoxonUITable.Data = [];
+            
+            % calculate the selected algorithm p-value
+            algo_selected = app.VWilcoxonAlgorithmDropDown.Value;
+            
+            for algo = 1:length(data.algo_cell)
+                row_i = 1;
+                for prob = 1:length(data.prob_cell)
+                    tasks_num = data.tasks_num_list(prob);
+                    for task = 1:tasks_num
+                        compare_convergence_task = data.result(prob, algo).convergence(task:tasks_num:end, :);
+                        algo_convergence_task = data.result(prob, algo_selected).convergence(task:tasks_num:end, :);
+                        wilcoxon_p(row_i, algo) = ranksum(compare_convergence_task(:, end), algo_convergence_task(:, end));
+                        row_i = row_i + 1;
+                    end
+                end
+            end
+            
+            if strcmp(show_type, 'p-value')
+                app.VWilcoxonUITable.Data = wilcoxon_p;
+                
+                % highlight value
+                app.VWilcoxonUITable.removeStyle();
+                marker_color = uistyle('BackgroundColor', [0.94,0.94,0.94]);
+                row_i = 1;
+                for prob = 1:length(data.prob_cell)
+                    tasks_num = data.tasks_num_list(prob);
+                    for task = 1:tasks_num
+                        for algo = 1:length(data.algo_cell)
+                            % mark
+                            if wilcoxon_p(row_i, algo) < 0.05
+                                app.VWilcoxonUITable.addStyle(marker_color, 'cell', [row_i, algo]);
+                            end
+                        end
+                        row_i = row_i + 1;
+                    end
+                end
+                drawnow;
+                
+            elseif strcmp(show_type, 'fitness')
+                fitness = app.VFitnessAveUITable.Data;
+                app.VWilcoxonUITable.Data = fitness;
+                
+                % highlight value
+                app.VWilcoxonUITable.removeStyle();
+                high_color = uistyle('BackgroundColor', [0.67,0.95,0.67]);
+                medium_color = uistyle('BackgroundColor', [1.00,1.00,0.70]);
+                low_color = uistyle('BackgroundColor', [1.00,0.60,0.60]);
+                
+                row_i = 1;
+                for prob = 1:length(data.prob_cell)
+                    tasks_num = data.tasks_num_list(prob);
+                    for task = 1:tasks_num
+                        for algo = 1:length(data.algo_cell)
+                            % mark
+                            if wilcoxon_p(row_i, algo) < 0.05
+                                % better than selected algorithm
+                                if fitness(row_i, algo) < fitness(row_i, algo_selected)
+                                    app.VWilcoxonUITable.addStyle(high_color, 'cell', [row_i, algo]);
+                                else
+                                    app.VWilcoxonUITable.addStyle(low_color, 'cell', [row_i, algo]);
+                                end
+                            else
+                                app.VWilcoxonUITable.addStyle(medium_color, 'cell', [row_i, algo]);
+                            end
+                        end
+                        row_i = row_i + 1;
+                    end
+                end
+                drawnow;
+            end
+            
+            
+            
         end
         
         function result = McheckData(app)
@@ -1036,7 +1150,8 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % reset table and convergence
             app.VresetTable(algo_cell, prob_cell, tasks_num_list);
             app.VresetConvergenceProblemsDropDown(prob_cell, tasks_num_list);
-            cla(app.VConvergenceUIAxes, 'reset');
+            app.VresetWilcoxonAlgorithmDropDown(algo_cell);
+            cla(app.VConvergenceTrendUIAxes, 'reset');
             
             % main experiment loop
             log_str = [newline, '#====== Experiment Start ======#'];
@@ -1261,9 +1376,19 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.VupdateConvergenceAxes();
         end
 
-        % Value changed function: VConvergenceProblemsDropDown
-        function VConvergenceProblemsDropDownValueChanged(app, event)
+        % Value changed function: VProblemsDropDown
+        function VProblemsDropDownValueChanged(app, event)
             app.VupdateConvergenceAxes();
+        end
+
+        % Value changed function: VWilcoxonShowTypeDropDown
+        function VWilcoxonShowTypeDropDownValueChanged(app, event)
+            app.VupdateWilcoxonTable(app.data);
+        end
+
+        % Value changed function: VWilcoxonAlgorithmDropDown
+        function VWilcoxonAlgorithmDropDownValueChanged(app, event)
+            app.VupdateWilcoxonTable(app.data);
         end
 
         % Button pushed function: VLogsClearButton
@@ -1294,6 +1419,8 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.VupdateTable(app.data);
             app.VresetConvergenceProblemsDropDown(app.data.prob_cell, app.data.tasks_num_list);
             app.VupdateConvergenceAxes();
+            app.VresetWilcoxonAlgorithmDropDown(app.data.algo_cell);
+            app.VupdateWilcoxonTable(app.data);
         end
 
         % Button pushed function: VSaveResultButton
@@ -1357,12 +1484,20 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                     prob_task_cell = [prob_task_cell, [data_save.prob_cell{prob}, num2str(task)]];
                 end
             end
-            cell_out = [[{''}, prob_task_cell]', [data_save.algo_cell; num2cell(app.VFitnessUITable.Data)]];
-            writecell(cell_out, [table_dir_name, 'Fitness.', app.VTableTypeDropDown.Value]);
+            cell_out = [[{''}, prob_task_cell]', [data_save.algo_cell; num2cell(app.VFitnessAveUITable.Data)]];
+            writecell(cell_out, [table_dir_name, 'Fitness Ave.', app.VTableTypeDropDown.Value]);
             cell_out = [[{''}, prob_task_cell]', [data_save.algo_cell; num2cell(app.VFitnessStdUITable.Data)]];
             writecell(cell_out, [table_dir_name, 'Fitness Std.', app.VTableTypeDropDown.Value]);
-            cell_out = [[{''}, data_save.prob_cell']', [data_save.algo_cell; num2cell(app.VTimeUITable.Data)]];
+            cell_out = [[{''}, data_save.prob_cell']', [data_save.algo_cell; num2cell(app.VTimeUsedUITable.Data)]];
             writecell(cell_out, [table_dir_name, 'Time Used.', app.VTableTypeDropDown.Value]);
+            cell_out = [[{''}, prob_task_cell]', [data_save.algo_cell; num2cell(app.VWilcoxonUITable.Data)]];
+            writecell(cell_out, [table_dir_name, 'Wilcoxon P-Value.', app.VWilcoxon_p]);
+            cell_out = [[{''}, prob_task_cell]', [data_save.algo_cell; num2cell(app.VFriedmanUITable.Data)]];
+            writecell(cell_out, [table_dir_name, 'Wilcoxon Fitness.', app.VWilcoxon_fitness]);
+            % TODO Friedman
+            cell_out = [[{''}, prob_task_cell]', [data_save.algo_cell; num2cell(app.VFriedmanUITable.Data)]];
+            writecell(cell_out, [table_dir_name, 'Friedman’s Test.', app.VTableTypeDropDown.Value]);
+            
             app.Vprintlog(['Save to: "', dir_name, '"']);
         end
 
@@ -1558,7 +1693,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % Create MTOPlatformUIFigure and hide until all components are created
             app.MTOPlatformUIFigure = uifigure('Visible', 'off');
             app.MTOPlatformUIFigure.Color = [1 1 1];
-            app.MTOPlatformUIFigure.Position = [100 100 897 708];
+            app.MTOPlatformUIFigure.Position = [100 100 906 702];
             app.MTOPlatformUIFigure.Name = 'MTO Platform';
             app.MTOPlatformUIFigure.WindowStyle = 'modal';
 
@@ -2057,24 +2192,24 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.VTableTabGroup.Layout.Row = 1;
             app.VTableTabGroup.Layout.Column = 1;
 
-            % Create VFitnessTab
-            app.VFitnessTab = uitab(app.VTableTabGroup);
-            app.VFitnessTab.Title = 'Fitness';
-            app.VFitnessTab.BackgroundColor = [1 1 1];
+            % Create VFitnessAveTab
+            app.VFitnessAveTab = uitab(app.VTableTabGroup);
+            app.VFitnessAveTab.Title = 'Fitness Ave';
+            app.VFitnessAveTab.BackgroundColor = [1 1 1];
 
-            % Create VFitnessGridLayout
-            app.VFitnessGridLayout = uigridlayout(app.VFitnessTab);
-            app.VFitnessGridLayout.ColumnWidth = {'1x'};
-            app.VFitnessGridLayout.RowHeight = {'1x'};
-            app.VFitnessGridLayout.Padding = [0 0 0 0];
-            app.VFitnessGridLayout.BackgroundColor = [1 1 1];
+            % Create VFitnessAveGridLayout
+            app.VFitnessAveGridLayout = uigridlayout(app.VFitnessAveTab);
+            app.VFitnessAveGridLayout.ColumnWidth = {'1x'};
+            app.VFitnessAveGridLayout.RowHeight = {'1x'};
+            app.VFitnessAveGridLayout.Padding = [0 0 0 0];
+            app.VFitnessAveGridLayout.BackgroundColor = [1 1 1];
 
-            % Create VFitnessUITable
-            app.VFitnessUITable = uitable(app.VFitnessGridLayout);
-            app.VFitnessUITable.ColumnName = '';
-            app.VFitnessUITable.RowName = {};
-            app.VFitnessUITable.Layout.Row = 1;
-            app.VFitnessUITable.Layout.Column = 1;
+            % Create VFitnessAveUITable
+            app.VFitnessAveUITable = uitable(app.VFitnessAveGridLayout);
+            app.VFitnessAveUITable.ColumnName = '';
+            app.VFitnessAveUITable.RowName = {};
+            app.VFitnessAveUITable.Layout.Row = 1;
+            app.VFitnessAveUITable.Layout.Column = 1;
 
             % Create VFitnessStdTab
             app.VFitnessStdTab = uitab(app.VTableTabGroup);
@@ -2095,32 +2230,32 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.VFitnessStdUITable.Layout.Row = 1;
             app.VFitnessStdUITable.Layout.Column = 1;
 
-            % Create VTimeTab
-            app.VTimeTab = uitab(app.VTableTabGroup);
-            app.VTimeTab.Title = 'Time Used';
-            app.VTimeTab.BackgroundColor = [1 1 1];
+            % Create VTimeUsedTab
+            app.VTimeUsedTab = uitab(app.VTableTabGroup);
+            app.VTimeUsedTab.Title = 'Time Used';
+            app.VTimeUsedTab.BackgroundColor = [1 1 1];
 
-            % Create VTimeTableGridLayout
-            app.VTimeTableGridLayout = uigridlayout(app.VTimeTab);
-            app.VTimeTableGridLayout.ColumnWidth = {'1x'};
-            app.VTimeTableGridLayout.RowHeight = {'1x'};
-            app.VTimeTableGridLayout.Padding = [0 0 0 0];
-            app.VTimeTableGridLayout.BackgroundColor = [1 1 1];
+            % Create VTimeUsedTableGridLayout
+            app.VTimeUsedTableGridLayout = uigridlayout(app.VTimeUsedTab);
+            app.VTimeUsedTableGridLayout.ColumnWidth = {'1x'};
+            app.VTimeUsedTableGridLayout.RowHeight = {'1x'};
+            app.VTimeUsedTableGridLayout.Padding = [0 0 0 0];
+            app.VTimeUsedTableGridLayout.BackgroundColor = [1 1 1];
 
-            % Create VTimeUITable
-            app.VTimeUITable = uitable(app.VTimeTableGridLayout);
-            app.VTimeUITable.ColumnName = '';
-            app.VTimeUITable.RowName = {};
-            app.VTimeUITable.Layout.Row = 1;
-            app.VTimeUITable.Layout.Column = 1;
+            % Create VTimeUsedUITable
+            app.VTimeUsedUITable = uitable(app.VTimeUsedTableGridLayout);
+            app.VTimeUsedUITable.ColumnName = '';
+            app.VTimeUsedUITable.RowName = {};
+            app.VTimeUsedUITable.Layout.Row = 1;
+            app.VTimeUsedUITable.Layout.Column = 1;
 
-            % Create VConvergenceTab
-            app.VConvergenceTab = uitab(app.VTableTabGroup);
-            app.VConvergenceTab.Title = 'Convergence';
-            app.VConvergenceTab.BackgroundColor = [1 1 1];
+            % Create VConvergenceTrendTab
+            app.VConvergenceTrendTab = uitab(app.VTableTabGroup);
+            app.VConvergenceTrendTab.Title = 'Convergence Trend';
+            app.VConvergenceTrendTab.BackgroundColor = [1 1 1];
 
             % Create VCGridLayout
-            app.VCGridLayout = uigridlayout(app.VConvergenceTab);
+            app.VCGridLayout = uigridlayout(app.VConvergenceTrendTab);
             app.VCGridLayout.ColumnWidth = {'1x'};
             app.VCGridLayout.RowHeight = {'fit', '1x'};
             app.VCGridLayout.BackgroundColor = [1 1 1];
@@ -2134,14 +2269,14 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.VC1GridLayout.Layout.Column = 1;
             app.VC1GridLayout.BackgroundColor = [1 1 1];
 
-            % Create VConvergenceProblemsDropDown
-            app.VConvergenceProblemsDropDown = uidropdown(app.VC1GridLayout);
-            app.VConvergenceProblemsDropDown.Items = {'Problem '};
-            app.VConvergenceProblemsDropDown.ValueChangedFcn = createCallbackFcn(app, @VConvergenceProblemsDropDownValueChanged, true);
-            app.VConvergenceProblemsDropDown.BackgroundColor = [1 1 1];
-            app.VConvergenceProblemsDropDown.Layout.Row = 1;
-            app.VConvergenceProblemsDropDown.Layout.Column = 5;
-            app.VConvergenceProblemsDropDown.Value = 'Problem ';
+            % Create VProblemsDropDown
+            app.VProblemsDropDown = uidropdown(app.VC1GridLayout);
+            app.VProblemsDropDown.Items = {'Problem '};
+            app.VProblemsDropDown.ValueChangedFcn = createCallbackFcn(app, @VProblemsDropDownValueChanged, true);
+            app.VProblemsDropDown.BackgroundColor = [1 1 1];
+            app.VProblemsDropDown.Layout.Row = 1;
+            app.VProblemsDropDown.Layout.Column = 5;
+            app.VProblemsDropDown.Value = 'Problem ';
 
             % Create ConvergenceLabel
             app.ConvergenceLabel = uilabel(app.VC1GridLayout);
@@ -2166,19 +2301,135 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.VYLimTypeDropDown.Layout.Column = 3;
             app.VYLimTypeDropDown.Value = 'log(fitness)';
 
-            % Create VConvergenceProblemsDropDownLabel
-            app.VConvergenceProblemsDropDownLabel = uilabel(app.VC1GridLayout);
-            app.VConvergenceProblemsDropDownLabel.FontWeight = 'bold';
-            app.VConvergenceProblemsDropDownLabel.Layout.Row = 1;
-            app.VConvergenceProblemsDropDownLabel.Layout.Column = 4;
-            app.VConvergenceProblemsDropDownLabel.Text = 'Problem';
+            % Create VProblemsDropDownLabel
+            app.VProblemsDropDownLabel = uilabel(app.VC1GridLayout);
+            app.VProblemsDropDownLabel.FontWeight = 'bold';
+            app.VProblemsDropDownLabel.Layout.Row = 1;
+            app.VProblemsDropDownLabel.Layout.Column = 4;
+            app.VProblemsDropDownLabel.Text = 'Problem';
 
-            % Create VConvergenceUIAxes
-            app.VConvergenceUIAxes = uiaxes(app.VCGridLayout);
-            xlabel(app.VConvergenceUIAxes, 'Iteration')
-            ylabel(app.VConvergenceUIAxes, 'fitness')
-            app.VConvergenceUIAxes.Layout.Row = 2;
-            app.VConvergenceUIAxes.Layout.Column = 1;
+            % Create VConvergenceTrendUIAxes
+            app.VConvergenceTrendUIAxes = uiaxes(app.VCGridLayout);
+            xlabel(app.VConvergenceTrendUIAxes, 'Iteration')
+            ylabel(app.VConvergenceTrendUIAxes, 'fitness')
+            app.VConvergenceTrendUIAxes.Layout.Row = 2;
+            app.VConvergenceTrendUIAxes.Layout.Column = 1;
+
+            % Create VWilcoxonRankSumTestTab
+            app.VWilcoxonRankSumTestTab = uitab(app.VTableTabGroup);
+            app.VWilcoxonRankSumTestTab.Title = 'Wilcoxon Rank Sum Test';
+
+            % Create VWGridLayout
+            app.VWGridLayout = uigridlayout(app.VWilcoxonRankSumTestTab);
+            app.VWGridLayout.ColumnWidth = {'1x'};
+            app.VWGridLayout.RowHeight = {'fit', '1x'};
+            app.VWGridLayout.BackgroundColor = [1 1 1];
+
+            % Create VWilcoxonUITable
+            app.VWilcoxonUITable = uitable(app.VWGridLayout);
+            app.VWilcoxonUITable.ColumnName = '';
+            app.VWilcoxonUITable.RowName = {};
+            app.VWilcoxonUITable.Layout.Row = 2;
+            app.VWilcoxonUITable.Layout.Column = 1;
+
+            % Create VW1GridLayout
+            app.VW1GridLayout = uigridlayout(app.VWGridLayout);
+            app.VW1GridLayout.ColumnWidth = {'fit', '1x', 'fit', 'fit', 'fit', 'fit'};
+            app.VW1GridLayout.RowHeight = {'1x'};
+            app.VW1GridLayout.Padding = [0 0 0 0];
+            app.VW1GridLayout.Layout.Row = 1;
+            app.VW1GridLayout.Layout.Column = 1;
+            app.VW1GridLayout.BackgroundColor = [1 1 1];
+
+            % Create YourAlgorithmDropDownLabel
+            app.YourAlgorithmDropDownLabel = uilabel(app.VW1GridLayout);
+            app.YourAlgorithmDropDownLabel.FontWeight = 'bold';
+            app.YourAlgorithmDropDownLabel.Layout.Row = 1;
+            app.YourAlgorithmDropDownLabel.Layout.Column = 5;
+            app.YourAlgorithmDropDownLabel.Text = 'Your Algorithm';
+
+            % Create VWilcoxonAlgorithmDropDown
+            app.VWilcoxonAlgorithmDropDown = uidropdown(app.VW1GridLayout);
+            app.VWilcoxonAlgorithmDropDown.Items = {'Algorithm'};
+            app.VWilcoxonAlgorithmDropDown.ValueChangedFcn = createCallbackFcn(app, @VWilcoxonAlgorithmDropDownValueChanged, true);
+            app.VWilcoxonAlgorithmDropDown.FontWeight = 'bold';
+            app.VWilcoxonAlgorithmDropDown.BackgroundColor = [1 1 1];
+            app.VWilcoxonAlgorithmDropDown.Layout.Row = 1;
+            app.VWilcoxonAlgorithmDropDown.Layout.Column = 6;
+            app.VWilcoxonAlgorithmDropDown.Value = 'Algorithm';
+
+            % Create VWilcoxonRankSumTestLabel
+            app.VWilcoxonRankSumTestLabel = uilabel(app.VW1GridLayout);
+            app.VWilcoxonRankSumTestLabel.FontWeight = 'bold';
+            app.VWilcoxonRankSumTestLabel.Layout.Row = 1;
+            app.VWilcoxonRankSumTestLabel.Layout.Column = 1;
+            app.VWilcoxonRankSumTestLabel.Text = 'Wilcoxon Rank Sum Test';
+
+            % Create ShowTypeLabel
+            app.ShowTypeLabel = uilabel(app.VW1GridLayout);
+            app.ShowTypeLabel.FontWeight = 'bold';
+            app.ShowTypeLabel.Layout.Row = 1;
+            app.ShowTypeLabel.Layout.Column = 3;
+            app.ShowTypeLabel.Text = 'Show Type';
+
+            % Create VWilcoxonShowTypeDropDown
+            app.VWilcoxonShowTypeDropDown = uidropdown(app.VW1GridLayout);
+            app.VWilcoxonShowTypeDropDown.Items = {'fitness', 'p-value'};
+            app.VWilcoxonShowTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @VWilcoxonShowTypeDropDownValueChanged, true);
+            app.VWilcoxonShowTypeDropDown.FontWeight = 'bold';
+            app.VWilcoxonShowTypeDropDown.BackgroundColor = [1 1 1];
+            app.VWilcoxonShowTypeDropDown.Layout.Row = 1;
+            app.VWilcoxonShowTypeDropDown.Layout.Column = 4;
+            app.VWilcoxonShowTypeDropDown.Value = 'fitness';
+
+            % Create VFriedmansTestTab
+            app.VFriedmansTestTab = uitab(app.VTableTabGroup);
+            app.VFriedmansTestTab.Title = 'Friedman’s Test';
+
+            % Create VFGridLayout
+            app.VFGridLayout = uigridlayout(app.VFriedmansTestTab);
+            app.VFGridLayout.ColumnWidth = {'1x'};
+            app.VFGridLayout.RowHeight = {'fit', '1x'};
+            app.VFGridLayout.BackgroundColor = [1 1 1];
+
+            % Create VFriedmanUITable
+            app.VFriedmanUITable = uitable(app.VFGridLayout);
+            app.VFriedmanUITable.ColumnName = '';
+            app.VFriedmanUITable.RowName = {};
+            app.VFriedmanUITable.Layout.Row = 2;
+            app.VFriedmanUITable.Layout.Column = 1;
+
+            % Create VF1GridLayout
+            app.VF1GridLayout = uigridlayout(app.VFGridLayout);
+            app.VF1GridLayout.ColumnWidth = {'fit', '1x', 'fit', 'fit'};
+            app.VF1GridLayout.RowHeight = {'1x'};
+            app.VF1GridLayout.Padding = [0 0 0 0];
+            app.VF1GridLayout.Layout.Row = 1;
+            app.VF1GridLayout.Layout.Column = 1;
+            app.VF1GridLayout.BackgroundColor = [1 1 1];
+
+            % Create YourAlgorithmDropDown_2Label
+            app.YourAlgorithmDropDown_2Label = uilabel(app.VF1GridLayout);
+            app.YourAlgorithmDropDown_2Label.FontWeight = 'bold';
+            app.YourAlgorithmDropDown_2Label.Layout.Row = 1;
+            app.YourAlgorithmDropDown_2Label.Layout.Column = 3;
+            app.YourAlgorithmDropDown_2Label.Text = 'Your Algorithm';
+
+            % Create VFriedmanAlgorithmDropDown
+            app.VFriedmanAlgorithmDropDown = uidropdown(app.VF1GridLayout);
+            app.VFriedmanAlgorithmDropDown.Items = {'Algorithm'};
+            app.VFriedmanAlgorithmDropDown.FontWeight = 'bold';
+            app.VFriedmanAlgorithmDropDown.BackgroundColor = [1 1 1];
+            app.VFriedmanAlgorithmDropDown.Layout.Row = 1;
+            app.VFriedmanAlgorithmDropDown.Layout.Column = 4;
+            app.VFriedmanAlgorithmDropDown.Value = 'Algorithm';
+
+            % Create VFriedmansTestLabel
+            app.VFriedmansTestLabel = uilabel(app.VF1GridLayout);
+            app.VFriedmansTestLabel.FontWeight = 'bold';
+            app.VFriedmansTestLabel.Layout.Row = 1;
+            app.VFriedmansTestLabel.Layout.Column = 1;
+            app.VFriedmansTestLabel.Text = 'Friedman’s Test';
 
             % Create VPanel2
             app.VPanel2 = uipanel(app.ViewTableGridLayout);
@@ -2224,7 +2475,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % Create VP3GridLayout
             app.VP3GridLayout = uigridlayout(app.VPanel3);
             app.VP3GridLayout.ColumnWidth = {90, 100};
-            app.VP3GridLayout.RowHeight = {'fit', 'fit', 'fit'};
+            app.VP3GridLayout.RowHeight = {'fit', 'fit', '1x'};
             app.VP3GridLayout.BackgroundColor = [1 1 1];
 
             % Create FigureTypeDropDownLabel
@@ -2273,13 +2524,13 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.VLoadDataButton.Layout.Column = 1;
             app.VLoadDataButton.Text = 'Load Data';
 
-            % Create MergeDataTab
-            app.MergeDataTab = uitab(app.MTOPlatformTabGroup);
-            app.MergeDataTab.Title = 'Merge Data';
-            app.MergeDataTab.BackgroundColor = [1 1 1];
+            % Create DataProcessTab
+            app.DataProcessTab = uitab(app.MTOPlatformTabGroup);
+            app.DataProcessTab.Title = 'Data Process';
+            app.DataProcessTab.BackgroundColor = [1 1 1];
 
             % Create MergeDataGridLayout
-            app.MergeDataGridLayout = uigridlayout(app.MergeDataTab);
+            app.MergeDataGridLayout = uigridlayout(app.DataProcessTab);
             app.MergeDataGridLayout.ColumnWidth = {'1.5x', '1x'};
             app.MergeDataGridLayout.RowHeight = {'1x'};
             app.MergeDataGridLayout.BackgroundColor = [1 1 1];
