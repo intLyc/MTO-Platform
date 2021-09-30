@@ -2,165 +2,130 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
 
     % Properties that correspond to app components
     properties (Access = public)
-        MTOPlatformUIFigure           matlab.ui.Figure
-        MTOPlatformGridLayout         matlab.ui.container.GridLayout
-        MTOPlatformTabGroup           matlab.ui.container.TabGroup
-        TestModuleTab                 matlab.ui.container.Tab
-        TestGridLayout                matlab.ui.container.GridLayout
-        TPanel1                       matlab.ui.container.Panel
-        TP1GridLayout                 matlab.ui.container.GridLayout
-        TLogsTextArea                 matlab.ui.control.TextArea
-        LogsTextArea_2Label_2         matlab.ui.control.Label
-        TLogsClearButton              matlab.ui.control.Button
-        TPopSizeEditField             matlab.ui.control.NumericEditField
-        TPopSizeEditFieldLabel        matlab.ui.control.Label
-        TEndNumEditField              matlab.ui.control.NumericEditField
-        TEndNumEditFieldLabel         matlab.ui.control.Label
-        AlgorithmDropDownLabel        matlab.ui.control.Label
-        TAlgorithmDropDown            matlab.ui.control.DropDown
-        TAlgorithmTree                matlab.ui.container.Tree
-        TProblemTree                  matlab.ui.container.Tree
-        TProblemDropDown              matlab.ui.control.DropDown
-        ProblemDropDownLabel          matlab.ui.control.Label
-        EndTypeLabel_2                matlab.ui.control.Label
-        TEndTypeDropDown              matlab.ui.control.DropDown
-        TPanel2                       matlab.ui.container.Panel
-        TP2GridLayout                 matlab.ui.container.GridLayout
-        TP21GridLayout                matlab.ui.container.GridLayout
-        TShowTypeDropDown             matlab.ui.control.DropDown
-        TP24GridLayout                matlab.ui.container.GridLayout
-        TStartButton                  matlab.ui.control.Button
-        TUIAxes                       matlab.ui.control.UIAxes
-        ExperimentModuleTab           matlab.ui.container.Tab
-        ExperimentsGridLayout         matlab.ui.container.GridLayout
-        EPanel3                       matlab.ui.container.Panel
-        EPanel3GridLayout             matlab.ui.container.GridLayout
-        LogsTextAreaLabel             matlab.ui.control.Label
-        ELogsTextArea                 matlab.ui.control.TextArea
-        ELogsClearButton              matlab.ui.control.Button
-        ESaveDataButton               matlab.ui.control.Button
-        EPanel1                       matlab.ui.container.Panel
-        EP1GridLayout                 matlab.ui.container.GridLayout
-        EProblemsAddButton            matlab.ui.control.Button
-        EAlgorithmsAddButton          matlab.ui.control.Button
-        ERepsEditField                matlab.ui.control.NumericEditField
-        ERunTimesEditFieldLabel       matlab.ui.control.Label
-        EEndNumEditField              matlab.ui.control.NumericEditField
-        EEndNumEditFieldLabel         matlab.ui.control.Label
-        EPopSizeEditField             matlab.ui.control.NumericEditField
-        EPopSizeEditFieldLabel        matlab.ui.control.Label
-        EAlgorithmsListBox            matlab.ui.control.ListBox
-        AlgorithmsListBox_2Label      matlab.ui.control.Label
-        EProblemsListBox              matlab.ui.control.ListBox
-        ProblemsListBox_2Label        matlab.ui.control.Label
-        EndTypeLabel                  matlab.ui.control.Label
-        EEndTypeDropDown              matlab.ui.control.DropDown
-        EPanel2                       matlab.ui.container.Panel
-        EP2GridLayout                 matlab.ui.container.GridLayout
-        EStartButton                  matlab.ui.control.Button
-        EPauseButton                  matlab.ui.control.Button
-        EStopButton                   matlab.ui.control.Button
-        EAlgorithmsTree               matlab.ui.container.Tree
-        EProblemsTree                 matlab.ui.container.Tree
-        ESelectedAlgorithmsLabel      matlab.ui.control.Label
-        ESelectedProblemsLabel        matlab.ui.control.Label
-        EAlgorithmsDelButton          matlab.ui.control.Button
-        EProblemsDelButton            matlab.ui.control.Button
-        ViewTableTab                  matlab.ui.container.Tab
-        ViewTableGridLayout           matlab.ui.container.GridLayout
-        VPanel1                       matlab.ui.container.Panel
-        VP1GridLayout                 matlab.ui.container.GridLayout
-        VTableTabGroup                matlab.ui.container.TabGroup
-        VFitnessAveTab                matlab.ui.container.Tab
-        VFitnessAveGridLayout         matlab.ui.container.GridLayout
-        VFitnessAveUITable            matlab.ui.control.Table
-        VFitnessStdTab                matlab.ui.container.Tab
-        VFitnessStdGridLayout         matlab.ui.container.GridLayout
-        VFitnessStdUITable            matlab.ui.control.Table
-        VTimeUsedTab                  matlab.ui.container.Tab
-        VTimeUsedTableGridLayout      matlab.ui.container.GridLayout
-        VTimeUsedUITable              matlab.ui.control.Table
-        VConvergenceTrendTab          matlab.ui.container.Tab
-        VCGridLayout                  matlab.ui.container.GridLayout
-        VC1GridLayout                 matlab.ui.container.GridLayout
-        VProblemsDropDown             matlab.ui.control.DropDown
-        ConvergenceLabel              matlab.ui.control.Label
-        YLimTypeDropDownLabel         matlab.ui.control.Label
-        VYLimTypeDropDown             matlab.ui.control.DropDown
-        VProblemsDropDownLabel        matlab.ui.control.Label
-        VConvergenceTrendUIAxes       matlab.ui.control.UIAxes
-        VWilcoxonRankSumTestTab       matlab.ui.container.Tab
-        VWGridLayout                  matlab.ui.container.GridLayout
-        VWilcoxonUITable              matlab.ui.control.Table
-        VW1GridLayout                 matlab.ui.container.GridLayout
-        YourAlgorithmDropDownLabel    matlab.ui.control.Label
-        VWilcoxonAlgorithmDropDown    matlab.ui.control.DropDown
-        VWilcoxonRankSumTestLabel     matlab.ui.control.Label
-        ShowTypeLabel                 matlab.ui.control.Label
-        VWilcoxonShowTypeDropDown     matlab.ui.control.DropDown
-        VFriedmansTestTab             matlab.ui.container.Tab
-        VFGridLayout                  matlab.ui.container.GridLayout
-        VFriedmanUITable              matlab.ui.control.Table
-        VF1GridLayout                 matlab.ui.container.GridLayout
-        YourAlgorithmDropDown_2Label  matlab.ui.control.Label
-        VFriedmanAlgorithmDropDown    matlab.ui.control.DropDown
-        VFriedmansTestLabel           matlab.ui.control.Label
-        VPanel2                       matlab.ui.container.Panel
-        VP2GridLayout                 matlab.ui.container.GridLayout
-        VLogsTextArea                 matlab.ui.control.TextArea
-        VLogsClearButton              matlab.ui.control.Button
-        VLogsTextAreaLabel            matlab.ui.control.Label
-        VPanel3                       matlab.ui.container.Panel
-        VP3GridLayout                 matlab.ui.container.GridLayout
-        FigureTypeDropDownLabel       matlab.ui.control.Label
-        VFigureTypeDropDown           matlab.ui.control.DropDown
-        TableTypeDropDownLabel        matlab.ui.control.Label
-        VTableTypeDropDown            matlab.ui.control.DropDown
-        VSaveResultButton             matlab.ui.control.Button
-        VLoadDataButton               matlab.ui.control.Button
-        DataProcessTab                matlab.ui.container.Tab
-        MergeDataGridLayout           matlab.ui.container.GridLayout
-        MPanel1                       matlab.ui.container.Panel
-        MP1GridLayout                 matlab.ui.container.GridLayout
-        MLoadDataButton               matlab.ui.control.Button
-        MDeleteDataButton             matlab.ui.control.Button
-        MDataTree                     matlab.ui.container.Tree
-        MRepsMergeButton              matlab.ui.control.Button
-        MProblemsMergeButton          matlab.ui.control.Button
-        MAlgorithmsMergeButton        matlab.ui.control.Button
-        MPanel2                       matlab.ui.container.Panel
-        MP2GridLayout                 matlab.ui.container.GridLayout
-        LogsTextArea_2Label           matlab.ui.control.Label
-        MLogsTextArea                 matlab.ui.control.TextArea
-        MLogsClearButton              matlab.ui.control.Button
-        ESelectedAlgoContextMenu      matlab.ui.container.ContextMenu
-        SelectedAlgoSelectAllMenu     matlab.ui.container.Menu
-        MDataContextMenu              matlab.ui.container.ContextMenu
-        SelectedAlgoSelectAllMenu_2   matlab.ui.container.Menu
-        ESelectedProbContextMenu      matlab.ui.container.ContextMenu
-        SelectedProbSelectAllMenu     matlab.ui.container.Menu
-        EAlgorithmsContextMenu        matlab.ui.container.ContextMenu
-        AlgorithmsSelectAllMenu       matlab.ui.container.Menu
-        EProblemsContextMenu          matlab.ui.container.ContextMenu
-        ProblemsSelectAllMenu         matlab.ui.container.Menu
+        MTOPlatformUIFigure          matlab.ui.Figure
+        MTOPlatformGridLayout        matlab.ui.container.GridLayout
+        MTOPlatformTabGroup          matlab.ui.container.TabGroup
+        TestModuleTab                matlab.ui.container.Tab
+        TestGridLayout               matlab.ui.container.GridLayout
+        TPanel1                      matlab.ui.container.Panel
+        TP1GridLayout                matlab.ui.container.GridLayout
+        TPopSizeEditField            matlab.ui.control.NumericEditField
+        TPopSizeEditFieldLabel       matlab.ui.control.Label
+        TEndNumEditField             matlab.ui.control.NumericEditField
+        TEndNumEditFieldLabel        matlab.ui.control.Label
+        AlgorithmDropDownLabel       matlab.ui.control.Label
+        TAlgorithmDropDown           matlab.ui.control.DropDown
+        TAlgorithmTree               matlab.ui.container.Tree
+        TProblemTree                 matlab.ui.container.Tree
+        TProblemDropDown             matlab.ui.control.DropDown
+        ProblemDropDownLabel         matlab.ui.control.Label
+        EndTypeLabel_2               matlab.ui.control.Label
+        TEndTypeDropDown             matlab.ui.control.DropDown
+        TPanel2                      matlab.ui.container.Panel
+        TP2GridLayout                matlab.ui.container.GridLayout
+        TP21GridLayout               matlab.ui.container.GridLayout
+        TShowTypeDropDown            matlab.ui.control.DropDown
+        TP24GridLayout               matlab.ui.container.GridLayout
+        TStartButton                 matlab.ui.control.Button
+        TUIAxes                      matlab.ui.control.UIAxes
+        ExperimentModuleTab          matlab.ui.container.Tab
+        ExperimentsGridLayout        matlab.ui.container.GridLayout
+        EPanel3                      matlab.ui.container.Panel
+        EP3GridLayout                matlab.ui.container.GridLayout
+        ETableTabGroup               matlab.ui.container.TabGroup
+        ETableTab                    matlab.ui.container.Tab
+        EP3TGridLayout               matlab.ui.container.GridLayout
+        EP3T1GridLayout              matlab.ui.container.GridLayout
+        ETestTypeDropDown            matlab.ui.control.DropDown
+        EAlgorithmDropDown           matlab.ui.control.DropDown
+        EShowTypeDropDown            matlab.ui.control.DropDown
+        EDataTypeDropDown            matlab.ui.control.DropDown
+        EHighlightTypeDropDown       matlab.ui.control.DropDown
+        ESaveTableButton             matlab.ui.control.Button
+        EUITable                     matlab.ui.control.Table
+        EFigureTab                   matlab.ui.container.Tab
+        EP3FGridLayout               matlab.ui.container.GridLayout
+        EP3F1GridLayout              matlab.ui.container.GridLayout
+        EProblemsDropDown            matlab.ui.control.DropDown
+        EYLimTypeDropDown            matlab.ui.control.DropDown
+        ESaveAllFigureButton         matlab.ui.control.Button
+        EFigureTypeDropDown          matlab.ui.control.DropDown
+        EConvergenceTrendUIAxes      matlab.ui.control.UIAxes
+        EPanel1                      matlab.ui.container.Panel
+        EP1GridLayout                matlab.ui.container.GridLayout
+        EProblemsAddButton           matlab.ui.control.Button
+        EAlgorithmsAddButton         matlab.ui.control.Button
+        ERepsEditField               matlab.ui.control.NumericEditField
+        ERunTimesEditFieldLabel      matlab.ui.control.Label
+        EEndNumEditField             matlab.ui.control.NumericEditField
+        EEndNumEditFieldLabel        matlab.ui.control.Label
+        EPopSizeEditField            matlab.ui.control.NumericEditField
+        EPopSizeEditFieldLabel       matlab.ui.control.Label
+        EAlgorithmsListBox           matlab.ui.control.ListBox
+        AlgorithmsListBox_2Label     matlab.ui.control.Label
+        EProblemsListBox             matlab.ui.control.ListBox
+        ProblemsListBox_2Label       matlab.ui.control.Label
+        EndTypeLabel                 matlab.ui.control.Label
+        EEndTypeDropDown             matlab.ui.control.DropDown
+        ELoadDataButton              matlab.ui.control.Button
+        EPanel2                      matlab.ui.container.Panel
+        EP2GridLayout                matlab.ui.container.GridLayout
+        EStartButton                 matlab.ui.control.Button
+        EPauseButton                 matlab.ui.control.Button
+        EStopButton                  matlab.ui.control.Button
+        EAlgorithmsTree              matlab.ui.container.Tree
+        EProblemsTree                matlab.ui.container.Tree
+        ESelectedAlgorithmsLabel     matlab.ui.control.Label
+        ESelectedProblemsLabel       matlab.ui.control.Label
+        EAlgorithmsDelButton         matlab.ui.control.Button
+        EProblemsDelButton           matlab.ui.control.Button
+        ESaveDataButton              matlab.ui.control.Button
+        DataProcessTab               matlab.ui.container.Tab
+        MergeDataGridLayout          matlab.ui.container.GridLayout
+        MPanel1                      matlab.ui.container.Panel
+        MP1GridLayout                matlab.ui.container.GridLayout
+        MLoadDataButton              matlab.ui.control.Button
+        MDeleteDataButton            matlab.ui.control.Button
+        MDataTree                    matlab.ui.container.Tree
+        MRepsMergeButton             matlab.ui.control.Button
+        MProblemsMergeButton         matlab.ui.control.Button
+        MAlgorithmsMergeButton       matlab.ui.control.Button
+        MergeDataLabel               matlab.ui.control.Label
+        MPanel2                      matlab.ui.container.Panel
+        MP2GridLayout                matlab.ui.container.GridLayout
+        MLoadDataButton_2            matlab.ui.control.Button
+        MDeleteDataButton_2          matlab.ui.control.Button
+        MDataTree_2                  matlab.ui.container.Tree
+        MProblemsMergeButton_2       matlab.ui.control.Button
+        MAlgorithmsMergeButton_2     matlab.ui.control.Button
+        SplitDataLabel               matlab.ui.control.Label
+        ESelectedAlgoContextMenu     matlab.ui.container.ContextMenu
+        SelectedAlgoSelectAllMenu    matlab.ui.container.Menu
+        MDataContextMenu             matlab.ui.container.ContextMenu
+        SelectedAlgoSelectAllMenu_2  matlab.ui.container.Menu
+        ESelectedProbContextMenu     matlab.ui.container.ContextMenu
+        SelectedProbSelectAllMenu    matlab.ui.container.Menu
+        EAlgorithmsContextMenu       matlab.ui.container.ContextMenu
+        AlgorithmsSelectAllMenu      matlab.ui.container.Menu
+        EProblemsContextMenu         matlab.ui.container.ContextMenu
+        ProblemsSelectAllMenu        matlab.ui.container.Menu
     end
 
     properties (Access = public)
         algo_load % cell of algorithms loaded from folder
         prob_load % cell of problems loaded from folder
-        data % data
         
         % Test Module
-        Tpop_size % number of population size
-        Tend_num % number of iteration num
         Tdata
         
         % Experiment Module
-        Ereps % number of independent runs
-        Epop_size % number of population size
-        Eend_num % number of end condition
-        Eresult % (problem, algorithm){wallclock, rep * convergence}
+        Edata % data
         Estop_flag % stop button clicked flag
+        Efitness % fitness calculated
+        Etime_used % time_used calculated
+        Etable_data
+        Etable_view
+        Etable_reps
         
     end
     
@@ -218,54 +183,6 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EProblemsListBox.Items(:) = [];
             app.EAlgorithmsListBox.Items = app.algo_load;
             app.EProblemsListBox.Items = app.prob_load;
-        end
-        
-        function Eprintlog(app, str)
-            % print log to Experiments logs text area
-            
-            if strcmp(app.ELogsTextArea.Value, '')
-                app.ELogsTextArea.Value = str;
-            else
-                app.ELogsTextArea.Value = [app.ELogsTextArea.Value; str];
-            end
-            drawnow;
-            scroll(app.ELogsTextArea, 'bottom');
-        end
-        
-        function Tprintlog(app, str)
-            % print log to Test logs text area
-            
-            if strcmp(app.TLogsTextArea.Value, '')
-                app.TLogsTextArea.Value = str;
-            else
-                app.TLogsTextArea.Value = [app.TLogsTextArea.Value; str];
-            end
-            drawnow;
-            scroll(app.TLogsTextArea, 'bottom');
-        end
-        
-        function Vprintlog(app, str)
-            % print log to View Table logs text area
-            
-            if strcmp(app.VLogsTextArea.Value, '')
-                app.VLogsTextArea.Value = str;
-            else
-                app.VLogsTextArea.Value = [app.VLogsTextArea.Value; str];
-            end
-            drawnow;
-            scroll(app.VLogsTextArea, 'bottom');
-        end
-        
-        function Mprintlog(app, str)
-            % print log to Merge Data logs text area
-            
-            if strcmp(app.MLogsTextArea.Value, '')
-                app.MLogsTextArea.Value = str;
-            else
-                app.MLogsTextArea.Value = [app.MLogsTextArea.Value; str];
-            end
-            drawnow;
-            scroll(app.MLogsTextArea, 'bottom');
         end
         
         function TstartEnable(app, value)
@@ -383,7 +300,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             tasks_name = app.TProblemTree.Children(1).NodeData.tasks_name;
             no_of_tasks = length(Tasks);
             
-            x = 0:1/200:1;
+            x = 0:1/1000:1;
             f = zeros(size(x));
             
             legend_cell = {};
@@ -422,7 +339,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         function TupdateConvergence(app)
             % update convergence
             
-            % check app.data
+            % check app.Edata
             if isempty(app.Tdata)
                 return;
             end
@@ -447,187 +364,240 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             legend(app.TUIAxes, app.Tdata.tasks_name);
         end
         
-        function VresetTable(app, algo_cell, prob_cell, tasks_num_list)
-            % reset the table data and name
+        function EresetTableAlgorithmDropDown(app, algo_cell)
+            algo_index = [];
+            for algo = 1:length(algo_cell)
+                algo_index = [algo_index, algo];
+            end
+            app.EAlgorithmDropDown.Items = algo_cell;
+            app.EAlgorithmDropDown.ItemsData = algo_index;
+        end
+        
+        function EresetTable(app, algo_cell, prob_cell, tasks_num_list)
+            % reset the table
             
+            app.EUITable.Data = {};
+            drawnow;
             prob_row_cell = {};
             for prob = 1:length(prob_cell)
                 for task = 1:tasks_num_list(prob)
                     prob_row_cell = [prob_row_cell, [prob_cell{prob}, num2str(task)]];
                 end
             end
-            app.VFitnessAveUITable.ColumnName = algo_cell;
-            app.VFitnessStdUITable.ColumnName = algo_cell;
-            app.VTimeUsedUITable.ColumnName = algo_cell;
-            app.VWilcoxonUITable.ColumnName = algo_cell;
-            app.VFriedmanUITable.ColumnName = algo_cell;
-            app.VFitnessAveUITable.RowName = prob_row_cell;
-            app.VFitnessStdUITable.RowName = prob_row_cell;
-            app.VTimeUsedUITable.RowName = prob_cell;
-            app.VWilcoxonUITable.RowName = prob_row_cell;
-            app.VFriedmanUITable.RowName = prob_row_cell;
-            app.VFitnessAveUITable.Data = [];
-            app.VFitnessStdUITable.Data = [];
-            app.VTimeUsedUITable.Data = [];
-            app.VWilcoxonUITable.Data = [];
-            app.VFriedmanUITable.Data = [];
+            
+            switch app.EDataTypeDropDown.Value
+                case 'Fitness'
+                    app.EUITable.RowName = prob_row_cell;
+                    app.EUITable.RowName = [app.EUITable.RowName; '+/-/='];
+                otherwise
+                    app.EUITable.RowName = prob_cell;
+            end
+            app.EUITable.ColumnName = algo_cell;
         end
         
-        function VupdateTable(app, data)
-            % update fitness, std, time_used table
+        function EcalculatePre(app)
+            % calculate fitness, std, time used
             
-            for algo = 1:length(data.algo_cell)
+            if isempty(app.Edata)
+                return
+            end
+            
+            app.Efitness = [];
+            app.Etime_used = [];
+            % calculate fitness
+            for algo = 1:length(app.Edata.algo_cell)
                 row_i = 1;
-                for prob = 1:length(data.prob_cell)
-                    tasks_num = data.tasks_num_list(prob);
+                for prob = 1:length(app.Edata.prob_cell)
+                    tasks_num = app.Edata.tasks_num_list(prob);
                     for task = 1:tasks_num
-                        convergence_task = data.result(prob, algo).convergence(task:tasks_num:end, :);
-                        mean_end = mean(convergence_task(:, end));
-                        std_end = std(convergence_task(:, end));
-                        app.VFitnessAveUITable.Data(row_i, algo) = mean_end;
-                        app.VFitnessStdUITable.Data(row_i, algo) = std_end;
+                        convergence_task = app.Edata.result(prob, algo).convergence(task:tasks_num:end, :);
+                        app.Efitness(row_i, algo, :) = convergence_task(:, end);
                         row_i = row_i + 1;
                     end
-                    app.VTimeUsedUITable.Data(prob, algo) = data.result(prob, algo).clock_time;
+                    app.Etime_used(prob, algo) = app.Edata.result(prob, algo).clock_time;
                 end
             end
+        end
+        
+        function EupdateTableReps(app)
+            if ~strcmp(app.EDataTypeDropDown.Value, 'Reps')
+                return;
+            end
+            app.EUITable.Data = sprintfc('%d', app.Etable_reps);
+            drawnow;
+        end
+        
+        function EupdateTableFitness(app)
+            if ~strcmp(app.EDataTypeDropDown.Value, 'Fitness')
+                return;
+            end
+            show_type = app.EShowTypeDropDown.Value;
             
-            % highlight best value
-            app.VFitnessAveUITable.removeStyle();
-            app.VFitnessStdUITable.removeStyle();
-            app.VTimeUsedUITable.removeStyle();
-            high_color = uistyle('BackgroundColor', [0.67,0.95,0.67]);
-            low_color = uistyle('BackgroundColor', [1.00,0.60,0.60]);
-            row_i = 1;
-            for prob = 1:length(data.prob_cell)
-                tasks_num = data.tasks_num_list(prob);
-                for task = 1:tasks_num
-                    % best
-                    [~, index] = min(app.VFitnessAveUITable.Data(row_i, :));
-                    app.VFitnessAveUITable.addStyle(high_color, 'cell', [row_i, index]);
-                    [~, index] = min(app.VFitnessStdUITable.Data(row_i, :));
-                    app.VFitnessStdUITable.addStyle(high_color, 'cell', [row_i, index]);
-                    
-                    % worst
-                    [~, index] = max(app.VFitnessAveUITable.Data(row_i, :));
-                    app.VFitnessAveUITable.addStyle(low_color, 'cell', [row_i, index]);
-                    [~, index] = max(app.VFitnessStdUITable.Data(row_i, :));
-                    app.VFitnessStdUITable.addStyle(low_color, 'cell', [row_i, index]);
-                    
-                    row_i = row_i + 1;
+            if strcmp(show_type, 'Mean')
+                fitness_mean = mean(app.Efitness, 3);
+                app.Etable_data = fitness_mean;
+                app.EUITable.Data = sprintfc('%.2d', fitness_mean);
+            elseif strcmp(show_type, 'Mean (Std)')
+                fitness_mean = mean(app.Efitness, 3);
+                fitness_std = std(app.Efitness, 0, 3);
+                app.Etable_data = fitness_mean;
+                x = zeros([size(fitness_mean, 1), 2*size(fitness_mean, 2)]);
+                x(:, 1:2:end) = fitness_mean;
+                x(:, 2:2:end) = fitness_std;
+                app.EUITable.Data = sprintfc('%.2d (%.2d)', x);
+            elseif strcmp(show_type, 'Median')
+                fitness_median = median(app.Efitness, 3);
+                app.Etable_data = fitness_median;
+                app.EUITable.Data = sprintfc('%.2d', fitness_median);
+            elseif strcmp(show_type, 'Median (Std)')
+                fitness_median = median(app.Efitness, 3);
+                fitness_std = std(app.Efitness, 0, 3);
+                app.Etable_data = fitness_median;
+                x = zeros([size(fitness_median, 1), 2*size(fitness_median, 2)]);
+                x(:, 1:2:end) = fitness_median;
+                x(:, 2:2:end) = fitness_std;
+                app.EUITable.Data = sprintfc('%.2d (%.2d)', x);
+            end
+            app.Etable_view = app.EUITable.Data;
+            app.EupdateTableTest();
+            drawnow;
+        end
+        
+        function EupdateTableTimeUsed(app)
+            time_used = app.Etime_used;
+            app.Etable_data = time_used;
+            app.EUITable.Data = time_used;
+            drawnow;
+        end
+        
+        function EupdateTableTest(app)
+            if ~strcmp(app.EDataTypeDropDown.Value, 'Fitness')
+                return;
+            end
+            test_type = app.ETestTypeDropDown.Value;
+            algo_selected = app.EAlgorithmDropDown.Value;
+            
+            app.EUITable.Data = app.Etable_view;
+            
+            if strcmp(test_type, 'None')
+                return;
+            end
+            
+            for algo = 1:size(app.Etable_data, 2)
+                if algo == algo_selected
+                    continue;
                 end
-                % best
-                [~, index] = min(app.VTimeUsedUITable.Data(prob, :));
-                app.VTimeUsedUITable.addStyle(high_color, 'cell', [prob, index]);
-                
-                % worst
-                [~, index] = max(app.VTimeUsedUITable.Data(prob, :));
-                app.VTimeUsedUITable.addStyle(low_color, 'cell', [prob, index]);
+                sign_p = [0 0 0];
+                for row_i = 1:size(app.Etable_data, 1)
+                    x1 = reshape(app.Efitness(row_i, algo, :), 1, length(app.Efitness(row_i, algo, :)));
+                    x2 = reshape(app.Efitness(row_i, algo_selected, :), 1, length(app.Efitness(row_i, algo_selected, :)));
+                    p = 1;
+                    if strcmp(test_type, 'Rank sum test')
+                        p = ranksum(x1, x2);
+                    elseif strcmp(test_type, 'Signed rank test')
+                        p = signrank(x1, x2);
+                    elseif strcmp(test_type, 'Friedman test')
+                        % TODO
+                    end
+                    
+                    if p < 0.05
+                        if app.Etable_data(row_i, algo) < app.Etable_data(row_i, algo_selected)
+                            app.EUITable.Data{row_i, algo} = [app.Etable_view{row_i, algo}, ' +'];
+                            sign_p(1) = sign_p(1) + 1;
+                        else
+                            app.EUITable.Data{row_i, algo} = [app.Etable_view{row_i, algo}, ' -'];
+                            sign_p(2) = sign_p(2) + 1;
+                        end
+                    else
+                        app.EUITable.Data{row_i, algo} = [app.Etable_view{row_i, algo}, ' ='];
+                        sign_p(3) = sign_p(3) + 1;
+                    end
+                end
+                app.EUITable.Data{size(app.Etable_data, 1)+1, algo} = sprintf('%d/%d/%d', sign_p);
             end
             drawnow;
         end
         
-        function VupdateTableProb(app, algo_cell, prob, tasks_num_list)
-            % update fitness, std, time_used table problem
-            
-            for algo = 1:length(algo_cell)
-                tasks_num = tasks_num_list(prob);
-                row_i = sum(tasks_num_list(1:prob-1)) + 1;
-                for task = 1:tasks_num
-                    convergence_task = app.Eresult(prob, algo).convergence(task:tasks_num:end, :);
-                    mean_end = mean(convergence_task(:, end));
-                    std_end = std(convergence_task(:, end));
-                    app.VFitnessAveUITable.Data(row_i, algo) = mean_end;
-                    app.VFitnessStdUITable.Data(row_i, algo) = std_end;
-                    row_i = row_i + 1;
-                end
-                app.VTimeUsedUITable.Data(prob, algo) = app.Eresult(prob, algo).clock_time;
-            end
+        function EupdateTableHighlight(app)
+            highlight_type = app.EHighlightTypeDropDown.Value;
             
             % highlight best value
-            row_i = sum(tasks_num_list(1:prob-1)) + 1;
+            app.EUITable.removeStyle();
             high_color = uistyle('BackgroundColor', [0.67,0.95,0.67]);
+            font_bold = uistyle('FontWeight', 'bold');
             low_color = uistyle('BackgroundColor', [1.00,0.60,0.60]);
-            tasks_num = tasks_num_list(prob);
-            for task = 1:tasks_num
-                target_index = app.VFitnessAveUITable.StyleConfigurations.TargetIndex;
-                style_row = reshape([target_index{:}], [2, length(target_index)]);
-                if ~isempty(find(style_row(1, :) == row_i, 1))
-                    app.VFitnessAveUITable.removeStyle(find(style_row(1, :) == row_i));
-                end
-                target_index = app.VFitnessStdUITable.StyleConfigurations.TargetIndex;
-                style_row = reshape([target_index{:}], [2, length(target_index)]);
-                if ~isempty(find(style_row(1, :) == row_i, 1))
-                    app.VFitnessStdUITable.removeStyle(find(style_row(1, :) == row_i));
-                end
-                
+            for row_i = 1:size(app.Etable_data, 1)
                 % best
-                [~, index] = min(app.VFitnessAveUITable.Data(row_i, :));
-                app.VFitnessAveUITable.addStyle(high_color, 'cell', [row_i, index]);
-                [~, index] = min(app.VFitnessStdUITable.Data(row_i, :));
-                app.VFitnessStdUITable.addStyle(high_color, 'cell', [row_i, index]);
-                
+                if ~strcmp(highlight_type, 'None')
+                    [~, index] = min(app.Etable_data(row_i, :));
+                    app.EUITable.addStyle(high_color, 'cell', [row_i, index]);
+                    app.EUITable.addStyle(font_bold, 'cell', [row_i, index]);
+                end
                 % worst
-                [~, index] = max(app.VFitnessAveUITable.Data(row_i, :));
-                app.VFitnessAveUITable.addStyle(low_color, 'cell', [row_i, index]);
-                [~, index] = max(app.VFitnessStdUITable.Data(row_i, :));
-                app.VFitnessStdUITable.addStyle(low_color, 'cell', [row_i, index]);
-                row_i = row_i + 1;
+                if strcmp(highlight_type, 'Highlight best worst')
+                    [~, index] = max(app.Etable_data(row_i, :));
+                    app.EUITable.addStyle(low_color, 'cell', [row_i, index]);
+                end
             end
-            target_index = app.VTimeUsedUITable.StyleConfigurations.TargetIndex;
-            style_row = reshape([target_index{:}], [2, length(target_index)]);
-            if ~isempty(find(style_row(1, :) == prob, 1))
-                app.VTimeUsedUITable.removeStyle(find(style_row(1, :) == prob));
-            end
-            % best
-            [~, index] = min(app.VTimeUsedUITable.Data(prob, :));
-            app.VTimeUsedUITable.addStyle(high_color, 'cell', [prob, index]);
-            
-            % worst
-            [~, index] = max(app.VTimeUsedUITable.Data(prob, :));
-            app.VTimeUsedUITable.addStyle(low_color, 'cell', [prob, index]);
-            
             drawnow;
         end
         
-        function VresetConvergenceProblemsDropDown(app, prob_cell, tasks_num_list)
+        function EupdateTable(app)
+            % update table
+            app.EUITable.Data = {};
+            if isempty(app.Edata) || isempty(app.Efitness)
+                return;
+            end
+            app.EresetTable(app.Edata.algo_cell, app.Edata.prob_cell, app.Edata.tasks_num_list);
+            switch app.EDataTypeDropDown.Value
+                case 'Reps'
+                    app.EupdateTableReps();
+                case 'Fitness'
+                    app.EupdateTableFitness();
+                case 'Time used'
+                    app.EupdateTableTimeUsed();
+            end
+            app.EupdateTableHighlight();
+        end
+        
+        function EresetConvergenceProblemsDropDown(app)
             % reset convergence problems drop down
             
             prob_row_cell = {};
             prob_row_index = {};
-            for prob = 1:length(prob_cell)
-                for task = 1:tasks_num_list(prob)
-                    prob_row_cell = [prob_row_cell, [prob_cell{prob}, num2str(task)]];
+            for prob = 1:length(app.Edata.prob_cell)
+                for task = 1:app.Edata.tasks_num_list(prob)
+                    prob_row_cell = [prob_row_cell, [app.Edata.prob_cell{prob}, num2str(task)]];
                     prob_row_index = [prob_row_index, [prob, task]];
                 end
             end
-            app.VProblemsDropDown.Items = prob_row_cell;
-            app.VProblemsDropDown.ItemsData = prob_row_index;
+            app.EProblemsDropDown.Items = prob_row_cell;
+            app.EProblemsDropDown.ItemsData = prob_row_index;
         end
         
-        function VupdateConvergenceAxes(app)
+        function EupdateConvergenceAxes(app)
             % update convergence axes
             
             % clear axes
-            cla(app.VConvergenceTrendUIAxes, 'reset');
+            cla(app.EConvergenceTrendUIAxes, 'reset');
             
-            % check app.data
-            if isempty(app.data)
+            % check app.Edata
+            if isempty(app.Edata)
                 return;
             end
             
             % draw
-            value = app.VProblemsDropDown.Value;
+            value = app.EProblemsDropDown.Value;
             prob = value(1);
             task = value(2);
-            tasks_num = app.data.tasks_num_list(prob);
-            for algo = 1:length(app.data.algo_cell)
-                convergence_task = app.data.result(prob, algo).convergence(task:tasks_num:end, :);
+            tasks_num = app.Edata.tasks_num_list(prob);
+            for algo = 1:length(app.Edata.algo_cell)
+                convergence_task = app.Edata.result(prob, algo).convergence(task:tasks_num:end, :);
                 convergence = mean(convergence_task, 1);
                 x_cell{algo} = 1:size(convergence,2);
                 y_cell{algo} = convergence;
             end
-            switch app.VYLimTypeDropDown.Value
+            switch app.EYLimTypeDropDown.Value
                 case 'log(fitness)'
                     for i = 1:length(y_cell)
                         y_cell{i} = log(y_cell{i});
@@ -641,116 +611,27 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             end
             marker_list = {'o', '*', 'x', '^', 's', 'v', 'd', '<', '>', 'p', 'h'};
             for i = 1:length(x_cell)
-                p = plot(app.VConvergenceTrendUIAxes, x_cell{i}, y_cell{i}, ['-', marker_list{i}]);
+                p = plot(app.EConvergenceTrendUIAxes, x_cell{i}, y_cell{i}, ['-', marker_list{i}]);
                 p.LineWidth = 1.5;
                 p.MarkerIndices = 1:round(max_x/10):max_x;
                 p.MarkerSize = 8;
-                hold(app.VConvergenceTrendUIAxes, 'on');
+                hold(app.EConvergenceTrendUIAxes, 'on');
             end
-            legend(app.VConvergenceTrendUIAxes, strrep(app.data.algo_cell, '_', '\_'));
-            xlabel(app.VConvergenceTrendUIAxes, 'Iteration');
-            ylabel(app.VConvergenceTrendUIAxes, app.VYLimTypeDropDown.Value);
-            xlim(app.VConvergenceTrendUIAxes, [1, max_x]);
-            grid(app.VConvergenceTrendUIAxes, 'on');
+            legend(app.EConvergenceTrendUIAxes, strrep(app.Edata.algo_cell, '_', '\_'));
+            xlabel(app.EConvergenceTrendUIAxes, 'Iteration');
+            ylabel(app.EConvergenceTrendUIAxes, app.EYLimTypeDropDown.Value);
+            xlim(app.EConvergenceTrendUIAxes, [1, max_x]);
+            grid(app.EConvergenceTrendUIAxes, 'on');
         end
         
-        function VresetWilcoxonAlgorithmDropDown(app, algo_cell)
-            % reset convergence problems drop down
-            
-            algo_index = [];
-            for algo = 1:length(algo_cell)
-                algo_index = [algo_index, algo];
-            end
-            app.VWilcoxonAlgorithmDropDown.Items = algo_cell;
-            app.VWilcoxonAlgorithmDropDown.ItemsData = algo_index;
-        end
-        
-        function VupdateWilcoxonTable(app, data)
-            % update Wilcoxon Rank Sum Test Table
-            
-            show_type = app.VWilcoxonShowTypeDropDown.Value;
-            app.VWilcoxonUITable.Data = [];
-            
-            % calculate the selected algorithm p-value
-            algo_selected = app.VWilcoxonAlgorithmDropDown.Value;
-            
-            for algo = 1:length(data.algo_cell)
-                row_i = 1;
-                for prob = 1:length(data.prob_cell)
-                    tasks_num = data.tasks_num_list(prob);
-                    for task = 1:tasks_num
-                        compare_convergence_task = data.result(prob, algo).convergence(task:tasks_num:end, :);
-                        algo_convergence_task = data.result(prob, algo_selected).convergence(task:tasks_num:end, :);
-                        wilcoxon_p(row_i, algo) = ranksum(compare_convergence_task(:, end), algo_convergence_task(:, end));
-                        row_i = row_i + 1;
-                    end
-                end
-            end
-            
-            if strcmp(show_type, 'p-value')
-                app.VWilcoxonUITable.Data = wilcoxon_p;
-                
-                % highlight value
-                app.VWilcoxonUITable.removeStyle();
-                marker_color = uistyle('BackgroundColor', [0.94,0.94,0.94]);
-                row_i = 1;
-                for prob = 1:length(data.prob_cell)
-                    tasks_num = data.tasks_num_list(prob);
-                    for task = 1:tasks_num
-                        for algo = 1:length(data.algo_cell)
-                            % mark
-                            if wilcoxon_p(row_i, algo) < 0.05
-                                app.VWilcoxonUITable.addStyle(marker_color, 'cell', [row_i, algo]);
-                            end
-                        end
-                        row_i = row_i + 1;
-                    end
-                end
-                drawnow;
-                
-            elseif strcmp(show_type, 'fitness')
-                fitness = app.VFitnessAveUITable.Data;
-                app.VWilcoxonUITable.Data = fitness;
-                
-                % highlight value
-                app.VWilcoxonUITable.removeStyle();
-                high_color = uistyle('BackgroundColor', [0.67,0.95,0.67]);
-                medium_color = uistyle('BackgroundColor', [1.00,1.00,0.70]);
-                low_color = uistyle('BackgroundColor', [1.00,0.60,0.60]);
-                
-                row_i = 1;
-                for prob = 1:length(data.prob_cell)
-                    tasks_num = data.tasks_num_list(prob);
-                    for task = 1:tasks_num
-                        for algo = 1:length(data.algo_cell)
-                            % mark
-                            if wilcoxon_p(row_i, algo) < 0.05
-                                % better than selected algorithm
-                                if fitness(row_i, algo) < fitness(row_i, algo_selected)
-                                    app.VWilcoxonUITable.addStyle(high_color, 'cell', [row_i, algo]);
-                                else
-                                    app.VWilcoxonUITable.addStyle(low_color, 'cell', [row_i, algo]);
-                                end
-                            else
-                                app.VWilcoxonUITable.addStyle(medium_color, 'cell', [row_i, algo]);
-                            end
-                        end
-                        row_i = row_i + 1;
-                    end
-                end
-                drawnow;
-            end
-            
-            
-            
-        end
         
         function result = McheckData(app)
             % check data num, pop size, iter num, eva num
             
             data_num = length(app.MDataTree.Children);
             if data_num < 2
-                app.Mprintlog('!!! Add at least 2 data to merge !!!');
+                msg = 'Add at least 2 data to merge';
+                uiconfirm(app.MTOPlatformUIFigure, msg, 'error', 'Icon','warning');
                 result = false;
                 return;
             end
@@ -763,7 +644,8 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                 if app.MDataTree.Children(i).NodeData.pop_size ~= pop_size || ...
                         app.MDataTree.Children(i).NodeData.iter_num ~= iter_num || ...
                         app.MDataTree.Children(i).NodeData.eva_num ~= eva_num
-                app.Mprintlog('!!! The data''s pop_size or iter_num or eva_num not equal !!!');
+                msg = 'The data''s pop_size or iter_num or eva_num not equal';
+                uiconfirm(app.MTOPlatformUIFigure, msg, 'error', 'Icon','warning');
                 result = false;
                 return;
                 end
@@ -778,7 +660,8 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             reps = app.MDataTree.Children(1).NodeData.reps;
             for i = 2:data_num
                 if app.MDataTree.Children(i).NodeData.reps ~= reps
-                    app.Mprintlog('!!! The data''s reps not equal !!!');
+                    msg = 'The data''s reps not equal';
+                    uiconfirm(app.MTOPlatformUIFigure, msg, 'error', 'Icon','warning');
                     result = false;
                     return;
                 end
@@ -794,7 +677,8 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             for i = 2:data_num
                 for algo = 1:length(algo_cell)
                     if ~strcmp(app.MDataTree.Children(i).NodeData.algo_cell{algo}, algo_cell{algo})
-                        app.Mprintlog('!!! The data''s algorithms not equal !!!');
+                        msg = 'The data''s algorithms not equal';
+                        uiconfirm(app.MTOPlatformUIFigure, msg, 'error', 'Icon','warning');
                         result = false;
                         return;
                     end
@@ -811,7 +695,8 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             for i = 2:data_num
                 for prob = 1:length(prob_cell)
                     if ~strcmp(app.MDataTree.Children(i).NodeData.prob_cell{prob}, prob_cell{prob})
-                        app.Mprintlog('!!! The data''s problems not equal !!!');
+                        msg = 'The data''s problems not equal';
+                        uiconfirm(app.MTOPlatformUIFigure, msg, 'error', 'Icon','warning');
                         result = false;
                         return;
                     end
@@ -825,8 +710,8 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             
             % check selected file name
             [file_name, dir_name] = uiputfile('data_save.mat');
+            figure(app.MTOPlatformUIFigure);
             if file_name == 0
-                app.Mprintlog('!!! User select canceled !!!');
                 return;
             end
             
@@ -854,28 +739,6 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.TupdateAlgorithm();
             app.TupdateProblem();
             app.TupdateUIAxes();
-            app.VresetTable({}, {}, []);
-            
-            % read default value
-            app.Ereps = app.ERepsEditField.Value;
-            app.Epop_size = app.EPopSizeEditField.Value;
-            app.Eend_num = app.EEndNumEditField.Value;
-            app.Tpop_size = app.TPopSizeEditField.Value;
-            app.Tend_num = app.TEndNumEditField.Value;
-        end
-
-        % Value changed function: TPopSizeEditField
-        function TPopSizeEditFieldValueChanged(app, event)
-            % update pop_size parameter
-            
-            app.Tpop_size = app.TPopSizeEditField.Value;
-        end
-
-        % Value changed function: TEndNumEditField
-        function TEndNumEditFieldValueChanged(app, event)
-            % update end_num parameter
-            
-            app.Tend_num = app.TEndNumEditField.Value;
         end
 
         % Value changed function: TAlgorithmDropDown
@@ -943,13 +806,6 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.TupdateUIAxes();
         end
 
-        % Button pushed function: TLogsClearButton
-        function TLogsClearButtonPushed(app, event)
-            % clear logs text area
-            
-            app.TLogsTextArea.Value = '';
-        end
-
         % Value changed function: TShowTypeDropDown
         function TShowTypeDropDownValueChanged(app, event)
             app.TupdateUIAxes();
@@ -976,24 +832,16 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             tasks_num = app.TProblemTree.Children(1).NodeData.getTasksNumber();
             tasks_name = app.TProblemTree.Children(1).NodeData.getTasksName();
             
-            % main test loop
-            app.Tprintlog('----------------------------------');
-            app.Tprintlog(['Problem: ', prob_name]);
-            app.Tprintlog(['Algorithm: ', algo_name]);
-            app.Tprintlog(['Pop Size: ', num2str(app.Tpop_size)]);
-            
             % get this experiment's parameters
             switch app.TEndTypeDropDown.Value
                 case 'Iteration'
-                    iter_num = app.Tend_num;
+                    iter_num = app.TEndNumEditField.Value;
                     eva_num = inf;
-                    app.Tprintlog(['Iteration: ', num2str(app.Tend_num)]);
                 case 'Evaluation'
                     iter_num = inf;
-                    eva_num = app.Tend_num;
-                    app.Tprintlog(['Evaluation: ', num2str(app.Tend_num)]);
+                    eva_num = app.TEndNumEditField.Value;
             end
-            pre_run_list = [app.Tpop_size, iter_num, eva_num];
+            pre_run_list = [app.TPopSizeEditField.Value, iter_num, eva_num];
             
             % run
             app.Tdata = singleRun(app.TAlgorithmTree.Children(1).NodeData, app.TProblemTree.Children(1).NodeData, pre_run_list);
@@ -1003,33 +851,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.Tdata.tasks_name = tasks_name;
             app.TupdateUIAxes();
             
-            app.Tprintlog('<--- Best Fitness --->');
-            for task = 1:tasks_num
-                app.Tprintlog([tasks_name{task}, ': ', num2str(app.Tdata.convergence(task,end))]);
-            end
-            app.Tprintlog('----------------------------------');
             app.TstartEnable(true);
-        end
-
-        % Value changed function: ERepsEditField
-        function ERepsEditFieldValueChanged(app, event)
-            % update reps parameter
-            
-            app.Ereps = app.ERepsEditField.Value;
-        end
-
-        % Value changed function: EPopSizeEditField
-        function EPopSizeEditFieldValueChanged(app, event)
-            % update pop_size parameter
-            
-            app.Epop_size = app.EPopSizeEditField.Value;
-        end
-
-        % Value changed function: EEndNumEditField
-        function EEndNumEditFieldValueChanged(app, event)
-            % update end_num parameter
-            
-            app.Eend_num = app.EEndNumEditField.Value;
         end
 
         % Context menu opening function: EAlgorithmsContextMenu
@@ -1110,12 +932,14 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             algo_num = length(app.EAlgorithmsTree.Children);
             prob_num = length(app.EProblemsTree.Children);
             if algo_num == 0
-                app.Eprintlog('!!! Please select the Algorithm first !!!');
+                msg = 'Please select the Algorithm first';
+                uiconfirm(app.MTOPlatformUIFigure, msg, 'error', 'Icon','warning');
                 app.EstartEnable(true);
                 return;
             end
             if prob_num == 0
-                app.Eprintlog('!!! Please select the Problem first !!!');
+                msg = 'Please select the Problem first';
+                uiconfirm(app.MTOPlatformUIFigure, msg, 'error', 'Icon','warning');
                 app.EstartEnable(true);
                 return;
             end
@@ -1125,14 +949,13 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.Estop_flag = false;
             
             % clear the temporary data
-            app.data = [];
-            app.Eresult = [];
+            app.Edata = [];
             
             % initialize the result properties
             for algo = 1:algo_num
                 for prob = 1:prob_num
-                    app.Eresult(prob, algo).clock_time = 0;
-                    app.Eresult(prob, algo).convergence = [];
+                    app.Edata.result(prob, algo).clock_time = 0;
+                    app.Edata.result(prob, algo).convergence = [];
                 end
             end
             
@@ -1148,70 +971,56 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             end
             
             % reset table and convergence
-            app.VresetTable(algo_cell, prob_cell, tasks_num_list);
-            app.VresetConvergenceProblemsDropDown(prob_cell, tasks_num_list);
-            app.VresetWilcoxonAlgorithmDropDown(algo_cell);
-            cla(app.VConvergenceTrendUIAxes, 'reset');
+            app.Etable_reps = zeros(length(prob_cell), length(algo_cell));
+            app.EresetTable(algo_cell, prob_cell, tasks_num_list);
+            app.EresetTableAlgorithmDropDown(algo_cell);
+            cla(app.EConvergenceTrendUIAxes, 'reset');
             
             % main experiment loop
-            log_str = [newline, '#====== Experiment Start ======#'];
-            app.Eprintlog(log_str);
-            app.Vprintlog(log_str);
-            app.Eprintlog('== See result in <View Table> ==')
             tStart = tic;
-            for rep = 1:app.Ereps
-                log_str = ['<======== Rep: ', num2str(rep), ' ========>'];
-                app.Eprintlog(log_str);
-                app.Vprintlog(log_str);
+            for rep = 1:app.ERepsEditField.Value
                 for prob = 1:prob_num
-                    log_str = ['-------- Problem: ', app.EProblemsTree.Children(prob).Text, ' --------'];
-                    app.Eprintlog(log_str);
-                    app.Vprintlog(log_str);
                     for algo = 1:algo_num
                         % check pause and stop
                         app.EcheckPauseStopStatus();
                         
                         % get this experiment's parameters
-                        log_str = [app.EAlgorithmsTree.Children(algo).Text, ' is running'];
-                        app.Eprintlog(log_str);
-                        app.Vprintlog(log_str);
                         switch app.EEndTypeDropDown.Value
                             case 'Iteration'
-                                iter_num = app.Eend_num;
+                                iter_num = app.EEndNumEditField.Value;
                                 eva_num = inf;
                             case 'Evaluation'
                                 iter_num = inf;
-                                eva_num = app.Eend_num;
+                                eva_num = app.EEndNumEditField.Value;
                         end
-                        pre_run_list = [app.Epop_size, iter_num, eva_num];
+                        pre_run_list = [app.EPopSizeEditField.Value, iter_num, eva_num];
                         
                         % run
                         data = singleRun(app.EAlgorithmsTree.Children(algo).NodeData, app.EProblemsTree.Children(prob).NodeData, pre_run_list);
-                        app.Eresult(prob, algo).clock_time = app.Eresult(prob, algo).clock_time + data.clock_time;
+                        app.Edata.result(prob, algo).clock_time = app.Edata.result(prob, algo).clock_time + data.clock_time;
                         % BUG: when p_il ~= 0, convergence vartical not same
-                        app.Eresult(prob, algo).convergence = [app.Eresult(prob, algo).convergence; data.convergence];
+                        app.Edata.result(prob, algo).convergence = [app.Edata.result(prob, algo).convergence; data.convergence];
+                        
+                        app.Etable_reps(prob, algo) = rep;
+                        app.EupdateTableReps();
                     end
-                    app.VupdateTableProb(algo_cell, prob, tasks_num_list);
                 end
-                
-                app.data.reps = rep;
-                app.data.tasks_num_list = tasks_num_list;
-                app.data.pop_size = app.Epop_size;
-                app.data.iter_num = iter_num;
-                app.data.eva_num = eva_num;
-                app.data.algo_cell = algo_cell;
-                app.data.prob_cell = prob_cell';
-                app.data.result = app.Eresult;
-                app.VupdateConvergenceAxes();
+                app.Edata.reps = rep;
+                app.Edata.pop_size = app.EPopSizeEditField.Value;
+                app.Edata.iter_num = iter_num;
+                app.Edata.eva_num = eva_num;
+                app.Edata.algo_cell = algo_cell;
+                app.Edata.prob_cell = prob_cell';
+                app.Edata.tasks_num_list = tasks_num_list;
+                app.EcalculatePre();
+                app.EupdateTable();
+                app.EresetConvergenceProblemsDropDown();
+                app.EupdateConvergenceAxes();
             end
             
             tEnd = toc(tStart);
-            log_str = ['<----- All Use Time: ', char(duration([0, 0, tEnd])), ' ----->'];
-            app.Eprintlog(log_str);
-            app.Vprintlog(log_str);
-            log_str = ['#==== Experiment Finished ====#', newline];
-            app.Eprintlog(log_str);
-            app.Vprintlog(log_str);
+            msg = ['All Use Time: ', char(duration([0, 0, tEnd]))];
+            uiconfirm(app.MTOPlatformUIFigure, msg, 'success', 'Icon', 'success');
             
             app.EstartEnable(true);
         end
@@ -1223,15 +1032,9 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             if strcmp(app.EPauseButton.Text, 'Pause')
                 app.EStopButton.Enable = 'off';
                 app.EPauseButton.Text = 'Resume';
-                log_str = '########### Paused ###########';
-                app.Eprintlog(log_str);
-                app.Vprintlog(log_str);
             else
                 app.EStopButton.Enable = 'on';
                 app.EPauseButton.Text = 'Pause';
-                log_str = '########## Resumed ##########';
-                app.Eprintlog(log_str);
-                app.Vprintlog(log_str);
             end
         end
 
@@ -1239,11 +1042,9 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         function EStopButtonPushed(app, event)
             % stop this experiment
             
+            app.Etable_reps = app.Edata.reps * ones([length(app.Edata.prob_cell), length(app.Edata.algo_cell)]);
             app.EstartEnable(true);
             app.Estop_flag = true;
-            log_str = '#====== Experiment Stopped ======#';
-            app.Eprintlog(log_str);
-            app.Vprintlog(log_str);
         end
 
         % Context menu opening function: ESelectedAlgoContextMenu
@@ -1261,7 +1062,8 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             
             algo_selected = app.EAlgorithmsTree.SelectedNodes;
             if isempty(algo_selected)
-                app.Eprintlog('!!! Select Algorithm node in tree first !!!');
+                msg = 'Select Algorithm node in tree first';
+                uiconfirm(app.MTOPlatformUIFigure, msg, 'error', 'Icon','warning');
             end
             
             for i = 1:length(algo_selected)
@@ -1309,7 +1111,8 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             
             prob_selected = app.EProblemsTree.SelectedNodes;
             if isempty(prob_selected)
-                app.Eprintlog('!!! Select Problem node in tree first !!!');
+                msg = 'Select Problem node in tree first';
+                uiconfirm(app.MTOPlatformUIFigure, msg, 'error', 'Icon','warning');
             end
             
             for i = 1:length(prob_selected)
@@ -1342,170 +1145,149 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             end
         end
 
-        % Button pushed function: ELogsClearButton
-        function ELogsClearButtonPushed(app, event)
-            % clear logs text area
-            
-            app.ELogsTextArea.Value = '';
-        end
-
         % Button pushed function: ESaveDataButton
         function ESaveDataButtonPushed(app, event)
             % save data to folder
             
             % check data
-            if isempty(app.data)
-                app.Eprintlog('!!! Please run experiment first !!!');
+            if isempty(app.Edata)
+                msg = 'Please run experiment first';
+                uiconfirm(app.MTOPlatformUIFigure, msg, 'error', 'Icon','warning');
                 return;
             end
             
             % check selected file name
             [file_name, dir_name] = uiputfile('data_save.mat');
+            figure(app.MTOPlatformUIFigure);
             if file_name == 0
-                app.Eprintlog('!!! User select canceled !!!');
                 return;
             end
             
             % save data
-            data_save = app.data;
+            data_save = app.Edata;
             save([dir_name, file_name], 'data_save');
         end
 
-        % Value changed function: VYLimTypeDropDown
-        function VYLimTypeDropDownValueChanged(app, event)
-            app.VupdateConvergenceAxes();
+        % Value changed function: EDataTypeDropDown
+        function EDataTypeDropDownValueChanged(app, event)
+            app.EupdateTable();
         end
 
-        % Value changed function: VProblemsDropDown
-        function VProblemsDropDownValueChanged(app, event)
-            app.VupdateConvergenceAxes();
+        % Value changed function: EShowTypeDropDown
+        function EShowTypeDropDownValueChanged(app, event)
+            app.EupdateTableFitness();
         end
 
-        % Value changed function: VWilcoxonShowTypeDropDown
-        function VWilcoxonShowTypeDropDownValueChanged(app, event)
-            app.VupdateWilcoxonTable(app.data);
+        % Value changed function: ETestTypeDropDown
+        function ETestTypeDropDownValueChanged(app, event)
+            app.EupdateTableTest();
         end
 
-        % Value changed function: VWilcoxonAlgorithmDropDown
-        function VWilcoxonAlgorithmDropDownValueChanged(app, event)
-            app.VupdateWilcoxonTable(app.data);
+        % Value changed function: EAlgorithmDropDown
+        function EAlgorithmDropDownValueChanged(app, event)
+            app.EupdateTableTest();
         end
 
-        % Button pushed function: VLogsClearButton
-        function VLogsClearButtonPushed(app, event)
-            % clear logs text area
-            
-            app.VLogsTextArea.Value = '';
+        % Value changed function: EHighlightTypeDropDown
+        function EHighlightTypeDropDownValueChanged(app, event)
+            app.EupdateTableHighlight();
         end
 
-        % Button pushed function: VLoadDataButton
-        function VLoadDataButtonPushed(app, event)
+        % Value changed function: EYLimTypeDropDown
+        function EYLimTypeDropDownValueChanged(app, event)
+            app.EupdateConvergenceAxes();
+        end
+
+        % Value changed function: EProblemsDropDown
+        function EProblemsDropDownValueChanged(app, event)
+            app.EupdateConvergenceAxes();
+        end
+
+        % Button pushed function: ELoadDataButton
+        function ELoadDataButtonPushed(app, event)
             % load data from file
             
             % select mat file
             [file_name, pathname] = uigetfile('*.mat', 'Select Data', './');
+            figure(app.MTOPlatformUIFigure);
             
             % check selected ile_name
             if file_name == 0
-                app.Vprintlog('!!! User select canceled !!!');
                 return;
             end
             
             % load data to app's parameter
             load([pathname, file_name], 'data_save');
-            app.Vprintlog(['Load Data: "', [pathname, file_name], '"']);
-            app.data = data_save;
-            app.VresetTable(app.data.algo_cell, app.data.prob_cell, app.data.tasks_num_list);
-            app.VupdateTable(app.data);
-            app.VresetConvergenceProblemsDropDown(app.data.prob_cell, app.data.tasks_num_list);
-            app.VupdateConvergenceAxes();
-            app.VresetWilcoxonAlgorithmDropDown(app.data.algo_cell);
-            app.VupdateWilcoxonTable(app.data);
+            app.Edata = data_save;
+            app.Etable_reps = app.Edata.reps * ones([length(app.Edata.prob_cell), length(app.Edata.algo_cell)]);
+            app.EresetTableAlgorithmDropDown(app.Edata.algo_cell);
+            app.EcalculatePre();
+            app.EupdateTable();
+            app.EresetConvergenceProblemsDropDown();
+            app.EupdateConvergenceAxes();
         end
 
-        % Button pushed function: VSaveResultButton
-        function VSaveResultButtonPushed(app, event)
-            % save data, figure, table to folder
+        % Button pushed function: ESaveTableButton
+        function ESaveTableButtonPushed(app, event)
+            % save table
+            
+            % check selected file name
+            filter = {'*.csv';'*.xlsx';'*.txt';'*.*'};
+            [file_name, dir_name] = uiputfile(filter);
+            figure(app.MTOPlatformUIFigure);
+            if file_name == 0
+                return;
+            end
+            row_name = app.EUITable.RowName(1:size(app.EUITable.Data, 1));
+            column_name = app.EUITable.ColumnName(1:size(app.EUITable.Data, 2))';
+            cell_out = [[{''}; row_name], [column_name; app.EUITable.Data]];
+            writecell(cell_out, [dir_name, file_name]);
+        end
+
+        % Button pushed function: ESaveAllFigureButton
+        function ESaveAllFigureButtonPushed(app, event)
+            % save figure to folder
             
             % check data
-            if isempty(app.data)
-                app.Vprintlog('!!! Please run experiment or load data first !!!');
+            if isempty(app.Edata)
                 return;
             end
             
             % check selected dir name
             dir_name = uigetdir('./', 'Select save path');
+            figure(app.MTOPlatformUIFigure);
             if dir_name == 0
-                app.Vprintlog('!!! User select canceled !!!');
                 return;
             end
             
-            % save data
-            data_save = app.data;
-            save([dir_name, '/data_save'], 'data_save');
-            
             % save figure
-            fig_dir_name = [dir_name, '/data_Figure/'];
+            fig_dir_name = [dir_name, '/Figure/'];
             mkdir(fig_dir_name);
             draw_obj = drawFigure;
-            for prob = 1:length(data_save.prob_cell)
-                tasks_num = data_save.tasks_num_list(prob);
+            for prob = 1:length(app.Edata.prob_cell)
+                tasks_num = app.Edata.tasks_num_list(prob);
                 for task = 1:tasks_num
-                    for algo = 1:length(data_save.algo_cell)
-                        convergence_task = data_save.result(prob, algo).convergence(task:tasks_num:end, :);
+                    for algo = 1:length(app.Edata.algo_cell)
+                        convergence_task = app.Edata.result(prob, algo).convergence(task:tasks_num:end, :);
                         convergence = mean(convergence_task, 1);
                         x_cell{algo} = 1:size(convergence,2);
                         y_cell{algo} = convergence;
                     end
-                    switch app.VYLimTypeDropDown.Value
+                    switch app.EYLimTypeDropDown.Value
                         case 'log(fitness)'
                             for i = 1:length(y_cell)
                                 y_cell{i} = log(y_cell{i});
                             end
                     end
                     draw_obj.setXY(x_cell, y_cell);
-                    draw_obj.setXYlabel('Generation', app.VYLimTypeDropDown.Value);
-                    draw_obj.setLegend(data_save.algo_cell);
-                    draw_obj.setTitle([data_save.prob_cell{prob}, ' T', num2str(task)]);
+                    draw_obj.setXYlabel('Generation', app.EYLimTypeDropDown.Value);
+                    draw_obj.setLegend(app.Edata.algo_cell);
+                    draw_obj.setTitle([app.Edata.prob_cell{prob}, ' T', num2str(task)]);
                     draw_obj.setSaveDir(fig_dir_name);
-                    draw_obj.setFigureType(app.VFigureTypeDropDown.Value);
+                    draw_obj.setFigureType(app.EFigureTypeDropDown.Value);
                     draw_obj.save();
                 end
             end
-            
-            % save table
-            table_dir_name = [dir_name, '/data_Table/'];
-            mkdir(table_dir_name);
-            % add algo and prob name
-            prob_task_cell = {};
-            for prob = 1:length(data_save.prob_cell)
-                tasks_num = data_save.tasks_num_list(prob);
-                for task = 1:tasks_num
-                    prob_task_cell = [prob_task_cell, [data_save.prob_cell{prob}, num2str(task)]];
-                end
-            end
-            cell_out = [[{''}, prob_task_cell]', [data_save.algo_cell; num2cell(app.VFitnessAveUITable.Data)]];
-            writecell(cell_out, [table_dir_name, 'Fitness Ave.', app.VTableTypeDropDown.Value]);
-            cell_out = [[{''}, prob_task_cell]', [data_save.algo_cell; num2cell(app.VFitnessStdUITable.Data)]];
-            writecell(cell_out, [table_dir_name, 'Fitness Std.', app.VTableTypeDropDown.Value]);
-            cell_out = [[{''}, data_save.prob_cell']', [data_save.algo_cell; num2cell(app.VTimeUsedUITable.Data)]];
-            writecell(cell_out, [table_dir_name, 'Time Used.', app.VTableTypeDropDown.Value]);
-            cell_out = [[{''}, prob_task_cell]', [data_save.algo_cell; num2cell(app.VWilcoxonUITable.Data)]];
-            writecell(cell_out, [table_dir_name, 'Wilcoxon P-Value.', app.VWilcoxon_p]);
-            cell_out = [[{''}, prob_task_cell]', [data_save.algo_cell; num2cell(app.VFriedmanUITable.Data)]];
-            writecell(cell_out, [table_dir_name, 'Wilcoxon Fitness.', app.VWilcoxon_fitness]);
-            % TODO Friedman
-            cell_out = [[{''}, prob_task_cell]', [data_save.algo_cell; num2cell(app.VFriedmanUITable.Data)]];
-            writecell(cell_out, [table_dir_name, 'Friedman’s Test.', app.VTableTypeDropDown.Value]);
-            
-            app.Vprintlog(['Save to: "', dir_name, '"']);
-        end
-
-        % Button pushed function: MLogsClearButton
-        function MLogsClearButtonPushed(app, event)
-            % clear logs text area
-            
-            app.MLogsTextArea.Value = '';
         end
 
         % Button pushed function: MLoadDataButton
@@ -1515,11 +1297,11 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % select mat file
             file_name_list = {};
             [file_name, pathname] = uigetfile('*.mat', 'select the data mat', './', 'MultiSelect', 'on');
+            figure(app.MTOPlatformUIFigure);
             file_name_list = [file_name_list, file_name];
             
             % check selected file_name
             if file_name_list{1} == 0
-                app.Mprintlog('!!! User select canceled !!!');
                 return;
             end
             
@@ -1528,7 +1310,6 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                 data_node = uitreenode(app.MDataTree);
                 data_node.Text = file_name_list{i};
                 load([pathname, file_name_list{i}], 'data_save');
-                app.Mprintlog(['Load data: "', [pathname, file_name_list{i}], '"']);
                 data_node.NodeData = data_save;
                 data_node.ContextMenu = app.MDataContextMenu;
                 
@@ -1584,7 +1365,8 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             
             data_selected = app.MDataTree.SelectedNodes;
             if isempty(data_selected)
-                app.Mprintlog('!!! Select data node in tree first !!!');
+                msg = 'Select data node in tree first';
+                uiconfirm(app.MTOPlatformUIFigure, msg, 'error', 'Icon','warning');
             end
             
             for i = 1:length(data_selected)
@@ -1693,7 +1475,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % Create MTOPlatformUIFigure and hide until all components are created
             app.MTOPlatformUIFigure = uifigure('Visible', 'off');
             app.MTOPlatformUIFigure.Color = [1 1 1];
-            app.MTOPlatformUIFigure.Position = [100 100 906 702];
+            app.MTOPlatformUIFigure.Position = [100 100 1221 716];
             app.MTOPlatformUIFigure.Name = 'MTO Platform';
             app.MTOPlatformUIFigure.WindowStyle = 'modal';
 
@@ -1716,7 +1498,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
 
             % Create TestGridLayout
             app.TestGridLayout = uigridlayout(app.TestModuleTab);
-            app.TestGridLayout.ColumnWidth = {'fit', '2.5x'};
+            app.TestGridLayout.ColumnWidth = {230, '2.5x'};
             app.TestGridLayout.RowHeight = {'1x'};
             app.TestGridLayout.BackgroundColor = [1 1 1];
 
@@ -1729,35 +1511,11 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % Create TP1GridLayout
             app.TP1GridLayout = uigridlayout(app.TPanel1);
             app.TP1GridLayout.ColumnWidth = {'fit', '1x', 70};
-            app.TP1GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x', 'fit', '1.5x'};
+            app.TP1GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x'};
             app.TP1GridLayout.BackgroundColor = [1 1 1];
-
-            % Create TLogsTextArea
-            app.TLogsTextArea = uitextarea(app.TP1GridLayout);
-            app.TLogsTextArea.Editable = 'off';
-            app.TLogsTextArea.HorizontalAlignment = 'center';
-            app.TLogsTextArea.WordWrap = 'off';
-            app.TLogsTextArea.Layout.Row = 9;
-            app.TLogsTextArea.Layout.Column = [1 3];
-
-            % Create LogsTextArea_2Label_2
-            app.LogsTextArea_2Label_2 = uilabel(app.TP1GridLayout);
-            app.LogsTextArea_2Label_2.FontWeight = 'bold';
-            app.LogsTextArea_2Label_2.Layout.Row = 8;
-            app.LogsTextArea_2Label_2.Layout.Column = 1;
-            app.LogsTextArea_2Label_2.Text = 'Logs';
-
-            % Create TLogsClearButton
-            app.TLogsClearButton = uibutton(app.TP1GridLayout, 'push');
-            app.TLogsClearButton.ButtonPushedFcn = createCallbackFcn(app, @TLogsClearButtonPushed, true);
-            app.TLogsClearButton.BackgroundColor = [1 1 0.702];
-            app.TLogsClearButton.Layout.Row = 8;
-            app.TLogsClearButton.Layout.Column = 3;
-            app.TLogsClearButton.Text = 'Clear';
 
             % Create TPopSizeEditField
             app.TPopSizeEditField = uieditfield(app.TP1GridLayout, 'numeric');
-            app.TPopSizeEditField.ValueChangedFcn = createCallbackFcn(app, @TPopSizeEditFieldValueChanged, true);
             app.TPopSizeEditField.HorizontalAlignment = 'center';
             app.TPopSizeEditField.Layout.Row = 1;
             app.TPopSizeEditField.Layout.Column = [2 3];
@@ -1772,7 +1530,6 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
 
             % Create TEndNumEditField
             app.TEndNumEditField = uieditfield(app.TP1GridLayout, 'numeric');
-            app.TEndNumEditField.ValueChangedFcn = createCallbackFcn(app, @TEndNumEditFieldValueChanged, true);
             app.TEndNumEditField.HorizontalAlignment = 'center';
             app.TEndNumEditField.Layout.Row = 3;
             app.TEndNumEditField.Layout.Column = [2 3];
@@ -1873,6 +1630,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.TShowTypeDropDown = uidropdown(app.TP21GridLayout);
             app.TShowTypeDropDown.Items = {'Tasks Figure', 'Convergence'};
             app.TShowTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @TShowTypeDropDownValueChanged, true);
+            app.TShowTypeDropDown.FontWeight = 'bold';
             app.TShowTypeDropDown.BackgroundColor = [1 1 1];
             app.TShowTypeDropDown.Layout.Row = 1;
             app.TShowTypeDropDown.Layout.Column = 2;
@@ -1892,6 +1650,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.TStartButton.ButtonPushedFcn = createCallbackFcn(app, @TStartButtonPushed, true);
             app.TStartButton.BusyAction = 'cancel';
             app.TStartButton.BackgroundColor = [0.6706 0.949 0.6706];
+            app.TStartButton.FontWeight = 'bold';
             app.TStartButton.Layout.Row = 1;
             app.TStartButton.Layout.Column = 2;
             app.TStartButton.Text = 'Start';
@@ -1908,7 +1667,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
 
             % Create ExperimentsGridLayout
             app.ExperimentsGridLayout = uigridlayout(app.ExperimentModuleTab);
-            app.ExperimentsGridLayout.ColumnWidth = {'1x', '1.5x', '1.3x'};
+            app.ExperimentsGridLayout.ColumnWidth = {180, 230, '1.3x'};
             app.ExperimentsGridLayout.RowHeight = {'1x'};
             app.ExperimentsGridLayout.BackgroundColor = [1 1 1];
 
@@ -1919,42 +1678,161 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EPanel3.Layout.Row = 1;
             app.EPanel3.Layout.Column = 3;
 
-            % Create EPanel3GridLayout
-            app.EPanel3GridLayout = uigridlayout(app.EPanel3);
-            app.EPanel3GridLayout.ColumnWidth = {'fit', '1x', 70};
-            app.EPanel3GridLayout.RowHeight = {'fit', '1x', 'fit'};
-            app.EPanel3GridLayout.BackgroundColor = [1 1 1];
+            % Create EP3GridLayout
+            app.EP3GridLayout = uigridlayout(app.EPanel3);
+            app.EP3GridLayout.ColumnWidth = {'1x'};
+            app.EP3GridLayout.RowHeight = {'1x'};
+            app.EP3GridLayout.BackgroundColor = [1 1 1];
 
-            % Create LogsTextAreaLabel
-            app.LogsTextAreaLabel = uilabel(app.EPanel3GridLayout);
-            app.LogsTextAreaLabel.FontWeight = 'bold';
-            app.LogsTextAreaLabel.Layout.Row = 1;
-            app.LogsTextAreaLabel.Layout.Column = 1;
-            app.LogsTextAreaLabel.Text = 'Logs';
+            % Create ETableTabGroup
+            app.ETableTabGroup = uitabgroup(app.EP3GridLayout);
+            app.ETableTabGroup.Layout.Row = 1;
+            app.ETableTabGroup.Layout.Column = 1;
 
-            % Create ELogsTextArea
-            app.ELogsTextArea = uitextarea(app.EPanel3GridLayout);
-            app.ELogsTextArea.Editable = 'off';
-            app.ELogsTextArea.HorizontalAlignment = 'center';
-            app.ELogsTextArea.WordWrap = 'off';
-            app.ELogsTextArea.Layout.Row = 2;
-            app.ELogsTextArea.Layout.Column = [1 3];
+            % Create ETableTab
+            app.ETableTab = uitab(app.ETableTabGroup);
+            app.ETableTab.Title = 'Table';
+            app.ETableTab.BackgroundColor = [1 1 1];
 
-            % Create ELogsClearButton
-            app.ELogsClearButton = uibutton(app.EPanel3GridLayout, 'push');
-            app.ELogsClearButton.ButtonPushedFcn = createCallbackFcn(app, @ELogsClearButtonPushed, true);
-            app.ELogsClearButton.BackgroundColor = [1 1 0.702];
-            app.ELogsClearButton.Layout.Row = 1;
-            app.ELogsClearButton.Layout.Column = 3;
-            app.ELogsClearButton.Text = 'Clear';
+            % Create EP3TGridLayout
+            app.EP3TGridLayout = uigridlayout(app.ETableTab);
+            app.EP3TGridLayout.ColumnWidth = {'1x'};
+            app.EP3TGridLayout.RowHeight = {'fit', '1x'};
+            app.EP3TGridLayout.RowSpacing = 0;
+            app.EP3TGridLayout.Padding = [0 0 0 0];
+            app.EP3TGridLayout.BackgroundColor = [1 1 1];
 
-            % Create ESaveDataButton
-            app.ESaveDataButton = uibutton(app.EPanel3GridLayout, 'push');
-            app.ESaveDataButton.ButtonPushedFcn = createCallbackFcn(app, @ESaveDataButtonPushed, true);
-            app.ESaveDataButton.BackgroundColor = [0.702 1 0.702];
-            app.ESaveDataButton.Layout.Row = 3;
-            app.ESaveDataButton.Layout.Column = [1 3];
-            app.ESaveDataButton.Text = 'Save Data';
+            % Create EP3T1GridLayout
+            app.EP3T1GridLayout = uigridlayout(app.EP3TGridLayout);
+            app.EP3T1GridLayout.ColumnWidth = {'fit', '1x', 'fit', 'fit', 'fit', 'fit', 'fit'};
+            app.EP3T1GridLayout.RowHeight = {'fit'};
+            app.EP3T1GridLayout.Layout.Row = 1;
+            app.EP3T1GridLayout.Layout.Column = 1;
+            app.EP3T1GridLayout.BackgroundColor = [1 1 1];
+
+            % Create ETestTypeDropDown
+            app.ETestTypeDropDown = uidropdown(app.EP3T1GridLayout);
+            app.ETestTypeDropDown.Items = {'None', 'Rank sum test', 'Signed rank test', 'Friedman test', ''};
+            app.ETestTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @ETestTypeDropDownValueChanged, true);
+            app.ETestTypeDropDown.BackgroundColor = [1 1 1];
+            app.ETestTypeDropDown.Layout.Row = 1;
+            app.ETestTypeDropDown.Layout.Column = 5;
+            app.ETestTypeDropDown.Value = 'None';
+
+            % Create EAlgorithmDropDown
+            app.EAlgorithmDropDown = uidropdown(app.EP3T1GridLayout);
+            app.EAlgorithmDropDown.Items = {'Algorithm'};
+            app.EAlgorithmDropDown.ValueChangedFcn = createCallbackFcn(app, @EAlgorithmDropDownValueChanged, true);
+            app.EAlgorithmDropDown.BackgroundColor = [1 1 1];
+            app.EAlgorithmDropDown.Layout.Row = 1;
+            app.EAlgorithmDropDown.Layout.Column = 6;
+            app.EAlgorithmDropDown.Value = 'Algorithm';
+
+            % Create EShowTypeDropDown
+            app.EShowTypeDropDown = uidropdown(app.EP3T1GridLayout);
+            app.EShowTypeDropDown.Items = {'Mean', 'Mean (Std)', 'Median', 'Median (Std)'};
+            app.EShowTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EShowTypeDropDownValueChanged, true);
+            app.EShowTypeDropDown.BackgroundColor = [1 1 1];
+            app.EShowTypeDropDown.Layout.Row = 1;
+            app.EShowTypeDropDown.Layout.Column = 4;
+            app.EShowTypeDropDown.Value = 'Mean';
+
+            % Create EDataTypeDropDown
+            app.EDataTypeDropDown = uidropdown(app.EP3T1GridLayout);
+            app.EDataTypeDropDown.Items = {'Reps', 'Fitness', 'Time used'};
+            app.EDataTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EDataTypeDropDownValueChanged, true);
+            app.EDataTypeDropDown.BackgroundColor = [1 1 1];
+            app.EDataTypeDropDown.Layout.Row = 1;
+            app.EDataTypeDropDown.Layout.Column = 3;
+            app.EDataTypeDropDown.Value = 'Reps';
+
+            % Create EHighlightTypeDropDown
+            app.EHighlightTypeDropDown = uidropdown(app.EP3T1GridLayout);
+            app.EHighlightTypeDropDown.Items = {'None', 'Highlight best', 'Highlight best worst'};
+            app.EHighlightTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EHighlightTypeDropDownValueChanged, true);
+            app.EHighlightTypeDropDown.BackgroundColor = [1 1 1];
+            app.EHighlightTypeDropDown.Layout.Row = 1;
+            app.EHighlightTypeDropDown.Layout.Column = 7;
+            app.EHighlightTypeDropDown.Value = 'None';
+
+            % Create ESaveTableButton
+            app.ESaveTableButton = uibutton(app.EP3T1GridLayout, 'push');
+            app.ESaveTableButton.ButtonPushedFcn = createCallbackFcn(app, @ESaveTableButtonPushed, true);
+            app.ESaveTableButton.BackgroundColor = [0.702 1 0.702];
+            app.ESaveTableButton.FontWeight = 'bold';
+            app.ESaveTableButton.Layout.Row = 1;
+            app.ESaveTableButton.Layout.Column = 1;
+            app.ESaveTableButton.Text = 'Save Table';
+
+            % Create EUITable
+            app.EUITable = uitable(app.EP3TGridLayout);
+            app.EUITable.ColumnName = '';
+            app.EUITable.RowName = {};
+            app.EUITable.Layout.Row = 2;
+            app.EUITable.Layout.Column = 1;
+
+            % Create EFigureTab
+            app.EFigureTab = uitab(app.ETableTabGroup);
+            app.EFigureTab.Title = 'Figure';
+            app.EFigureTab.BackgroundColor = [1 1 1];
+
+            % Create EP3FGridLayout
+            app.EP3FGridLayout = uigridlayout(app.EFigureTab);
+            app.EP3FGridLayout.ColumnWidth = {'1x'};
+            app.EP3FGridLayout.RowHeight = {'fit', '1x'};
+            app.EP3FGridLayout.RowSpacing = 0;
+            app.EP3FGridLayout.Padding = [0 0 0 0];
+            app.EP3FGridLayout.BackgroundColor = [1 1 1];
+
+            % Create EP3F1GridLayout
+            app.EP3F1GridLayout = uigridlayout(app.EP3FGridLayout);
+            app.EP3F1GridLayout.ColumnWidth = {'fit', '1x', 'fit', 'fit', 'fit'};
+            app.EP3F1GridLayout.RowHeight = {'fit'};
+            app.EP3F1GridLayout.Layout.Row = 1;
+            app.EP3F1GridLayout.Layout.Column = 1;
+            app.EP3F1GridLayout.BackgroundColor = [1 1 1];
+
+            % Create EProblemsDropDown
+            app.EProblemsDropDown = uidropdown(app.EP3F1GridLayout);
+            app.EProblemsDropDown.Items = {'Problem '};
+            app.EProblemsDropDown.ValueChangedFcn = createCallbackFcn(app, @EProblemsDropDownValueChanged, true);
+            app.EProblemsDropDown.BackgroundColor = [1 1 1];
+            app.EProblemsDropDown.Layout.Row = 1;
+            app.EProblemsDropDown.Layout.Column = 5;
+            app.EProblemsDropDown.Value = 'Problem ';
+
+            % Create EYLimTypeDropDown
+            app.EYLimTypeDropDown = uidropdown(app.EP3F1GridLayout);
+            app.EYLimTypeDropDown.Items = {'log(fitness)', 'fitness'};
+            app.EYLimTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EYLimTypeDropDownValueChanged, true);
+            app.EYLimTypeDropDown.BackgroundColor = [1 1 1];
+            app.EYLimTypeDropDown.Layout.Row = 1;
+            app.EYLimTypeDropDown.Layout.Column = 4;
+            app.EYLimTypeDropDown.Value = 'log(fitness)';
+
+            % Create ESaveAllFigureButton
+            app.ESaveAllFigureButton = uibutton(app.EP3F1GridLayout, 'push');
+            app.ESaveAllFigureButton.ButtonPushedFcn = createCallbackFcn(app, @ESaveAllFigureButtonPushed, true);
+            app.ESaveAllFigureButton.BackgroundColor = [0.702 1 0.702];
+            app.ESaveAllFigureButton.FontWeight = 'bold';
+            app.ESaveAllFigureButton.Layout.Row = 1;
+            app.ESaveAllFigureButton.Layout.Column = 1;
+            app.ESaveAllFigureButton.Text = 'Save All Figure';
+
+            % Create EFigureTypeDropDown
+            app.EFigureTypeDropDown = uidropdown(app.EP3F1GridLayout);
+            app.EFigureTypeDropDown.Items = {'eps', 'png', 'pdf'};
+            app.EFigureTypeDropDown.BackgroundColor = [1 1 1];
+            app.EFigureTypeDropDown.Layout.Row = 1;
+            app.EFigureTypeDropDown.Layout.Column = 3;
+            app.EFigureTypeDropDown.Value = 'eps';
+
+            % Create EConvergenceTrendUIAxes
+            app.EConvergenceTrendUIAxes = uiaxes(app.EP3FGridLayout);
+            xlabel(app.EConvergenceTrendUIAxes, 'Iteration')
+            ylabel(app.EConvergenceTrendUIAxes, 'fitness')
+            app.EConvergenceTrendUIAxes.Layout.Row = 2;
+            app.EConvergenceTrendUIAxes.Layout.Column = 1;
 
             % Create EPanel1
             app.EPanel1 = uipanel(app.ExperimentsGridLayout);
@@ -1965,7 +1843,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % Create EP1GridLayout
             app.EP1GridLayout = uigridlayout(app.EPanel1);
             app.EP1GridLayout.ColumnWidth = {'fit', '1x', 70};
-            app.EP1GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x'};
+            app.EP1GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x', 'fit'};
             app.EP1GridLayout.BackgroundColor = [1 1 1];
 
             % Create EProblemsAddButton
@@ -1973,6 +1851,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EProblemsAddButton.ButtonPushedFcn = createCallbackFcn(app, @EProblemsAddButtonPushed, true);
             app.EProblemsAddButton.VerticalAlignment = 'top';
             app.EProblemsAddButton.BackgroundColor = [0.702 1 0.702];
+            app.EProblemsAddButton.FontWeight = 'bold';
             app.EProblemsAddButton.Layout.Row = 7;
             app.EProblemsAddButton.Layout.Column = 3;
             app.EProblemsAddButton.Text = 'Add';
@@ -1982,13 +1861,13 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EAlgorithmsAddButton.ButtonPushedFcn = createCallbackFcn(app, @EAlgorithmsAddButtonPushed, true);
             app.EAlgorithmsAddButton.VerticalAlignment = 'top';
             app.EAlgorithmsAddButton.BackgroundColor = [0.702 1 0.702];
+            app.EAlgorithmsAddButton.FontWeight = 'bold';
             app.EAlgorithmsAddButton.Layout.Row = 5;
             app.EAlgorithmsAddButton.Layout.Column = 3;
             app.EAlgorithmsAddButton.Text = 'Add';
 
             % Create ERepsEditField
             app.ERepsEditField = uieditfield(app.EP1GridLayout, 'numeric');
-            app.ERepsEditField.ValueChangedFcn = createCallbackFcn(app, @ERepsEditFieldValueChanged, true);
             app.ERepsEditField.HorizontalAlignment = 'center';
             app.ERepsEditField.Layout.Row = 1;
             app.ERepsEditField.Layout.Column = [2 3];
@@ -2003,7 +1882,6 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
 
             % Create EEndNumEditField
             app.EEndNumEditField = uieditfield(app.EP1GridLayout, 'numeric');
-            app.EEndNumEditField.ValueChangedFcn = createCallbackFcn(app, @EEndNumEditFieldValueChanged, true);
             app.EEndNumEditField.HorizontalAlignment = 'center';
             app.EEndNumEditField.Layout.Row = 4;
             app.EEndNumEditField.Layout.Column = [2 3];
@@ -2018,7 +1896,6 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
 
             % Create EPopSizeEditField
             app.EPopSizeEditField = uieditfield(app.EP1GridLayout, 'numeric');
-            app.EPopSizeEditField.ValueChangedFcn = createCallbackFcn(app, @EPopSizeEditFieldValueChanged, true);
             app.EPopSizeEditField.HorizontalAlignment = 'center';
             app.EPopSizeEditField.Layout.Row = 2;
             app.EPopSizeEditField.Layout.Column = [2 3];
@@ -2076,6 +1953,15 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EEndTypeDropDown.Layout.Column = [2 3];
             app.EEndTypeDropDown.Value = 'Iteration';
 
+            % Create ELoadDataButton
+            app.ELoadDataButton = uibutton(app.EP1GridLayout, 'push');
+            app.ELoadDataButton.ButtonPushedFcn = createCallbackFcn(app, @ELoadDataButtonPushed, true);
+            app.ELoadDataButton.BackgroundColor = [0.502 0.702 1];
+            app.ELoadDataButton.FontWeight = 'bold';
+            app.ELoadDataButton.Layout.Row = 9;
+            app.ELoadDataButton.Layout.Column = [1 3];
+            app.ELoadDataButton.Text = 'Load Data';
+
             % Create EPanel2
             app.EPanel2 = uipanel(app.ExperimentsGridLayout);
             app.EPanel2.BackgroundColor = [1 1 1];
@@ -2085,7 +1971,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % Create EP2GridLayout
             app.EP2GridLayout = uigridlayout(app.EPanel2);
             app.EP2GridLayout.ColumnWidth = {'2x', 70};
-            app.EP2GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x'};
+            app.EP2GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x', 'fit'};
             app.EP2GridLayout.BackgroundColor = [1 1 1];
 
             % Create EStartButton
@@ -2093,6 +1979,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EStartButton.ButtonPushedFcn = createCallbackFcn(app, @EStartButtonPushed, true);
             app.EStartButton.BusyAction = 'cancel';
             app.EStartButton.BackgroundColor = [0.6706 0.949 0.6706];
+            app.EStartButton.FontWeight = 'bold';
             app.EStartButton.Layout.Row = 1;
             app.EStartButton.Layout.Column = [1 2];
             app.EStartButton.Text = 'Start';
@@ -2102,6 +1989,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EPauseButton.ButtonPushedFcn = createCallbackFcn(app, @EPauseButtonPushed, true);
             app.EPauseButton.BusyAction = 'cancel';
             app.EPauseButton.BackgroundColor = [1 1 0.502];
+            app.EPauseButton.FontWeight = 'bold';
             app.EPauseButton.Enable = 'off';
             app.EPauseButton.Layout.Row = 2;
             app.EPauseButton.Layout.Column = [1 2];
@@ -2112,6 +2000,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EStopButton.ButtonPushedFcn = createCallbackFcn(app, @EStopButtonPushed, true);
             app.EStopButton.BusyAction = 'cancel';
             app.EStopButton.BackgroundColor = [1 0.6 0.6];
+            app.EStopButton.FontWeight = 'bold';
             app.EStopButton.Enable = 'off';
             app.EStopButton.Layout.Row = 3;
             app.EStopButton.Layout.Column = [1 2];
@@ -2151,6 +2040,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EAlgorithmsDelButton = uibutton(app.EP2GridLayout, 'push');
             app.EAlgorithmsDelButton.ButtonPushedFcn = createCallbackFcn(app, @EAlgorithmsDelButtonPushed, true);
             app.EAlgorithmsDelButton.BackgroundColor = [1 1 0.702];
+            app.EAlgorithmsDelButton.FontWeight = 'bold';
             app.EAlgorithmsDelButton.Layout.Row = 4;
             app.EAlgorithmsDelButton.Layout.Column = 2;
             app.EAlgorithmsDelButton.Text = 'Delete';
@@ -2159,370 +2049,19 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EProblemsDelButton = uibutton(app.EP2GridLayout, 'push');
             app.EProblemsDelButton.ButtonPushedFcn = createCallbackFcn(app, @EProblemsDelButtonPushed, true);
             app.EProblemsDelButton.BackgroundColor = [1 1 0.702];
+            app.EProblemsDelButton.FontWeight = 'bold';
             app.EProblemsDelButton.Layout.Row = 6;
             app.EProblemsDelButton.Layout.Column = 2;
             app.EProblemsDelButton.Text = 'Delete';
 
-            % Create ViewTableTab
-            app.ViewTableTab = uitab(app.MTOPlatformTabGroup);
-            app.ViewTableTab.Title = 'Experiment View';
-            app.ViewTableTab.BackgroundColor = [1 1 1];
-
-            % Create ViewTableGridLayout
-            app.ViewTableGridLayout = uigridlayout(app.ViewTableTab);
-            app.ViewTableGridLayout.ColumnWidth = {'1x', 'fit'};
-            app.ViewTableGridLayout.RowHeight = {'1x', 'fit'};
-            app.ViewTableGridLayout.BackgroundColor = [1 1 1];
-
-            % Create VPanel1
-            app.VPanel1 = uipanel(app.ViewTableGridLayout);
-            app.VPanel1.BackgroundColor = [1 1 1];
-            app.VPanel1.Layout.Row = 1;
-            app.VPanel1.Layout.Column = [1 2];
-
-            % Create VP1GridLayout
-            app.VP1GridLayout = uigridlayout(app.VPanel1);
-            app.VP1GridLayout.ColumnWidth = {'1x'};
-            app.VP1GridLayout.RowHeight = {'1x'};
-            app.VP1GridLayout.Padding = [0 0 0 0];
-            app.VP1GridLayout.BackgroundColor = [1 1 1];
-
-            % Create VTableTabGroup
-            app.VTableTabGroup = uitabgroup(app.VP1GridLayout);
-            app.VTableTabGroup.Layout.Row = 1;
-            app.VTableTabGroup.Layout.Column = 1;
-
-            % Create VFitnessAveTab
-            app.VFitnessAveTab = uitab(app.VTableTabGroup);
-            app.VFitnessAveTab.Title = 'Fitness Ave';
-            app.VFitnessAveTab.BackgroundColor = [1 1 1];
-
-            % Create VFitnessAveGridLayout
-            app.VFitnessAveGridLayout = uigridlayout(app.VFitnessAveTab);
-            app.VFitnessAveGridLayout.ColumnWidth = {'1x'};
-            app.VFitnessAveGridLayout.RowHeight = {'1x'};
-            app.VFitnessAveGridLayout.Padding = [0 0 0 0];
-            app.VFitnessAveGridLayout.BackgroundColor = [1 1 1];
-
-            % Create VFitnessAveUITable
-            app.VFitnessAveUITable = uitable(app.VFitnessAveGridLayout);
-            app.VFitnessAveUITable.ColumnName = '';
-            app.VFitnessAveUITable.RowName = {};
-            app.VFitnessAveUITable.Layout.Row = 1;
-            app.VFitnessAveUITable.Layout.Column = 1;
-
-            % Create VFitnessStdTab
-            app.VFitnessStdTab = uitab(app.VTableTabGroup);
-            app.VFitnessStdTab.Title = 'Fitness Std';
-            app.VFitnessStdTab.BackgroundColor = [1 1 1];
-
-            % Create VFitnessStdGridLayout
-            app.VFitnessStdGridLayout = uigridlayout(app.VFitnessStdTab);
-            app.VFitnessStdGridLayout.ColumnWidth = {'1x'};
-            app.VFitnessStdGridLayout.RowHeight = {'1x'};
-            app.VFitnessStdGridLayout.Padding = [0 0 0 0];
-            app.VFitnessStdGridLayout.BackgroundColor = [1 1 1];
-
-            % Create VFitnessStdUITable
-            app.VFitnessStdUITable = uitable(app.VFitnessStdGridLayout);
-            app.VFitnessStdUITable.ColumnName = '';
-            app.VFitnessStdUITable.RowName = {};
-            app.VFitnessStdUITable.Layout.Row = 1;
-            app.VFitnessStdUITable.Layout.Column = 1;
-
-            % Create VTimeUsedTab
-            app.VTimeUsedTab = uitab(app.VTableTabGroup);
-            app.VTimeUsedTab.Title = 'Time Used';
-            app.VTimeUsedTab.BackgroundColor = [1 1 1];
-
-            % Create VTimeUsedTableGridLayout
-            app.VTimeUsedTableGridLayout = uigridlayout(app.VTimeUsedTab);
-            app.VTimeUsedTableGridLayout.ColumnWidth = {'1x'};
-            app.VTimeUsedTableGridLayout.RowHeight = {'1x'};
-            app.VTimeUsedTableGridLayout.Padding = [0 0 0 0];
-            app.VTimeUsedTableGridLayout.BackgroundColor = [1 1 1];
-
-            % Create VTimeUsedUITable
-            app.VTimeUsedUITable = uitable(app.VTimeUsedTableGridLayout);
-            app.VTimeUsedUITable.ColumnName = '';
-            app.VTimeUsedUITable.RowName = {};
-            app.VTimeUsedUITable.Layout.Row = 1;
-            app.VTimeUsedUITable.Layout.Column = 1;
-
-            % Create VConvergenceTrendTab
-            app.VConvergenceTrendTab = uitab(app.VTableTabGroup);
-            app.VConvergenceTrendTab.Title = 'Convergence Trend';
-            app.VConvergenceTrendTab.BackgroundColor = [1 1 1];
-
-            % Create VCGridLayout
-            app.VCGridLayout = uigridlayout(app.VConvergenceTrendTab);
-            app.VCGridLayout.ColumnWidth = {'1x'};
-            app.VCGridLayout.RowHeight = {'fit', '1x'};
-            app.VCGridLayout.BackgroundColor = [1 1 1];
-
-            % Create VC1GridLayout
-            app.VC1GridLayout = uigridlayout(app.VCGridLayout);
-            app.VC1GridLayout.ColumnWidth = {'1x', 'fit', 'fit', 'fit', 'fit'};
-            app.VC1GridLayout.RowHeight = {'1x'};
-            app.VC1GridLayout.Padding = [0 0 0 0];
-            app.VC1GridLayout.Layout.Row = 1;
-            app.VC1GridLayout.Layout.Column = 1;
-            app.VC1GridLayout.BackgroundColor = [1 1 1];
-
-            % Create VProblemsDropDown
-            app.VProblemsDropDown = uidropdown(app.VC1GridLayout);
-            app.VProblemsDropDown.Items = {'Problem '};
-            app.VProblemsDropDown.ValueChangedFcn = createCallbackFcn(app, @VProblemsDropDownValueChanged, true);
-            app.VProblemsDropDown.BackgroundColor = [1 1 1];
-            app.VProblemsDropDown.Layout.Row = 1;
-            app.VProblemsDropDown.Layout.Column = 5;
-            app.VProblemsDropDown.Value = 'Problem ';
-
-            % Create ConvergenceLabel
-            app.ConvergenceLabel = uilabel(app.VC1GridLayout);
-            app.ConvergenceLabel.FontWeight = 'bold';
-            app.ConvergenceLabel.Layout.Row = 1;
-            app.ConvergenceLabel.Layout.Column = 1;
-            app.ConvergenceLabel.Text = 'Convergence';
-
-            % Create YLimTypeDropDownLabel
-            app.YLimTypeDropDownLabel = uilabel(app.VC1GridLayout);
-            app.YLimTypeDropDownLabel.FontWeight = 'bold';
-            app.YLimTypeDropDownLabel.Layout.Row = 1;
-            app.YLimTypeDropDownLabel.Layout.Column = 2;
-            app.YLimTypeDropDownLabel.Text = 'YLim Type';
-
-            % Create VYLimTypeDropDown
-            app.VYLimTypeDropDown = uidropdown(app.VC1GridLayout);
-            app.VYLimTypeDropDown.Items = {'log(fitness)', 'fitness'};
-            app.VYLimTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @VYLimTypeDropDownValueChanged, true);
-            app.VYLimTypeDropDown.BackgroundColor = [1 1 1];
-            app.VYLimTypeDropDown.Layout.Row = 1;
-            app.VYLimTypeDropDown.Layout.Column = 3;
-            app.VYLimTypeDropDown.Value = 'log(fitness)';
-
-            % Create VProblemsDropDownLabel
-            app.VProblemsDropDownLabel = uilabel(app.VC1GridLayout);
-            app.VProblemsDropDownLabel.FontWeight = 'bold';
-            app.VProblemsDropDownLabel.Layout.Row = 1;
-            app.VProblemsDropDownLabel.Layout.Column = 4;
-            app.VProblemsDropDownLabel.Text = 'Problem';
-
-            % Create VConvergenceTrendUIAxes
-            app.VConvergenceTrendUIAxes = uiaxes(app.VCGridLayout);
-            xlabel(app.VConvergenceTrendUIAxes, 'Iteration')
-            ylabel(app.VConvergenceTrendUIAxes, 'fitness')
-            app.VConvergenceTrendUIAxes.Layout.Row = 2;
-            app.VConvergenceTrendUIAxes.Layout.Column = 1;
-
-            % Create VWilcoxonRankSumTestTab
-            app.VWilcoxonRankSumTestTab = uitab(app.VTableTabGroup);
-            app.VWilcoxonRankSumTestTab.Title = 'Wilcoxon Rank Sum Test';
-
-            % Create VWGridLayout
-            app.VWGridLayout = uigridlayout(app.VWilcoxonRankSumTestTab);
-            app.VWGridLayout.ColumnWidth = {'1x'};
-            app.VWGridLayout.RowHeight = {'fit', '1x'};
-            app.VWGridLayout.BackgroundColor = [1 1 1];
-
-            % Create VWilcoxonUITable
-            app.VWilcoxonUITable = uitable(app.VWGridLayout);
-            app.VWilcoxonUITable.ColumnName = '';
-            app.VWilcoxonUITable.RowName = {};
-            app.VWilcoxonUITable.Layout.Row = 2;
-            app.VWilcoxonUITable.Layout.Column = 1;
-
-            % Create VW1GridLayout
-            app.VW1GridLayout = uigridlayout(app.VWGridLayout);
-            app.VW1GridLayout.ColumnWidth = {'fit', '1x', 'fit', 'fit', 'fit', 'fit'};
-            app.VW1GridLayout.RowHeight = {'1x'};
-            app.VW1GridLayout.Padding = [0 0 0 0];
-            app.VW1GridLayout.Layout.Row = 1;
-            app.VW1GridLayout.Layout.Column = 1;
-            app.VW1GridLayout.BackgroundColor = [1 1 1];
-
-            % Create YourAlgorithmDropDownLabel
-            app.YourAlgorithmDropDownLabel = uilabel(app.VW1GridLayout);
-            app.YourAlgorithmDropDownLabel.FontWeight = 'bold';
-            app.YourAlgorithmDropDownLabel.Layout.Row = 1;
-            app.YourAlgorithmDropDownLabel.Layout.Column = 5;
-            app.YourAlgorithmDropDownLabel.Text = 'Your Algorithm';
-
-            % Create VWilcoxonAlgorithmDropDown
-            app.VWilcoxonAlgorithmDropDown = uidropdown(app.VW1GridLayout);
-            app.VWilcoxonAlgorithmDropDown.Items = {'Algorithm'};
-            app.VWilcoxonAlgorithmDropDown.ValueChangedFcn = createCallbackFcn(app, @VWilcoxonAlgorithmDropDownValueChanged, true);
-            app.VWilcoxonAlgorithmDropDown.FontWeight = 'bold';
-            app.VWilcoxonAlgorithmDropDown.BackgroundColor = [1 1 1];
-            app.VWilcoxonAlgorithmDropDown.Layout.Row = 1;
-            app.VWilcoxonAlgorithmDropDown.Layout.Column = 6;
-            app.VWilcoxonAlgorithmDropDown.Value = 'Algorithm';
-
-            % Create VWilcoxonRankSumTestLabel
-            app.VWilcoxonRankSumTestLabel = uilabel(app.VW1GridLayout);
-            app.VWilcoxonRankSumTestLabel.FontWeight = 'bold';
-            app.VWilcoxonRankSumTestLabel.Layout.Row = 1;
-            app.VWilcoxonRankSumTestLabel.Layout.Column = 1;
-            app.VWilcoxonRankSumTestLabel.Text = 'Wilcoxon Rank Sum Test';
-
-            % Create ShowTypeLabel
-            app.ShowTypeLabel = uilabel(app.VW1GridLayout);
-            app.ShowTypeLabel.FontWeight = 'bold';
-            app.ShowTypeLabel.Layout.Row = 1;
-            app.ShowTypeLabel.Layout.Column = 3;
-            app.ShowTypeLabel.Text = 'Show Type';
-
-            % Create VWilcoxonShowTypeDropDown
-            app.VWilcoxonShowTypeDropDown = uidropdown(app.VW1GridLayout);
-            app.VWilcoxonShowTypeDropDown.Items = {'fitness', 'p-value'};
-            app.VWilcoxonShowTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @VWilcoxonShowTypeDropDownValueChanged, true);
-            app.VWilcoxonShowTypeDropDown.FontWeight = 'bold';
-            app.VWilcoxonShowTypeDropDown.BackgroundColor = [1 1 1];
-            app.VWilcoxonShowTypeDropDown.Layout.Row = 1;
-            app.VWilcoxonShowTypeDropDown.Layout.Column = 4;
-            app.VWilcoxonShowTypeDropDown.Value = 'fitness';
-
-            % Create VFriedmansTestTab
-            app.VFriedmansTestTab = uitab(app.VTableTabGroup);
-            app.VFriedmansTestTab.Title = 'Friedman’s Test';
-
-            % Create VFGridLayout
-            app.VFGridLayout = uigridlayout(app.VFriedmansTestTab);
-            app.VFGridLayout.ColumnWidth = {'1x'};
-            app.VFGridLayout.RowHeight = {'fit', '1x'};
-            app.VFGridLayout.BackgroundColor = [1 1 1];
-
-            % Create VFriedmanUITable
-            app.VFriedmanUITable = uitable(app.VFGridLayout);
-            app.VFriedmanUITable.ColumnName = '';
-            app.VFriedmanUITable.RowName = {};
-            app.VFriedmanUITable.Layout.Row = 2;
-            app.VFriedmanUITable.Layout.Column = 1;
-
-            % Create VF1GridLayout
-            app.VF1GridLayout = uigridlayout(app.VFGridLayout);
-            app.VF1GridLayout.ColumnWidth = {'fit', '1x', 'fit', 'fit'};
-            app.VF1GridLayout.RowHeight = {'1x'};
-            app.VF1GridLayout.Padding = [0 0 0 0];
-            app.VF1GridLayout.Layout.Row = 1;
-            app.VF1GridLayout.Layout.Column = 1;
-            app.VF1GridLayout.BackgroundColor = [1 1 1];
-
-            % Create YourAlgorithmDropDown_2Label
-            app.YourAlgorithmDropDown_2Label = uilabel(app.VF1GridLayout);
-            app.YourAlgorithmDropDown_2Label.FontWeight = 'bold';
-            app.YourAlgorithmDropDown_2Label.Layout.Row = 1;
-            app.YourAlgorithmDropDown_2Label.Layout.Column = 3;
-            app.YourAlgorithmDropDown_2Label.Text = 'Your Algorithm';
-
-            % Create VFriedmanAlgorithmDropDown
-            app.VFriedmanAlgorithmDropDown = uidropdown(app.VF1GridLayout);
-            app.VFriedmanAlgorithmDropDown.Items = {'Algorithm'};
-            app.VFriedmanAlgorithmDropDown.FontWeight = 'bold';
-            app.VFriedmanAlgorithmDropDown.BackgroundColor = [1 1 1];
-            app.VFriedmanAlgorithmDropDown.Layout.Row = 1;
-            app.VFriedmanAlgorithmDropDown.Layout.Column = 4;
-            app.VFriedmanAlgorithmDropDown.Value = 'Algorithm';
-
-            % Create VFriedmansTestLabel
-            app.VFriedmansTestLabel = uilabel(app.VF1GridLayout);
-            app.VFriedmansTestLabel.FontWeight = 'bold';
-            app.VFriedmansTestLabel.Layout.Row = 1;
-            app.VFriedmansTestLabel.Layout.Column = 1;
-            app.VFriedmansTestLabel.Text = 'Friedman’s Test';
-
-            % Create VPanel2
-            app.VPanel2 = uipanel(app.ViewTableGridLayout);
-            app.VPanel2.BackgroundColor = [1 1 1];
-            app.VPanel2.Layout.Row = 2;
-            app.VPanel2.Layout.Column = 1;
-
-            % Create VP2GridLayout
-            app.VP2GridLayout = uigridlayout(app.VPanel2);
-            app.VP2GridLayout.ColumnWidth = {90, '1x'};
-            app.VP2GridLayout.RowHeight = {'fit', '1x', 'fit'};
-            app.VP2GridLayout.BackgroundColor = [1 1 1];
-
-            % Create VLogsTextArea
-            app.VLogsTextArea = uitextarea(app.VP2GridLayout);
-            app.VLogsTextArea.Editable = 'off';
-            app.VLogsTextArea.HorizontalAlignment = 'center';
-            app.VLogsTextArea.WordWrap = 'off';
-            app.VLogsTextArea.Layout.Row = [1 3];
-            app.VLogsTextArea.Layout.Column = 2;
-
-            % Create VLogsClearButton
-            app.VLogsClearButton = uibutton(app.VP2GridLayout, 'push');
-            app.VLogsClearButton.ButtonPushedFcn = createCallbackFcn(app, @VLogsClearButtonPushed, true);
-            app.VLogsClearButton.BackgroundColor = [1 1 0.702];
-            app.VLogsClearButton.Layout.Row = 3;
-            app.VLogsClearButton.Layout.Column = 1;
-            app.VLogsClearButton.Text = 'Clear';
-
-            % Create VLogsTextAreaLabel
-            app.VLogsTextAreaLabel = uilabel(app.VP2GridLayout);
-            app.VLogsTextAreaLabel.FontWeight = 'bold';
-            app.VLogsTextAreaLabel.Layout.Row = 1;
-            app.VLogsTextAreaLabel.Layout.Column = 1;
-            app.VLogsTextAreaLabel.Text = 'Logs';
-
-            % Create VPanel3
-            app.VPanel3 = uipanel(app.ViewTableGridLayout);
-            app.VPanel3.BackgroundColor = [1 1 1];
-            app.VPanel3.Layout.Row = 2;
-            app.VPanel3.Layout.Column = 2;
-
-            % Create VP3GridLayout
-            app.VP3GridLayout = uigridlayout(app.VPanel3);
-            app.VP3GridLayout.ColumnWidth = {90, 100};
-            app.VP3GridLayout.RowHeight = {'fit', 'fit', '1x'};
-            app.VP3GridLayout.BackgroundColor = [1 1 1];
-
-            % Create FigureTypeDropDownLabel
-            app.FigureTypeDropDownLabel = uilabel(app.VP3GridLayout);
-            app.FigureTypeDropDownLabel.FontWeight = 'bold';
-            app.FigureTypeDropDownLabel.Layout.Row = 1;
-            app.FigureTypeDropDownLabel.Layout.Column = 1;
-            app.FigureTypeDropDownLabel.Text = 'Figure Type';
-
-            % Create VFigureTypeDropDown
-            app.VFigureTypeDropDown = uidropdown(app.VP3GridLayout);
-            app.VFigureTypeDropDown.Items = {'png', 'eps', 'pdf'};
-            app.VFigureTypeDropDown.BackgroundColor = [1 1 1];
-            app.VFigureTypeDropDown.Layout.Row = 1;
-            app.VFigureTypeDropDown.Layout.Column = 2;
-            app.VFigureTypeDropDown.Value = 'png';
-
-            % Create TableTypeDropDownLabel
-            app.TableTypeDropDownLabel = uilabel(app.VP3GridLayout);
-            app.TableTypeDropDownLabel.FontWeight = 'bold';
-            app.TableTypeDropDownLabel.Layout.Row = 2;
-            app.TableTypeDropDownLabel.Layout.Column = 1;
-            app.TableTypeDropDownLabel.Text = 'Table Type';
-
-            % Create VTableTypeDropDown
-            app.VTableTypeDropDown = uidropdown(app.VP3GridLayout);
-            app.VTableTypeDropDown.Items = {'csv', 'xlsx'};
-            app.VTableTypeDropDown.BackgroundColor = [1 1 1];
-            app.VTableTypeDropDown.Layout.Row = 2;
-            app.VTableTypeDropDown.Layout.Column = 2;
-            app.VTableTypeDropDown.Value = 'csv';
-
-            % Create VSaveResultButton
-            app.VSaveResultButton = uibutton(app.VP3GridLayout, 'push');
-            app.VSaveResultButton.ButtonPushedFcn = createCallbackFcn(app, @VSaveResultButtonPushed, true);
-            app.VSaveResultButton.BackgroundColor = [0.702 1 0.702];
-            app.VSaveResultButton.Layout.Row = 3;
-            app.VSaveResultButton.Layout.Column = 2;
-            app.VSaveResultButton.Text = 'Save Result';
-
-            % Create VLoadDataButton
-            app.VLoadDataButton = uibutton(app.VP3GridLayout, 'push');
-            app.VLoadDataButton.ButtonPushedFcn = createCallbackFcn(app, @VLoadDataButtonPushed, true);
-            app.VLoadDataButton.BackgroundColor = [0.502 0.702 1];
-            app.VLoadDataButton.Layout.Row = 3;
-            app.VLoadDataButton.Layout.Column = 1;
-            app.VLoadDataButton.Text = 'Load Data';
+            % Create ESaveDataButton
+            app.ESaveDataButton = uibutton(app.EP2GridLayout, 'push');
+            app.ESaveDataButton.ButtonPushedFcn = createCallbackFcn(app, @ESaveDataButtonPushed, true);
+            app.ESaveDataButton.BackgroundColor = [0.702 1 0.702];
+            app.ESaveDataButton.FontWeight = 'bold';
+            app.ESaveDataButton.Layout.Row = 8;
+            app.ESaveDataButton.Layout.Column = [1 2];
+            app.ESaveDataButton.Text = 'Save Data';
 
             % Create DataProcessTab
             app.DataProcessTab = uitab(app.MTOPlatformTabGroup);
@@ -2531,7 +2070,6 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
 
             % Create MergeDataGridLayout
             app.MergeDataGridLayout = uigridlayout(app.DataProcessTab);
-            app.MergeDataGridLayout.ColumnWidth = {'1.5x', '1x'};
             app.MergeDataGridLayout.RowHeight = {'1x'};
             app.MergeDataGridLayout.BackgroundColor = [1 1 1];
 
@@ -2551,14 +2089,16 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.MLoadDataButton = uibutton(app.MP1GridLayout, 'push');
             app.MLoadDataButton.ButtonPushedFcn = createCallbackFcn(app, @MLoadDataButtonPushed, true);
             app.MLoadDataButton.BackgroundColor = [0.502 0.702 1];
+            app.MLoadDataButton.FontWeight = 'bold';
             app.MLoadDataButton.Layout.Row = 1;
-            app.MLoadDataButton.Layout.Column = 1;
+            app.MLoadDataButton.Layout.Column = 2;
             app.MLoadDataButton.Text = 'Load Data';
 
             % Create MDeleteDataButton
             app.MDeleteDataButton = uibutton(app.MP1GridLayout, 'push');
             app.MDeleteDataButton.ButtonPushedFcn = createCallbackFcn(app, @MDeleteDataButtonPushed, true);
             app.MDeleteDataButton.BackgroundColor = [1 1 0.702];
+            app.MDeleteDataButton.FontWeight = 'bold';
             app.MDeleteDataButton.Layout.Row = 1;
             app.MDeleteDataButton.Layout.Column = 3;
             app.MDeleteDataButton.Text = 'Delete Data';
@@ -2573,6 +2113,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.MRepsMergeButton = uibutton(app.MP1GridLayout, 'push');
             app.MRepsMergeButton.ButtonPushedFcn = createCallbackFcn(app, @MRepsMergeButtonPushed, true);
             app.MRepsMergeButton.BackgroundColor = [1 1 1];
+            app.MRepsMergeButton.FontWeight = 'bold';
             app.MRepsMergeButton.Layout.Row = 3;
             app.MRepsMergeButton.Layout.Column = 1;
             app.MRepsMergeButton.Text = 'Reps Merge';
@@ -2581,6 +2122,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.MProblemsMergeButton = uibutton(app.MP1GridLayout, 'push');
             app.MProblemsMergeButton.ButtonPushedFcn = createCallbackFcn(app, @MProblemsMergeButtonPushed, true);
             app.MProblemsMergeButton.BackgroundColor = [1 1 1];
+            app.MProblemsMergeButton.FontWeight = 'bold';
             app.MProblemsMergeButton.Layout.Row = 3;
             app.MProblemsMergeButton.Layout.Column = 3;
             app.MProblemsMergeButton.Text = 'Problems Merge';
@@ -2589,9 +2131,17 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.MAlgorithmsMergeButton = uibutton(app.MP1GridLayout, 'push');
             app.MAlgorithmsMergeButton.ButtonPushedFcn = createCallbackFcn(app, @MAlgorithmsMergeButtonPushed, true);
             app.MAlgorithmsMergeButton.BackgroundColor = [1 1 1];
+            app.MAlgorithmsMergeButton.FontWeight = 'bold';
             app.MAlgorithmsMergeButton.Layout.Row = 3;
             app.MAlgorithmsMergeButton.Layout.Column = 2;
             app.MAlgorithmsMergeButton.Text = 'Algorithms Merge';
+
+            % Create MergeDataLabel
+            app.MergeDataLabel = uilabel(app.MP1GridLayout);
+            app.MergeDataLabel.FontWeight = 'bold';
+            app.MergeDataLabel.Layout.Row = 1;
+            app.MergeDataLabel.Layout.Column = 1;
+            app.MergeDataLabel.Text = 'Merge Data';
 
             % Create MPanel2
             app.MPanel2 = uipanel(app.MergeDataGridLayout);
@@ -2601,32 +2151,54 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
 
             % Create MP2GridLayout
             app.MP2GridLayout = uigridlayout(app.MPanel2);
-            app.MP2GridLayout.ColumnWidth = {'fit', '1x', 90};
-            app.MP2GridLayout.RowHeight = {'fit', '1x'};
+            app.MP2GridLayout.ColumnWidth = {'1x', '1x', '1x'};
+            app.MP2GridLayout.RowHeight = {'fit', '1x', 'fit'};
             app.MP2GridLayout.BackgroundColor = [1 1 1];
 
-            % Create LogsTextArea_2Label
-            app.LogsTextArea_2Label = uilabel(app.MP2GridLayout);
-            app.LogsTextArea_2Label.FontWeight = 'bold';
-            app.LogsTextArea_2Label.Layout.Row = 1;
-            app.LogsTextArea_2Label.Layout.Column = 1;
-            app.LogsTextArea_2Label.Text = 'Logs';
+            % Create MLoadDataButton_2
+            app.MLoadDataButton_2 = uibutton(app.MP2GridLayout, 'push');
+            app.MLoadDataButton_2.BackgroundColor = [0.502 0.702 1];
+            app.MLoadDataButton_2.FontWeight = 'bold';
+            app.MLoadDataButton_2.Layout.Row = 1;
+            app.MLoadDataButton_2.Layout.Column = 2;
+            app.MLoadDataButton_2.Text = 'Load Data';
 
-            % Create MLogsTextArea
-            app.MLogsTextArea = uitextarea(app.MP2GridLayout);
-            app.MLogsTextArea.Editable = 'off';
-            app.MLogsTextArea.HorizontalAlignment = 'center';
-            app.MLogsTextArea.WordWrap = 'off';
-            app.MLogsTextArea.Layout.Row = 2;
-            app.MLogsTextArea.Layout.Column = [1 3];
+            % Create MDeleteDataButton_2
+            app.MDeleteDataButton_2 = uibutton(app.MP2GridLayout, 'push');
+            app.MDeleteDataButton_2.BackgroundColor = [1 1 0.702];
+            app.MDeleteDataButton_2.FontWeight = 'bold';
+            app.MDeleteDataButton_2.Layout.Row = 1;
+            app.MDeleteDataButton_2.Layout.Column = 3;
+            app.MDeleteDataButton_2.Text = 'Delete Data';
 
-            % Create MLogsClearButton
-            app.MLogsClearButton = uibutton(app.MP2GridLayout, 'push');
-            app.MLogsClearButton.ButtonPushedFcn = createCallbackFcn(app, @MLogsClearButtonPushed, true);
-            app.MLogsClearButton.BackgroundColor = [1 1 0.702];
-            app.MLogsClearButton.Layout.Row = 1;
-            app.MLogsClearButton.Layout.Column = 3;
-            app.MLogsClearButton.Text = 'Clear';
+            % Create MDataTree_2
+            app.MDataTree_2 = uitree(app.MP2GridLayout);
+            app.MDataTree_2.Multiselect = 'on';
+            app.MDataTree_2.Layout.Row = 2;
+            app.MDataTree_2.Layout.Column = [1 3];
+
+            % Create MProblemsMergeButton_2
+            app.MProblemsMergeButton_2 = uibutton(app.MP2GridLayout, 'push');
+            app.MProblemsMergeButton_2.BackgroundColor = [1 1 1];
+            app.MProblemsMergeButton_2.FontWeight = 'bold';
+            app.MProblemsMergeButton_2.Layout.Row = 3;
+            app.MProblemsMergeButton_2.Layout.Column = 3;
+            app.MProblemsMergeButton_2.Text = 'Problems Split';
+
+            % Create MAlgorithmsMergeButton_2
+            app.MAlgorithmsMergeButton_2 = uibutton(app.MP2GridLayout, 'push');
+            app.MAlgorithmsMergeButton_2.BackgroundColor = [1 1 1];
+            app.MAlgorithmsMergeButton_2.FontWeight = 'bold';
+            app.MAlgorithmsMergeButton_2.Layout.Row = 3;
+            app.MAlgorithmsMergeButton_2.Layout.Column = 1;
+            app.MAlgorithmsMergeButton_2.Text = 'Algorithms Split';
+
+            % Create SplitDataLabel
+            app.SplitDataLabel = uilabel(app.MP2GridLayout);
+            app.SplitDataLabel.FontWeight = 'bold';
+            app.SplitDataLabel.Layout.Row = 1;
+            app.SplitDataLabel.Layout.Column = 1;
+            app.SplitDataLabel.Text = 'Split Data';
 
             % Create ESelectedAlgoContextMenu
             app.ESelectedAlgoContextMenu = uicontextmenu(app.MTOPlatformUIFigure);
@@ -2646,6 +2218,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             
             % Assign app.MDataContextMenu
             app.MDataTree.ContextMenu = app.MDataContextMenu;
+            app.MDataTree_2.ContextMenu = app.MDataContextMenu;
 
             % Create SelectedAlgoSelectAllMenu_2
             app.SelectedAlgoSelectAllMenu_2 = uimenu(app.MDataContextMenu);
