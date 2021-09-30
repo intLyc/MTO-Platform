@@ -972,6 +972,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             
             % reset table and convergence
             app.Etable_reps = zeros(length(prob_cell), length(algo_cell));
+            app.EupdateTableReps();
             app.EresetTable(algo_cell, prob_cell, tasks_num_list);
             app.EresetTableAlgorithmDropDown(algo_cell);
             cla(app.EConvergenceTrendUIAxes, 'reset');
@@ -1042,7 +1043,6 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         function EStopButtonPushed(app, event)
             % stop this experiment
             
-            app.Etable_reps = app.Edata.reps * ones([length(app.Edata.prob_cell), length(app.Edata.algo_cell)]);
             app.EstartEnable(true);
             app.Estop_flag = true;
         end
@@ -1475,7 +1475,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % Create MTOPlatformUIFigure and hide until all components are created
             app.MTOPlatformUIFigure = uifigure('Visible', 'off');
             app.MTOPlatformUIFigure.Color = [1 1 1];
-            app.MTOPlatformUIFigure.Position = [100 100 1221 716];
+            app.MTOPlatformUIFigure.Position = [100 100 1232 725];
             app.MTOPlatformUIFigure.Name = 'MTO Platform';
             app.MTOPlatformUIFigure.WindowStyle = 'modal';
 
@@ -1615,13 +1615,14 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.TP2GridLayout = uigridlayout(app.TPanel2);
             app.TP2GridLayout.ColumnWidth = {'1x'};
             app.TP2GridLayout.RowHeight = {'fit', '1x', 'fit'};
+            app.TP2GridLayout.RowSpacing = 0;
             app.TP2GridLayout.BackgroundColor = [1 1 1];
 
             % Create TP21GridLayout
             app.TP21GridLayout = uigridlayout(app.TP2GridLayout);
-            app.TP21GridLayout.ColumnWidth = {'1x', 'fit', 'fit'};
+            app.TP21GridLayout.ColumnWidth = {'1x', 'fit'};
             app.TP21GridLayout.RowHeight = {'1x'};
-            app.TP21GridLayout.Padding = [0 0 0 0];
+            app.TP21GridLayout.Padding = [0 10 0 10];
             app.TP21GridLayout.Layout.Row = 1;
             app.TP21GridLayout.Layout.Column = 1;
             app.TP21GridLayout.BackgroundColor = [1 1 1];
@@ -1682,6 +1683,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EP3GridLayout = uigridlayout(app.EPanel3);
             app.EP3GridLayout.ColumnWidth = {'1x'};
             app.EP3GridLayout.RowHeight = {'1x'};
+            app.EP3GridLayout.Padding = [0 0 0 0];
             app.EP3GridLayout.BackgroundColor = [1 1 1];
 
             % Create ETableTabGroup
@@ -1699,13 +1701,13 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EP3TGridLayout.ColumnWidth = {'1x'};
             app.EP3TGridLayout.RowHeight = {'fit', '1x'};
             app.EP3TGridLayout.RowSpacing = 0;
-            app.EP3TGridLayout.Padding = [0 0 0 0];
             app.EP3TGridLayout.BackgroundColor = [1 1 1];
 
             % Create EP3T1GridLayout
             app.EP3T1GridLayout = uigridlayout(app.EP3TGridLayout);
             app.EP3T1GridLayout.ColumnWidth = {'fit', '1x', 'fit', 'fit', 'fit', 'fit', 'fit'};
             app.EP3T1GridLayout.RowHeight = {'fit'};
+            app.EP3T1GridLayout.Padding = [0 10 0 10];
             app.EP3T1GridLayout.Layout.Row = 1;
             app.EP3T1GridLayout.Layout.Column = 1;
             app.EP3T1GridLayout.BackgroundColor = [1 1 1];
@@ -1781,13 +1783,13 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EP3FGridLayout.ColumnWidth = {'1x'};
             app.EP3FGridLayout.RowHeight = {'fit', '1x'};
             app.EP3FGridLayout.RowSpacing = 0;
-            app.EP3FGridLayout.Padding = [0 0 0 0];
             app.EP3FGridLayout.BackgroundColor = [1 1 1];
 
             % Create EP3F1GridLayout
             app.EP3F1GridLayout = uigridlayout(app.EP3FGridLayout);
             app.EP3F1GridLayout.ColumnWidth = {'fit', '1x', 'fit', 'fit', 'fit'};
             app.EP3F1GridLayout.RowHeight = {'fit'};
+            app.EP3F1GridLayout.Padding = [0 10 0 10];
             app.EP3F1GridLayout.Layout.Row = 1;
             app.EP3F1GridLayout.Layout.Column = 1;
             app.EP3F1GridLayout.BackgroundColor = [1 1 1];
