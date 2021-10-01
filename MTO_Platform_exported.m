@@ -85,21 +85,21 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         DPanel1                      matlab.ui.container.Panel
         DP1GridLayout                matlab.ui.container.GridLayout
         DDataProcessModuleLabel      matlab.ui.control.Label
-        Panel                        matlab.ui.container.Panel
-        GridLayout_3                 matlab.ui.container.GridLayout
-        DLoadDataButton_3            matlab.ui.control.Button
-        DDeleteDataButton_3          matlab.ui.control.Button
-        DSaveDataButton_3            matlab.ui.control.Button
+        DP1Panel1                    matlab.ui.container.Panel
+        DP1P1GridLayout              matlab.ui.container.GridLayout
+        DLoadDataButton              matlab.ui.control.Button
+        DDeleteDataButton            matlab.ui.control.Button
+        DSaveDataButton              matlab.ui.control.Button
         DLoadDataorSelectandDeleteSaveDataLabel_3  matlab.ui.control.Label
         DLoadDataorSelectandDeleteSaveDataLabel_4  matlab.ui.control.Label
-        Panel_2                      matlab.ui.container.Panel
-        GridLayout                   matlab.ui.container.GridLayout
+        DP1Panel2                    matlab.ui.container.Panel
+        DP1P2GridLayout              matlab.ui.container.GridLayout
         DSelectandSplitDataLabel     matlab.ui.control.Label
         DRepsSplitButton             matlab.ui.control.Button
         DAlgorithmsSplitButton       matlab.ui.control.Button
         DProblemsSplitButton         matlab.ui.control.Button
-        Panel_4                      matlab.ui.container.Panel
-        GridLayout_2                 matlab.ui.container.GridLayout
+        DP1Panel3                    matlab.ui.container.Panel
+        DP1P3GridLayout              matlab.ui.container.GridLayout
         DSelectandMergeDataLabel     matlab.ui.control.Label
         DRepsMergeButton             matlab.ui.control.Button
         DAlgorithmsMergeButton       matlab.ui.control.Button
@@ -109,7 +109,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         DDataTree                    matlab.ui.container.Tree
         ESelectedAlgoContextMenu     matlab.ui.container.ContextMenu
         SelectedAlgoSelectAllMenu    matlab.ui.container.Menu
-        MDataContextMenu             matlab.ui.container.ContextMenu
+        DDataContextMenu             matlab.ui.container.ContextMenu
         SelectedAlgoSelectAllMenu_2  matlab.ui.container.Menu
         ESelectedProbContextMenu     matlab.ui.container.ContextMenu
         SelectedProbSelectAllMenu    matlab.ui.container.Menu
@@ -135,6 +135,8 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         Etable_view
         Etable_reps
         
+        % Data Process Module
+        Ddata_mark
     end
     
     methods (Access = public)
@@ -634,25 +636,36 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         end
         
         
-        function result = DcheckData(app)
+        function result = DcheckMergeData(app)
             % check data num, pop size, iter num, eva num
             
-            data_num = length(app.DDataTree.Children);
+            data_selected = app.DDataTree.SelectedNodes;
+            app.Ddata_mark = [];
+            data_num = 0;
+            for i = 1:length(data_selected)
+                if isa(data_selected(i).Parent, 'matlab.ui.container.Tree')
+                    data_num = data_num + 1;
+                    app.Ddata_mark(i) = 1;
+                else
+                    app.Ddata_mark(i) = 0;
+                end
+            end
             if data_num < 2
-                msg = 'Add at least 2 data to merge';
+                msg = 'Select at least 2 data node to merge';
                 uiconfirm(app.MTOPlatformUIFigure, msg, 'error', 'Icon','warning');
                 result = false;
                 return;
             end
             
+            data_selected = data_selected(app.Ddata_mark == 1);
             % check pop, iteration and evaluate
-            pop_size = app.DDataTree.Children(1).NodeData.pop_size;
-            iter_num = app.DDataTree.Children(1).NodeData.iter_num;
-            eva_num = app.DDataTree.Children(1).NodeData.eva_num;
+            pop_size = data_selected(1).NodeData.pop_size;
+            iter_num = data_selected(1).NodeData.iter_num;
+            eva_num = data_selected(1).NodeData.eva_num;
             for i = 2:data_num
-                if app.DDataTree.Children(i).NodeData.pop_size ~= pop_size || ...
-                        app.DDataTree.Children(i).NodeData.iter_num ~= iter_num || ...
-                        app.DDataTree.Children(i).NodeData.eva_num ~= eva_num
+                if data_selected(i).NodeData.pop_size ~= pop_size || ...
+                        data_selected(i).NodeData.iter_num ~= iter_num || ...
+                        data_selected(i).NodeData.eva_num ~= eva_num
                 msg = 'The data''s pop_size or iter_num or eva_num not equal';
                 uiconfirm(app.MTOPlatformUIFigure, msg, 'error', 'Icon','warning');
                 result = false;
@@ -662,13 +675,15 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             result = true;
         end
         
-        function result = DcheckReps(app)
+        function result = DcheckMergeReps(app)
             % check reps
             
-            data_num = length(app.DDataTree.Children);
-            reps = app.DDataTree.Children(1).NodeData.reps;
+            data_num = sum(app.Ddata_mark);
+            data_selected = app.DDataTree.SelectedNodes;
+            data_selected = data_selected(app.Ddata_mark == 1);
+            reps = data_selected(1).NodeData.reps;
             for i = 2:data_num
-                if app.DDataTree.Children(i).NodeData.reps ~= reps
+                if data_selected(i).NodeData.reps ~= reps
                     msg = 'The data''s reps not equal';
                     uiconfirm(app.MTOPlatformUIFigure, msg, 'error', 'Icon','warning');
                     result = false;
@@ -678,14 +693,22 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             result = true;
         end
         
-        function result = DcheckAlgorithms(app)
+        function result = DcheckMergeAlgorithms(app)
             % check algorithms
             
-            data_num = length(app.DDataTree.Children);
-            algo_cell = app.DDataTree.Children(1).NodeData.algo_cell;
+            data_num = sum(app.Ddata_mark);
+            data_selected = app.DDataTree.SelectedNodes;
+            data_selected = data_selected(app.Ddata_mark == 1);
+            algo_cell = data_selected(1).NodeData.algo_cell;
             for i = 2:data_num
+                if length(algo_cell) ~= length(data_selected(i).NodeData.algo_cell)
+                    msg = 'The data''s algorithms not equal';
+                    uiconfirm(app.MTOPlatformUIFigure, msg, 'error', 'Icon','warning');
+                    result = false;
+                    return;
+                end
                 for algo = 1:length(algo_cell)
-                    if ~strcmp(app.DDataTree.Children(i).NodeData.algo_cell{algo}, algo_cell{algo})
+                    if ~strcmp(data_selected(i).NodeData.algo_cell{algo}, algo_cell{algo})
                         msg = 'The data''s algorithms not equal';
                         uiconfirm(app.MTOPlatformUIFigure, msg, 'error', 'Icon','warning');
                         result = false;
@@ -696,14 +719,22 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             result = true;
         end
         
-        function result = DcheckProblems(app)
+        function result = DcheckMergeProblems(app)
             % check problems
             
-            data_num = length(app.DDataTree.Children);
-            prob_cell = app.DDataTree.Children(1).NodeData.prob_cell;
+            data_num = sum(app.Ddata_mark);
+            data_selected = app.DDataTree.SelectedNodes;
+            data_selected = data_selected(app.Ddata_mark == 1);
+            prob_cell = data_selected(1).NodeData.prob_cell;
             for i = 2:data_num
+                if length(prob_cell) ~= length(data_selected(i).NodeData.prob_cell)
+                    msg = 'The data''s problems not equal';
+                    uiconfirm(app.MTOPlatformUIFigure, msg, 'error', 'Icon','warning');
+                    result = false;
+                    return;
+                end
                 for prob = 1:length(prob_cell)
-                    if ~strcmp(app.DDataTree.Children(i).NodeData.prob_cell{prob}, prob_cell{prob})
+                    if ~strcmp(data_selected(i).NodeData.prob_cell{prob}, prob_cell{prob})
                         msg = 'The data''s problems not equal';
                         uiconfirm(app.MTOPlatformUIFigure, msg, 'error', 'Icon','warning');
                         result = false;
@@ -712,6 +743,48 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                 end
             end
             result = true;
+        end
+        
+        function DputDataNode(app, name, data_save)
+            data_node = uitreenode(app.DDataTree);
+            data_node.Text = name;
+            data_node.NodeData = data_save;
+            data_node.ContextMenu = app.DDataContextMenu;
+            
+            % child node
+            reps_node = uitreenode(data_node);
+            reps_node.Text = ['Reps: ', num2str(data_node.NodeData.reps)];
+            reps_node.ContextMenu = app.DDataContextMenu;
+            
+            algo_node = uitreenode(data_node);
+            algo_node.Text = 'Algorithms:';
+            algo_node.ContextMenu = app.DDataContextMenu;
+            for algo = 1:length(data_node.NodeData.algo_cell)
+                algo_child_node = uitreenode(algo_node);
+                algo_child_node.Text = data_node.NodeData.algo_cell{algo};
+                algo_child_node.ContextMenu = app.DDataContextMenu;
+            end
+            
+            prob_node = uitreenode(data_node);
+            prob_node.Text = 'Problems:';
+            prob_node.ContextMenu = app.DDataContextMenu;
+            for prob = 1:length(data_node.NodeData.prob_cell)
+                prob_child_node = uitreenode(prob_node);
+                prob_child_node.Text = data_node.NodeData.prob_cell{prob};
+                prob_child_node.ContextMenu = app.DDataContextMenu;
+            end
+            
+            pop_node = uitreenode(data_node);
+            pop_node.Text = ['Pop Size: ', num2str(data_node.NodeData.pop_size)];
+            pop_node.ContextMenu = app.DDataContextMenu;
+            
+            iter_node = uitreenode(data_node);
+            iter_node.Text = ['Iteration Num: ', num2str(data_node.NodeData.iter_num)];
+            iter_node.ContextMenu = app.DDataContextMenu;
+            
+            eva_node = uitreenode(data_node);
+            eva_node.Text = ['Evaluation Num: ', num2str(data_node.NodeData.eva_num)];
+            eva_node.ContextMenu = app.DDataContextMenu;
         end
         
         function DsaveData(app, data_save)
@@ -859,6 +932,9 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.Tdata.tasks_num = tasks_num;
             app.Tdata.tasks_name = tasks_name;
             app.TupdateUIAxes();
+            
+            msg = ['All Use Time: ', char(duration([0, 0, tEnd]))];
+            uiconfirm(app.MTOPlatformUIFigure, msg, 'success', 'Icon', 'success');
             
             app.TstartEnable(true);
         end
@@ -1299,7 +1375,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             end
         end
 
-        % Context menu opening function: MDataContextMenu
+        % Context menu opening function: DDataContextMenu
         function DDataContextMenuOpening(app, event)
             % select all data
             
@@ -1308,7 +1384,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             end
         end
 
-        % Callback function
+        % Button pushed function: DLoadDataButton
         function DLoadDataButtonPushed(app, event)
             % load data from mat files
             
@@ -1325,181 +1401,182 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             
             %load data mat files
             for i = 1:length(file_name_list)
-                data_node = uitreenode(app.DDataTree);
-                data_node.Text = file_name_list{i};
                 load([pathname, file_name_list{i}], 'data_save');
-                data_node.NodeData = data_save;
-                data_node.ContextMenu = app.MDataContextMenu;
-                
-                % child node
-                reps_node = uitreenode(data_node);
-                reps_node.Text = ['Reps: ', num2str(data_node.NodeData.reps)];
-                reps_node.ContextMenu = app.MDataContextMenu;
-                
-                algo_node = uitreenode(data_node);
-                algo_node.Text = 'Algorithms:';
-                algo_node.ContextMenu = app.MDataContextMenu;
-                for algo = 1:length(data_node.NodeData.algo_cell)
-                    algo_child_node = uitreenode(algo_node);
-                    algo_child_node.Text = data_node.NodeData.algo_cell{algo};
-                    algo_child_node.ContextMenu = app.MDataContextMenu;
-                end
-                
-                prob_node = uitreenode(data_node);
-                prob_node.Text = 'Problems:';
-                prob_node.ContextMenu = app.MDataContextMenu;
-                for prob = 1:length(data_node.NodeData.prob_cell)
-                    prob_child_node = uitreenode(prob_node);
-                    prob_child_node.Text = data_node.NodeData.prob_cell{prob};
-                    prob_child_node.ContextMenu = app.MDataContextMenu;
-                end
-                
-                pop_node = uitreenode(data_node);
-                pop_node.Text = ['Pop Size: ', num2str(data_node.NodeData.pop_size)];
-                pop_node.ContextMenu = app.MDataContextMenu;
-                
-                iter_node = uitreenode(data_node);
-                iter_node.Text = ['Iteration Num: ', num2str(data_node.NodeData.iter_num)];
-                iter_node.ContextMenu = app.MDataContextMenu;
-                
-                eva_node = uitreenode(data_node);
-                eva_node.Text = ['Evaluation Num: ', num2str(data_node.NodeData.eva_num)];
-                eva_node.ContextMenu = app.MDataContextMenu;
+                app.DputDataNode(file_name_list{i}(1:end-4), data_save);
             end
         end
 
-        % Callback function
+        % Button pushed function: DDeleteDataButton
         function DDeleteDataButtonPushed(app, event)
             data_selected = app.DDataTree.SelectedNodes;
-            if isempty(data_selected)
+            data_mark = [];
+            data_num = 0;
+            for i = 1:length(data_selected)
+                if isa(data_selected(i).Parent, 'matlab.ui.container.Tree')
+                    data_num = data_num + 1;
+                    data_mark(i) = 1;
+                else
+                    data_mark(i) = 0;
+                end
+            end
+            if data_num == 0
                 msg = 'Select data node in tree first';
                 uiconfirm(app.MTOPlatformUIFigure, msg, 'error', 'Icon','warning');
             end
             
+            data_selected = data_selected(data_mark == 1);
             for i = 1:length(data_selected)
-                if isa(data_selected(i).Parent, 'matlab.ui.container.Tree')
-                    data_selected(i).delete();
-                end
+                data_selected(i).delete();
             end
         end
 
-        % Callback function
+        % Button pushed function: DSaveDataButton
         function DSaveDataButtonPushed(app, event)
             data_selected = app.DDataTree.SelectedNodes;
-            if isempty(data_selected)
+            data_mark = [];
+            data_num = 0;
+            for i = 1:length(data_selected)
+                if isa(data_selected(i).Parent, 'matlab.ui.container.Tree')
+                    data_num = data_num + 1;
+                    data_mark(i) = 1;
+                else
+                    data_mark(i) = 0;
+                end
+            end
+            if data_num == 0
                 msg = 'Select data node in tree first';
                 uiconfirm(app.MTOPlatformUIFigure, msg, 'error', 'Icon','warning');
             end
             
+            data_selected = data_selected(data_mark == 1);
             for i = 1:length(data_selected)
-                if isa(data_selected(i).Parent, 'matlab.ui.container.Tree')
-                    app.DsaveData(data_selected(i).NodeData);
-                end
+                app.DsaveData(data_selected(i).NodeData);
             end
         end
 
         % Button pushed function: DRepsSplitButton
         function DRepsSplitButtonPushed(app, event)
             
+            
+            msg = sprintf('Split reps success!\nSplited data nodes have added to tree');
+            uiconfirm(app.MTOPlatformUIFigure, msg, 'success', 'Icon', 'success');
         end
 
         % Button pushed function: DAlgorithmsSplitButton
         function DAlgorithmsSplitButtonPushed(app, event)
             
+            
+            msg = sprintf('Split algorithms success!\nSplited data nodes have added to tree');
+            uiconfirm(app.MTOPlatformUIFigure, msg, 'success', 'Icon', 'success');
         end
 
         % Button pushed function: DProblemsSplitButton
         function DProblemsSplitButtonPushed(app, event)
             
+            
+            msg = sprintf('Split problems success!\nSplited data nodes have added to tree');
+            uiconfirm(app.MTOPlatformUIFigure, msg, 'success', 'Icon', 'success');
         end
 
         % Button pushed function: DRepsMergeButton
         function DRepsMergeButtonPushed(app, event)
             % merge reps, with same pop, iteration, evaluate, algorithms and problems
             
-            if ~app.DcheckData() || ~app.DcheckAlgorithms() || ~app.DcheckProblems()
+            if ~app.DcheckMergeData() || ~app.DcheckMergeAlgorithms() || ~app.DcheckMergeProblems()
                 return;
             end
             
             % merge
+            data_selected = app.DDataTree.SelectedNodes;
+            data_selected = data_selected(app.Ddata_mark == 1);
             data_save.reps = 0;
-            data_save.tasks_num_list = app.DDataTree.Children(1).NodeData.tasks_num_list;
-            data_save.pop_size = app.DDataTree.Children(1).NodeData.pop_size;
-            data_save.iter_num = app.DDataTree.Children(1).NodeData.iter_num;
-            data_save.eva_num = app.DDataTree.Children(1).NodeData.eva_num;
-            data_save.algo_cell = app.DDataTree.Children(1).NodeData.algo_cell;
-            data_save.prob_cell = app.DDataTree.Children(1).NodeData.prob_cell;
+            data_save.tasks_num_list = data_selected(1).NodeData.tasks_num_list;
+            data_save.pop_size = data_selected(1).NodeData.pop_size;
+            data_save.iter_num = data_selected(1).NodeData.iter_num;
+            data_save.eva_num = data_selected(1).NodeData.eva_num;
+            data_save.algo_cell = data_selected(1).NodeData.algo_cell;
+            data_save.prob_cell = data_selected(1).NodeData.prob_cell;
             for prob = 1:length(data_save.prob_cell)
                 for algo = 1:length(data_save.algo_cell)
                     data_save.result(prob, algo).clock_time = 0;
                     data_save.result(prob, algo).convergence = [];
                 end
             end
-            for i = 1:length(app.DDataTree.Children)
-                data_save.reps = data_save.reps + app.DDataTree.Children(i).NodeData.reps;
+            for i = 1:length(data_selected)
+                data_save.reps = data_save.reps + data_selected(i).NodeData.reps;
                 for prob = 1:length(data_save.prob_cell)
                     for algo = 1:length(data_save.algo_cell)
-                        data_save.result(prob, algo).clock_time = data_save.result(prob, algo).clock_time + app.DDataTree.Children(i).NodeData.result(prob, algo).clock_time;
+                        data_save.result(prob, algo).clock_time = data_save.result(prob, algo).clock_time + data_selected(i).NodeData.result(prob, algo).clock_time;
                         % BUG: when p_il ~= 0, convergence vartical not same
-                        data_save.result(prob, algo).convergence = [data_save.result(prob, algo).convergence; app.DDataTree.Children(i).NodeData.result(prob, algo).convergence];
+                        data_save.result(prob, algo).convergence = [data_save.result(prob, algo).convergence; data_selected(i).NodeData.result(prob, algo).convergence];
                     end
                 end
             end
             
-            app.DsaveData(data_save);
+            app.DputDataNode('data_Merge_Reps', data_save);
+            msg = sprintf('Merge reps success!\nMerged data node has added to tree');
+            uiconfirm(app.MTOPlatformUIFigure, msg, 'success', 'Icon', 'success');
         end
 
         % Button pushed function: DAlgorithmsMergeButton
         function DAlgorithmsMergeButtonPushed(app, event)
             % merge algorithms, with same pop, iteration, evaluate, reps and problems
             
-            if ~app.DcheckData() || ~app.DcheckReps() || ~app.DcheckProblems()
+            if ~app.DcheckMergeData() || ~app.DcheckMergeReps() || ~app.DcheckMergeProblems()
                 return;
             end
             
             % merge
-            data_save.reps = app.DDataTree.Children(1).NodeData.reps;
-            data_save.tasks_num_list = app.DDataTree.Children(1).NodeData.tasks_num_list;
-            data_save.pop_size = app.DDataTree.Children(1).NodeData.pop_size;
-            data_save.iter_num = app.DDataTree.Children(1).NodeData.iter_num;
-            data_save.eva_num = app.DDataTree.Children(1).NodeData.eva_num;
-            data_save.prob_cell = app.DDataTree.Children(1).NodeData.prob_cell;
+            data_selected = app.DDataTree.SelectedNodes;
+            data_selected = data_selected(app.Ddata_mark == 1);
+            data_save.reps = data_selected(1).NodeData.reps;
+            data_save.tasks_num_list = data_selected(1).NodeData.tasks_num_list;
+            data_save.pop_size = data_selected(1).NodeData.pop_size;
+            data_save.iter_num = data_selected(1).NodeData.iter_num;
+            data_save.eva_num = data_selected(1).NodeData.eva_num;
+            data_save.prob_cell = data_selected(1).NodeData.prob_cell;
             data_save.algo_cell = {};
-            for i = 1:length(app.DDataTree.Children)
+            for i = 1:length(data_selected)
                 algo_start = length(data_save.algo_cell) + 1;
-                data_save.algo_cell = [data_save.algo_cell, app.DDataTree.Children(i).NodeData.algo_cell];
+                data_save.algo_cell = [data_save.algo_cell, data_selected(i).NodeData.algo_cell];
                 algo_end = length(data_save.algo_cell);
-                data_save.result(:, algo_start:algo_end) = app.DDataTree.Children(i).NodeData.result;
+                data_save.result(:, algo_start:algo_end) = data_selected(i).NodeData.result;
             end
             
-            app.DsaveData(data_save);
+            app.DputDataNode('data_Merge_Algorithms', data_save);
+            msg = sprintf('Merge algorithms success!\nMerged data node has added to tree');
+            uiconfirm(app.MTOPlatformUIFigure, msg, 'success', 'Icon', 'success');
         end
 
         % Button pushed function: DProblemsMergeButton
         function DProblemsMergeButtonPushed(app, event)
             % merge problems, with same pop, iteration, evaluate, reps and algorithms
             
-            if ~app.DcheckData() || ~app.DcheckReps() || ~app.DcheckAlgorithms()
+            if ~app.DcheckMergeData() || ~app.DcheckMergeReps() || ~app.DcheckMergeAlgorithms()
                 return;
             end
             
             % merge
-            data_save.reps = app.DDataTree.Children(1).NodeData.reps;
-            data_save.pop_size = app.DDataTree.Children(1).NodeData.pop_size;
-            data_save.iter_num = app.DDataTree.Children(1).NodeData.iter_num;
-            data_save.eva_num = app.DDataTree.Children(1).NodeData.eva_num;
-            data_save.algo_cell = app.DDataTree.Children(1).NodeData.algo_cell;
+            data_selected = app.DDataTree.SelectedNodes;
+            data_selected = data_selected(app.Ddata_mark == 1);
+            data_save.reps = data_selected(1).NodeData.reps;
+            data_save.pop_size = data_selected(1).NodeData.pop_size;
+            data_save.iter_num = data_selected(1).NodeData.iter_num;
+            data_save.eva_num = data_selected(1).NodeData.eva_num;
+            data_save.algo_cell = data_selected(1).NodeData.algo_cell;
             data_save.prob_cell = {};
             data_save.tasks_num_list = [];
-            for i = 1:length(app.DDataTree.Children)
-                data_save.tasks_num_list = [data_save.tasks_num_list, app.DDataTree.Children(i).NodeData.tasks_num_list];
+            for i = 1:length(data_selected)
+                data_save.tasks_num_list = [data_save.tasks_num_list, data_selected(i).NodeData.tasks_num_list];
                 prob_start = length(data_save.prob_cell) + 1;
-                data_save.prob_cell = [data_save.prob_cell; app.DDataTree.Children(i).NodeData.prob_cell];
+                data_save.prob_cell = [data_save.prob_cell; data_selected(i).NodeData.prob_cell];
                 prob_end = length(data_save.prob_cell);
-                data_save.result(prob_start:prob_end, :) = app.DDataTree.Children(i).NodeData.result;
+                data_save.result(prob_start:prob_end, :) = data_selected(i).NodeData.result;
             end
             
-            app.DsaveData(data_save);
+            app.DputDataNode('data_Merge_Problems', data_save);
+            msg = sprintf('Merge problems success!\nMerged data node has added to tree');
+            uiconfirm(app.MTOPlatformUIFigure, msg, 'success', 'Icon', 'success');
         end
     end
 
@@ -2150,79 +2227,82 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.DDataProcessModuleLabel.Layout.Column = 1;
             app.DDataProcessModuleLabel.Text = 'Data Process Module';
 
-            % Create Panel
-            app.Panel = uipanel(app.DP1GridLayout);
-            app.Panel.BackgroundColor = [1 1 1];
-            app.Panel.Layout.Row = 2;
-            app.Panel.Layout.Column = 1;
+            % Create DP1Panel1
+            app.DP1Panel1 = uipanel(app.DP1GridLayout);
+            app.DP1Panel1.BackgroundColor = [1 1 1];
+            app.DP1Panel1.Layout.Row = 2;
+            app.DP1Panel1.Layout.Column = 1;
 
-            % Create GridLayout_3
-            app.GridLayout_3 = uigridlayout(app.Panel);
-            app.GridLayout_3.ColumnWidth = {'1x', '1x', '1x'};
-            app.GridLayout_3.RowHeight = {'fit', 'fit'};
-            app.GridLayout_3.Padding = [10 20 10 20];
-            app.GridLayout_3.BackgroundColor = [1 1 1];
+            % Create DP1P1GridLayout
+            app.DP1P1GridLayout = uigridlayout(app.DP1Panel1);
+            app.DP1P1GridLayout.ColumnWidth = {'1x', '1x', '1x'};
+            app.DP1P1GridLayout.RowHeight = {'fit', 'fit'};
+            app.DP1P1GridLayout.Padding = [10 20 10 20];
+            app.DP1P1GridLayout.BackgroundColor = [1 1 1];
 
-            % Create DLoadDataButton_3
-            app.DLoadDataButton_3 = uibutton(app.GridLayout_3, 'push');
-            app.DLoadDataButton_3.BackgroundColor = [0.502 0.702 1];
-            app.DLoadDataButton_3.FontWeight = 'bold';
-            app.DLoadDataButton_3.Layout.Row = 2;
-            app.DLoadDataButton_3.Layout.Column = 1;
-            app.DLoadDataButton_3.Text = 'Load Data';
+            % Create DLoadDataButton
+            app.DLoadDataButton = uibutton(app.DP1P1GridLayout, 'push');
+            app.DLoadDataButton.ButtonPushedFcn = createCallbackFcn(app, @DLoadDataButtonPushed, true);
+            app.DLoadDataButton.BackgroundColor = [0.502 0.702 1];
+            app.DLoadDataButton.FontWeight = 'bold';
+            app.DLoadDataButton.Layout.Row = 2;
+            app.DLoadDataButton.Layout.Column = 1;
+            app.DLoadDataButton.Text = 'Load Data';
 
-            % Create DDeleteDataButton_3
-            app.DDeleteDataButton_3 = uibutton(app.GridLayout_3, 'push');
-            app.DDeleteDataButton_3.BackgroundColor = [1 1 0.702];
-            app.DDeleteDataButton_3.FontWeight = 'bold';
-            app.DDeleteDataButton_3.Layout.Row = 2;
-            app.DDeleteDataButton_3.Layout.Column = 2;
-            app.DDeleteDataButton_3.Text = 'Delete Data';
+            % Create DDeleteDataButton
+            app.DDeleteDataButton = uibutton(app.DP1P1GridLayout, 'push');
+            app.DDeleteDataButton.ButtonPushedFcn = createCallbackFcn(app, @DDeleteDataButtonPushed, true);
+            app.DDeleteDataButton.BackgroundColor = [1 1 0.702];
+            app.DDeleteDataButton.FontWeight = 'bold';
+            app.DDeleteDataButton.Layout.Row = 2;
+            app.DDeleteDataButton.Layout.Column = 2;
+            app.DDeleteDataButton.Text = 'Delete Data';
 
-            % Create DSaveDataButton_3
-            app.DSaveDataButton_3 = uibutton(app.GridLayout_3, 'push');
-            app.DSaveDataButton_3.BackgroundColor = [0.6706 0.949 0.6706];
-            app.DSaveDataButton_3.FontWeight = 'bold';
-            app.DSaveDataButton_3.Layout.Row = 2;
-            app.DSaveDataButton_3.Layout.Column = 3;
-            app.DSaveDataButton_3.Text = 'Save Data';
+            % Create DSaveDataButton
+            app.DSaveDataButton = uibutton(app.DP1P1GridLayout, 'push');
+            app.DSaveDataButton.ButtonPushedFcn = createCallbackFcn(app, @DSaveDataButtonPushed, true);
+            app.DSaveDataButton.BackgroundColor = [0.6706 0.949 0.6706];
+            app.DSaveDataButton.FontWeight = 'bold';
+            app.DSaveDataButton.Layout.Row = 2;
+            app.DSaveDataButton.Layout.Column = 3;
+            app.DSaveDataButton.Text = 'Save Data';
 
             % Create DLoadDataorSelectandDeleteSaveDataLabel_3
-            app.DLoadDataorSelectandDeleteSaveDataLabel_3 = uilabel(app.GridLayout_3);
+            app.DLoadDataorSelectandDeleteSaveDataLabel_3 = uilabel(app.DP1P1GridLayout);
             app.DLoadDataorSelectandDeleteSaveDataLabel_3.HorizontalAlignment = 'center';
             app.DLoadDataorSelectandDeleteSaveDataLabel_3.Layout.Row = 1;
             app.DLoadDataorSelectandDeleteSaveDataLabel_3.Layout.Column = [2 3];
             app.DLoadDataorSelectandDeleteSaveDataLabel_3.Text = 'Select data nodes, click delete/save button';
 
             % Create DLoadDataorSelectandDeleteSaveDataLabel_4
-            app.DLoadDataorSelectandDeleteSaveDataLabel_4 = uilabel(app.GridLayout_3);
+            app.DLoadDataorSelectandDeleteSaveDataLabel_4 = uilabel(app.DP1P1GridLayout);
             app.DLoadDataorSelectandDeleteSaveDataLabel_4.HorizontalAlignment = 'center';
             app.DLoadDataorSelectandDeleteSaveDataLabel_4.Layout.Row = 1;
             app.DLoadDataorSelectandDeleteSaveDataLabel_4.Layout.Column = 1;
             app.DLoadDataorSelectandDeleteSaveDataLabel_4.Text = 'Load data from folder';
 
-            % Create Panel_2
-            app.Panel_2 = uipanel(app.DP1GridLayout);
-            app.Panel_2.BackgroundColor = [1 1 1];
-            app.Panel_2.Layout.Row = 3;
-            app.Panel_2.Layout.Column = 1;
+            % Create DP1Panel2
+            app.DP1Panel2 = uipanel(app.DP1GridLayout);
+            app.DP1Panel2.BackgroundColor = [1 1 1];
+            app.DP1Panel2.Layout.Row = 3;
+            app.DP1Panel2.Layout.Column = 1;
 
-            % Create GridLayout
-            app.GridLayout = uigridlayout(app.Panel_2);
-            app.GridLayout.ColumnWidth = {'1x', '1x', '1x'};
-            app.GridLayout.RowHeight = {'fit', 'fit'};
-            app.GridLayout.Padding = [10 20 10 20];
-            app.GridLayout.BackgroundColor = [1 1 1];
+            % Create DP1P2GridLayout
+            app.DP1P2GridLayout = uigridlayout(app.DP1Panel2);
+            app.DP1P2GridLayout.ColumnWidth = {'1x', '1x', '1x'};
+            app.DP1P2GridLayout.RowHeight = {'fit', 'fit'};
+            app.DP1P2GridLayout.Padding = [10 20 10 20];
+            app.DP1P2GridLayout.BackgroundColor = [1 1 1];
 
             % Create DSelectandSplitDataLabel
-            app.DSelectandSplitDataLabel = uilabel(app.GridLayout);
+            app.DSelectandSplitDataLabel = uilabel(app.DP1P2GridLayout);
             app.DSelectandSplitDataLabel.HorizontalAlignment = 'center';
             app.DSelectandSplitDataLabel.Layout.Row = 1;
             app.DSelectandSplitDataLabel.Layout.Column = [1 3];
             app.DSelectandSplitDataLabel.Text = 'Select data node, click split button';
 
             % Create DRepsSplitButton
-            app.DRepsSplitButton = uibutton(app.GridLayout, 'push');
+            app.DRepsSplitButton = uibutton(app.DP1P2GridLayout, 'push');
             app.DRepsSplitButton.ButtonPushedFcn = createCallbackFcn(app, @DRepsSplitButtonPushed, true);
             app.DRepsSplitButton.BackgroundColor = [0.902 0.902 0.902];
             app.DRepsSplitButton.FontWeight = 'bold';
@@ -2231,7 +2311,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.DRepsSplitButton.Text = 'Reps Split';
 
             % Create DAlgorithmsSplitButton
-            app.DAlgorithmsSplitButton = uibutton(app.GridLayout, 'push');
+            app.DAlgorithmsSplitButton = uibutton(app.DP1P2GridLayout, 'push');
             app.DAlgorithmsSplitButton.ButtonPushedFcn = createCallbackFcn(app, @DAlgorithmsSplitButtonPushed, true);
             app.DAlgorithmsSplitButton.BackgroundColor = [0.902 0.902 0.902];
             app.DAlgorithmsSplitButton.FontWeight = 'bold';
@@ -2240,7 +2320,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.DAlgorithmsSplitButton.Text = 'Algorithms Split';
 
             % Create DProblemsSplitButton
-            app.DProblemsSplitButton = uibutton(app.GridLayout, 'push');
+            app.DProblemsSplitButton = uibutton(app.DP1P2GridLayout, 'push');
             app.DProblemsSplitButton.ButtonPushedFcn = createCallbackFcn(app, @DProblemsSplitButtonPushed, true);
             app.DProblemsSplitButton.BackgroundColor = [0.902 0.902 0.902];
             app.DProblemsSplitButton.FontWeight = 'bold';
@@ -2248,28 +2328,28 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.DProblemsSplitButton.Layout.Column = 3;
             app.DProblemsSplitButton.Text = 'Problems Split';
 
-            % Create Panel_4
-            app.Panel_4 = uipanel(app.DP1GridLayout);
-            app.Panel_4.BackgroundColor = [1 1 1];
-            app.Panel_4.Layout.Row = 4;
-            app.Panel_4.Layout.Column = 1;
+            % Create DP1Panel3
+            app.DP1Panel3 = uipanel(app.DP1GridLayout);
+            app.DP1Panel3.BackgroundColor = [1 1 1];
+            app.DP1Panel3.Layout.Row = 4;
+            app.DP1Panel3.Layout.Column = 1;
 
-            % Create GridLayout_2
-            app.GridLayout_2 = uigridlayout(app.Panel_4);
-            app.GridLayout_2.ColumnWidth = {'1x', '1x', '1x'};
-            app.GridLayout_2.RowHeight = {'fit', 'fit'};
-            app.GridLayout_2.Padding = [10 20 10 20];
-            app.GridLayout_2.BackgroundColor = [1 1 1];
+            % Create DP1P3GridLayout
+            app.DP1P3GridLayout = uigridlayout(app.DP1Panel3);
+            app.DP1P3GridLayout.ColumnWidth = {'1x', '1x', '1x'};
+            app.DP1P3GridLayout.RowHeight = {'fit', 'fit'};
+            app.DP1P3GridLayout.Padding = [10 20 10 20];
+            app.DP1P3GridLayout.BackgroundColor = [1 1 1];
 
             % Create DSelectandMergeDataLabel
-            app.DSelectandMergeDataLabel = uilabel(app.GridLayout_2);
+            app.DSelectandMergeDataLabel = uilabel(app.DP1P3GridLayout);
             app.DSelectandMergeDataLabel.HorizontalAlignment = 'center';
             app.DSelectandMergeDataLabel.Layout.Row = 1;
             app.DSelectandMergeDataLabel.Layout.Column = [1 3];
             app.DSelectandMergeDataLabel.Text = 'Select data nodes, click merge button';
 
             % Create DRepsMergeButton
-            app.DRepsMergeButton = uibutton(app.GridLayout_2, 'push');
+            app.DRepsMergeButton = uibutton(app.DP1P3GridLayout, 'push');
             app.DRepsMergeButton.ButtonPushedFcn = createCallbackFcn(app, @DRepsMergeButtonPushed, true);
             app.DRepsMergeButton.BackgroundColor = [0.902 0.902 0.902];
             app.DRepsMergeButton.FontWeight = 'bold';
@@ -2278,7 +2358,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.DRepsMergeButton.Text = 'Reps Merge';
 
             % Create DAlgorithmsMergeButton
-            app.DAlgorithmsMergeButton = uibutton(app.GridLayout_2, 'push');
+            app.DAlgorithmsMergeButton = uibutton(app.DP1P3GridLayout, 'push');
             app.DAlgorithmsMergeButton.ButtonPushedFcn = createCallbackFcn(app, @DAlgorithmsMergeButtonPushed, true);
             app.DAlgorithmsMergeButton.BackgroundColor = [0.902 0.902 0.902];
             app.DAlgorithmsMergeButton.FontWeight = 'bold';
@@ -2287,7 +2367,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.DAlgorithmsMergeButton.Text = 'Algorithms Merge';
 
             % Create DProblemsMergeButton
-            app.DProblemsMergeButton = uibutton(app.GridLayout_2, 'push');
+            app.DProblemsMergeButton = uibutton(app.DP1P3GridLayout, 'push');
             app.DProblemsMergeButton.ButtonPushedFcn = createCallbackFcn(app, @DProblemsMergeButtonPushed, true);
             app.DProblemsMergeButton.BackgroundColor = [0.902 0.902 0.902];
             app.DProblemsMergeButton.FontWeight = 'bold';
@@ -2326,15 +2406,15 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.SelectedAlgoSelectAllMenu = uimenu(app.ESelectedAlgoContextMenu);
             app.SelectedAlgoSelectAllMenu.Text = 'Select All';
 
-            % Create MDataContextMenu
-            app.MDataContextMenu = uicontextmenu(app.MTOPlatformUIFigure);
-            app.MDataContextMenu.ContextMenuOpeningFcn = createCallbackFcn(app, @DDataContextMenuOpening, true);
+            % Create DDataContextMenu
+            app.DDataContextMenu = uicontextmenu(app.MTOPlatformUIFigure);
+            app.DDataContextMenu.ContextMenuOpeningFcn = createCallbackFcn(app, @DDataContextMenuOpening, true);
             
-            % Assign app.MDataContextMenu
-            app.DDataTree.ContextMenu = app.MDataContextMenu;
+            % Assign app.DDataContextMenu
+            app.DDataTree.ContextMenu = app.DDataContextMenu;
 
             % Create SelectedAlgoSelectAllMenu_2
-            app.SelectedAlgoSelectAllMenu_2 = uimenu(app.MDataContextMenu);
+            app.SelectedAlgoSelectAllMenu_2 = uimenu(app.DDataContextMenu);
             app.SelectedAlgoSelectAllMenu_2.Text = 'Select All';
 
             % Create ESelectedProbContextMenu
