@@ -81,24 +81,32 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         EProblemsDelButton           matlab.ui.control.Button
         ESaveDataButton              matlab.ui.control.Button
         DataProcessTab               matlab.ui.container.Tab
-        MergeDataGridLayout          matlab.ui.container.GridLayout
-        MPanel1                      matlab.ui.container.Panel
-        MP1GridLayout                matlab.ui.container.GridLayout
-        MLoadDataButton              matlab.ui.control.Button
-        MDeleteDataButton            matlab.ui.control.Button
-        MDataTree                    matlab.ui.container.Tree
-        MRepsMergeButton             matlab.ui.control.Button
-        MProblemsMergeButton         matlab.ui.control.Button
-        MAlgorithmsMergeButton       matlab.ui.control.Button
-        MergeDataLabel               matlab.ui.control.Label
-        MPanel2                      matlab.ui.container.Panel
-        MP2GridLayout                matlab.ui.container.GridLayout
-        MLoadDataButton_2            matlab.ui.control.Button
-        MDeleteDataButton_2          matlab.ui.control.Button
-        MDataTree_2                  matlab.ui.container.Tree
-        MProblemsMergeButton_2       matlab.ui.control.Button
-        MAlgorithmsMergeButton_2     matlab.ui.control.Button
-        SplitDataLabel               matlab.ui.control.Label
+        DataProcessGridLayout        matlab.ui.container.GridLayout
+        DPanel1                      matlab.ui.container.Panel
+        DP1GridLayout                matlab.ui.container.GridLayout
+        DDataProcessModuleLabel      matlab.ui.control.Label
+        Panel                        matlab.ui.container.Panel
+        GridLayout_3                 matlab.ui.container.GridLayout
+        DLoadDataButton_3            matlab.ui.control.Button
+        DDeleteDataButton_3          matlab.ui.control.Button
+        DSaveDataButton_3            matlab.ui.control.Button
+        DLoadDataorSelectandDeleteSaveDataLabel_3  matlab.ui.control.Label
+        DLoadDataorSelectandDeleteSaveDataLabel_4  matlab.ui.control.Label
+        Panel_2                      matlab.ui.container.Panel
+        GridLayout                   matlab.ui.container.GridLayout
+        DSelectandSplitDataLabel     matlab.ui.control.Label
+        DRepsSplitButton             matlab.ui.control.Button
+        DAlgorithmsSplitButton       matlab.ui.control.Button
+        DProblemsSplitButton         matlab.ui.control.Button
+        Panel_4                      matlab.ui.container.Panel
+        GridLayout_2                 matlab.ui.container.GridLayout
+        DSelectandMergeDataLabel     matlab.ui.control.Label
+        DRepsMergeButton             matlab.ui.control.Button
+        DAlgorithmsMergeButton       matlab.ui.control.Button
+        DProblemsMergeButton         matlab.ui.control.Button
+        DPanel2                      matlab.ui.container.Panel
+        DP2GridLayout                matlab.ui.container.GridLayout
+        DDataTree                    matlab.ui.container.Tree
         ESelectedAlgoContextMenu     matlab.ui.container.ContextMenu
         SelectedAlgoSelectAllMenu    matlab.ui.container.Menu
         MDataContextMenu             matlab.ui.container.ContextMenu
@@ -210,6 +218,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EProblemsDelButton.Enable = value;
             app.EAlgorithmsTree.Enable = value;
             app.EProblemsTree.Enable = value;
+            app.ELoadDataButton.Enable = value;
             app.EPauseButton.Enable = ~value;
             app.EStopButton.Enable = ~value;
         end
@@ -625,10 +634,10 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         end
         
         
-        function result = McheckData(app)
+        function result = DcheckData(app)
             % check data num, pop size, iter num, eva num
             
-            data_num = length(app.MDataTree.Children);
+            data_num = length(app.DDataTree.Children);
             if data_num < 2
                 msg = 'Add at least 2 data to merge';
                 uiconfirm(app.MTOPlatformUIFigure, msg, 'error', 'Icon','warning');
@@ -637,13 +646,13 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             end
             
             % check pop, iteration and evaluate
-            pop_size = app.MDataTree.Children(1).NodeData.pop_size;
-            iter_num = app.MDataTree.Children(1).NodeData.iter_num;
-            eva_num = app.MDataTree.Children(1).NodeData.eva_num;
+            pop_size = app.DDataTree.Children(1).NodeData.pop_size;
+            iter_num = app.DDataTree.Children(1).NodeData.iter_num;
+            eva_num = app.DDataTree.Children(1).NodeData.eva_num;
             for i = 2:data_num
-                if app.MDataTree.Children(i).NodeData.pop_size ~= pop_size || ...
-                        app.MDataTree.Children(i).NodeData.iter_num ~= iter_num || ...
-                        app.MDataTree.Children(i).NodeData.eva_num ~= eva_num
+                if app.DDataTree.Children(i).NodeData.pop_size ~= pop_size || ...
+                        app.DDataTree.Children(i).NodeData.iter_num ~= iter_num || ...
+                        app.DDataTree.Children(i).NodeData.eva_num ~= eva_num
                 msg = 'The data''s pop_size or iter_num or eva_num not equal';
                 uiconfirm(app.MTOPlatformUIFigure, msg, 'error', 'Icon','warning');
                 result = false;
@@ -653,13 +662,13 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             result = true;
         end
         
-        function result = McheckReps(app)
+        function result = DcheckReps(app)
             % check reps
             
-            data_num = length(app.MDataTree.Children);
-            reps = app.MDataTree.Children(1).NodeData.reps;
+            data_num = length(app.DDataTree.Children);
+            reps = app.DDataTree.Children(1).NodeData.reps;
             for i = 2:data_num
-                if app.MDataTree.Children(i).NodeData.reps ~= reps
+                if app.DDataTree.Children(i).NodeData.reps ~= reps
                     msg = 'The data''s reps not equal';
                     uiconfirm(app.MTOPlatformUIFigure, msg, 'error', 'Icon','warning');
                     result = false;
@@ -669,14 +678,14 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             result = true;
         end
         
-        function result = McheckAlgorithms(app)
+        function result = DcheckAlgorithms(app)
             % check algorithms
             
-            data_num = length(app.MDataTree.Children);
-            algo_cell = app.MDataTree.Children(1).NodeData.algo_cell;
+            data_num = length(app.DDataTree.Children);
+            algo_cell = app.DDataTree.Children(1).NodeData.algo_cell;
             for i = 2:data_num
                 for algo = 1:length(algo_cell)
-                    if ~strcmp(app.MDataTree.Children(i).NodeData.algo_cell{algo}, algo_cell{algo})
+                    if ~strcmp(app.DDataTree.Children(i).NodeData.algo_cell{algo}, algo_cell{algo})
                         msg = 'The data''s algorithms not equal';
                         uiconfirm(app.MTOPlatformUIFigure, msg, 'error', 'Icon','warning');
                         result = false;
@@ -687,14 +696,14 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             result = true;
         end
         
-        function result = McheckProblems(app)
+        function result = DcheckProblems(app)
             % check problems
             
-            data_num = length(app.MDataTree.Children);
-            prob_cell = app.MDataTree.Children(1).NodeData.prob_cell;
+            data_num = length(app.DDataTree.Children);
+            prob_cell = app.DDataTree.Children(1).NodeData.prob_cell;
             for i = 2:data_num
                 for prob = 1:length(prob_cell)
-                    if ~strcmp(app.MDataTree.Children(i).NodeData.prob_cell{prob}, prob_cell{prob})
+                    if ~strcmp(app.DDataTree.Children(i).NodeData.prob_cell{prob}, prob_cell{prob})
                         msg = 'The data''s problems not equal';
                         uiconfirm(app.MTOPlatformUIFigure, msg, 'error', 'Icon','warning');
                         result = false;
@@ -705,7 +714,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             result = true;
         end
         
-        function MsaveData(app, data_save)
+        function DsaveData(app, data_save)
             % save data to folder
             
             % check selected file name
@@ -1290,8 +1299,17 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             end
         end
 
-        % Button pushed function: MLoadDataButton
-        function MLoadDataButtonPushed(app, event)
+        % Context menu opening function: MDataContextMenu
+        function DDataContextMenuOpening(app, event)
+            % select all data
+            
+            if ~isempty(app.DDataTree.Children)
+                app.DDataTree.SelectedNodes = app.DDataTree.Children;
+            end
+        end
+
+        % Callback function
+        function DLoadDataButtonPushed(app, event)
             % load data from mat files
             
             % select mat file
@@ -1307,7 +1325,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             
             %load data mat files
             for i = 1:length(file_name_list)
-                data_node = uitreenode(app.MDataTree);
+                data_node = uitreenode(app.DDataTree);
                 data_node.Text = file_name_list{i};
                 load([pathname, file_name_list{i}], 'data_save');
                 data_node.NodeData = data_save;
@@ -1350,20 +1368,9 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             end
         end
 
-        % Context menu opening function: MDataContextMenu
-        function MDataContextMenuOpening(app, event)
-            % select all data
-            
-            if ~isempty(app.MDataTree.Children)
-                app.MDataTree.SelectedNodes = app.MDataTree.Children;
-            end
-        end
-
-        % Button pushed function: MDeleteDataButton
-        function MDeleteDataButtonPushed(app, event)
-            % delete selected data from data tree
-            
-            data_selected = app.MDataTree.SelectedNodes;
+        % Callback function
+        function DDeleteDataButtonPushed(app, event)
+            data_selected = app.DDataTree.SelectedNodes;
             if isempty(data_selected)
                 msg = 'Select data node in tree first';
                 uiconfirm(app.MTOPlatformUIFigure, msg, 'error', 'Icon','warning');
@@ -1371,98 +1378,128 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             
             for i = 1:length(data_selected)
                 if isa(data_selected(i).Parent, 'matlab.ui.container.Tree')
-                    data_selected(i).delete;
+                    data_selected(i).delete();
                 end
             end
         end
 
-        % Button pushed function: MRepsMergeButton
-        function MRepsMergeButtonPushed(app, event)
+        % Callback function
+        function DSaveDataButtonPushed(app, event)
+            data_selected = app.DDataTree.SelectedNodes;
+            if isempty(data_selected)
+                msg = 'Select data node in tree first';
+                uiconfirm(app.MTOPlatformUIFigure, msg, 'error', 'Icon','warning');
+            end
+            
+            for i = 1:length(data_selected)
+                if isa(data_selected(i).Parent, 'matlab.ui.container.Tree')
+                    app.DsaveData(data_selected(i).NodeData);
+                end
+            end
+        end
+
+        % Button pushed function: DRepsSplitButton
+        function DRepsSplitButtonPushed(app, event)
+            
+        end
+
+        % Button pushed function: DAlgorithmsSplitButton
+        function DAlgorithmsSplitButtonPushed(app, event)
+            
+        end
+
+        % Button pushed function: DProblemsSplitButton
+        function DProblemsSplitButtonPushed(app, event)
+            
+        end
+
+        % Button pushed function: DRepsMergeButton
+        function DRepsMergeButtonPushed(app, event)
             % merge reps, with same pop, iteration, evaluate, algorithms and problems
             
-            if ~app.McheckData() || ~app.McheckAlgorithms() || ~app.McheckProblems()
+            if ~app.DcheckData() || ~app.DcheckAlgorithms() || ~app.DcheckProblems()
                 return;
             end
             
             % merge
             data_save.reps = 0;
-            data_save.tasks_num_list = app.MDataTree.Children(1).NodeData.tasks_num_list;
-            data_save.pop_size = app.MDataTree.Children(1).NodeData.pop_size;
-            data_save.iter_num = app.MDataTree.Children(1).NodeData.iter_num;
-            data_save.eva_num = app.MDataTree.Children(1).NodeData.eva_num;
-            data_save.algo_cell = app.MDataTree.Children(1).NodeData.algo_cell;
-            data_save.prob_cell = app.MDataTree.Children(1).NodeData.prob_cell;
+            data_save.tasks_num_list = app.DDataTree.Children(1).NodeData.tasks_num_list;
+            data_save.pop_size = app.DDataTree.Children(1).NodeData.pop_size;
+            data_save.iter_num = app.DDataTree.Children(1).NodeData.iter_num;
+            data_save.eva_num = app.DDataTree.Children(1).NodeData.eva_num;
+            data_save.algo_cell = app.DDataTree.Children(1).NodeData.algo_cell;
+            data_save.prob_cell = app.DDataTree.Children(1).NodeData.prob_cell;
             for prob = 1:length(data_save.prob_cell)
                 for algo = 1:length(data_save.algo_cell)
                     data_save.result(prob, algo).clock_time = 0;
                     data_save.result(prob, algo).convergence = [];
                 end
             end
-            for i = 1:length(app.MDataTree.Children)
-                data_save.reps = data_save.reps + app.MDataTree.Children(i).NodeData.reps;
+            for i = 1:length(app.DDataTree.Children)
+                data_save.reps = data_save.reps + app.DDataTree.Children(i).NodeData.reps;
                 for prob = 1:length(data_save.prob_cell)
                     for algo = 1:length(data_save.algo_cell)
-                        data_save.result(prob, algo).clock_time = data_save.result(prob, algo).clock_time + app.MDataTree.Children(i).NodeData.result(prob, algo).clock_time;
+                        data_save.result(prob, algo).clock_time = data_save.result(prob, algo).clock_time + app.DDataTree.Children(i).NodeData.result(prob, algo).clock_time;
                         % BUG: when p_il ~= 0, convergence vartical not same
-                        data_save.result(prob, algo).convergence = [data_save.result(prob, algo).convergence; app.MDataTree.Children(i).NodeData.result(prob, algo).convergence];
+                        data_save.result(prob, algo).convergence = [data_save.result(prob, algo).convergence; app.DDataTree.Children(i).NodeData.result(prob, algo).convergence];
                     end
                 end
             end
             
-            app.MsaveData(data_save);
+            app.DsaveData(data_save);
         end
 
-        % Button pushed function: MAlgorithmsMergeButton
-        function MAlgorithmsMergeButtonPushed(app, event)
+        % Button pushed function: DAlgorithmsMergeButton
+        function DAlgorithmsMergeButtonPushed(app, event)
             % merge algorithms, with same pop, iteration, evaluate, reps and problems
             
-            if ~app.McheckData() || ~app.McheckReps() || ~app.McheckProblems()
+            if ~app.DcheckData() || ~app.DcheckReps() || ~app.DcheckProblems()
                 return;
             end
             
             % merge
-            data_save.reps = app.MDataTree.Children(1).NodeData.reps;
-            data_save.tasks_num_list = app.MDataTree.Children(1).NodeData.tasks_num_list;
-            data_save.pop_size = app.MDataTree.Children(1).NodeData.pop_size;
-            data_save.iter_num = app.MDataTree.Children(1).NodeData.iter_num;
-            data_save.eva_num = app.MDataTree.Children(1).NodeData.eva_num;
-            data_save.prob_cell = app.MDataTree.Children(1).NodeData.prob_cell;
+            data_save.reps = app.DDataTree.Children(1).NodeData.reps;
+            data_save.tasks_num_list = app.DDataTree.Children(1).NodeData.tasks_num_list;
+            data_save.pop_size = app.DDataTree.Children(1).NodeData.pop_size;
+            data_save.iter_num = app.DDataTree.Children(1).NodeData.iter_num;
+            data_save.eva_num = app.DDataTree.Children(1).NodeData.eva_num;
+            data_save.prob_cell = app.DDataTree.Children(1).NodeData.prob_cell;
             data_save.algo_cell = {};
-            for i = 1:length(app.MDataTree.Children)
+            for i = 1:length(app.DDataTree.Children)
                 algo_start = length(data_save.algo_cell) + 1;
-                data_save.algo_cell = [data_save.algo_cell, app.MDataTree.Children(i).NodeData.algo_cell];
+                data_save.algo_cell = [data_save.algo_cell, app.DDataTree.Children(i).NodeData.algo_cell];
                 algo_end = length(data_save.algo_cell);
-                data_save.result(:, algo_start:algo_end) = app.MDataTree.Children(i).NodeData.result;
+                data_save.result(:, algo_start:algo_end) = app.DDataTree.Children(i).NodeData.result;
             end
             
-            app.MsaveData(data_save);
+            app.DsaveData(data_save);
         end
 
-        % Button pushed function: MProblemsMergeButton
-        function MProblemsMergeButtonPushed(app, event)
+        % Button pushed function: DProblemsMergeButton
+        function DProblemsMergeButtonPushed(app, event)
             % merge problems, with same pop, iteration, evaluate, reps and algorithms
             
-            if ~app.McheckData() || ~app.McheckReps() || ~app.McheckAlgorithms()
+            if ~app.DcheckData() || ~app.DcheckReps() || ~app.DcheckAlgorithms()
                 return;
             end
             
             % merge
-            data_save.reps = app.MDataTree.Children(1).NodeData.reps;
-            data_save.pop_size = app.MDataTree.Children(1).NodeData.pop_size;
-            data_save.iter_num = app.MDataTree.Children(1).NodeData.iter_num;
-            data_save.eva_num = app.MDataTree.Children(1).NodeData.eva_num;
-            data_save.algo_cell = app.MDataTree.Children(1).NodeData.algo_cell;
+            data_save.reps = app.DDataTree.Children(1).NodeData.reps;
+            data_save.pop_size = app.DDataTree.Children(1).NodeData.pop_size;
+            data_save.iter_num = app.DDataTree.Children(1).NodeData.iter_num;
+            data_save.eva_num = app.DDataTree.Children(1).NodeData.eva_num;
+            data_save.algo_cell = app.DDataTree.Children(1).NodeData.algo_cell;
             data_save.prob_cell = {};
             data_save.tasks_num_list = [];
-            for i = 1:length(app.MDataTree.Children)
-                data_save.tasks_num_list = [data_save.tasks_num_list, app.MDataTree.Children(i).NodeData.tasks_num_list];
+            for i = 1:length(app.DDataTree.Children)
+                data_save.tasks_num_list = [data_save.tasks_num_list, app.DDataTree.Children(i).NodeData.tasks_num_list];
                 prob_start = length(data_save.prob_cell) + 1;
-                data_save.prob_cell = [data_save.prob_cell; app.MDataTree.Children(i).NodeData.prob_cell];
+                data_save.prob_cell = [data_save.prob_cell; app.DDataTree.Children(i).NodeData.prob_cell];
                 prob_end = length(data_save.prob_cell);
-                data_save.result(prob_start:prob_end, :) = app.MDataTree.Children(i).NodeData.result;
+                data_save.result(prob_start:prob_end, :) = app.DDataTree.Children(i).NodeData.result;
             end
             
-            app.MsaveData(data_save);
+            app.DsaveData(data_save);
         end
     end
 
@@ -1475,7 +1512,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % Create MTOPlatformUIFigure and hide until all components are created
             app.MTOPlatformUIFigure = uifigure('Visible', 'off');
             app.MTOPlatformUIFigure.Color = [1 1 1];
-            app.MTOPlatformUIFigure.Position = [100 100 1232 725];
+            app.MTOPlatformUIFigure.Position = [100 100 1028 660];
             app.MTOPlatformUIFigure.Name = 'MTO Platform';
             app.MTOPlatformUIFigure.WindowStyle = 'modal';
 
@@ -1498,8 +1535,9 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
 
             % Create TestGridLayout
             app.TestGridLayout = uigridlayout(app.TestModuleTab);
-            app.TestGridLayout.ColumnWidth = {230, '2.5x'};
+            app.TestGridLayout.ColumnWidth = {210, '2.5x'};
             app.TestGridLayout.RowHeight = {'1x'};
+            app.TestGridLayout.ColumnSpacing = 5;
             app.TestGridLayout.BackgroundColor = [1 1 1];
 
             % Create TPanel1
@@ -1510,15 +1548,17 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
 
             % Create TP1GridLayout
             app.TP1GridLayout = uigridlayout(app.TPanel1);
-            app.TP1GridLayout.ColumnWidth = {'fit', '1x', 70};
+            app.TP1GridLayout.ColumnWidth = {'fit', '1x'};
             app.TP1GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x'};
+            app.TP1GridLayout.ColumnSpacing = 5;
+            app.TP1GridLayout.Padding = [5 5 5 5];
             app.TP1GridLayout.BackgroundColor = [1 1 1];
 
             % Create TPopSizeEditField
             app.TPopSizeEditField = uieditfield(app.TP1GridLayout, 'numeric');
             app.TPopSizeEditField.HorizontalAlignment = 'center';
             app.TPopSizeEditField.Layout.Row = 1;
-            app.TPopSizeEditField.Layout.Column = [2 3];
+            app.TPopSizeEditField.Layout.Column = 2;
             app.TPopSizeEditField.Value = 20;
 
             % Create TPopSizeEditFieldLabel
@@ -1532,7 +1572,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.TEndNumEditField = uieditfield(app.TP1GridLayout, 'numeric');
             app.TEndNumEditField.HorizontalAlignment = 'center';
             app.TEndNumEditField.Layout.Row = 3;
-            app.TEndNumEditField.Layout.Column = [2 3];
+            app.TEndNumEditField.Layout.Column = 2;
             app.TEndNumEditField.Value = 100;
 
             % Create TEndNumEditFieldLabel
@@ -1555,7 +1595,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.TAlgorithmDropDown.ValueChangedFcn = createCallbackFcn(app, @TAlgorithmDropDownValueChanged, true);
             app.TAlgorithmDropDown.BackgroundColor = [1 1 1];
             app.TAlgorithmDropDown.Layout.Row = 4;
-            app.TAlgorithmDropDown.Layout.Column = [2 3];
+            app.TAlgorithmDropDown.Layout.Column = 2;
             app.TAlgorithmDropDown.Value = {};
 
             % Create TAlgorithmTree
@@ -1564,7 +1604,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.TAlgorithmTree.NodeTextChangedFcn = createCallbackFcn(app, @TAlgorithmTreeNodeTextChanged, true);
             app.TAlgorithmTree.Editable = 'on';
             app.TAlgorithmTree.Layout.Row = 5;
-            app.TAlgorithmTree.Layout.Column = [1 3];
+            app.TAlgorithmTree.Layout.Column = [1 2];
 
             % Create TProblemTree
             app.TProblemTree = uitree(app.TP1GridLayout);
@@ -1572,7 +1612,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.TProblemTree.NodeTextChangedFcn = createCallbackFcn(app, @TProblemTreeNodeTextChanged, true);
             app.TProblemTree.Editable = 'on';
             app.TProblemTree.Layout.Row = 7;
-            app.TProblemTree.Layout.Column = [1 3];
+            app.TProblemTree.Layout.Column = [1 2];
 
             % Create TProblemDropDown
             app.TProblemDropDown = uidropdown(app.TP1GridLayout);
@@ -1580,7 +1620,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.TProblemDropDown.ValueChangedFcn = createCallbackFcn(app, @TProblemDropDownValueChanged, true);
             app.TProblemDropDown.BackgroundColor = [1 1 1];
             app.TProblemDropDown.Layout.Row = 6;
-            app.TProblemDropDown.Layout.Column = [2 3];
+            app.TProblemDropDown.Layout.Column = 2;
             app.TProblemDropDown.Value = {};
 
             % Create ProblemDropDownLabel
@@ -1602,7 +1642,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.TEndTypeDropDown.Items = {'Iteration', 'Evaluation'};
             app.TEndTypeDropDown.BackgroundColor = [1 1 1];
             app.TEndTypeDropDown.Layout.Row = 2;
-            app.TEndTypeDropDown.Layout.Column = [2 3];
+            app.TEndTypeDropDown.Layout.Column = 2;
             app.TEndTypeDropDown.Value = 'Iteration';
 
             % Create TPanel2
@@ -1616,13 +1656,15 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.TP2GridLayout.ColumnWidth = {'1x'};
             app.TP2GridLayout.RowHeight = {'fit', '1x', 'fit'};
             app.TP2GridLayout.RowSpacing = 0;
+            app.TP2GridLayout.Padding = [5 5 5 5];
             app.TP2GridLayout.BackgroundColor = [1 1 1];
 
             % Create TP21GridLayout
             app.TP21GridLayout = uigridlayout(app.TP2GridLayout);
             app.TP21GridLayout.ColumnWidth = {'1x', 'fit'};
             app.TP21GridLayout.RowHeight = {'1x'};
-            app.TP21GridLayout.Padding = [0 10 0 10];
+            app.TP21GridLayout.ColumnSpacing = 5;
+            app.TP21GridLayout.Padding = [0 5 0 0];
             app.TP21GridLayout.Layout.Row = 1;
             app.TP21GridLayout.Layout.Column = 1;
             app.TP21GridLayout.BackgroundColor = [1 1 1];
@@ -1668,8 +1710,9 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
 
             % Create ExperimentsGridLayout
             app.ExperimentsGridLayout = uigridlayout(app.ExperimentModuleTab);
-            app.ExperimentsGridLayout.ColumnWidth = {180, 230, '1.3x'};
+            app.ExperimentsGridLayout.ColumnWidth = {170, 210, '1.3x'};
             app.ExperimentsGridLayout.RowHeight = {'1x'};
+            app.ExperimentsGridLayout.ColumnSpacing = 5;
             app.ExperimentsGridLayout.BackgroundColor = [1 1 1];
 
             % Create EPanel3
@@ -1701,13 +1744,15 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EP3TGridLayout.ColumnWidth = {'1x'};
             app.EP3TGridLayout.RowHeight = {'fit', '1x'};
             app.EP3TGridLayout.RowSpacing = 0;
+            app.EP3TGridLayout.Padding = [5 5 5 5];
             app.EP3TGridLayout.BackgroundColor = [1 1 1];
 
             % Create EP3T1GridLayout
             app.EP3T1GridLayout = uigridlayout(app.EP3TGridLayout);
             app.EP3T1GridLayout.ColumnWidth = {'fit', '1x', 'fit', 'fit', 'fit', 'fit', 'fit'};
             app.EP3T1GridLayout.RowHeight = {'fit'};
-            app.EP3T1GridLayout.Padding = [0 10 0 10];
+            app.EP3T1GridLayout.ColumnSpacing = 5;
+            app.EP3T1GridLayout.Padding = [0 5 0 0];
             app.EP3T1GridLayout.Layout.Row = 1;
             app.EP3T1GridLayout.Layout.Column = 1;
             app.EP3T1GridLayout.BackgroundColor = [1 1 1];
@@ -1764,7 +1809,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.ESaveTableButton.FontWeight = 'bold';
             app.ESaveTableButton.Layout.Row = 1;
             app.ESaveTableButton.Layout.Column = 1;
-            app.ESaveTableButton.Text = 'Save Table';
+            app.ESaveTableButton.Text = 'Save';
 
             % Create EUITable
             app.EUITable = uitable(app.EP3TGridLayout);
@@ -1783,13 +1828,15 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EP3FGridLayout.ColumnWidth = {'1x'};
             app.EP3FGridLayout.RowHeight = {'fit', '1x'};
             app.EP3FGridLayout.RowSpacing = 0;
+            app.EP3FGridLayout.Padding = [5 5 5 5];
             app.EP3FGridLayout.BackgroundColor = [1 1 1];
 
             % Create EP3F1GridLayout
             app.EP3F1GridLayout = uigridlayout(app.EP3FGridLayout);
             app.EP3F1GridLayout.ColumnWidth = {'fit', '1x', 'fit', 'fit', 'fit'};
             app.EP3F1GridLayout.RowHeight = {'fit'};
-            app.EP3F1GridLayout.Padding = [0 10 0 10];
+            app.EP3F1GridLayout.ColumnSpacing = 5;
+            app.EP3F1GridLayout.Padding = [0 5 0 0];
             app.EP3F1GridLayout.Layout.Row = 1;
             app.EP3F1GridLayout.Layout.Column = 1;
             app.EP3F1GridLayout.BackgroundColor = [1 1 1];
@@ -1819,7 +1866,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.ESaveAllFigureButton.FontWeight = 'bold';
             app.ESaveAllFigureButton.Layout.Row = 1;
             app.ESaveAllFigureButton.Layout.Column = 1;
-            app.ESaveAllFigureButton.Text = 'Save All Figure';
+            app.ESaveAllFigureButton.Text = 'Save';
 
             % Create EFigureTypeDropDown
             app.EFigureTypeDropDown = uidropdown(app.EP3F1GridLayout);
@@ -1846,6 +1893,8 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EP1GridLayout = uigridlayout(app.EPanel1);
             app.EP1GridLayout.ColumnWidth = {'fit', '1x', 70};
             app.EP1GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x', 'fit'};
+            app.EP1GridLayout.ColumnSpacing = 5;
+            app.EP1GridLayout.Padding = [5 5 5 5];
             app.EP1GridLayout.BackgroundColor = [1 1 1];
 
             % Create EProblemsAddButton
@@ -1974,6 +2023,8 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EP2GridLayout = uigridlayout(app.EPanel2);
             app.EP2GridLayout.ColumnWidth = {'2x', 70};
             app.EP2GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x', 'fit'};
+            app.EP2GridLayout.ColumnSpacing = 5;
+            app.EP2GridLayout.Padding = [5 5 5 5];
             app.EP2GridLayout.BackgroundColor = [1 1 1];
 
             % Create EStartButton
@@ -2070,137 +2121,198 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.DataProcessTab.Title = 'Data Process';
             app.DataProcessTab.BackgroundColor = [1 1 1];
 
-            % Create MergeDataGridLayout
-            app.MergeDataGridLayout = uigridlayout(app.DataProcessTab);
-            app.MergeDataGridLayout.RowHeight = {'1x'};
-            app.MergeDataGridLayout.BackgroundColor = [1 1 1];
+            % Create DataProcessGridLayout
+            app.DataProcessGridLayout = uigridlayout(app.DataProcessTab);
+            app.DataProcessGridLayout.RowHeight = {'1x'};
+            app.DataProcessGridLayout.ColumnSpacing = 5;
+            app.DataProcessGridLayout.BackgroundColor = [1 1 1];
 
-            % Create MPanel1
-            app.MPanel1 = uipanel(app.MergeDataGridLayout);
-            app.MPanel1.BackgroundColor = [1 1 1];
-            app.MPanel1.Layout.Row = 1;
-            app.MPanel1.Layout.Column = 1;
+            % Create DPanel1
+            app.DPanel1 = uipanel(app.DataProcessGridLayout);
+            app.DPanel1.BackgroundColor = [1 1 1];
+            app.DPanel1.Layout.Row = 1;
+            app.DPanel1.Layout.Column = 1;
 
-            % Create MP1GridLayout
-            app.MP1GridLayout = uigridlayout(app.MPanel1);
-            app.MP1GridLayout.ColumnWidth = {'1x', '1x', '1x'};
-            app.MP1GridLayout.RowHeight = {'fit', '1x', 'fit'};
-            app.MP1GridLayout.BackgroundColor = [1 1 1];
+            % Create DP1GridLayout
+            app.DP1GridLayout = uigridlayout(app.DPanel1);
+            app.DP1GridLayout.ColumnWidth = {'1x'};
+            app.DP1GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit'};
+            app.DP1GridLayout.RowSpacing = 20;
+            app.DP1GridLayout.Padding = [10 10 10 20];
+            app.DP1GridLayout.BackgroundColor = [1 1 1];
 
-            % Create MLoadDataButton
-            app.MLoadDataButton = uibutton(app.MP1GridLayout, 'push');
-            app.MLoadDataButton.ButtonPushedFcn = createCallbackFcn(app, @MLoadDataButtonPushed, true);
-            app.MLoadDataButton.BackgroundColor = [0.502 0.702 1];
-            app.MLoadDataButton.FontWeight = 'bold';
-            app.MLoadDataButton.Layout.Row = 1;
-            app.MLoadDataButton.Layout.Column = 2;
-            app.MLoadDataButton.Text = 'Load Data';
+            % Create DDataProcessModuleLabel
+            app.DDataProcessModuleLabel = uilabel(app.DP1GridLayout);
+            app.DDataProcessModuleLabel.HorizontalAlignment = 'center';
+            app.DDataProcessModuleLabel.FontSize = 18;
+            app.DDataProcessModuleLabel.FontWeight = 'bold';
+            app.DDataProcessModuleLabel.Layout.Row = 1;
+            app.DDataProcessModuleLabel.Layout.Column = 1;
+            app.DDataProcessModuleLabel.Text = 'Data Process Module';
 
-            % Create MDeleteDataButton
-            app.MDeleteDataButton = uibutton(app.MP1GridLayout, 'push');
-            app.MDeleteDataButton.ButtonPushedFcn = createCallbackFcn(app, @MDeleteDataButtonPushed, true);
-            app.MDeleteDataButton.BackgroundColor = [1 1 0.702];
-            app.MDeleteDataButton.FontWeight = 'bold';
-            app.MDeleteDataButton.Layout.Row = 1;
-            app.MDeleteDataButton.Layout.Column = 3;
-            app.MDeleteDataButton.Text = 'Delete Data';
+            % Create Panel
+            app.Panel = uipanel(app.DP1GridLayout);
+            app.Panel.BackgroundColor = [1 1 1];
+            app.Panel.Layout.Row = 2;
+            app.Panel.Layout.Column = 1;
 
-            % Create MDataTree
-            app.MDataTree = uitree(app.MP1GridLayout);
-            app.MDataTree.Multiselect = 'on';
-            app.MDataTree.Layout.Row = 2;
-            app.MDataTree.Layout.Column = [1 3];
+            % Create GridLayout_3
+            app.GridLayout_3 = uigridlayout(app.Panel);
+            app.GridLayout_3.ColumnWidth = {'1x', '1x', '1x'};
+            app.GridLayout_3.RowHeight = {'fit', 'fit'};
+            app.GridLayout_3.Padding = [10 20 10 20];
+            app.GridLayout_3.BackgroundColor = [1 1 1];
 
-            % Create MRepsMergeButton
-            app.MRepsMergeButton = uibutton(app.MP1GridLayout, 'push');
-            app.MRepsMergeButton.ButtonPushedFcn = createCallbackFcn(app, @MRepsMergeButtonPushed, true);
-            app.MRepsMergeButton.BackgroundColor = [1 1 1];
-            app.MRepsMergeButton.FontWeight = 'bold';
-            app.MRepsMergeButton.Layout.Row = 3;
-            app.MRepsMergeButton.Layout.Column = 1;
-            app.MRepsMergeButton.Text = 'Reps Merge';
+            % Create DLoadDataButton_3
+            app.DLoadDataButton_3 = uibutton(app.GridLayout_3, 'push');
+            app.DLoadDataButton_3.BackgroundColor = [0.502 0.702 1];
+            app.DLoadDataButton_3.FontWeight = 'bold';
+            app.DLoadDataButton_3.Layout.Row = 2;
+            app.DLoadDataButton_3.Layout.Column = 1;
+            app.DLoadDataButton_3.Text = 'Load Data';
 
-            % Create MProblemsMergeButton
-            app.MProblemsMergeButton = uibutton(app.MP1GridLayout, 'push');
-            app.MProblemsMergeButton.ButtonPushedFcn = createCallbackFcn(app, @MProblemsMergeButtonPushed, true);
-            app.MProblemsMergeButton.BackgroundColor = [1 1 1];
-            app.MProblemsMergeButton.FontWeight = 'bold';
-            app.MProblemsMergeButton.Layout.Row = 3;
-            app.MProblemsMergeButton.Layout.Column = 3;
-            app.MProblemsMergeButton.Text = 'Problems Merge';
+            % Create DDeleteDataButton_3
+            app.DDeleteDataButton_3 = uibutton(app.GridLayout_3, 'push');
+            app.DDeleteDataButton_3.BackgroundColor = [1 1 0.702];
+            app.DDeleteDataButton_3.FontWeight = 'bold';
+            app.DDeleteDataButton_3.Layout.Row = 2;
+            app.DDeleteDataButton_3.Layout.Column = 2;
+            app.DDeleteDataButton_3.Text = 'Delete Data';
 
-            % Create MAlgorithmsMergeButton
-            app.MAlgorithmsMergeButton = uibutton(app.MP1GridLayout, 'push');
-            app.MAlgorithmsMergeButton.ButtonPushedFcn = createCallbackFcn(app, @MAlgorithmsMergeButtonPushed, true);
-            app.MAlgorithmsMergeButton.BackgroundColor = [1 1 1];
-            app.MAlgorithmsMergeButton.FontWeight = 'bold';
-            app.MAlgorithmsMergeButton.Layout.Row = 3;
-            app.MAlgorithmsMergeButton.Layout.Column = 2;
-            app.MAlgorithmsMergeButton.Text = 'Algorithms Merge';
+            % Create DSaveDataButton_3
+            app.DSaveDataButton_3 = uibutton(app.GridLayout_3, 'push');
+            app.DSaveDataButton_3.BackgroundColor = [0.6706 0.949 0.6706];
+            app.DSaveDataButton_3.FontWeight = 'bold';
+            app.DSaveDataButton_3.Layout.Row = 2;
+            app.DSaveDataButton_3.Layout.Column = 3;
+            app.DSaveDataButton_3.Text = 'Save Data';
 
-            % Create MergeDataLabel
-            app.MergeDataLabel = uilabel(app.MP1GridLayout);
-            app.MergeDataLabel.FontWeight = 'bold';
-            app.MergeDataLabel.Layout.Row = 1;
-            app.MergeDataLabel.Layout.Column = 1;
-            app.MergeDataLabel.Text = 'Merge Data';
+            % Create DLoadDataorSelectandDeleteSaveDataLabel_3
+            app.DLoadDataorSelectandDeleteSaveDataLabel_3 = uilabel(app.GridLayout_3);
+            app.DLoadDataorSelectandDeleteSaveDataLabel_3.HorizontalAlignment = 'center';
+            app.DLoadDataorSelectandDeleteSaveDataLabel_3.Layout.Row = 1;
+            app.DLoadDataorSelectandDeleteSaveDataLabel_3.Layout.Column = [2 3];
+            app.DLoadDataorSelectandDeleteSaveDataLabel_3.Text = 'Select data nodes, click delete/save button';
 
-            % Create MPanel2
-            app.MPanel2 = uipanel(app.MergeDataGridLayout);
-            app.MPanel2.BackgroundColor = [1 1 1];
-            app.MPanel2.Layout.Row = 1;
-            app.MPanel2.Layout.Column = 2;
+            % Create DLoadDataorSelectandDeleteSaveDataLabel_4
+            app.DLoadDataorSelectandDeleteSaveDataLabel_4 = uilabel(app.GridLayout_3);
+            app.DLoadDataorSelectandDeleteSaveDataLabel_4.HorizontalAlignment = 'center';
+            app.DLoadDataorSelectandDeleteSaveDataLabel_4.Layout.Row = 1;
+            app.DLoadDataorSelectandDeleteSaveDataLabel_4.Layout.Column = 1;
+            app.DLoadDataorSelectandDeleteSaveDataLabel_4.Text = 'Load data from folder';
 
-            % Create MP2GridLayout
-            app.MP2GridLayout = uigridlayout(app.MPanel2);
-            app.MP2GridLayout.ColumnWidth = {'1x', '1x', '1x'};
-            app.MP2GridLayout.RowHeight = {'fit', '1x', 'fit'};
-            app.MP2GridLayout.BackgroundColor = [1 1 1];
+            % Create Panel_2
+            app.Panel_2 = uipanel(app.DP1GridLayout);
+            app.Panel_2.BackgroundColor = [1 1 1];
+            app.Panel_2.Layout.Row = 3;
+            app.Panel_2.Layout.Column = 1;
 
-            % Create MLoadDataButton_2
-            app.MLoadDataButton_2 = uibutton(app.MP2GridLayout, 'push');
-            app.MLoadDataButton_2.BackgroundColor = [0.502 0.702 1];
-            app.MLoadDataButton_2.FontWeight = 'bold';
-            app.MLoadDataButton_2.Layout.Row = 1;
-            app.MLoadDataButton_2.Layout.Column = 2;
-            app.MLoadDataButton_2.Text = 'Load Data';
+            % Create GridLayout
+            app.GridLayout = uigridlayout(app.Panel_2);
+            app.GridLayout.ColumnWidth = {'1x', '1x', '1x'};
+            app.GridLayout.RowHeight = {'fit', 'fit'};
+            app.GridLayout.Padding = [10 20 10 20];
+            app.GridLayout.BackgroundColor = [1 1 1];
 
-            % Create MDeleteDataButton_2
-            app.MDeleteDataButton_2 = uibutton(app.MP2GridLayout, 'push');
-            app.MDeleteDataButton_2.BackgroundColor = [1 1 0.702];
-            app.MDeleteDataButton_2.FontWeight = 'bold';
-            app.MDeleteDataButton_2.Layout.Row = 1;
-            app.MDeleteDataButton_2.Layout.Column = 3;
-            app.MDeleteDataButton_2.Text = 'Delete Data';
+            % Create DSelectandSplitDataLabel
+            app.DSelectandSplitDataLabel = uilabel(app.GridLayout);
+            app.DSelectandSplitDataLabel.HorizontalAlignment = 'center';
+            app.DSelectandSplitDataLabel.Layout.Row = 1;
+            app.DSelectandSplitDataLabel.Layout.Column = [1 3];
+            app.DSelectandSplitDataLabel.Text = 'Select data node, click split button';
 
-            % Create MDataTree_2
-            app.MDataTree_2 = uitree(app.MP2GridLayout);
-            app.MDataTree_2.Multiselect = 'on';
-            app.MDataTree_2.Layout.Row = 2;
-            app.MDataTree_2.Layout.Column = [1 3];
+            % Create DRepsSplitButton
+            app.DRepsSplitButton = uibutton(app.GridLayout, 'push');
+            app.DRepsSplitButton.ButtonPushedFcn = createCallbackFcn(app, @DRepsSplitButtonPushed, true);
+            app.DRepsSplitButton.BackgroundColor = [0.902 0.902 0.902];
+            app.DRepsSplitButton.FontWeight = 'bold';
+            app.DRepsSplitButton.Layout.Row = 2;
+            app.DRepsSplitButton.Layout.Column = 1;
+            app.DRepsSplitButton.Text = 'Reps Split';
 
-            % Create MProblemsMergeButton_2
-            app.MProblemsMergeButton_2 = uibutton(app.MP2GridLayout, 'push');
-            app.MProblemsMergeButton_2.BackgroundColor = [1 1 1];
-            app.MProblemsMergeButton_2.FontWeight = 'bold';
-            app.MProblemsMergeButton_2.Layout.Row = 3;
-            app.MProblemsMergeButton_2.Layout.Column = 3;
-            app.MProblemsMergeButton_2.Text = 'Problems Split';
+            % Create DAlgorithmsSplitButton
+            app.DAlgorithmsSplitButton = uibutton(app.GridLayout, 'push');
+            app.DAlgorithmsSplitButton.ButtonPushedFcn = createCallbackFcn(app, @DAlgorithmsSplitButtonPushed, true);
+            app.DAlgorithmsSplitButton.BackgroundColor = [0.902 0.902 0.902];
+            app.DAlgorithmsSplitButton.FontWeight = 'bold';
+            app.DAlgorithmsSplitButton.Layout.Row = 2;
+            app.DAlgorithmsSplitButton.Layout.Column = 2;
+            app.DAlgorithmsSplitButton.Text = 'Algorithms Split';
 
-            % Create MAlgorithmsMergeButton_2
-            app.MAlgorithmsMergeButton_2 = uibutton(app.MP2GridLayout, 'push');
-            app.MAlgorithmsMergeButton_2.BackgroundColor = [1 1 1];
-            app.MAlgorithmsMergeButton_2.FontWeight = 'bold';
-            app.MAlgorithmsMergeButton_2.Layout.Row = 3;
-            app.MAlgorithmsMergeButton_2.Layout.Column = 1;
-            app.MAlgorithmsMergeButton_2.Text = 'Algorithms Split';
+            % Create DProblemsSplitButton
+            app.DProblemsSplitButton = uibutton(app.GridLayout, 'push');
+            app.DProblemsSplitButton.ButtonPushedFcn = createCallbackFcn(app, @DProblemsSplitButtonPushed, true);
+            app.DProblemsSplitButton.BackgroundColor = [0.902 0.902 0.902];
+            app.DProblemsSplitButton.FontWeight = 'bold';
+            app.DProblemsSplitButton.Layout.Row = 2;
+            app.DProblemsSplitButton.Layout.Column = 3;
+            app.DProblemsSplitButton.Text = 'Problems Split';
 
-            % Create SplitDataLabel
-            app.SplitDataLabel = uilabel(app.MP2GridLayout);
-            app.SplitDataLabel.FontWeight = 'bold';
-            app.SplitDataLabel.Layout.Row = 1;
-            app.SplitDataLabel.Layout.Column = 1;
-            app.SplitDataLabel.Text = 'Split Data';
+            % Create Panel_4
+            app.Panel_4 = uipanel(app.DP1GridLayout);
+            app.Panel_4.BackgroundColor = [1 1 1];
+            app.Panel_4.Layout.Row = 4;
+            app.Panel_4.Layout.Column = 1;
+
+            % Create GridLayout_2
+            app.GridLayout_2 = uigridlayout(app.Panel_4);
+            app.GridLayout_2.ColumnWidth = {'1x', '1x', '1x'};
+            app.GridLayout_2.RowHeight = {'fit', 'fit'};
+            app.GridLayout_2.Padding = [10 20 10 20];
+            app.GridLayout_2.BackgroundColor = [1 1 1];
+
+            % Create DSelectandMergeDataLabel
+            app.DSelectandMergeDataLabel = uilabel(app.GridLayout_2);
+            app.DSelectandMergeDataLabel.HorizontalAlignment = 'center';
+            app.DSelectandMergeDataLabel.Layout.Row = 1;
+            app.DSelectandMergeDataLabel.Layout.Column = [1 3];
+            app.DSelectandMergeDataLabel.Text = 'Select data nodes, click merge button';
+
+            % Create DRepsMergeButton
+            app.DRepsMergeButton = uibutton(app.GridLayout_2, 'push');
+            app.DRepsMergeButton.ButtonPushedFcn = createCallbackFcn(app, @DRepsMergeButtonPushed, true);
+            app.DRepsMergeButton.BackgroundColor = [0.902 0.902 0.902];
+            app.DRepsMergeButton.FontWeight = 'bold';
+            app.DRepsMergeButton.Layout.Row = 2;
+            app.DRepsMergeButton.Layout.Column = 1;
+            app.DRepsMergeButton.Text = 'Reps Merge';
+
+            % Create DAlgorithmsMergeButton
+            app.DAlgorithmsMergeButton = uibutton(app.GridLayout_2, 'push');
+            app.DAlgorithmsMergeButton.ButtonPushedFcn = createCallbackFcn(app, @DAlgorithmsMergeButtonPushed, true);
+            app.DAlgorithmsMergeButton.BackgroundColor = [0.902 0.902 0.902];
+            app.DAlgorithmsMergeButton.FontWeight = 'bold';
+            app.DAlgorithmsMergeButton.Layout.Row = 2;
+            app.DAlgorithmsMergeButton.Layout.Column = 2;
+            app.DAlgorithmsMergeButton.Text = 'Algorithms Merge';
+
+            % Create DProblemsMergeButton
+            app.DProblemsMergeButton = uibutton(app.GridLayout_2, 'push');
+            app.DProblemsMergeButton.ButtonPushedFcn = createCallbackFcn(app, @DProblemsMergeButtonPushed, true);
+            app.DProblemsMergeButton.BackgroundColor = [0.902 0.902 0.902];
+            app.DProblemsMergeButton.FontWeight = 'bold';
+            app.DProblemsMergeButton.Layout.Row = 2;
+            app.DProblemsMergeButton.Layout.Column = 3;
+            app.DProblemsMergeButton.Text = 'Problems Merge';
+
+            % Create DPanel2
+            app.DPanel2 = uipanel(app.DataProcessGridLayout);
+            app.DPanel2.BackgroundColor = [1 1 1];
+            app.DPanel2.Layout.Row = 1;
+            app.DPanel2.Layout.Column = 2;
+
+            % Create DP2GridLayout
+            app.DP2GridLayout = uigridlayout(app.DPanel2);
+            app.DP2GridLayout.ColumnWidth = {'1x', '1x', '1x'};
+            app.DP2GridLayout.RowHeight = {'1x'};
+            app.DP2GridLayout.Padding = [0 0 0 0];
+            app.DP2GridLayout.BackgroundColor = [1 1 1];
+
+            % Create DDataTree
+            app.DDataTree = uitree(app.DP2GridLayout);
+            app.DDataTree.Multiselect = 'on';
+            app.DDataTree.Layout.Row = 1;
+            app.DDataTree.Layout.Column = [1 3];
 
             % Create ESelectedAlgoContextMenu
             app.ESelectedAlgoContextMenu = uicontextmenu(app.MTOPlatformUIFigure);
@@ -2216,11 +2328,10 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
 
             % Create MDataContextMenu
             app.MDataContextMenu = uicontextmenu(app.MTOPlatformUIFigure);
-            app.MDataContextMenu.ContextMenuOpeningFcn = createCallbackFcn(app, @MDataContextMenuOpening, true);
+            app.MDataContextMenu.ContextMenuOpeningFcn = createCallbackFcn(app, @DDataContextMenuOpening, true);
             
             % Assign app.MDataContextMenu
-            app.MDataTree.ContextMenu = app.MDataContextMenu;
-            app.MDataTree_2.ContextMenu = app.MDataContextMenu;
+            app.DDataTree.ContextMenu = app.MDataContextMenu;
 
             % Create SelectedAlgoSelectAllMenu_2
             app.SelectedAlgoSelectAllMenu_2 = uimenu(app.MDataContextMenu);
