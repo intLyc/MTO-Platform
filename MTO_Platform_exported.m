@@ -635,6 +635,29 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             grid(app.EConvergenceTrendUIAxes, 'on');
         end
         
+        function result = DcheckSplitData(app)
+            % check and reproduce split data
+            
+            data_selected = app.DDataTree.SelectedNodes;
+            app.Ddata_mark = [];
+            data_num = 0;
+            for i = 1:length(data_selected)
+                if isa(data_selected(i).Parent, 'matlab.ui.container.Tree')
+                    data_num = data_num + 1;
+                    app.Ddata_mark(i) = 1;
+                else
+                    app.Ddata_mark(i) = 0;
+                end
+            end
+            if data_num < 1
+                msg = 'Select at least 1 data node to split';
+                uiconfirm(app.MTOPlatformUIFigure, msg, 'error', 'Icon','warning');
+                result = false;
+                return;
+            end
+            
+            result = true;
+        end
         
         function result = DcheckMergeData(app)
             % check data num, pop size, iter num, eva num
@@ -1456,26 +1479,108 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
 
         % Button pushed function: DRepsSplitButton
         function DRepsSplitButtonPushed(app, event)
+            % split reps
             
+            if ~app.DcheckSplitData()
+                return;
+            end
             
-            msg = sprintf('Split reps success!\nSplited data nodes have added to tree');
-            uiconfirm(app.MTOPlatformUIFigure, msg, 'success', 'Icon', 'success');
+            % split
+            data_selected = app.DDataTree.SelectedNodes;
+            data_selected = data_selected(app.Ddata_mark == 1);
+            
+            for i = 1:length(data_selected)
+                if data_selected(i).NodeData.reps <= 1
+                    msg = ['The ', data_selected(i).Text, '''s reps <= 1'];
+                    uiconfirm(app.MTOPlatformUIFigure, msg, 'error', 'Icon','warning');
+                    continue;
+                end
+                for rep = 1:data_selected(i).NodeData.reps
+                    data_save.reps = 0;
+                    data_save.tasks_num_list = data_selected(i).NodeData.tasks_num_list;
+                    data_save.pop_size = data_selected(i).NodeData.pop_size;
+                    data_save.iter_num = data_selected(i).NodeData.iter_num;
+                    data_save.eva_num = data_selected(i).NodeData.eva_num;
+                    data_save.algo_cell = data_selected(i).NodeData.algo_cell;
+                    data_save.prob_cell = data_selected(i).NodeData.prob_cell;
+                    data_save.reps = 1;
+                    data_save.result = [];
+                    for prob = 1:length(data_save.prob_cell)
+                        task_num = data_selected(i).NodeData.tasks_num_list(prob);
+                        for algo = 1:length(data_save.algo_cell)
+                            data_save.result(prob, algo).clock_time = data_selected(i).NodeData.result(prob, algo).clock_time / data_selected(i).NodeData.reps;
+                            data_save.result(prob, algo).convergence = data_selected(i).NodeData.result(prob, algo).convergence((rep-1)*task_num+1 : rep*task_num, :);
+                        end
+                    end
+                    app.DputDataNode([data_selected(i).Text, ' (Split Rep: ', num2str(rep), ')'], data_save);
+                end
+            end
         end
 
         % Button pushed function: DAlgorithmsSplitButton
         function DAlgorithmsSplitButtonPushed(app, event)
+            % split algorithms
             
+            if ~app.DcheckSplitData()
+                return;
+            end
             
-            msg = sprintf('Split algorithms success!\nSplited data nodes have added to tree');
-            uiconfirm(app.MTOPlatformUIFigure, msg, 'success', 'Icon', 'success');
+            % split
+            data_selected = app.DDataTree.SelectedNodes;
+            data_selected = data_selected(app.Ddata_mark == 1);
+            
+            for i = 1:length(data_selected)
+                if length(data_selected(i).NodeData.algo_cell) <= 1
+                    msg = ['The ', data_selected(i).Text, '''s algorithms <= 1'];
+                    uiconfirm(app.MTOPlatformUIFigure, msg, 'error', 'Icon','warning');
+                    continue;
+                end
+                for algo = 1:length(data_selected(i).NodeData.algo_cell)
+                    data_save.reps = data_selected(i).NodeData.reps;
+                    data_save.tasks_num_list = data_selected(i).NodeData.tasks_num_list;
+                    data_save.pop_size = data_selected(i).NodeData.pop_size;
+                    data_save.iter_num = data_selected(i).NodeData.iter_num;
+                    data_save.eva_num = data_selected(i).NodeData.eva_num;
+                    data_save.prob_cell = data_selected(i).NodeData.prob_cell;
+                    data_save.algo_cell = data_selected(i).NodeData.algo_cell(algo);
+                    data_save.result = data_selected(i).NodeData.result(:, algo);
+                    
+                    app.DputDataNode([data_selected(i).Text, ' (Split Algorithm: ', data_save.algo_cell{1}, ')'], data_save);
+                end
+            end
         end
 
         % Button pushed function: DProblemsSplitButton
         function DProblemsSplitButtonPushed(app, event)
+            % split algorithms
             
+            if ~app.DcheckSplitData()
+                return;
+            end
             
-            msg = sprintf('Split problems success!\nSplited data nodes have added to tree');
-            uiconfirm(app.MTOPlatformUIFigure, msg, 'success', 'Icon', 'success');
+            % split
+            data_selected = app.DDataTree.SelectedNodes;
+            data_selected = data_selected(app.Ddata_mark == 1);
+            
+            for i = 1:length(data_selected)
+                if length(data_selected(i).NodeData.prob_cell) <= 1
+                    msg = ['The ', data_selected(i).Text, '''s problems <= 1'];
+                    uiconfirm(app.MTOPlatformUIFigure, msg, 'error', 'Icon','warning');
+                    continue;
+                end
+                for prob = 1:length(data_selected(i).NodeData.prob_cell)
+                    data_save.reps = data_selected(i).NodeData.reps;
+                    data_save.pop_size = data_selected(i).NodeData.pop_size;
+                    data_save.iter_num = data_selected(i).NodeData.iter_num;
+                    data_save.eva_num = data_selected(i).NodeData.eva_num;
+                    data_save.algo_cell = data_selected(i).NodeData.algo_cell;
+                    data_save.prob_cell = data_selected(i).NodeData.prob_cell(prob);
+                    data_save.tasks_num_list = [[], data_selected(i).NodeData.tasks_num_list(prob)];
+                    data_save.result = data_selected(i).NodeData.result(prob, :);
+                    
+                    app.DputDataNode([data_selected(i).Text, ' (Split Problem: ', data_save.prob_cell{1}, ')'], data_save);
+                end
+            end
         end
 
         % Button pushed function: DRepsMergeButton
@@ -1513,9 +1618,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                 end
             end
             
-            app.DputDataNode('data_Merge_Reps', data_save);
-            msg = sprintf('Merge reps success!\nMerged data node has added to tree');
-            uiconfirm(app.MTOPlatformUIFigure, msg, 'success', 'Icon', 'success');
+            app.DputDataNode('data (Merge Reps)', data_save);
         end
 
         % Button pushed function: DAlgorithmsMergeButton
@@ -1543,9 +1646,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                 data_save.result(:, algo_start:algo_end) = data_selected(i).NodeData.result;
             end
             
-            app.DputDataNode('data_Merge_Algorithms', data_save);
-            msg = sprintf('Merge algorithms success!\nMerged data node has added to tree');
-            uiconfirm(app.MTOPlatformUIFigure, msg, 'success', 'Icon', 'success');
+            app.DputDataNode('data (Merge Algorithms)', data_save);
         end
 
         % Button pushed function: DProblemsMergeButton
@@ -1574,9 +1675,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                 data_save.result(prob_start:prob_end, :) = data_selected(i).NodeData.result;
             end
             
-            app.DputDataNode('data_Merge_Problems', data_save);
-            msg = sprintf('Merge problems success!\nMerged data node has added to tree');
-            uiconfirm(app.MTOPlatformUIFigure, msg, 'success', 'Icon', 'success');
+            app.DputDataNode('data (Merge Problems)', data_save);
         end
     end
 
