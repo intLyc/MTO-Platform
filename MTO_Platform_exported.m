@@ -124,19 +124,19 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         prob_load % cell of problems loaded from folder
         
         % Test Module
-        Tdata
+        Tdata % data
         
         % Experiment Module
         Edata % data
         Estop_flag % stop button clicked flag
         Efitness % fitness calculated
         Etime_used % time_used calculated
-        Etable_data
-        Etable_view
-        Etable_reps
+        Etable_data % table data for calculate
+        Etable_view % table data view
+        Etable_reps % table reps
         
         % Data Process Module
-        Ddata_mark
+        Ddata_mark % legal data node index
     end
     
     methods (Access = public)
@@ -178,7 +178,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         end
         
         function TloadAlgoProb(app)
-            % load the algorithms and problems
+            % load the algorithms and problems in Test module
             
             app.TAlgorithmDropDown.Items = {};
             app.TProblemDropDown.Items = {};
@@ -187,7 +187,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         end
         
         function EloadAlgoProb(app)
-            % load the algorithms and problems
+            % load the algorithms and problems in Experiment module
             
             app.EAlgorithmsListBox.Items(:) = [];
             app.EProblemsListBox.Items(:) = [];
@@ -196,6 +196,9 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         end
         
         function TstartEnable(app, value)
+            % change controler enable when start button pused and end
+            % in Test module
+            
             app.TStartButton.Enable = value;
             app.TPopSizeEditField.Enable = value;
             app.TEndTypeDropDown.Enable = value;
@@ -207,6 +210,9 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         end
         
         function EstartEnable(app, value)
+            % change controler enable when start button pused and end
+            % in Experiment module
+            
             app.EStartButton.Enable = value;
             app.ERepsEditField.Enable = value;
             app.EPopSizeEditField.Enable = value;
@@ -241,7 +247,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         end
         
         function TupdateAlgorithm(app)
-            % update algorithm tree
+            % update algorithm tree in Test module
             
             app.TAlgorithmTree.Children.delete;
             
@@ -266,7 +272,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         end
         
         function TupdateProblem(app)
-            % update problem tree
+            % update problem tree in Test module
             
             app.TProblemTree.Children.delete;
             
@@ -292,7 +298,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         end
         
         function TupdateUIAxes(app)
-            % update UI Axes
+            % update UI Axes in Test module
             
             cla(app.TUIAxes, 'reset');
             type = app.TShowTypeDropDown.Value;
@@ -305,7 +311,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         end
         
         function TupdateTasksFigure(app)
-            % update selected problem tasks figure
+            % update selected problem tasks figure in Test module
             
             Tasks = app.TProblemTree.Children(1).NodeData.getTasks();
             tasks_name = app.TProblemTree.Children(1).NodeData.tasks_name;
@@ -348,7 +354,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         end
         
         function TupdateConvergence(app)
-            % update convergence
+            % update convergence in Test module
             
             % check app.Edata
             if isempty(app.Tdata)
@@ -376,6 +382,8 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         end
         
         function EresetTableAlgorithmDropDown(app, algo_cell)
+            % reset table's algorithms drop down in Experiment module
+            
             algo_index = [];
             for algo = 1:length(algo_cell)
                 algo_index = [algo_index, algo];
@@ -385,7 +393,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         end
         
         function EresetTable(app, algo_cell, prob_cell, tasks_num_list)
-            % reset the table
+            % reset table in Experiment module
             
             app.EUITable.Data = {};
             drawnow;
@@ -431,6 +439,8 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         end
         
         function EupdateTableReps(app)
+            % update table reps per run
+            
             if ~strcmp(app.EDataTypeDropDown.Value, 'Reps')
                 return;
             end
@@ -439,6 +449,8 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         end
         
         function EupdateTableFitness(app)
+            % update table fitness
+            
             if ~strcmp(app.EDataTypeDropDown.Value, 'Fitness')
                 return;
             end
@@ -475,6 +487,8 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         end
         
         function EupdateTableTimeUsed(app)
+            % update table time used
+            
             time_used = app.Etime_used;
             app.Etable_data = time_used;
             app.EUITable.Data = time_used;
@@ -482,6 +496,8 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         end
         
         function EupdateTableTest(app)
+            % update table fitness test
+            
             if ~strcmp(app.EDataTypeDropDown.Value, 'Fitness')
                 return;
             end
@@ -530,6 +546,8 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         end
         
         function EupdateTableHighlight(app)
+            % update table highlight
+            
             highlight_type = app.EHighlightTypeDropDown.Value;
             
             % highlight best value
@@ -554,7 +572,8 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         end
         
         function EupdateTable(app)
-            % update table
+            % update table in Experiment module
+            
             app.EUITable.Data = {};
             if isempty(app.Edata) || isempty(app.Efitness)
                 return;
@@ -572,7 +591,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         end
         
         function EresetConvergenceProblemsDropDown(app)
-            % reset convergence problems drop down
+            % reset convergence problems drop down in Experiment module
             
             prob_row_cell = {};
             prob_row_index = {};
@@ -660,7 +679,8 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         end
         
         function result = DcheckMergeData(app)
-            % check data num, pop size, iter num, eva num
+            % check merge data num, pop size, iter num, eva num
+            % select legal node
             
             data_selected = app.DDataTree.SelectedNodes;
             app.Ddata_mark = [];
@@ -699,7 +719,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         end
         
         function result = DcheckMergeReps(app)
-            % check reps
+            % check merge reps
             
             data_num = sum(app.Ddata_mark);
             data_selected = app.DDataTree.SelectedNodes;
@@ -717,7 +737,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         end
         
         function result = DcheckMergeAlgorithms(app)
-            % check algorithms
+            % check merge algorithms
             
             data_num = sum(app.Ddata_mark);
             data_selected = app.DDataTree.SelectedNodes;
@@ -743,7 +763,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         end
         
         function result = DcheckMergeProblems(app)
-            % check problems
+            % check merge problems
             
             data_num = sum(app.Ddata_mark);
             data_selected = app.DDataTree.SelectedNodes;
@@ -769,6 +789,8 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         end
         
         function DputDataNode(app, name, data_save)
+            % add data to tree in Data process module
+            
             data_node = uitreenode(app.DDataTree);
             data_node.Text = name;
             data_node.NodeData = data_save;
@@ -811,7 +833,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         end
         
         function DsaveData(app, data_save)
-            % save data to folder
+            % save data to folder in Data process module
             
             % check selected file name
             [file_name, dir_name] = uiputfile('data_save.mat');
@@ -1431,6 +1453,8 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
 
         % Button pushed function: DDeleteDataButton
         function DDeleteDataButtonPushed(app, event)
+            % delete selected data from tree
+            
             data_selected = app.DDataTree.SelectedNodes;
             data_mark = [];
             data_num = 0;
@@ -1455,6 +1479,8 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
 
         % Button pushed function: DSaveDataButton
         function DSaveDataButtonPushed(app, event)
+            % save selected data from tree
+            
             data_selected = app.DDataTree.SelectedNodes;
             data_mark = [];
             data_num = 0;
