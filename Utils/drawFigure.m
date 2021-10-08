@@ -60,7 +60,7 @@ classdef drawFigure < handle
 
             end
 
-            marker_list = {'o', '*', 'x', '^', 's', 'v', 'd', '<', '>', 'p', 'h'};
+            marker_list = {'o', '*', 'x', '^', '+', 'p', 'v', 's', 'd', '<', '>', 'h'};
 
             for i = 1:length(obj.x_cell)
                 p = plot(obj.x_cell{i}, obj.y_cell{i}, ['-', marker_list{i}]);
