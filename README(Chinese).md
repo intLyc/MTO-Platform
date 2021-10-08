@@ -18,11 +18,13 @@ matlab运行**MTO_Platform_exported.m**文件
 
 ### 加入自己的算法
 
-继承Algorithm文件夹下的**Algorithm**类实现新的算法类，并放入Problem文件夹或其子文件夹内，按照Algorithm类中的各虚函数的注释实现继承的虚函数。*可参考MFEA算法的实现*
+继承Algorithm文件夹下的**Algorithm**类实现新的算法类，并放入Problem文件夹或其子文件夹内，按照Algorithm类中的各虚函数的注释实现继承的虚函数。
+*可参考MFEA算法的实现*
 
 ### 加入自己的问题
 
-继承Problem文件夹下的**Problem**类实现新的问题类，并放入Problem文件夹或其子文件夹内，按照Problem类中的各虚函数的注释实现继承的虚函数。*可参考CI_H问题的实现*
+继承Problem文件夹下的**Problem**类实现新的问题类，并放入Problem文件夹或其子文件夹内，按照Problem类中的各虚函数的注释实现继承的虚函数。
+*可参考CI_H问题的实现*
 
 ### 使用App Designer修改GUI界面
 
