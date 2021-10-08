@@ -5,7 +5,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         MTOPlatformUIFigure          matlab.ui.Figure
         MTOPlatformGridLayout        matlab.ui.container.GridLayout
         MTOPlatformTabGroup          matlab.ui.container.TabGroup
-        TestModuleTab                matlab.ui.container.Tab
+        TestTab                      matlab.ui.container.Tab
         TestGridLayout               matlab.ui.container.GridLayout
         TPanel1                      matlab.ui.container.Panel
         TP1GridLayout                matlab.ui.container.GridLayout
@@ -28,7 +28,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         TP24GridLayout               matlab.ui.container.GridLayout
         TStartButton                 matlab.ui.control.Button
         TUIAxes                      matlab.ui.control.UIAxes
-        ExperimentModuleTab          matlab.ui.container.Tab
+        ExperimentTab                matlab.ui.container.Tab
         ExperimentsGridLayout        matlab.ui.container.GridLayout
         EPanel3                      matlab.ui.container.Panel
         EP3GridLayout                matlab.ui.container.GridLayout
@@ -123,6 +123,12 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         algo_load % cell of algorithms loaded from folder
         prob_load % cell of problems loaded from folder
         
+        % convergence axes set
+        line_width = 1.5
+        marker_list = {'o', '*', 'x', '^', '+', 'p', 'v', 's', 'd', '<', '>', 'h'}
+        marker_size = 7
+        marker_num = 10
+        
         % Test Module
         Tdata % data
         
@@ -133,6 +139,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         Etime_used % time_used calculated
         Etable_data % table data for calculate
         Etable_view % table data view
+        Etable_view_test % table data view test
         Etable_reps % table reps
         
         % Data Process Module
@@ -303,7 +310,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             cla(app.TUIAxes, 'reset');
             type = app.TShowTypeDropDown.Value;
             switch type
-                case 'Tasks Figure'
+                case 'Tasks Figure (1D)'
                     app.TupdateTasksFigure();
                 case 'Convergence'
                     app.TupdateConvergence();
@@ -362,16 +369,16 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             end
             
             % draw
-            marker_list = {'o', '*', 'x', '^', 's', 'v', 'd', '<', '>', 'p', 'h'};
+            
             for task = 1:app.Tdata.tasks_num
                 convergence = app.Tdata.convergence(task, :);
                 x = 1:size(convergence,2);
                 y = log(convergence);
                 
-                p = plot(app.TUIAxes, x, y, ['-', marker_list{task}]);
-                p.LineWidth = 1.5;
-                p.MarkerIndices = 1:round(x(end)/10):x(end);
-                p.MarkerSize = 8;
+                p = plot(app.TUIAxes, x, y, ['-', app.marker_list{task}]);
+                p.LineWidth = app.line_width;
+                p.MarkerIndices = 1:round(x(end)/app.marker_num):x(end);
+                p.MarkerSize = app.marker_size;
                 hold(app.TUIAxes, 'on');
                 
                 xlabel(app.TUIAxes, 'Iteration');
@@ -459,7 +466,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             if strcmp(show_type, 'Mean')
                 fitness_mean = mean(app.Efitness, 3);
                 app.Etable_data = fitness_mean;
-                app.EUITable.Data = sprintfc('%.2d', fitness_mean);
+                app.Etable_view = sprintfc('%.2d', fitness_mean);
             elseif strcmp(show_type, 'Mean (Std)')
                 fitness_mean = mean(app.Efitness, 3);
                 fitness_std = std(app.Efitness, 0, 3);
@@ -467,11 +474,11 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                 x = zeros([size(fitness_mean, 1), 2*size(fitness_mean, 2)]);
                 x(:, 1:2:end) = fitness_mean;
                 x(:, 2:2:end) = fitness_std;
-                app.EUITable.Data = sprintfc('%.2d (%.2d)', x);
+                app.Etable_view = sprintfc('%.2d (%.2d)', x);
             elseif strcmp(show_type, 'Median')
                 fitness_median = median(app.Efitness, 3);
                 app.Etable_data = fitness_median;
-                app.EUITable.Data = sprintfc('%.2d', fitness_median);
+                app.Etable_view = sprintfc('%.2d', fitness_median);
             elseif strcmp(show_type, 'Median (Std)')
                 fitness_median = median(app.Efitness, 3);
                 fitness_std = std(app.Efitness, 0, 3);
@@ -479,10 +486,19 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                 x = zeros([size(fitness_median, 1), 2*size(fitness_median, 2)]);
                 x(:, 1:2:end) = fitness_median;
                 x(:, 2:2:end) = fitness_std;
-                app.EUITable.Data = sprintfc('%.2d (%.2d)', x);
+                app.Etable_view = sprintfc('%.2d (%.2d)', x);
             end
-            app.Etable_view = app.EUITable.Data;
-            app.EupdateTableTest();
+            
+            if ~isempty(app.Etable_view_test)
+                for algo = 1:size(app.Etable_data, 2)
+                    for row_i = 1:size(app.Etable_data, 1)
+                        app.EUITable.Data{row_i, algo} = [app.Etable_view{row_i, algo}, ' ', app.Etable_view_test{row_i, algo}];
+                    end
+                    app.EUITable.Data{size(app.Etable_data, 1)+1, algo} = app.Etable_view_test{size(app.Etable_data, 1)+1, algo};
+                end
+            else
+                app.EUITable.Data = app.Etable_view;
+            end
             drawnow;
         end
         
@@ -503,10 +519,10 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             end
             test_type = app.ETestTypeDropDown.Value;
             algo_selected = app.EAlgorithmDropDown.Value;
-            
-            app.EUITable.Data = app.Etable_view;
+            app.Etable_view_test = {};
             
             if strcmp(test_type, 'None')
+                app.EUITable.Data = app.Etable_view;
                 return;
             end
             
@@ -523,24 +539,27 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                         p = ranksum(x1, x2);
                     elseif strcmp(test_type, 'Signed rank test')
                         p = signrank(x1, x2);
-                    elseif strcmp(test_type, 'Friedman test')
-                        % TODO
                     end
-                    
                     if p < 0.05
                         if app.Etable_data(row_i, algo) < app.Etable_data(row_i, algo_selected)
-                            app.EUITable.Data{row_i, algo} = [app.Etable_view{row_i, algo}, ' +'];
+                            app.Etable_view_test{row_i, algo} = '+';
                             sign_p(1) = sign_p(1) + 1;
                         else
-                            app.EUITable.Data{row_i, algo} = [app.Etable_view{row_i, algo}, ' -'];
+                            app.Etable_view_test{row_i, algo} = '-';
                             sign_p(2) = sign_p(2) + 1;
                         end
                     else
-                        app.EUITable.Data{row_i, algo} = [app.Etable_view{row_i, algo}, ' ='];
+                        app.Etable_view_test{row_i, algo} = '=';
                         sign_p(3) = sign_p(3) + 1;
                     end
                 end
-                app.EUITable.Data{size(app.Etable_data, 1)+1, algo} = sprintf('%d/%d/%d', sign_p);
+                app.Etable_view_test{size(app.Etable_data, 1)+1, algo} = sprintf('%d/%d/%d', sign_p);
+            end
+            for algo = 1:size(app.Etable_data, 2)
+                for row_i = 1:size(app.Etable_data, 1)
+                    app.EUITable.Data{row_i, algo} = [app.Etable_view{row_i, algo}, ' ', app.Etable_view_test{row_i, algo}];
+                end
+                app.EUITable.Data{size(app.Etable_data, 1)+1, algo} = app.Etable_view_test{size(app.Etable_data, 1)+1, algo};
             end
             drawnow;
         end
@@ -584,6 +603,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                     app.EupdateTableReps();
                 case 'Fitness'
                     app.EupdateTableFitness();
+                    app.EupdateTableTest();
                 case 'Time used'
                     app.EupdateTableTimeUsed();
             end
@@ -639,12 +659,11 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                     max_x = x_cell{i}(end);
                 end
             end
-            marker_list = {'o', '*', 'x', '^', 's', 'v', 'd', '<', '>', 'p', 'h'};
             for i = 1:length(x_cell)
-                p = plot(app.EConvergenceTrendUIAxes, x_cell{i}, y_cell{i}, ['-', marker_list{i}]);
-                p.LineWidth = 1.5;
-                p.MarkerIndices = 1:round(max_x/10):max_x;
-                p.MarkerSize = 8;
+                p = plot(app.EConvergenceTrendUIAxes, x_cell{i}, y_cell{i}, ['-', app.marker_list{i}]);
+                p.LineWidth = app.line_width;
+                p.MarkerIndices = 1:round(max_x/app.marker_num):max_x;
+                p.MarkerSize = app.marker_size;
                 hold(app.EConvergenceTrendUIAxes, 'on');
             end
             legend(app.EConvergenceTrendUIAxes, strrep(app.Edata.algo_cell, '_', '\_'));
@@ -799,14 +818,17 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % child node
             reps_node = uitreenode(data_node);
             reps_node.Text = ['Reps: ', num2str(data_node.NodeData.reps)];
+            reps_node.NodeData = reps_node.Text;
             reps_node.ContextMenu = app.DDataContextMenu;
             
             algo_node = uitreenode(data_node);
             algo_node.Text = 'Algorithms:';
+            algo_node.NodeData = algo_node.Text;
             algo_node.ContextMenu = app.DDataContextMenu;
             for algo = 1:length(data_node.NodeData.algo_cell)
                 algo_child_node = uitreenode(algo_node);
                 algo_child_node.Text = data_node.NodeData.algo_cell{algo};
+                algo_child_node.NodeData = algo_child_node.Text;
                 algo_child_node.ContextMenu = app.DDataContextMenu;
             end
             
@@ -816,19 +838,23 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             for prob = 1:length(data_node.NodeData.prob_cell)
                 prob_child_node = uitreenode(prob_node);
                 prob_child_node.Text = data_node.NodeData.prob_cell{prob};
+                prob_child_node.NodeData = prob_child_node.Text;
                 prob_child_node.ContextMenu = app.DDataContextMenu;
             end
             
             pop_node = uitreenode(data_node);
             pop_node.Text = ['Pop Size: ', num2str(data_node.NodeData.pop_size)];
+            pop_node.NodeData = pop_node.Text;
             pop_node.ContextMenu = app.DDataContextMenu;
             
             iter_node = uitreenode(data_node);
             iter_node.Text = ['Iteration Num: ', num2str(data_node.NodeData.iter_num)];
+            iter_node.NodeData = iter_node.Text;
             iter_node.ContextMenu = app.DDataContextMenu;
             
             eva_node = uitreenode(data_node);
             eva_node.Text = ['Evaluation Num: ', num2str(data_node.NodeData.eva_num)];
+            eva_node.NodeData = eva_node.Text;
             eva_node.ContextMenu = app.DDataContextMenu;
         end
         
@@ -977,9 +1003,6 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.Tdata.tasks_num = tasks_num;
             app.Tdata.tasks_name = tasks_name;
             app.TupdateUIAxes();
-            
-            msg = ['All Use Time: ', char(duration([0, 0, tEnd]))];
-            uiconfirm(app.MTOPlatformUIFigure, msg, 'success', 'Icon', 'success');
             
             app.TstartEnable(true);
         end
@@ -1703,6 +1726,20 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             
             app.DputDataNode('data (Merge Problems)', data_save);
         end
+
+        % Node text changed function: DDataTree
+        function DDataTreeNodeTextChanged(app, event)
+            % update data text
+            
+            node = event.Node;
+            if isa(node.Parent, 'matlab.ui.container.Tree')
+                % this is data text node
+                node.NodeData.name = node.Text;
+            else
+                % this is data parameter node, can't change
+                node.Text = node.NodeData;
+            end
+        end
     end
 
     % Component initialization
@@ -1714,7 +1751,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % Create MTOPlatformUIFigure and hide until all components are created
             app.MTOPlatformUIFigure = uifigure('Visible', 'off');
             app.MTOPlatformUIFigure.Color = [1 1 1];
-            app.MTOPlatformUIFigure.Position = [100 100 1028 660];
+            app.MTOPlatformUIFigure.Position = [100 100 1075 660];
             app.MTOPlatformUIFigure.Name = 'MTO Platform';
             app.MTOPlatformUIFigure.WindowStyle = 'modal';
 
@@ -1730,13 +1767,13 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.MTOPlatformTabGroup.Layout.Row = 1;
             app.MTOPlatformTabGroup.Layout.Column = 1;
 
-            % Create TestModuleTab
-            app.TestModuleTab = uitab(app.MTOPlatformTabGroup);
-            app.TestModuleTab.Title = 'Test Module';
-            app.TestModuleTab.BackgroundColor = [1 1 1];
+            % Create TestTab
+            app.TestTab = uitab(app.MTOPlatformTabGroup);
+            app.TestTab.Title = 'Test';
+            app.TestTab.BackgroundColor = [1 1 1];
 
             % Create TestGridLayout
-            app.TestGridLayout = uigridlayout(app.TestModuleTab);
+            app.TestGridLayout = uigridlayout(app.TestTab);
             app.TestGridLayout.ColumnWidth = {210, '2.5x'};
             app.TestGridLayout.RowHeight = {'1x'};
             app.TestGridLayout.ColumnSpacing = 5;
@@ -1857,7 +1894,6 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.TP2GridLayout = uigridlayout(app.TPanel2);
             app.TP2GridLayout.ColumnWidth = {'1x'};
             app.TP2GridLayout.RowHeight = {'fit', '1x', 'fit'};
-            app.TP2GridLayout.RowSpacing = 0;
             app.TP2GridLayout.Padding = [5 5 5 5];
             app.TP2GridLayout.BackgroundColor = [1 1 1];
 
@@ -1866,20 +1902,20 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.TP21GridLayout.ColumnWidth = {'1x', 'fit'};
             app.TP21GridLayout.RowHeight = {'1x'};
             app.TP21GridLayout.ColumnSpacing = 5;
-            app.TP21GridLayout.Padding = [0 5 0 0];
+            app.TP21GridLayout.Padding = [0 0 0 0];
             app.TP21GridLayout.Layout.Row = 1;
             app.TP21GridLayout.Layout.Column = 1;
             app.TP21GridLayout.BackgroundColor = [1 1 1];
 
             % Create TShowTypeDropDown
             app.TShowTypeDropDown = uidropdown(app.TP21GridLayout);
-            app.TShowTypeDropDown.Items = {'Tasks Figure', 'Convergence'};
+            app.TShowTypeDropDown.Items = {'Tasks Figure (1D)', 'Convergence'};
             app.TShowTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @TShowTypeDropDownValueChanged, true);
             app.TShowTypeDropDown.FontWeight = 'bold';
             app.TShowTypeDropDown.BackgroundColor = [1 1 1];
             app.TShowTypeDropDown.Layout.Row = 1;
             app.TShowTypeDropDown.Layout.Column = 2;
-            app.TShowTypeDropDown.Value = 'Tasks Figure';
+            app.TShowTypeDropDown.Value = 'Tasks Figure (1D)';
 
             % Create TP24GridLayout
             app.TP24GridLayout = uigridlayout(app.TP2GridLayout);
@@ -1905,13 +1941,13 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.TUIAxes.Layout.Row = 2;
             app.TUIAxes.Layout.Column = 1;
 
-            % Create ExperimentModuleTab
-            app.ExperimentModuleTab = uitab(app.MTOPlatformTabGroup);
-            app.ExperimentModuleTab.Title = 'Experiment Module';
-            app.ExperimentModuleTab.BackgroundColor = [1 1 1];
+            % Create ExperimentTab
+            app.ExperimentTab = uitab(app.MTOPlatformTabGroup);
+            app.ExperimentTab.Title = 'Experiment';
+            app.ExperimentTab.BackgroundColor = [1 1 1];
 
             % Create ExperimentsGridLayout
-            app.ExperimentsGridLayout = uigridlayout(app.ExperimentModuleTab);
+            app.ExperimentsGridLayout = uigridlayout(app.ExperimentTab);
             app.ExperimentsGridLayout.ColumnWidth = {170, 210, '1.3x'};
             app.ExperimentsGridLayout.RowHeight = {'1x'};
             app.ExperimentsGridLayout.ColumnSpacing = 5;
@@ -1961,7 +1997,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
 
             % Create ETestTypeDropDown
             app.ETestTypeDropDown = uidropdown(app.EP3T1GridLayout);
-            app.ETestTypeDropDown.Items = {'None', 'Rank sum test', 'Signed rank test', 'Friedman test', ''};
+            app.ETestTypeDropDown.Items = {'None', 'Rank sum test', 'Signed rank test', ''};
             app.ETestTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @ETestTypeDropDownValueChanged, true);
             app.ETestTypeDropDown.BackgroundColor = [1 1 1];
             app.ETestTypeDropDown.Layout.Row = 1;
@@ -2029,7 +2065,6 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EP3FGridLayout = uigridlayout(app.EFigureTab);
             app.EP3FGridLayout.ColumnWidth = {'1x'};
             app.EP3FGridLayout.RowHeight = {'fit', '1x'};
-            app.EP3FGridLayout.RowSpacing = 0;
             app.EP3FGridLayout.Padding = [5 5 5 5];
             app.EP3FGridLayout.BackgroundColor = [1 1 1];
 
@@ -2038,7 +2073,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EP3F1GridLayout.ColumnWidth = {'fit', '1x', 'fit', 'fit', 'fit'};
             app.EP3F1GridLayout.RowHeight = {'fit'};
             app.EP3F1GridLayout.ColumnSpacing = 5;
-            app.EP3F1GridLayout.Padding = [0 5 0 0];
+            app.EP3F1GridLayout.Padding = [0 0 0 0];
             app.EP3F1GridLayout.Layout.Row = 1;
             app.EP3F1GridLayout.Layout.Column = 1;
             app.EP3F1GridLayout.BackgroundColor = [1 1 1];
@@ -2068,7 +2103,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.ESaveAllFigureButton.FontWeight = 'bold';
             app.ESaveAllFigureButton.Layout.Row = 1;
             app.ESaveAllFigureButton.Layout.Column = 1;
-            app.ESaveAllFigureButton.Text = 'Save';
+            app.ESaveAllFigureButton.Text = 'Save All Figure';
 
             % Create EFigureTypeDropDown
             app.EFigureTypeDropDown = uidropdown(app.EP3F1GridLayout);
@@ -2325,6 +2360,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
 
             % Create DataProcessGridLayout
             app.DataProcessGridLayout = uigridlayout(app.DataProcessTab);
+            app.DataProcessGridLayout.ColumnWidth = {350, '1x'};
             app.DataProcessGridLayout.RowHeight = {'1x'};
             app.DataProcessGridLayout.ColumnSpacing = 5;
             app.DataProcessGridLayout.BackgroundColor = [1 1 1];
@@ -2397,14 +2433,14 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.DLoadDataorSelectandDeleteSaveDataLabel_3.HorizontalAlignment = 'center';
             app.DLoadDataorSelectandDeleteSaveDataLabel_3.Layout.Row = 1;
             app.DLoadDataorSelectandDeleteSaveDataLabel_3.Layout.Column = [2 3];
-            app.DLoadDataorSelectandDeleteSaveDataLabel_3.Text = 'Select data nodes, click delete/save button';
+            app.DLoadDataorSelectandDeleteSaveDataLabel_3.Text = 'Select data node, click delete/save';
 
             % Create DLoadDataorSelectandDeleteSaveDataLabel_4
             app.DLoadDataorSelectandDeleteSaveDataLabel_4 = uilabel(app.DP1P1GridLayout);
             app.DLoadDataorSelectandDeleteSaveDataLabel_4.HorizontalAlignment = 'center';
             app.DLoadDataorSelectandDeleteSaveDataLabel_4.Layout.Row = 1;
             app.DLoadDataorSelectandDeleteSaveDataLabel_4.Layout.Column = 1;
-            app.DLoadDataorSelectandDeleteSaveDataLabel_4.Text = 'Load data from folder';
+            app.DLoadDataorSelectandDeleteSaveDataLabel_4.Text = 'Load data to tree';
 
             % Create DP1Panel2
             app.DP1Panel2 = uipanel(app.DP1GridLayout);
@@ -2442,7 +2478,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.DAlgorithmsSplitButton.FontWeight = 'bold';
             app.DAlgorithmsSplitButton.Layout.Row = 2;
             app.DAlgorithmsSplitButton.Layout.Column = 2;
-            app.DAlgorithmsSplitButton.Text = 'Algorithms Split';
+            app.DAlgorithmsSplitButton.Text = 'Algorithm Split';
 
             % Create DProblemsSplitButton
             app.DProblemsSplitButton = uibutton(app.DP1P2GridLayout, 'push');
@@ -2451,7 +2487,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.DProblemsSplitButton.FontWeight = 'bold';
             app.DProblemsSplitButton.Layout.Row = 2;
             app.DProblemsSplitButton.Layout.Column = 3;
-            app.DProblemsSplitButton.Text = 'Problems Split';
+            app.DProblemsSplitButton.Text = 'Problem Split';
 
             % Create DP1Panel3
             app.DP1Panel3 = uipanel(app.DP1GridLayout);
@@ -2471,7 +2507,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.DSelectandMergeDataLabel.HorizontalAlignment = 'center';
             app.DSelectandMergeDataLabel.Layout.Row = 1;
             app.DSelectandMergeDataLabel.Layout.Column = [1 3];
-            app.DSelectandMergeDataLabel.Text = 'Select data nodes, click merge button';
+            app.DSelectandMergeDataLabel.Text = 'Select data node, click merge button';
 
             % Create DRepsMergeButton
             app.DRepsMergeButton = uibutton(app.DP1P3GridLayout, 'push');
@@ -2489,7 +2525,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.DAlgorithmsMergeButton.FontWeight = 'bold';
             app.DAlgorithmsMergeButton.Layout.Row = 2;
             app.DAlgorithmsMergeButton.Layout.Column = 2;
-            app.DAlgorithmsMergeButton.Text = 'Algorithms Merge';
+            app.DAlgorithmsMergeButton.Text = 'Algorithm Merge';
 
             % Create DProblemsMergeButton
             app.DProblemsMergeButton = uibutton(app.DP1P3GridLayout, 'push');
@@ -2498,7 +2534,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.DProblemsMergeButton.FontWeight = 'bold';
             app.DProblemsMergeButton.Layout.Row = 2;
             app.DProblemsMergeButton.Layout.Column = 3;
-            app.DProblemsMergeButton.Text = 'Problems Merge';
+            app.DProblemsMergeButton.Text = 'Problem Merge';
 
             % Create DPanel2
             app.DPanel2 = uipanel(app.DataProcessGridLayout);
@@ -2516,6 +2552,8 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % Create DDataTree
             app.DDataTree = uitree(app.DP2GridLayout);
             app.DDataTree.Multiselect = 'on';
+            app.DDataTree.NodeTextChangedFcn = createCallbackFcn(app, @DDataTreeNodeTextChanged, true);
+            app.DDataTree.Editable = 'on';
             app.DDataTree.Layout.Row = 1;
             app.DDataTree.Layout.Column = [1 3];
 
