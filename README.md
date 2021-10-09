@@ -37,7 +37,7 @@ Environment: **Matlab >= R2020b**
 
 ## Module
 
-### I. Test module
+### I. Test Module
 
 1. Parameter setting
     - Pop Size: population size
@@ -96,7 +96,7 @@ Environment: **Matlab >= R2020b**
     - Read data, click Load Data button, read the saved experimental data, and display the data
 
 
-### III. Data Processing Module
+### III. Data Process Module
 
 1. Read data
     - Click the Load Data button, read the saved experimental data, add to the Data Tree. *Multi-selectable, can be added repeatedly*
