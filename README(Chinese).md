@@ -39,6 +39,9 @@
 
 ### 一、测试模块
 
+![Test Module Tasks](./Readme_Figure/MTO-Platform%20Test%20Module.png)
+![Test Module Convergence](./Readme_Figure/MTO-Platform%20Test%20Module%202.png)
+
 1. 参数设置
     - Pop Size: 种群大小
     - End Type: 终止条件 (Iteration 迭代次数 / Evaluation 评价次数)
@@ -57,6 +60,9 @@
     - 选取算法和任务后，点击Start按钮，会在Axes区域绘制该算法在该问题每个任务上的收敛图像
 
 ### 二、实验模块
+
+![Experiment Module Table](./Readme_Figure/MTO-Platform%20Experiment%20Module.png)
+![Experiment Module Figure](./Readme_Figure/MTO-Platform%20Experiment%20Module%202.png)
 
 1. 参数设置
     - Run Times: 独立运行次数

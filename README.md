@@ -39,6 +39,9 @@ Environment: **Matlab >= R2020b**
 
 ### I. Test Module
 
+![Test Module Tasks](./Readme_Figure/MTO-Platform%20Test%20Module.png)
+![Test Module Convergence](./Readme_Figure/MTO-Platform%20Test%20Module%202.png)
+
 1. Parameter setting
     - Pop Size: population size
     - End Type: Ending condition (Iteration / Evaluation)
@@ -57,6 +60,9 @@ Environment: **Matlab >= R2020b**
     - After selecting the algorithm and task, click the Start button, the convergence image of the algorithm on each task of the problem will be plotted in the Axes area
 
 ### II. Experiment Module
+
+![Experiment Module Table](./Readme_Figure/MTO-Platform%20Experiment%20Module.png)
+![Experiment Module Figure](./Readme_Figure/MTO-Platform%20Experiment%20Module%202.png)
 
 1. parameter settings
     - Run Times: Number of independent runs
