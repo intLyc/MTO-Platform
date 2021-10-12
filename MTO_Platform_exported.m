@@ -397,12 +397,16 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             end
             app.EAlgorithmDropDown.Items = algo_cell;
             app.EAlgorithmDropDown.ItemsData = algo_index;
+            app.EAlgorithmDropDown.Value = 1;
         end
         
         function EresetTable(app, algo_cell, prob_cell, tasks_num_list)
             % reset table in Experiment module
             
             app.EUITable.Data = {};
+            app.Etable_data = {};
+            app.Etable_view = {};
+            app.Etable_view_test = {};
             drawnow;
             prob_row_cell = {};
             for prob = 1:length(prob_cell)
@@ -497,6 +501,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                         else
                             app.EUITable.Data{row_i, algo} = [app.Etable_view{row_i, algo}, ' ', app.Etable_view_test{row_i, algo}];
                         end
+                        drawnow;
                     end
                     if size(app.Etable_view_test, 2) < algo
                         app.EUITable.Data{size(app.Etable_data, 1)+1, algo} = '';
@@ -570,14 +575,15 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                     else
                         app.EUITable.Data{row_i, algo} = [app.Etable_view{row_i, algo}, ' ', app.Etable_view_test{row_i, algo}];
                     end
+                    drawnow;
                 end
                 if size(app.Etable_view_test, 2) < algo
                     app.EUITable.Data{size(app.Etable_data, 1)+1, algo} = '';
                 else
                     app.EUITable.Data{size(app.Etable_data, 1)+1, algo} = app.Etable_view_test{size(app.Etable_data, 1)+1, algo};
                 end
+                drawnow;
             end
-            drawnow;
         end
         
         function EupdateTableHighlight(app)
@@ -602,8 +608,8 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                     [~, index] = max(app.Etable_data(row_i, :));
                     app.EUITable.addStyle(low_color, 'cell', [row_i, index]);
                 end
+                drawnow;
             end
-            drawnow;
         end
         
         function EupdateTable(app)
@@ -639,6 +645,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             end
             app.EProblemsDropDown.Items = prob_row_cell;
             app.EProblemsDropDown.ItemsData = prob_row_index;
+            app.EProblemsDropDown.Value = [1 1];
         end
         
         function EupdateConvergenceAxes(app)
@@ -1487,6 +1494,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             for i = 1:length(file_name_list)
                 load([pathname, file_name_list{i}], 'data_save');
                 app.DputDataNode(file_name_list{i}(1:end-4), data_save);
+                drawnow;
             end
         end
 
@@ -1513,6 +1521,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             data_selected = data_selected(data_mark == 1);
             for i = 1:length(data_selected)
                 data_selected(i).delete();
+                drawnow;
             end
         end
 
@@ -1578,6 +1587,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                         end
                     end
                     app.DputDataNode([data_selected(i).Text, ' (Split Rep: ', num2str(rep), ')'], data_save);
+                    drawnow;
                 end
             end
         end
@@ -1611,6 +1621,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                     data_save.result = data_selected(i).NodeData.result(:, algo);
                     
                     app.DputDataNode([data_selected(i).Text, ' (Split Algorithm: ', data_save.algo_cell{1}, ')'], data_save);
+                    drawnow;
                 end
             end
         end
@@ -1644,6 +1655,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                     data_save.result = data_selected(i).NodeData.result(prob, :);
                     
                     app.DputDataNode([data_selected(i).Text, ' (Split Problem: ', data_save.prob_cell{1}, ')'], data_save);
+                    drawnow;
                 end
             end
         end
@@ -1684,6 +1696,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             end
             
             app.DputDataNode('data (Merge Reps)', data_save);
+            drawnow;
         end
 
         % Button pushed function: DAlgorithmsMergeButton
@@ -1712,6 +1725,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             end
             
             app.DputDataNode('data (Merge Algorithms)', data_save);
+            drawnow;
         end
 
         % Button pushed function: DProblemsMergeButton
@@ -1741,6 +1755,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             end
             
             app.DputDataNode('data (Merge Problems)', data_save);
+            drawnow;
         end
 
         % Node text changed function: DDataTree
@@ -2600,8 +2615,8 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.ESelectedProbContextMenu = uicontextmenu(app.MTOPlatformUIFigure);
             
             % Assign app.ESelectedProbContextMenu
-            app.TProblemTree.ContextMenu = app.ESelectedProbContextMenu;
             app.EProblemsTree.ContextMenu = app.ESelectedProbContextMenu;
+            app.TProblemTree.ContextMenu = app.ESelectedProbContextMenu;
 
             % Create SelectedProbSelectAllMenu
             app.SelectedProbSelectAllMenu = uimenu(app.ESelectedProbContextMenu);
