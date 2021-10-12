@@ -492,9 +492,17 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             if ~isempty(app.Etable_view_test)
                 for algo = 1:size(app.Etable_data, 2)
                     for row_i = 1:size(app.Etable_data, 1)
-                        app.EUITable.Data{row_i, algo} = [app.Etable_view{row_i, algo}, ' ', app.Etable_view_test{row_i, algo}];
+                        if size(app.Etable_view_test, 2) < algo
+                            app.EUITable.Data{row_i, algo} = app.Etable_view{row_i, algo};
+                        else
+                            app.EUITable.Data{row_i, algo} = [app.Etable_view{row_i, algo}, ' ', app.Etable_view_test{row_i, algo}];
+                        end
                     end
-                    app.EUITable.Data{size(app.Etable_data, 1)+1, algo} = app.Etable_view_test{size(app.Etable_data, 1)+1, algo};
+                    if size(app.Etable_view_test, 2) < algo
+                        app.EUITable.Data{size(app.Etable_data, 1)+1, algo} = '';
+                    else
+                        app.EUITable.Data{size(app.Etable_data, 1)+1, algo} = app.Etable_view_test{size(app.Etable_data, 1)+1, algo};
+                    end
                 end
             else
                 app.EUITable.Data = app.Etable_view;
@@ -557,9 +565,17 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             end
             for algo = 1:size(app.Etable_data, 2)
                 for row_i = 1:size(app.Etable_data, 1)
-                    app.EUITable.Data{row_i, algo} = [app.Etable_view{row_i, algo}, ' ', app.Etable_view_test{row_i, algo}];
+                    if size(app.Etable_view_test, 2) < algo
+                        app.EUITable.Data{row_i, algo} = app.Etable_view{row_i, algo};
+                    else
+                        app.EUITable.Data{row_i, algo} = [app.Etable_view{row_i, algo}, ' ', app.Etable_view_test{row_i, algo}];
+                    end
                 end
-                app.EUITable.Data{size(app.Etable_data, 1)+1, algo} = app.Etable_view_test{size(app.Etable_data, 1)+1, algo};
+                if size(app.Etable_view_test, 2) < algo
+                    app.EUITable.Data{size(app.Etable_data, 1)+1, algo} = '';
+                else
+                    app.EUITable.Data{size(app.Etable_data, 1)+1, algo} = app.Etable_view_test{size(app.Etable_data, 1)+1, algo};
+                end
             end
             drawnow;
         end
@@ -1751,7 +1767,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % Create MTOPlatformUIFigure and hide until all components are created
             app.MTOPlatformUIFigure = uifigure('Visible', 'off');
             app.MTOPlatformUIFigure.Color = [1 1 1];
-            app.MTOPlatformUIFigure.Position = [100 100 1089 675];
+            app.MTOPlatformUIFigure.Position = [100 100 1104 668];
             app.MTOPlatformUIFigure.Name = 'MTO Platform';
             app.MTOPlatformUIFigure.WindowStyle = 'modal';
 
@@ -2360,7 +2376,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
 
             % Create DataProcessGridLayout
             app.DataProcessGridLayout = uigridlayout(app.DataProcessTab);
-            app.DataProcessGridLayout.ColumnWidth = {350, '1x'};
+            app.DataProcessGridLayout.ColumnWidth = {380, '1x'};
             app.DataProcessGridLayout.RowHeight = {'1x'};
             app.DataProcessGridLayout.ColumnSpacing = 5;
             app.DataProcessGridLayout.BackgroundColor = [1 1 1];
