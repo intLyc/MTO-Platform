@@ -12,12 +12,12 @@ classdef Chromosome_AC_MTEA
             object.rnvec = rand(1, D);
         end
 
-        function [object, calls] = evaluate(object, Tasks, task_index)
+        function [object, calls] = evaluate(object, Task)
             % 评价函数
             % 参数(个体, 任务组, 任务下标)
             % 返回值(个体, 评价次数)
 
-            [object.factorial_costs, object.rnvec, funcCount] = fnceval(Tasks(object.skill_factor), object.rnvec, 0, options);
+            [object.fitness, object.rnvec, funcCount] = fnceval(Task, object.rnvec, 0, 0);
             calls = funcCount;
         end
 
