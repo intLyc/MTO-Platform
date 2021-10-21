@@ -35,7 +35,6 @@ function transfer_individuals = Transfer(archive, bestX, Tnum)
             rand_t = randi([1, length(archive)]);
             rand_p = randi([1, length(archive{rand_t})]);
             transfer_individuals(i) = archive{rand_t}(rand_p);
-            count = count + 1;
         end
 
     end
