@@ -2,7 +2,7 @@ classdef AC_MTEA < Algorithm
 
     properties (SetAccess = private)
         Tnum = 8;
-        operator_list = ["GA", "DE", "GA", "DE"];
+        operator_list = ["GA", "GA", "GA"];
         GA_mu = 10 % 模拟二进制交叉的染色体长度
         GA_pM = 0.1 % 变异概率
         GA_sigma = 0.02 % 高斯变异的标准差
@@ -95,9 +95,6 @@ classdef AC_MTEA < Algorithm
 
                 % transfer individuals
                 for t = 1:no_of_tasks
-                    transfer_individuals = Transfer([archive(1:t - 1), archive(t + 1:end)], bestX(t), obj.Tnum);
-                    replace_idx = randperm(length(population{t}));
-                    population{t}(replace_idx(1:obj.Tnum)) = transfer_individuals;
                 end
 
                 % evolution
@@ -109,6 +106,11 @@ classdef AC_MTEA < Algorithm
                         case 'DE'
                             child = obj.operator_DE(population{t}, obj.DE_F, obj.DE_pCR);
                     end
+
+                    % Weak Transfer
+                    transfer_individuals = Transfer([archive(1:t - 1), archive(t + 1:end)], bestX(t), obj.Tnum);
+                    replace_idx = randperm(length(population{t}));
+                    population{t}(replace_idx(1:obj.Tnum)) = transfer_individuals;
 
                     for i = 1:length(population{t})
                         % 函数值评价
