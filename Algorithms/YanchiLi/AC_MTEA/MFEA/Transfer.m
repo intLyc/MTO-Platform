@@ -24,8 +24,20 @@ function transfer_individuals = Transfer(archive, bestX, Tnum)
 
     [~, min_idx] = sort(archive_dist);
 
+    count = 1;
+
     for i = 1:Tnum
-        transfer_individuals(i) = archive{tp_idx(min_idx(i), 1)}(tp_idx(min_idx(i), 2));
+
+        if rand() < 0.5
+            transfer_individuals(i) = archive{tp_idx(min_idx(count), 1)}(tp_idx(min_idx(count), 2));
+            count = count + 1;
+        else
+            rand_t = randi([1, length(archive)]);
+            rand_p = randi([1, length(archive{rand_t})]);
+            transfer_individuals(i) = archive{rand_t}(rand_p);
+            count = count + 1;
+        end
+
     end
 
 end
