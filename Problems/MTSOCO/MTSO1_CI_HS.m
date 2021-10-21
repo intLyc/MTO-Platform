@@ -1,11 +1,11 @@
-classdef CI_H < Problem
+classdef MTSO1_CI_HS < Problem
 
     properties
     end
 
     methods
 
-        function obj = CI_H(name)
+        function obj = MTSO1_CI_HS(name)
             obj = obj@Problem(name);
             obj.dims = [50, 50];
             obj.tasks_name = {'Griewank', 'Rastrigin'};

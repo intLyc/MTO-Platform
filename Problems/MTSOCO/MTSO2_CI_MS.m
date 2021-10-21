@@ -1,20 +1,20 @@
-classdef NI_H < Problem
+classdef MTSO2_CI_MS < Problem
 
     properties
     end
 
     methods
 
-        function obj = NI_H(name)
+        function obj = MTSO2_CI_MS(name)
             obj = obj@Problem(name);
             obj.dims = [50, 50];
-            obj.tasks_name = {'Rosenbrock', 'Rastrigin'};
+            obj.tasks_name = {'Ackley', 'Rastrigin'};
         end
 
         function Tasks = getTasks(obj)
-            load('NI_H.mat') % loading data from folder ./Tasks
+            load('CI_M.mat') % loading data from folder ./Tasks
             Tasks(1).dims = obj.dims(1);
-            Tasks(1).fnc = @(x)Rosenbrock(x);
+            Tasks(1).fnc = @(x)Ackley(x, Rotation_Task1, GO_Task1);
             Tasks(1).Lb = -50 * ones(1, obj.dims(1));
             Tasks(1).Ub = 50 * ones(1, obj.dims(1));
             Tasks(2).dims = obj.dims(2);

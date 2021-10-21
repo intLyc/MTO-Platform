@@ -1,11 +1,11 @@
-classdef NI_M < Problem
+classdef MTSO8_NI_MS < Problem
 
     properties
     end
 
     methods
 
-        function obj = NI_M(name)
+        function obj = MTSO8_NI_MS(name)
             obj = obj@Problem(name);
             obj.dims = [50, 50];
             obj.tasks_name = {'Griewank', 'Weierstrass'};
