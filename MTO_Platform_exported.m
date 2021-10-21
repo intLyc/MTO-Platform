@@ -1139,18 +1139,6 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EstartEnable(false);
             app.Estop_flag = false;
             
-            % clear the temporary data
-            app.Edata = [];
-            app.EDataTypeDropDown.Value = 'Reps';
-            
-            % initialize the result properties
-            for algo = 1:algo_num
-                for prob = 1:prob_num
-                    app.Edata.result(prob, algo).clock_time = 0;
-                    app.Edata.result(prob, algo).convergence = [];
-                end
-            end
-            
             % read selected algorithms and problems
             algo_cell = {};
             for algo = 1:algo_num
@@ -1162,6 +1150,10 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                 tasks_num_list(prob) = app.EProblemsTree.Children(prob).NodeData.getTasksNumber();
             end
             
+            % clear the temporary data
+            app.Edata = [];
+            app.EDataTypeDropDown.Value = 'Reps';
+            
             % reset table and convergence
             app.Etable_reps = zeros(length(prob_cell), length(algo_cell));
             app.EupdateTableReps();
@@ -1169,9 +1161,18 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EresetTableAlgorithmDropDown(algo_cell);
             cla(app.EConvergenceTrendUIAxes, 'reset');
             
+            % initialize the result properties
+            for algo = 1:algo_num
+                for prob = 1:prob_num
+                    result(prob, algo).clock_time = 0;
+                    result(prob, algo).convergence = [];
+                end
+            end
+            
             % main experiment loop
             tStart = tic;
             for rep = 1:app.ERepsEditField.Value
+    
                 for prob = 1:prob_num
                     for algo = 1:algo_num
                         % check pause and stop
@@ -1190,9 +1191,9 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                         
                         % run
                         data = singleRun(app.EAlgorithmsTree.Children(algo).NodeData, app.EProblemsTree.Children(prob).NodeData, pre_run_list);
-                        app.Edata.result(prob, algo).clock_time = app.Edata.result(prob, algo).clock_time + data.clock_time;
+                        result(prob, algo).clock_time = result(prob, algo).clock_time + data.clock_time;
                         % BUG: when p_il ~= 0, convergence vartical not same
-                        app.Edata.result(prob, algo).convergence = [app.Edata.result(prob, algo).convergence; data.convergence];
+                        result(prob, algo).convergence = [result(prob, algo).convergence; data.convergence];
                         
                         app.Etable_reps(prob, algo) = rep;
                         app.EupdateTableReps();
@@ -1205,6 +1206,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                 app.Edata.algo_cell = algo_cell;
                 app.Edata.prob_cell = prob_cell';
                 app.Edata.tasks_num_list = tasks_num_list;
+                app.Edata.result = result;
                 app.EcalculatePre();
                 app.EupdateTable();
                 app.EresetConvergenceProblemsDropDown();
