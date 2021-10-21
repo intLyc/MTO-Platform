@@ -28,6 +28,10 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         TP24GridLayout               matlab.ui.container.GridLayout
         TStartButton                 matlab.ui.control.Button
         TUIAxes                      matlab.ui.control.UIAxes
+        TPanel3                      matlab.ui.container.Panel
+        TP3GridLayout                matlab.ui.container.GridLayout
+        OutputTextAreaLabel          matlab.ui.control.Label
+        TOutputTextArea              matlab.ui.control.TextArea
         ExperimentTab                matlab.ui.container.Tab
         ExperimentsGridLayout        matlab.ui.container.GridLayout
         EPanel3                      matlab.ui.container.Panel
@@ -386,6 +390,15 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                 grid(app.TUIAxes, 'on');
             end
             legend(app.TUIAxes, app.Tdata.tasks_name);
+        end
+        
+        function Toutput(app, output_str)
+            if strcmp(app.TOutputTextArea.Value, '')
+                app.TOutputTextArea.Value = output_str;  
+            else
+                app.TOutputTextArea.Value = [app.TOutputTextArea.Value; output_str];
+            end
+            drawnow;
         end
         
         function EresetTableAlgorithmDropDown(app, algo_cell)
@@ -1026,6 +1039,8 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.Tdata.tasks_num = tasks_num;
             app.Tdata.tasks_name = tasks_name;
             app.TupdateUIAxes();
+            best_obj = num2str(app.Tdata.convergence(:, end)','%.2e, ');
+            app.Toutput([best_obj(1:end-1), ' (', prob_name, '-', algo_name, ')']);
             
             app.TstartEnable(true);
         end
@@ -1782,7 +1797,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % Create MTOPlatformUIFigure and hide until all components are created
             app.MTOPlatformUIFigure = uifigure('Visible', 'off');
             app.MTOPlatformUIFigure.Color = [1 1 1];
-            app.MTOPlatformUIFigure.Position = [100 100 1104 668];
+            app.MTOPlatformUIFigure.Position = [100 100 1143 693];
             app.MTOPlatformUIFigure.Name = 'MTO Platform';
             app.MTOPlatformUIFigure.WindowStyle = 'modal';
 
@@ -1805,7 +1820,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
 
             % Create TestGridLayout
             app.TestGridLayout = uigridlayout(app.TestTab);
-            app.TestGridLayout.ColumnWidth = {210, '2.5x'};
+            app.TestGridLayout.ColumnWidth = {210, '2.5x', 250};
             app.TestGridLayout.RowHeight = {'1x'};
             app.TestGridLayout.ColumnSpacing = 5;
             app.TestGridLayout.BackgroundColor = [1 1 1];
@@ -1971,6 +1986,36 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.TUIAxes = uiaxes(app.TP2GridLayout);
             app.TUIAxes.Layout.Row = 2;
             app.TUIAxes.Layout.Column = 1;
+
+            % Create TPanel3
+            app.TPanel3 = uipanel(app.TestGridLayout);
+            app.TPanel3.BackgroundColor = [1 1 1];
+            app.TPanel3.Layout.Row = 1;
+            app.TPanel3.Layout.Column = 3;
+
+            % Create TP3GridLayout
+            app.TP3GridLayout = uigridlayout(app.TPanel3);
+            app.TP3GridLayout.ColumnWidth = {'1x'};
+            app.TP3GridLayout.RowHeight = {'fit', '1x'};
+            app.TP3GridLayout.ColumnSpacing = 5;
+            app.TP3GridLayout.RowSpacing = 5;
+            app.TP3GridLayout.Padding = [5 5 5 5];
+            app.TP3GridLayout.BackgroundColor = [1 1 1];
+
+            % Create OutputTextAreaLabel
+            app.OutputTextAreaLabel = uilabel(app.TP3GridLayout);
+            app.OutputTextAreaLabel.FontWeight = 'bold';
+            app.OutputTextAreaLabel.Layout.Row = 1;
+            app.OutputTextAreaLabel.Layout.Column = 1;
+            app.OutputTextAreaLabel.Text = 'Output';
+
+            % Create TOutputTextArea
+            app.TOutputTextArea = uitextarea(app.TP3GridLayout);
+            app.TOutputTextArea.Editable = 'off';
+            app.TOutputTextArea.WordWrap = 'off';
+            app.TOutputTextArea.FontWeight = 'bold';
+            app.TOutputTextArea.Layout.Row = 2;
+            app.TOutputTextArea.Layout.Column = 1;
 
             % Create ExperimentTab
             app.ExperimentTab = uitab(app.MTOPlatformTabGroup);
@@ -2615,8 +2660,8 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.ESelectedProbContextMenu = uicontextmenu(app.MTOPlatformUIFigure);
             
             % Assign app.ESelectedProbContextMenu
-            app.EProblemsTree.ContextMenu = app.ESelectedProbContextMenu;
             app.TProblemTree.ContextMenu = app.ESelectedProbContextMenu;
+            app.EProblemsTree.ContextMenu = app.ESelectedProbContextMenu;
 
             % Create SelectedProbSelectAllMenu
             app.SelectedProbSelectAllMenu = uimenu(app.ESelectedProbContextMenu);
