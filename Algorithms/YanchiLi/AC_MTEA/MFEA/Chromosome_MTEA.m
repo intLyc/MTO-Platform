@@ -1,4 +1,4 @@
-classdef Chromosome_AC_MTEA
+classdef Chromosome_MTEA
     % 个体基因类
     properties
         rnvec; % 基因型
