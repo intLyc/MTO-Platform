@@ -1,4 +1,4 @@
-classdef AC_MTEA < Algorithm
+classdef MTEA < Algorithm
 
     properties (SetAccess = private)
         Tnum = 8;
@@ -63,14 +63,13 @@ classdef AC_MTEA < Algorithm
             archive = {};
             TotalEvaluations = 0;
             bestobj = inf([1, no_of_tasks]);
-            % bestX = [];
 
             % initialize
             for t = 1:no_of_tasks
                 D(t) = Tasks(t).dims;
 
                 for i = 1:sub_pop
-                    population{t}(i) = Chromosome_AC_MTEA();
+                    population{t}(i) = Chromosome_MTEA();
                     population{t}(i) = initialize(population{t}(i), D(t));
                     [population{t}(i), calls] = evaluate(population{t}(i), Tasks(t));
                     TotalEvaluations = TotalEvaluations + calls;
@@ -113,7 +112,6 @@ classdef AC_MTEA < Algorithm
                     population{t}(replace_idx(1:obj.Tnum)) = transfer_individuals;
 
                     for i = 1:length(population{t})
-                        % 函数值评价
                         [child(i), calls] = evaluate(child(i), Tasks(t));
                         TotalEvaluations = TotalEvaluations + calls;
                     end
@@ -132,8 +130,11 @@ classdef AC_MTEA < Algorithm
                     end
 
                     data.convergence(t, iter) = bestobj(t);
+                end
 
-                    % update archive
+                % update archive
+                for t = 1:no_of_tasks
+
                     if length(archive{t}) < archive_num
                         need_num = min(archive_num - length(archive{t}), length(population{t}));
                         archive{t}(length(archive{t}) + 1:length(archive{t}) + need_num) = population{t}(1:need_num);
@@ -147,9 +148,9 @@ classdef AC_MTEA < Algorithm
 
                 end
 
-                data.clock_time = toc;
             end
 
+            data.clock_time = toc;
         end
 
         function child = operator_GA(obj, population, D, mu, pM, sigma)
@@ -159,8 +160,8 @@ classdef AC_MTEA < Algorithm
             for i = 1:ceil(length(population) / 2)
                 p1 = indorder(i);
                 p2 = indorder(i + fix(length(population) / 2));
-                child(count) = Chromosome_AC_MTEA();
-                child(count + 1) = Chromosome_AC_MTEA();
+                child(count) = Chromosome_MTEA();
+                child(count + 1) = Chromosome_MTEA();
                 u = rand(1, D);
                 cf = zeros(1, D);
                 cf(u <= 0.5) = (2 * u(u <= 0.5)).^(1 / (mu + 1));
@@ -209,7 +210,7 @@ classdef AC_MTEA < Algorithm
 
                 end
 
-                child(i) = Chromosome_AC_MTEA();
+                child(i) = Chromosome_MTEA();
                 child(i).rnvec = z;
             end
 
