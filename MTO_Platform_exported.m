@@ -1141,6 +1141,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             
             % clear the temporary data
             app.Edata = [];
+            app.EDataTypeDropDown.Value = 'Reps';
             
             % initialize the result properties
             for algo = 1:algo_num
