@@ -1,8 +1,8 @@
 classdef MTEA < Algorithm
 
     properties (SetAccess = private)
-        Tnum = 8;
-        operator_list = ["GA", "GA", "GA"];
+        Tnum = 8
+        operator_list = ["GA"]
         GA_mu = 10 % 模拟二进制交叉的染色体长度
         GA_pM = 0.1 % 变异概率
         GA_sigma = 0.02 % 高斯变异的标准差
@@ -48,16 +48,24 @@ classdef MTEA < Algorithm
             archive_num = 2 * obj.pop_size; % 存档大小
             no_of_tasks = length(Tasks); % 任务数量
 
-            % fix operator_list num
-            for i = length(obj.operator_list) + 1:no_of_tasks
-                obj.operator_list(i) = "DE";
+            %fix operator_list
+            operator_list_input = obj.operator_list;
+
+            for t = length(operator_list_input) + 1:no_of_tasks
+                obj.operator_list(t) = operator_list_input(mod(t - 1, length(operator_list_input)) + 1);
             end
 
+            % fix pop size
             if mod(obj.pop_size, no_of_tasks) ~= 0
                 obj.pop_size = obj.pop_size + no_of_tasks - mod(obj.pop_size, no_of_tasks);
             end
 
-            sub_pop = int32(obj.pop_size / no_of_tasks);
+            % fix Tnum
+            if obj.Tnum >= ceil(obj.pop_size / no_of_tasks)
+                obj.Tnum = ceil(obj.pop_size / no_of_tasks);
+            end
+
+            sub_pop = ceil(obj.pop_size / no_of_tasks);
             D = zeros(1, no_of_tasks); % 每个任务解的维数
             population = {};
             archive = {};
