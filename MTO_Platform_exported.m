@@ -1154,20 +1154,37 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.Edata = [];
             app.EDataTypeDropDown.Value = 'Reps';
             
+            % initialize data
+            for algo = 1:algo_num
+                for prob = 1:prob_num
+                    app.Edata.result(prob, algo).clock_time = 0;
+                    app.Edata.result(prob, algo).convergence = [];
+                end
+            end
+            % get this experiment's parameters
+            switch app.EEndTypeDropDown.Value
+                case 'Iteration'
+                    iter_num = app.EEndNumEditField.Value;
+                    eva_num = inf;
+                case 'Evaluation'
+                    iter_num = inf;
+                    eva_num = app.EEndNumEditField.Value;
+            end
+            pre_run_list = [app.EPopSizeEditField.Value, iter_num, eva_num];
+            app.Edata.reps = 0;
+            app.Edata.pop_size = app.EPopSizeEditField.Value;
+            app.Edata.iter_num = iter_num;
+            app.Edata.eva_num = eva_num;
+            app.Edata.algo_cell = algo_cell;
+            app.Edata.prob_cell = prob_cell';
+            app.Edata.tasks_num_list = tasks_num_list;
+            
             % reset table and convergence
             app.Etable_reps = zeros(length(prob_cell), length(algo_cell));
             app.EupdateTableReps();
             app.EresetTable(algo_cell, prob_cell, tasks_num_list);
             app.EresetTableAlgorithmDropDown(algo_cell);
             cla(app.EConvergenceTrendUIAxes, 'reset');
-            
-            % initialize the result properties
-            for algo = 1:algo_num
-                for prob = 1:prob_num
-                    result(prob, algo).clock_time = 0;
-                    result(prob, algo).convergence = [];
-                end
-            end
             
             % main experiment loop
             tStart = tic;
@@ -1178,35 +1195,17 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                         % check pause and stop
                         app.EcheckPauseStopStatus();
                         
-                        % get this experiment's parameters
-                        switch app.EEndTypeDropDown.Value
-                            case 'Iteration'
-                                iter_num = app.EEndNumEditField.Value;
-                                eva_num = inf;
-                            case 'Evaluation'
-                                iter_num = inf;
-                                eva_num = app.EEndNumEditField.Value;
-                        end
-                        pre_run_list = [app.EPopSizeEditField.Value, iter_num, eva_num];
-                        
                         % run
                         data = singleRun(app.EAlgorithmsTree.Children(algo).NodeData, app.EProblemsTree.Children(prob).NodeData, pre_run_list);
-                        result(prob, algo).clock_time = result(prob, algo).clock_time + data.clock_time;
+                        app.Edata.result(prob, algo).clock_time = app.Edata.result(prob, algo).clock_time + data.clock_time;
                         % BUG: when p_il ~= 0, convergence vartical not same
-                        result(prob, algo).convergence = [result(prob, algo).convergence; data.convergence];
+                        app.Edata.result(prob, algo).convergence = [app.Edata.result(prob, algo).convergence; data.convergence];
                         
                         app.Etable_reps(prob, algo) = rep;
                         app.EupdateTableReps();
                     end
                 end
                 app.Edata.reps = rep;
-                app.Edata.pop_size = app.EPopSizeEditField.Value;
-                app.Edata.iter_num = iter_num;
-                app.Edata.eva_num = eva_num;
-                app.Edata.algo_cell = algo_cell;
-                app.Edata.prob_cell = prob_cell';
-                app.Edata.tasks_num_list = tasks_num_list;
-                app.Edata.result = result;
                 app.EcalculatePre();
                 app.EupdateTable();
                 app.EresetConvergenceProblemsDropDown();
