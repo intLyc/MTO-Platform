@@ -73,12 +73,12 @@ classdef SOGA < Algorithm
 
                 while generation < gen && TotalEvaluations(generation) < int32(eva_num / no_of_tasks)
                     generation = generation + 1;
-                    indorder = randperm(sub_pop);
+                    indorder = randperm(length(population));
                     count = 1;
 
-                    for i = 1:sub_pop / 2
+                    for i = 1:ceil(length(population) / 2)
                         p1 = indorder(i);
-                        p2 = indorder(i + (sub_pop / 2));
+                        p2 = indorder(i + fix(length(population) / 2));
                         child(count) = Chromosome_MFEA();
                         child(count + 1) = Chromosome_MFEA();
                         u = rand(1, D);
@@ -104,7 +104,7 @@ classdef SOGA < Algorithm
                     TotalEvaluations(generation) = fnceval_calls;
 
                     intpopulation(1:sub_pop) = population;
-                    intpopulation(sub_pop + 1:2 * sub_pop) = child;
+                    intpopulation(sub_pop + 1:2 * sub_pop) = child(1:sub_pop);
                     [xxx, y] = sort([intpopulation.factorial_costs]);
                     intpopulation = intpopulation(y);
 
@@ -120,7 +120,7 @@ classdef SOGA < Algorithm
                     EvBestFitness(generation) = bestobj;
 
                     if strcmp(selection_process, 'elitist')
-                        [xxx, y] = sort(-[intpopulation.scalar_fitness]);
+                        [xxx, y] = sort(- [intpopulation.scalar_fitness]);
                         intpopulation = intpopulation(y);
                         population = intpopulation(1:sub_pop);
                     elseif strcmp(selection_process, 'roulette wheel')
