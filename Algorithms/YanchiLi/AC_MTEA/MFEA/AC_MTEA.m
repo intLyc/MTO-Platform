@@ -1,8 +1,8 @@
 classdef AC_MTEA < Algorithm
 
     properties (SetAccess = private)
-        pT = 0.3;
-        operator_list = ["GA", "DE"];
+        Tnum = 8;
+        operator_list = ["GA", "DE", "GA", "DE"];
         GA_mu = 10 % 模拟二进制交叉的染色体长度
         GA_pM = 0.1 % 变异概率
         GA_sigma = 0.02 % 高斯变异的标准差
@@ -22,7 +22,8 @@ classdef AC_MTEA < Algorithm
 
             operator_string = sprintf(string_format, obj.operator_list);
 
-            parameter = {'Operator_list GA/DE', operator_string, ...
+            parameter = {'Tnum: Transfer num per iter', num2str(obj.Tnum), ...
+                        'Operator_list GA/DE', operator_string, ...
                         'mu: GA SBX Crossover length', num2str(obj.GA_mu), ...
                         'pM: GA Mutation Probability', num2str(obj.GA_pM), ...
                         'sigma: GA Mutation Sigma', num2str(obj.GA_sigma), ...
@@ -32,6 +33,7 @@ classdef AC_MTEA < Algorithm
 
         function obj = setParameter(obj, parameter_cell)
             count = 1;
+            obj.Tnum = str2num(parameter_cell{count}); count = count + 1;
             obj.operator_list = string(split(parameter_cell{count}, '/')); count = count + 1;
             obj.GA_mu = str2num(parameter_cell{count}); count = count + 1;
             obj.GA_pM = str2num(parameter_cell{count}); count = count + 1;
@@ -46,6 +48,11 @@ classdef AC_MTEA < Algorithm
             archive_num = 2 * obj.pop_size; % 存档大小
             no_of_tasks = length(Tasks); % 任务数量
 
+            % fix operator_list num
+            for i = length(obj.operator_list) + 1:no_of_tasks
+                obj.operator_list(i) = "DE";
+            end
+
             if mod(obj.pop_size, no_of_tasks) ~= 0
                 obj.pop_size = obj.pop_size + no_of_tasks - mod(obj.pop_size, no_of_tasks);
             end
@@ -55,6 +62,8 @@ classdef AC_MTEA < Algorithm
             population = {};
             archive = {};
             TotalEvaluations = 0;
+            bestobj = inf([1, no_of_tasks]);
+            % bestX = [];
 
             % initialize
             for t = 1:no_of_tasks
@@ -68,7 +77,14 @@ classdef AC_MTEA < Algorithm
                 end
 
                 archive{t}(1:sub_pop) = population{t};
-                convergence(t, 1) = min([population{t}.fitness]);
+                [bestobj_iter, min_idx] = min([population{t}.fitness]);
+
+                if bestobj_iter < bestobj(t)
+                    bestobj(t) = bestobj_iter;
+                    bestX(t) = population{t}(min_idx);
+                end
+
+                data.convergence(t, 1) = bestobj(t);
             end
 
             % main loop
@@ -77,6 +93,14 @@ classdef AC_MTEA < Algorithm
             while iter < obj.iter_num && TotalEvaluations < obj.eva_num
                 iter = iter + 1;
 
+                % transfer individuals
+                for t = 1:no_of_tasks
+                    transfer_individuals = Transfer([archive(1:t - 1), archive(t + 1:end)], bestX(t), obj.Tnum);
+                    replace_idx = randperm(length(population{t}));
+                    population{t}(replace_idx(1:obj.Tnum)) = transfer_individuals;
+                end
+
+                % evolution
                 for t = 1:no_of_tasks
 
                     switch obj.operator_list(t)
@@ -92,27 +116,31 @@ classdef AC_MTEA < Algorithm
                         TotalEvaluations = TotalEvaluations + calls;
                     end
 
-                    % transfer individuals
-                    % TODO
-
                     % selection
                     intpopulation(1:length(population{t})) = population{t};
                     intpopulation(length(population{t}) + 1:length(population{t}) + length(child)) = child;
-                    [~, y] = sort([population{t}.fitness]);
+                    [~, y] = sort([intpopulation.fitness]);
                     intpopulation = intpopulation(y);
-                    convergence(t, iter) = population{t}(1).fitness;
                     population{t} = intpopulation(1:sub_pop);
+                    [bestobj_iter, min_idx] = min([population{t}.fitness]);
+
+                    if bestobj_iter < bestobj(t)
+                        bestobj(t) = bestobj_iter;
+                        bestX(t) = population{t}(min_idx);
+                    end
+
+                    data.convergence(t, iter) = bestobj(t);
 
                     % update archive
-                    if iter == 2
-                        archive{t}(sub_pop + 1:archive_num) = population{t};
+                    if length(archive{t}) < archive_num
+                        need_num = min(archive_num - length(archive{t}), length(population{t}));
+                        archive{t}(length(archive{t}) + 1:length(archive{t}) + need_num) = population{t}(1:need_num);
                     else
                         % 随机选取U(1,n/2)个个体更新archive
-                        update_pop_idx = randperm(length(population{i}));
-                        update_pop_idx = update_idx(1:randi([1, ceil(length(population{i}) / 2)]));
-                        update_archive_idx = randperm(length(archive{i}));
-                        update_archive_idx = update_archive_idx(1:length(update_pop_idx));
-                        archive{t}(update_archive_idx) = population{t}(update_pop_idx);
+                        update_pop_idx = randperm(length(population{t}));
+                        update_pop_idx = update_pop_idx(1:randi([1, fix(length(population{t}) / 2)]));
+                        archive{t}(1:length(update_pop_idx)) = population{t}(update_pop_idx);
+                        archive{t} = [archive{t}(length(update_pop_idx) + 1:end), archive{t}(1:length(update_pop_idx))];
                     end
 
                 end
@@ -149,12 +177,10 @@ classdef AC_MTEA < Algorithm
         end
 
         function child = operator_DE(obj, population, F, pCR)
-            count = 1;
 
-            for i = 1:ceil(length(population))
+            for i = 1:length(population)
                 x = population(i).rnvec; % 提取个体位置
-                A = randperm(sub_pop);
-
+                A = randperm(length(population));
                 A(A == i) = []; % 当前个体所排位置腾空（产生变异中间体时当前个体不参与）
                 p1 = A(1);
                 p2 = A(mod(2 - 1, length(A)) + 1);
@@ -163,6 +189,8 @@ classdef AC_MTEA < Algorithm
                 % beta=unifrnd(beta_min,beta_max,VarSize); % 随机产生缩放因子
                 y = population(p1).rnvec + F * (population(p2).rnvec - population(p3).rnvec); % 产生中间体
                 % 防止中间体越界
+                lb = 0; % 参数取值下界
+                ub = 1; % 参数取值上界
                 y = max(y, lb);
                 y = min(y, ub);
 
@@ -179,10 +207,8 @@ classdef AC_MTEA < Algorithm
 
                 end
 
-                child(count) = Chromosome_MFDE();
-                child(count).rnvec = z;
-
-                count = count + 1;
+                child(i) = Chromosome_AC_MTEA();
+                child(i).rnvec = z;
             end
 
         end
