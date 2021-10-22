@@ -1,4 +1,4 @@
-classdef MTEA < Algorithm
+classdef MTEA_Mix < Algorithm
 
     properties (SetAccess = private)
         Tnum = 8
@@ -113,7 +113,7 @@ classdef MTEA < Algorithm
 
                     % Weak Transfer
                     if (mod((iter - 1), sum(obj.Titer)) + 1) - obj.Titer(1) > 0 && obj.Tnum > 0;
-                        transfer_individuals = Transfer_Random([population(1:t - 1), population(t + 1:end)], bestX(t), obj.Tnum);
+                        transfer_individuals = Transfer_Mix([population(1:t - 1), population(t + 1:end)], bestX(t), obj.Tnum);
                         replace_idx = randperm(length(child));
                         child(replace_idx(1:obj.Tnum)) = transfer_individuals;
                     end
