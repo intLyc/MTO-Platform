@@ -72,6 +72,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         EndTypeLabel                 matlab.ui.control.Label
         EEndTypeDropDown             matlab.ui.control.DropDown
         ELoadDataButton              matlab.ui.control.Button
+        ESaveDataButton              matlab.ui.control.Button
         EPanel2                      matlab.ui.container.Panel
         EP2GridLayout                matlab.ui.container.GridLayout
         EStartButton                 matlab.ui.control.Button
@@ -83,7 +84,6 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         ESelectedProblemsLabel       matlab.ui.control.Label
         EAlgorithmsDelButton         matlab.ui.control.Button
         EProblemsDelButton           matlab.ui.control.Button
-        ESaveDataButton              matlab.ui.control.Button
         DataProcessTab               matlab.ui.container.Tab
         DataProcessGridLayout        matlab.ui.container.GridLayout
         DPanel1                      matlab.ui.container.Panel
@@ -1799,7 +1799,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % Create MTOPlatformUIFigure and hide until all components are created
             app.MTOPlatformUIFigure = uifigure('Visible', 'off');
             app.MTOPlatformUIFigure.Color = [1 1 1];
-            app.MTOPlatformUIFigure.Position = [100 100 1143 693];
+            app.MTOPlatformUIFigure.Position = [100 100 1215 747];
             app.MTOPlatformUIFigure.Name = 'MTO Platform';
             app.MTOPlatformUIFigure.WindowStyle = 'modal';
 
@@ -2207,7 +2207,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % Create EP1GridLayout
             app.EP1GridLayout = uigridlayout(app.EPanel1);
             app.EP1GridLayout.ColumnWidth = {'fit', '1x', 70};
-            app.EP1GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x', 'fit'};
+            app.EP1GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x'};
             app.EP1GridLayout.ColumnSpacing = 5;
             app.EP1GridLayout.Padding = [5 5 5 5];
             app.EP1GridLayout.BackgroundColor = [1 1 1];
@@ -2218,7 +2218,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EProblemsAddButton.VerticalAlignment = 'top';
             app.EProblemsAddButton.BackgroundColor = [0.702 1 0.702];
             app.EProblemsAddButton.FontWeight = 'bold';
-            app.EProblemsAddButton.Layout.Row = 7;
+            app.EProblemsAddButton.Layout.Row = 9;
             app.EProblemsAddButton.Layout.Column = 3;
             app.EProblemsAddButton.Text = 'Add';
 
@@ -2228,49 +2228,49 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EAlgorithmsAddButton.VerticalAlignment = 'top';
             app.EAlgorithmsAddButton.BackgroundColor = [0.702 1 0.702];
             app.EAlgorithmsAddButton.FontWeight = 'bold';
-            app.EAlgorithmsAddButton.Layout.Row = 5;
+            app.EAlgorithmsAddButton.Layout.Row = 7;
             app.EAlgorithmsAddButton.Layout.Column = 3;
             app.EAlgorithmsAddButton.Text = 'Add';
 
             % Create ERepsEditField
             app.ERepsEditField = uieditfield(app.EP1GridLayout, 'numeric');
             app.ERepsEditField.HorizontalAlignment = 'center';
-            app.ERepsEditField.Layout.Row = 1;
+            app.ERepsEditField.Layout.Row = 3;
             app.ERepsEditField.Layout.Column = [2 3];
             app.ERepsEditField.Value = 20;
 
             % Create ERunTimesEditFieldLabel
             app.ERunTimesEditFieldLabel = uilabel(app.EP1GridLayout);
             app.ERunTimesEditFieldLabel.FontWeight = 'bold';
-            app.ERunTimesEditFieldLabel.Layout.Row = 1;
+            app.ERunTimesEditFieldLabel.Layout.Row = 3;
             app.ERunTimesEditFieldLabel.Layout.Column = 1;
             app.ERunTimesEditFieldLabel.Text = 'Run Times';
 
             % Create EEndNumEditField
             app.EEndNumEditField = uieditfield(app.EP1GridLayout, 'numeric');
             app.EEndNumEditField.HorizontalAlignment = 'center';
-            app.EEndNumEditField.Layout.Row = 4;
+            app.EEndNumEditField.Layout.Row = 6;
             app.EEndNumEditField.Layout.Column = [2 3];
             app.EEndNumEditField.Value = 1000;
 
             % Create EEndNumEditFieldLabel
             app.EEndNumEditFieldLabel = uilabel(app.EP1GridLayout);
             app.EEndNumEditFieldLabel.FontWeight = 'bold';
-            app.EEndNumEditFieldLabel.Layout.Row = 4;
+            app.EEndNumEditFieldLabel.Layout.Row = 6;
             app.EEndNumEditFieldLabel.Layout.Column = 1;
             app.EEndNumEditFieldLabel.Text = 'End Num';
 
             % Create EPopSizeEditField
             app.EPopSizeEditField = uieditfield(app.EP1GridLayout, 'numeric');
             app.EPopSizeEditField.HorizontalAlignment = 'center';
-            app.EPopSizeEditField.Layout.Row = 2;
+            app.EPopSizeEditField.Layout.Row = 4;
             app.EPopSizeEditField.Layout.Column = [2 3];
             app.EPopSizeEditField.Value = 100;
 
             % Create EPopSizeEditFieldLabel
             app.EPopSizeEditFieldLabel = uilabel(app.EP1GridLayout);
             app.EPopSizeEditFieldLabel.FontWeight = 'bold';
-            app.EPopSizeEditFieldLabel.Layout.Row = 2;
+            app.EPopSizeEditFieldLabel.Layout.Row = 4;
             app.EPopSizeEditFieldLabel.Layout.Column = 1;
             app.EPopSizeEditFieldLabel.Text = 'Pop Size';
 
@@ -2278,14 +2278,14 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EAlgorithmsListBox = uilistbox(app.EP1GridLayout);
             app.EAlgorithmsListBox.Items = {};
             app.EAlgorithmsListBox.Multiselect = 'on';
-            app.EAlgorithmsListBox.Layout.Row = 6;
+            app.EAlgorithmsListBox.Layout.Row = 8;
             app.EAlgorithmsListBox.Layout.Column = [1 3];
             app.EAlgorithmsListBox.Value = {};
 
             % Create AlgorithmsListBox_2Label
             app.AlgorithmsListBox_2Label = uilabel(app.EP1GridLayout);
             app.AlgorithmsListBox_2Label.FontWeight = 'bold';
-            app.AlgorithmsListBox_2Label.Layout.Row = 5;
+            app.AlgorithmsListBox_2Label.Layout.Row = 7;
             app.AlgorithmsListBox_2Label.Layout.Column = 1;
             app.AlgorithmsListBox_2Label.Text = 'Algorithms';
 
@@ -2293,21 +2293,21 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EProblemsListBox = uilistbox(app.EP1GridLayout);
             app.EProblemsListBox.Items = {};
             app.EProblemsListBox.Multiselect = 'on';
-            app.EProblemsListBox.Layout.Row = 8;
+            app.EProblemsListBox.Layout.Row = 10;
             app.EProblemsListBox.Layout.Column = [1 3];
             app.EProblemsListBox.Value = {};
 
             % Create ProblemsListBox_2Label
             app.ProblemsListBox_2Label = uilabel(app.EP1GridLayout);
             app.ProblemsListBox_2Label.FontWeight = 'bold';
-            app.ProblemsListBox_2Label.Layout.Row = 7;
+            app.ProblemsListBox_2Label.Layout.Row = 9;
             app.ProblemsListBox_2Label.Layout.Column = 1;
             app.ProblemsListBox_2Label.Text = 'Problems';
 
             % Create EndTypeLabel
             app.EndTypeLabel = uilabel(app.EP1GridLayout);
             app.EndTypeLabel.FontWeight = 'bold';
-            app.EndTypeLabel.Layout.Row = 3;
+            app.EndTypeLabel.Layout.Row = 5;
             app.EndTypeLabel.Layout.Column = 1;
             app.EndTypeLabel.Text = 'End Type';
 
@@ -2315,7 +2315,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EEndTypeDropDown = uidropdown(app.EP1GridLayout);
             app.EEndTypeDropDown.Items = {'Iteration', 'Evaluation'};
             app.EEndTypeDropDown.BackgroundColor = [1 1 1];
-            app.EEndTypeDropDown.Layout.Row = 3;
+            app.EEndTypeDropDown.Layout.Row = 5;
             app.EEndTypeDropDown.Layout.Column = [2 3];
             app.EEndTypeDropDown.Value = 'Iteration';
 
@@ -2324,9 +2324,18 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.ELoadDataButton.ButtonPushedFcn = createCallbackFcn(app, @ELoadDataButtonPushed, true);
             app.ELoadDataButton.BackgroundColor = [0.502 0.702 1];
             app.ELoadDataButton.FontWeight = 'bold';
-            app.ELoadDataButton.Layout.Row = 9;
+            app.ELoadDataButton.Layout.Row = 1;
             app.ELoadDataButton.Layout.Column = [1 3];
             app.ELoadDataButton.Text = 'Load Data';
+
+            % Create ESaveDataButton
+            app.ESaveDataButton = uibutton(app.EP1GridLayout, 'push');
+            app.ESaveDataButton.ButtonPushedFcn = createCallbackFcn(app, @ESaveDataButtonPushed, true);
+            app.ESaveDataButton.BackgroundColor = [0.702 1 0.702];
+            app.ESaveDataButton.FontWeight = 'bold';
+            app.ESaveDataButton.Layout.Row = 2;
+            app.ESaveDataButton.Layout.Column = [1 3];
+            app.ESaveDataButton.Text = 'Save Data';
 
             % Create EPanel2
             app.EPanel2 = uipanel(app.ExperimentsGridLayout);
@@ -2337,7 +2346,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % Create EP2GridLayout
             app.EP2GridLayout = uigridlayout(app.EPanel2);
             app.EP2GridLayout.ColumnWidth = {'2x', 70};
-            app.EP2GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x', 'fit'};
+            app.EP2GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x'};
             app.EP2GridLayout.ColumnSpacing = 5;
             app.EP2GridLayout.Padding = [5 5 5 5];
             app.EP2GridLayout.BackgroundColor = [1 1 1];
@@ -2421,15 +2430,6 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EProblemsDelButton.Layout.Row = 6;
             app.EProblemsDelButton.Layout.Column = 2;
             app.EProblemsDelButton.Text = 'Delete';
-
-            % Create ESaveDataButton
-            app.ESaveDataButton = uibutton(app.EP2GridLayout, 'push');
-            app.ESaveDataButton.ButtonPushedFcn = createCallbackFcn(app, @ESaveDataButtonPushed, true);
-            app.ESaveDataButton.BackgroundColor = [0.702 1 0.702];
-            app.ESaveDataButton.FontWeight = 'bold';
-            app.ESaveDataButton.Layout.Row = 8;
-            app.ESaveDataButton.Layout.Column = [1 2];
-            app.ESaveDataButton.Text = 'Save Data';
 
             % Create DataProcessTab
             app.DataProcessTab = uitab(app.MTOPlatformTabGroup);
