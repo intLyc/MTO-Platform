@@ -1,4 +1,4 @@
-classdef MTEA < Algorithm
+classdef MTEA_A < Algorithm
 
     properties (SetAccess = private)
         Tnum = 8
@@ -49,6 +49,7 @@ classdef MTEA < Algorithm
         function data = run(obj, Tasks, pre_run_list)
             obj.setPreRun(pre_run_list);
             tic
+            archive_num = 2 * obj.pop_size; % 存档大小
             no_of_tasks = length(Tasks); % 任务数量
 
             %fix operator_list
@@ -71,6 +72,7 @@ classdef MTEA < Algorithm
             sub_pop = ceil(obj.pop_size / no_of_tasks);
             D = zeros(1, no_of_tasks); % 每个任务解的维数
             population = {};
+            archive = {};
             TotalEvaluations = 0;
             bestobj = inf([1, no_of_tasks]);
 
@@ -85,6 +87,7 @@ classdef MTEA < Algorithm
                     TotalEvaluations = TotalEvaluations + calls;
                 end
 
+                archive{t}(1:sub_pop) = population{t};
                 [bestobj_iter, min_idx] = min([population{t}.fitness]);
 
                 if bestobj_iter < bestobj(t)
@@ -113,7 +116,7 @@ classdef MTEA < Algorithm
 
                     % Weak Transfer
                     if (mod((iter - 1), sum(obj.Titer)) + 1) - obj.Titer(1) > 0 && obj.Tnum > 0;
-                        transfer_individuals = Transfer_Random([population(1:t - 1), population(t + 1:end)], bestX(t), obj.Tnum);
+                        transfer_individuals = Transfer_Random([archive(1:t - 1), archive(t + 1:end)], bestX(t), obj.Tnum);
                         replace_idx = randperm(length(child));
                         child(replace_idx(1:obj.Tnum)) = transfer_individuals;
                     end
@@ -137,6 +140,22 @@ classdef MTEA < Algorithm
                     end
 
                     data.convergence(t, iter) = bestobj(t);
+                end
+
+                % update archive
+                for t = 1:no_of_tasks
+
+                    if length(archive{t}) < archive_num
+                        need_num = min(archive_num - length(archive{t}), length(population{t}));
+                        archive{t}(length(archive{t}) + 1:length(archive{t}) + need_num) = population{t}(1:need_num);
+                    else
+                        % 随机选取U(1,n/2)个个体更新archive
+                        update_pop_idx = randperm(length(population{t}));
+                        update_pop_idx = update_pop_idx(1:randi([1, fix(length(population{t}) / 2)]));
+                        archive{t}(1:length(update_pop_idx)) = population{t}(update_pop_idx);
+                        archive{t} = [archive{t}(length(update_pop_idx) + 1:end), archive{t}(1:length(update_pop_idx))];
+                    end
+
                 end
 
             end

@@ -1,4 +1,4 @@
-classdef MTEA < Algorithm
+classdef MTEA_IT < Algorithm
 
     properties (SetAccess = private)
         Tnum = 8
@@ -103,19 +103,19 @@ classdef MTEA < Algorithm
 
                 % evolution
                 for t = 1:no_of_tasks
+                    % indirect Transfer, only use for generate child
+                    parent = population{t};
+                    if (mod((iter - 1), sum(obj.Titer)) + 1) - obj.Titer(1) > 0 && obj.Tnum > 0;
+                        transfer_individuals = Transfer_Random([population(1:t - 1), population(t + 1:end)], bestX(t), obj.Tnum);
+                        replace_idx = randperm(length(parent));
+                        parent(replace_idx(1:obj.Tnum)) = transfer_individuals;
+                    end
 
                     switch obj.operator_list(t)
                         case 'GA'
-                            child = obj.operator_GA(population{t}, D(t), obj.GA_mu, obj.GA_pM, obj.GA_sigma);
+                            child = obj.operator_GA(parent, D(t), obj.GA_mu, obj.GA_pM, obj.GA_sigma);
                         case 'DE'
-                            child = obj.operator_DE(population{t}, obj.DE_F, obj.DE_pCR);
-                    end
-
-                    % Weak Transfer
-                    if (mod((iter - 1), sum(obj.Titer)) + 1) - obj.Titer(1) > 0 && obj.Tnum > 0;
-                        transfer_individuals = Transfer_Random([population(1:t - 1), population(t + 1:end)], bestX(t), obj.Tnum);
-                        replace_idx = randperm(length(child));
-                        child(replace_idx(1:obj.Tnum)) = transfer_individuals;
+                            child = obj.operator_DE(parent, obj.DE_F, obj.DE_pCR);
                     end
 
                     for i = 1:length(child)
