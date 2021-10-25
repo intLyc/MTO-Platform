@@ -108,6 +108,11 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         DRepsMergeButton             matlab.ui.control.Button
         DAlgorithmsMergeButton       matlab.ui.control.Button
         DProblemsMergeButton         matlab.ui.control.Button
+        DP1Panel4                    matlab.ui.container.Panel
+        DP1P4GridLayout              matlab.ui.container.GridLayout
+        DUpandDownDataLabel          matlab.ui.control.Label
+        DUpButton                    matlab.ui.control.Button
+        DDownButton                  matlab.ui.control.Button
         DPanel2                      matlab.ui.container.Panel
         DP2GridLayout                matlab.ui.container.GridLayout
         DDataTree                    matlab.ui.container.Tree
@@ -394,7 +399,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         
         function Toutput(app, output_str)
             if strcmp(app.TOutputTextArea.Value, '')
-                app.TOutputTextArea.Value = output_str;  
+                app.TOutputTextArea.Value = output_str;
             else
                 app.TOutputTextArea.Value = [app.TOutputTextArea.Value; output_str];
             end
@@ -1189,7 +1194,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % main experiment loop
             tStart = tic;
             for rep = 1:app.ERepsEditField.Value
-    
+                
                 for prob = 1:prob_num
                     for algo = 1:algo_num
                         % check pause and stop
@@ -1788,6 +1793,84 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                 node.Text = node.NodeData;
             end
         end
+
+        % Button pushed function: DUpButton
+        function DUpButtonPushed(app, event)
+            data_selected = app.DDataTree.SelectedNodes;
+            data_mark = [];
+            data_num = 0;
+            for i = 1:length(data_selected)
+                if isa(data_selected(i).Parent, 'matlab.ui.container.Tree')
+                    data_num = data_num + 1;
+                    data_mark(i) = 1;
+                else
+                    data_mark(i) = 0;
+                end
+            end
+            data_selected = app.DDataTree.SelectedNodes;
+            data_selected = data_selected(data_mark == 1);
+            selected = [];
+            
+            % move up
+            for i = 1:length(data_selected)
+                parent = data_selected(i).Parent;
+                for j = 1:length(parent.Children)
+                    if parent.Children(j) == data_selected(i) && j > 1
+                        text = parent.Children(j).Text;
+                        nodedata = parent.Children(j).NodeData;
+                        parent.Children(j).Text = parent.Children(j-1).Text;
+                        parent.Children(j).NodeData = parent.Children(j-1).NodeData;
+                        parent.Children(j-1).Text = text;
+                        parent.Children(j-1).NodeData = nodedata;
+                        selected = [selected, parent.Children(j-1)];
+                    elseif parent.Children(j) == data_selected(i) && j == 1
+                        selected = [selected, parent.Children(j)];
+                    end
+                end
+            end
+            
+            % change selected node
+            app.DDataTree.SelectedNodes = selected;
+        end
+
+        % Button pushed function: DDownButton
+        function DDownButtonPushed(app, event)
+            data_selected = app.DDataTree.SelectedNodes;
+            data_mark = [];
+            data_num = 0;
+            for i = 1:length(data_selected)
+                if isa(data_selected(i).Parent, 'matlab.ui.container.Tree')
+                    data_num = data_num + 1;
+                    data_mark(i) = 1;
+                else
+                    data_mark(i) = 0;
+                end
+            end
+            data_selected = app.DDataTree.SelectedNodes;
+            data_selected = data_selected(data_mark == 1);
+            selected = [];
+            
+            % move down
+            for i = 1:length(data_selected)
+                parent = data_selected(i).Parent;
+                for j = 1:length(parent.Children)
+                    if parent.Children(j) == data_selected(i) && j < length(parent.Children)
+                        text = parent.Children(j).Text;
+                        nodedata = parent.Children(j).NodeData;
+                        parent.Children(j).Text = parent.Children(j+1).Text;
+                        parent.Children(j).NodeData = parent.Children(j+1).NodeData;
+                        parent.Children(j+1).Text = text;
+                        parent.Children(j+1).NodeData = nodedata;
+                        selected = [selected, parent.Children(j+1)];
+                    elseif parent.Children(j) == data_selected(i) && j == length(parent.Children)
+                        selected = [selected, parent.Children(j)];
+                    end
+                end
+            end
+            
+            % change selected node
+            app.DDataTree.SelectedNodes = selected;
+        end
     end
 
     % Component initialization
@@ -1799,7 +1882,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % Create MTOPlatformUIFigure and hide until all components are created
             app.MTOPlatformUIFigure = uifigure('Visible', 'off');
             app.MTOPlatformUIFigure.Color = [1 1 1];
-            app.MTOPlatformUIFigure.Position = [100 100 1215 747];
+            app.MTOPlatformUIFigure.Position = [100 100 1216 709];
             app.MTOPlatformUIFigure.Name = 'MTO Platform';
             app.MTOPlatformUIFigure.WindowStyle = 'modal';
 
@@ -2452,7 +2535,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % Create DP1GridLayout
             app.DP1GridLayout = uigridlayout(app.DPanel1);
             app.DP1GridLayout.ColumnWidth = {'1x'};
-            app.DP1GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit'};
+            app.DP1GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', 'fit'};
             app.DP1GridLayout.RowSpacing = 20;
             app.DP1GridLayout.Padding = [10 10 10 20];
             app.DP1GridLayout.BackgroundColor = [1 1 1];
@@ -2511,7 +2594,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.DLoadDataorSelectandDeleteSaveDataLabel_3.HorizontalAlignment = 'center';
             app.DLoadDataorSelectandDeleteSaveDataLabel_3.Layout.Row = 1;
             app.DLoadDataorSelectandDeleteSaveDataLabel_3.Layout.Column = [2 3];
-            app.DLoadDataorSelectandDeleteSaveDataLabel_3.Text = 'Select data node, click delete/save';
+            app.DLoadDataorSelectandDeleteSaveDataLabel_3.Text = 'Select data node, click Delete/Save';
 
             % Create DLoadDataorSelectandDeleteSaveDataLabel_4
             app.DLoadDataorSelectandDeleteSaveDataLabel_4 = uilabel(app.DP1P1GridLayout);
@@ -2538,7 +2621,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.DSelectandSplitDataLabel.HorizontalAlignment = 'center';
             app.DSelectandSplitDataLabel.Layout.Row = 1;
             app.DSelectandSplitDataLabel.Layout.Column = [1 3];
-            app.DSelectandSplitDataLabel.Text = 'Select data node, click split button';
+            app.DSelectandSplitDataLabel.Text = 'Select data node, click Split button';
 
             % Create DRepsSplitButton
             app.DRepsSplitButton = uibutton(app.DP1P2GridLayout, 'push');
@@ -2585,7 +2668,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.DSelectandMergeDataLabel.HorizontalAlignment = 'center';
             app.DSelectandMergeDataLabel.Layout.Row = 1;
             app.DSelectandMergeDataLabel.Layout.Column = [1 3];
-            app.DSelectandMergeDataLabel.Text = 'Select data node, click merge button';
+            app.DSelectandMergeDataLabel.Text = 'Select data node, click Merge button';
 
             % Create DRepsMergeButton
             app.DRepsMergeButton = uibutton(app.DP1P3GridLayout, 'push');
@@ -2614,6 +2697,44 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.DProblemsMergeButton.Layout.Column = 3;
             app.DProblemsMergeButton.Text = 'Problem Merge';
 
+            % Create DP1Panel4
+            app.DP1Panel4 = uipanel(app.DP1GridLayout);
+            app.DP1Panel4.BackgroundColor = [1 1 1];
+            app.DP1Panel4.Layout.Row = 5;
+            app.DP1Panel4.Layout.Column = 1;
+
+            % Create DP1P4GridLayout
+            app.DP1P4GridLayout = uigridlayout(app.DP1Panel4);
+            app.DP1P4GridLayout.ColumnWidth = {'1x', '1x', '1x'};
+            app.DP1P4GridLayout.RowHeight = {'fit', 'fit'};
+            app.DP1P4GridLayout.Padding = [10 20 10 20];
+            app.DP1P4GridLayout.BackgroundColor = [1 1 1];
+
+            % Create DUpandDownDataLabel
+            app.DUpandDownDataLabel = uilabel(app.DP1P4GridLayout);
+            app.DUpandDownDataLabel.HorizontalAlignment = 'center';
+            app.DUpandDownDataLabel.Layout.Row = 1;
+            app.DUpandDownDataLabel.Layout.Column = [1 3];
+            app.DUpandDownDataLabel.Text = 'Select data node, click Up or Down button';
+
+            % Create DUpButton
+            app.DUpButton = uibutton(app.DP1P4GridLayout, 'push');
+            app.DUpButton.ButtonPushedFcn = createCallbackFcn(app, @DUpButtonPushed, true);
+            app.DUpButton.BackgroundColor = [0.902 0.902 0.902];
+            app.DUpButton.FontWeight = 'bold';
+            app.DUpButton.Layout.Row = 2;
+            app.DUpButton.Layout.Column = 1;
+            app.DUpButton.Text = 'UP';
+
+            % Create DDownButton
+            app.DDownButton = uibutton(app.DP1P4GridLayout, 'push');
+            app.DDownButton.ButtonPushedFcn = createCallbackFcn(app, @DDownButtonPushed, true);
+            app.DDownButton.BackgroundColor = [0.902 0.902 0.902];
+            app.DDownButton.FontWeight = 'bold';
+            app.DDownButton.Layout.Row = 2;
+            app.DDownButton.Layout.Column = 3;
+            app.DDownButton.Text = 'Down';
+
             % Create DPanel2
             app.DPanel2 = uipanel(app.DataProcessGridLayout);
             app.DPanel2.BackgroundColor = [1 1 1];
@@ -2622,7 +2743,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
 
             % Create DP2GridLayout
             app.DP2GridLayout = uigridlayout(app.DPanel2);
-            app.DP2GridLayout.ColumnWidth = {'1x', '1x', '1x'};
+            app.DP2GridLayout.ColumnWidth = {'1x'};
             app.DP2GridLayout.RowHeight = {'1x'};
             app.DP2GridLayout.Padding = [0 0 0 0];
             app.DP2GridLayout.BackgroundColor = [1 1 1];
@@ -2633,7 +2754,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.DDataTree.NodeTextChangedFcn = createCallbackFcn(app, @DDataTreeNodeTextChanged, true);
             app.DDataTree.Editable = 'on';
             app.DDataTree.Layout.Row = 1;
-            app.DDataTree.Layout.Column = [1 3];
+            app.DDataTree.Layout.Column = 1;
 
             % Create ESelectedAlgoContextMenu
             app.ESelectedAlgoContextMenu = uicontextmenu(app.MTOPlatformUIFigure);
