@@ -14,7 +14,7 @@ function Tasks = benchmark_WCCI2020_MTSO(index)
             Tasks(1).Lb = -100 * ones(1, dims);
             Tasks(1).Ub = 100 * ones(1, dims);
             task_id = 1;
-            fnc = @(x)cec14_func(x', fnc, index, task_id);
+            Tasks(1).fnc = @(x)cec14_func(x', fnc, index, task_id);
 
             Tasks(2).dims = dims;
             fnc = 6;
