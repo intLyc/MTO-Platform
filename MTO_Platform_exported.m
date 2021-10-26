@@ -330,13 +330,13 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % update selected problem tasks figure in Test module
             
             Tasks = app.TProblemTree.Children(1).NodeData.getTasks();
-            tasks_name = app.TProblemTree.Children(1).NodeData.tasks_name;
             no_of_tasks = length(Tasks);
             
             x = 0:1/1000:1;
             f = zeros(size(x));
             
             legend_cell = {};
+            plot_handle = {};
             color = colororder;
             for no = 1:no_of_tasks
                 
@@ -352,7 +352,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                 fmax = max(f);
                 f = (f - fmin) / (fmax - fmin);
                 p1 = plot(app.TUIAxes, x, f);
-                p1.Color = color(no, :);
+                p1.Color = color(mod(no-1, size(color, 1))+1, :);
                 p1.LineWidth = 1;
                 hold(app.TUIAxes, 'on');
                 
@@ -364,9 +364,11 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                 p2.MarkerEdgeColor = p1.Color;
                 hold(app.TUIAxes, 'on');
                 
-                legend_cell = [legend_cell, tasks_name{no}, [tasks_name{no}(1), ' optima']];
+                legend_cell = [legend_cell, ['T', num2str(no)]];
+                plot_handle = [plot_handle, p1];
             end
-            legend(app.TUIAxes, legend_cell);
+            legend(app.TUIAxes, plot_handle, legend_cell);
+            % legend(app.TUIAxes, legend_cell);
         end
         
         function TupdateConvergence(app)
@@ -378,13 +380,18 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             end
             
             % draw
-            
+            tasks_name = {};
             for task = 1:app.Tdata.tasks_num
                 convergence = app.Tdata.convergence(task, :);
                 x = 1:size(convergence,2);
                 y = log(convergence);
+                if task > length(app.marker_list)
+                    marker = '';
+                else
+                    marker = app.marker_list{task};
+                end
                 
-                p = plot(app.TUIAxes, x, y, ['-', app.marker_list{task}]);
+                p = plot(app.TUIAxes, x, y, ['-', marker]);
                 p.LineWidth = app.line_width;
                 p.MarkerIndices = 1:round(x(end)/app.marker_num):x(end);
                 p.MarkerSize = app.marker_size;
@@ -393,8 +400,9 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                 xlabel(app.TUIAxes, 'Iteration');
                 ylabel(app.TUIAxes, 'log(fitness)');
                 grid(app.TUIAxes, 'on');
+                tasks_name = [tasks_name, ['T', num2str(task)]];
             end
-            legend(app.TUIAxes, app.Tdata.tasks_name);
+            legend(app.TUIAxes, tasks_name);
         end
         
         function Toutput(app, output_str)
@@ -429,7 +437,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             prob_row_cell = {};
             for prob = 1:length(prob_cell)
                 for task = 1:tasks_num_list(prob)
-                    prob_row_cell = [prob_row_cell, [prob_cell{prob}, num2str(task)]];
+                    prob_row_cell = [prob_row_cell, [prob_cell{prob}, '_T', num2str(task)]];
                 end
             end
             
@@ -657,7 +665,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             prob_row_index = {};
             for prob = 1:length(app.Edata.prob_cell)
                 for task = 1:app.Edata.tasks_num_list(prob)
-                    prob_row_cell = [prob_row_cell, [app.Edata.prob_cell{prob}, num2str(task)]];
+                    prob_row_cell = [prob_row_cell, [app.Edata.prob_cell{prob}, '_T', num2str(task)]];
                     prob_row_index = [prob_row_index, [prob, task]];
                 end
             end
@@ -701,7 +709,12 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                 end
             end
             for i = 1:length(x_cell)
-                p = plot(app.EConvergenceTrendUIAxes, x_cell{i}, y_cell{i}, ['-', app.marker_list{i}]);
+                if i > length(app.marker_list)
+                    marker = '';
+                else
+                    marker = app.marker_list{i};
+                end
+                p = plot(app.EConvergenceTrendUIAxes, x_cell{i}, y_cell{i}, ['-', marker]);
                 p.LineWidth = app.line_width;
                 p.MarkerIndices = 1:round(max_x/app.marker_num):max_x;
                 p.MarkerSize = app.marker_size;
@@ -1023,8 +1036,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % read selected algorithms and problems
             algo_name = app.TAlgorithmTree.Children(1).Text;
             prob_name = app.TProblemTree.Children(1).Text;
-            tasks_num = app.TProblemTree.Children(1).NodeData.getTasksNumber();
-            tasks_name = app.TProblemTree.Children(1).NodeData.getTasksName();
+            tasks_num = length(app.TProblemTree.Children(1).NodeData.getTasks());
             
             % get this experiment's parameters
             switch app.TEndTypeDropDown.Value
@@ -1042,7 +1054,6 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.Tdata.algo_name = algo_name;
             app.Tdata.prob_name = prob_name;
             app.Tdata.tasks_num = tasks_num;
-            app.Tdata.tasks_name = tasks_name;
             app.TupdateUIAxes();
             best_obj = num2str(app.Tdata.convergence(:, end)','%.2e, ');
             app.Toutput([best_obj(1:end-1), ' (', prob_name, '-', algo_name, ')']);
@@ -1152,7 +1163,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             prob_cell = {};
             for prob = 1:prob_num
                 prob_cell{prob} = app.EProblemsTree.Children(prob).Text;
-                tasks_num_list(prob) = app.EProblemsTree.Children(prob).NodeData.getTasksNumber();
+                tasks_num_list(prob) = length(app.EProblemsTree.Children(prob).NodeData.getTasks());
             end
             
             % clear the temporary data
@@ -1480,7 +1491,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                     draw_obj.setXY(x_cell, y_cell);
                     draw_obj.setXYlabel('Generation', app.EYLimTypeDropDown.Value);
                     draw_obj.setLegend(app.Edata.algo_cell);
-                    draw_obj.setTitle([app.Edata.prob_cell{prob}, ' T', num2str(task)]);
+                    draw_obj.setTitle([app.Edata.prob_cell{prob}, '_T', num2str(task)]);
                     draw_obj.setSaveDir(fig_dir_name);
                     draw_obj.setFigureType(app.EFigureTypeDropDown.Value);
                     draw_obj.save();
@@ -1929,7 +1940,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.TPopSizeEditField.HorizontalAlignment = 'center';
             app.TPopSizeEditField.Layout.Row = 1;
             app.TPopSizeEditField.Layout.Column = 2;
-            app.TPopSizeEditField.Value = 20;
+            app.TPopSizeEditField.Value = 100;
 
             % Create TPopSizeEditFieldLabel
             app.TPopSizeEditFieldLabel = uilabel(app.TP1GridLayout);
