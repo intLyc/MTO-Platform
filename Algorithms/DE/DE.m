@@ -1,10 +1,10 @@
-classdef SOGA < Algorithm
+classdef DE < Algorithm
 
     properties (SetAccess = private)
         selection_process = 'elitist'
         p_il = 0
-        mu = 10 % 模拟二进制交叉的染色体长度
-        sigma = 0.02 % 高斯变异的标准差
+        F = 0.5
+        pCR = 0.9
     end
 
     methods
@@ -12,15 +12,15 @@ classdef SOGA < Algorithm
         function parameter = getParameter(obj)
             parameter = {'elitist / roulette wheel', obj.selection_process, ...
                         'Local Search Probability (p_il)', num2str(obj.p_il), ...
-                        'SBX Crossover length (mu)', num2str(obj.mu), ...
-                        'Mutation Sigma (sigma)', num2str(obj.sigma)};
+                        'Mutation Factor (F)', num2str(obj.F), ...
+                        'Crossover Probability (pCR)', num2str(obj.pCR)};
         end
 
         function obj = setParameter(obj, parameter_cell)
             obj.selection_process = parameter_cell{1};
             obj.p_il = str2double(parameter_cell{2});
-            obj.mu = str2num(parameter_cell{3});
-            obj.sigma = str2double(parameter_cell{4});
+            obj.F = str2double(parameter_cell{3});
+            obj.pCR = str2double(parameter_cell{4});
         end
 
         function data = run(obj, Tasks, pre_run_list)
@@ -30,8 +30,8 @@ classdef SOGA < Algorithm
             eva_num = obj.eva_num;
             selection_process = obj.selection_process;
             p_il = obj.p_il;
-            mu = obj.mu;
-            sigma = obj.sigma;
+            F = obj.F;
+            pCR = obj.pCR;
             data.convergence = [];
 
             tic
@@ -56,7 +56,7 @@ classdef SOGA < Algorithm
                 % TotalEvaluations = zeros(1, gen);
 
                 for i = 1:sub_pop
-                    population(i) = Chromosome_MFEA();
+                    population(i) = Chromosome_MFDE();
                     population(i) = initialize(population(i), D);
                 end
 
@@ -69,31 +69,49 @@ classdef SOGA < Algorithm
                 bestobj = min([population.factorial_costs]);
                 EvBestFitness(1) = bestobj;
 
+                %         VarSize=[1 D];   % Decision Variables Matrix Size
+                %         beta_min=0.2;   % Lower Bound of Scaling Factor
+                %         beta_max=0.8;   % Upper Bound of Scaling Factor
+                lb = zeros(1, D); % 参数取值下界
+                ub = ones(1, D); % 参数取值上界
                 generation = 1;
 
                 while generation < gen && TotalEvaluations(generation) < int32(eva_num / no_of_tasks)
                     generation = generation + 1;
-                    indorder = randperm(length(population));
                     count = 1;
 
-                    for i = 1:ceil(length(population) / 2)
-                        p1 = indorder(i);
-                        p2 = indorder(i + fix(length(population) / 2));
-                        child(count) = Chromosome_MFEA();
-                        child(count + 1) = Chromosome_MFEA();
-                        u = rand(1, D);
-                        cf = zeros(1, D);
-                        cf(u <= 0.5) = (2 * u(u <= 0.5)).^(1 / (mu + 1));
-                        cf(u > 0.5) = (2 * (1 - u(u > 0.5))).^(-1 / (mu + 1));
-                        child(count) = crossover(child(count), population(p1), population(p2), cf);
-                        child(count + 1) = crossover(child(count + 1), population(p2), population(p1), cf);
+                    for i = 1:sub_pop
+                        x = population(i).rnvec; % 提取个体位置
+                        A = randperm(sub_pop);
 
-                        if rand(1) < 0.1
-                            child(count) = mutate(child(count), child(count), D, sigma);
-                            child(count + 1) = mutate(child(count + 1), child(count + 1), D, sigma);
+                        A(A == i) = []; % 当前个体所排位置腾空（产生变异中间体时当前个体不参与）
+                        p1 = A(1);
+                        p2 = A(mod(2 - 1, length(A)) + 1);
+                        p3 = A(mod(3 - 1, length(A)) + 1);
+                        % 变异操作 Mutation
+                        % beta=unifrnd(beta_min,beta_max,VarSize); % 随机产生缩放因子
+                        y = population(p1).rnvec + F * (population(p2).rnvec - population(p3).rnvec); % 产生中间体
+                        % 防止中间体越界
+                        y = max(y, lb);
+                        y = min(y, ub);
+
+                        z = zeros(size(x)); % 初始化一个新个体
+                        j0 = randi([1, numel(x)]); % 产生一个伪随机数，即选取待交换维度编号
+
+                        for j = 1:numel(x) % 遍历每个维度
+
+                            if j == j0 || rand <= pCR % 如果当前维度是待交换维度或者随机概率小于交叉概率
+                                z(j) = y(j); % 新个体当前维度值等于中间体对应维度值
+                            else
+                                z(j) = x(j); % 新个体当前维度值等于当前个体对应维度值
+                            end
+
                         end
 
-                        count = count + 2;
+                        child(count) = Chromosome_MFDE();
+                        child(count).rnvec = z;
+
+                        count = count + 1;
                     end
 
                     for i = 1:sub_pop
@@ -104,7 +122,7 @@ classdef SOGA < Algorithm
                     TotalEvaluations(generation) = fnceval_calls;
 
                     intpopulation(1:sub_pop) = population;
-                    intpopulation(sub_pop + 1:2 * sub_pop) = child(1:sub_pop);
+                    intpopulation(sub_pop + 1:2 * sub_pop) = child;
                     [xxx, y] = sort([intpopulation.factorial_costs]);
                     intpopulation = intpopulation(y);
 
@@ -120,7 +138,7 @@ classdef SOGA < Algorithm
                     EvBestFitness(generation) = bestobj;
 
                     if strcmp(selection_process, 'elitist')
-                        [xxx, y] = sort(- [intpopulation.scalar_fitness]);
+                        [xxx, y] = sort(-[intpopulation.scalar_fitness]);
                         intpopulation = intpopulation(y);
                         population = intpopulation(1:sub_pop);
                     elseif strcmp(selection_process, 'roulette wheel')
