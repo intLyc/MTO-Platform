@@ -8,19 +8,19 @@
   f = cec14_func(x,func_num); 
   Here x is a D*pop_size matrix.
 */
-#include <WINDOWS.H>
+// #include <WINDOWS.H>
 #include <stdio.h>
 #include <math.h>
-#include <malloc.h>
+// #include <malloc.h>
 #include <mex.h>
 
 double *OShift, *M, *y, *z, *x_bound;
 int ini_flag = 0, n_flag, func_flag, benchmark_flag, task_flag, *SS;
 
-#include <WINDOWS.H>
+// #include <WINDOWS.H>
 #include <stdio.h>
 #include <math.h>
-#include <malloc.h>
+// #include <malloc.h>
 
 #define INF 1.0e99
 #define EPS 1.0e-14
@@ -90,6 +90,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	m = mxGetN(prhs[0]);
 	x = mxGetPr(prhs[0]);
 	func_num = (int)*mxGetPr(prhs[1]);
+	if (n <= 2 && ((func_num >= 17 && func_num <= 22) || (func_num >= 29 && func_num <= 30)))
+	{
+		mexErrMsgTxt("Error: This Test functions are only defined for D >= 3");
+	}
 	benchmark_id = (int)*mxGetPr(prhs[2]);
 	task_id = (int)*mxGetPr(prhs[3]);
 	if (func_num > 30)
@@ -132,11 +136,11 @@ void cec14_test_func(double *x, double *f, int nx, int mx, int func_num, int ben
 
 		if (!(nx == 2 || nx == 10 || nx == 20 || nx == 30 || nx == 50 || nx == 100))
 		{
-			printf("\nError: Test functions are only defined for D=2,10,20,30,50,100.\n");
+			// printf("\nError: Test functions are only defined for D=2,10,20,30,50,100.\n");
 		}
 		if (nx == 2 && ((func_num >= 17 && func_num <= 22) || (func_num >= 29 && func_num <= 30)))
 		{
-			printf("\nError: hf01,hf02,hf03,hf04,hf05,hf06,cf07&cf08 are NOT defined for D=2.\n");
+			// printf("\nError: hf01,hf02,hf03,hf04,hf05,hf06,cf07&cf08 are NOT defined for D<=2.\n");
 		}
 		if (func_num >= 23)
 		{
