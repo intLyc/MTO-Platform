@@ -1954,7 +1954,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.TEndNumEditField.HorizontalAlignment = 'center';
             app.TEndNumEditField.Layout.Row = 3;
             app.TEndNumEditField.Layout.Column = 2;
-            app.TEndNumEditField.Value = 100;
+            app.TEndNumEditField.Value = 1000;
 
             % Create TEndNumEditFieldLabel
             app.TEndNumEditFieldLabel = uilabel(app.TP1GridLayout);
