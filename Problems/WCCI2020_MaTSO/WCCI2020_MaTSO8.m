@@ -7,7 +7,7 @@ classdef WCCI2020_MaTSO8 < Problem
 
     methods
         function parameter = getParameter(obj)
-            parameter = {'Task Size', num2str(obj.task_size), ...
+            parameter = {'Task Num', num2str(obj.task_size), ...
                         'Dims', num2str(obj.dims)};
         end
 
