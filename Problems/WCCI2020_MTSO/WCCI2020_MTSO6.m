@@ -5,10 +5,11 @@ classdef WCCI2020_MTSO6 < Problem
 
     methods
         function parameter = getParameter(obj)
-            parameter = {};
+            parameter = obj.getRunParameter();
         end
 
         function obj = setParameter(obj, parameter_cell)
+            obj.setRunParameter(parameter_cell(1:3));
         end
 
         function Tasks = getTasks(obj)

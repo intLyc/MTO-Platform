@@ -26,12 +26,11 @@ classdef MFEA < Algorithm
             obj.sigma = str2double(parameter_cell{5});
         end
 
-        function data = run(obj, Tasks, pre_run_list)
-            obj.setPreRun(pre_run_list);
+        function data = run(obj, Tasks, run_parameter_list)
+            pop = run_parameter_list(1);
+            gen = run_parameter_list(2);
+            eva_num = run_parameter_list(3);
             rmp = obj.rmp;
-            pop = obj.pop_size;
-            gen = obj.iter_num;
-            eva_num = obj.eva_num;
             selection_process = obj.selection_process;
             p_il = obj.p_il;
             mu = obj.mu;
@@ -232,7 +231,7 @@ classdef MFEA < Algorithm
 
                 if strcmp(selection_process, 'elitist')
                     % 保留适应值最好的前pop个
-                    [xxx, y] = sort(-[intpopulation.scalar_fitness]);
+                    [xxx, y] = sort(- [intpopulation.scalar_fitness]);
                     intpopulation = intpopulation(y);
                     population = intpopulation(1:pop);
                 elseif strcmp(selection_process, 'roulette wheel')

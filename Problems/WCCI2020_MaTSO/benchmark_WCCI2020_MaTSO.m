@@ -27,7 +27,7 @@ function Tasks = benchmark_WCCI2020_MaTSO(ID, task_size, dims)
     end
     for task_id = 1:task_size
         func_id = choice_functions(mod(task_id - 1, length(choice_functions)) + 1);
-        file_dir = strcat("./Problems/WCCI2020_MaTSO/WCCI2020_MaTSO_Tasks/benchmark_", string(ID));
+        file_dir = strcat("./Problems/WCCI2020_MaTSO/Tasks/benchmark_", string(ID));
         shift_file = strcat("/bias_", string(task_id));
         rotation_file = strcat("/matrix_", string(task_id));
         matrix = load(strcat(file_dir, rotation_file));

@@ -9,10 +9,12 @@ classdef WCCI2020_MaTSO7 < Problem
         function parameter = getParameter(obj)
             parameter = {'Task Num', num2str(obj.task_size), ...
                         'Dims', num2str(obj.dims)};
+            parameter = [obj.getRunParameter(), parameter];
         end
 
         function obj = setParameter(obj, parameter_cell)
-            count = 1;
+            obj.setRunParameter(parameter_cell(1:3));
+            count = 4;
             obj.task_size = str2num(parameter_cell{count}); count = count + 1;
             obj.dims = str2num(parameter_cell{count}); count = count + 1;
         end
