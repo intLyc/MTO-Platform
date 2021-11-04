@@ -63,7 +63,12 @@ classdef drawFigure < handle
             marker_list = {'o', '*', 'x', '^', '+', 'p', 'v', 's', 'd', '<', '>', 'h'};
 
             for i = 1:length(obj.x_cell)
-                p = plot(obj.x_cell{i}, obj.y_cell{i}, ['-', marker_list{i}]);
+                if i <= length(marker_list)
+                    marker = marker_list{i};
+                else
+                    marker = '';
+                end
+                p = plot(obj.x_cell{i}, obj.y_cell{i}, ['-', marker]);
                 p.LineWidth = 1;
                 p.MarkerIndices = 1:round(max_x / 10):max_x;
                 p.MarkerSize = 5;
