@@ -1818,7 +1818,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                     data_mark(i) = 0;
                 end
             end
-            data_selected = app.DDataTree.SelectedNodes;
+            data_selected = sort(app.DDataTree.SelectedNodes, 'descend');
             data_selected = data_selected(data_mark == 1);
             selected = [];
             
@@ -1827,13 +1827,9 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                 parent = data_selected(i).Parent;
                 for j = 1:length(parent.Children)
                     if parent.Children(j) == data_selected(i) && j > 1
-                        text = parent.Children(j).Text;
-                        nodedata = parent.Children(j).NodeData;
-                        parent.Children(j).Text = parent.Children(j-1).Text;
-                        parent.Children(j).NodeData = parent.Children(j-1).NodeData;
-                        parent.Children(j-1).Text = text;
-                        parent.Children(j-1).NodeData = nodedata;
+                        move(parent.Children(j), parent.Children(j-1),'before');
                         selected = [selected, parent.Children(j-1)];
+                        break;
                     elseif parent.Children(j) == data_selected(i) && j == 1
                         selected = [selected, parent.Children(j)];
                     end
@@ -1842,11 +1838,13 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             
             % change selected node
             app.DDataTree.SelectedNodes = selected;
+            drawnow;
         end
 
         % Button pushed function: DDownButton
         function DDownButtonPushed(app, event)
             data_selected = app.DDataTree.SelectedNodes;
+            
             data_mark = [];
             data_num = 0;
             for i = 1:length(data_selected)
@@ -1858,21 +1856,17 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                 end
             end
             data_selected = app.DDataTree.SelectedNodes;
-            data_selected = data_selected(data_mark == 1);
+            data_selected = sort(data_selected(data_mark == 1), 'descend');
             selected = [];
             
             % move down
-            for i = 1:length(data_selected)
+            for i = length(data_selected):-1:1
                 parent = data_selected(i).Parent;
                 for j = 1:length(parent.Children)
                     if parent.Children(j) == data_selected(i) && j < length(parent.Children)
-                        text = parent.Children(j).Text;
-                        nodedata = parent.Children(j).NodeData;
-                        parent.Children(j).Text = parent.Children(j+1).Text;
-                        parent.Children(j).NodeData = parent.Children(j+1).NodeData;
-                        parent.Children(j+1).Text = text;
-                        parent.Children(j+1).NodeData = nodedata;
+                        move(parent.Children(j), parent.Children(j+1));
                         selected = [selected, parent.Children(j+1)];
+                        break;
                     elseif parent.Children(j) == data_selected(i) && j == length(parent.Children)
                         selected = [selected, parent.Children(j)];
                     end
@@ -1881,6 +1875,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             
             % change selected node
             app.DDataTree.SelectedNodes = selected;
+            drawnow;
         end
     end
 
@@ -2080,6 +2075,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
 
             % Create TUIAxes
             app.TUIAxes = uiaxes(app.TP2GridLayout);
+            app.TUIAxes.PlotBoxAspectRatio = [1.14506769825919 1 1];
             app.TUIAxes.Layout.Row = 2;
             app.TUIAxes.Layout.Column = 1;
 
@@ -2289,6 +2285,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EConvergenceTrendUIAxes = uiaxes(app.EP3FGridLayout);
             xlabel(app.EConvergenceTrendUIAxes, 'Iteration')
             ylabel(app.EConvergenceTrendUIAxes, 'fitness')
+            app.EConvergenceTrendUIAxes.PlotBoxAspectRatio = [1.37847866419295 1 1];
             app.EConvergenceTrendUIAxes.Layout.Row = 2;
             app.EConvergenceTrendUIAxes.Layout.Column = 1;
 
