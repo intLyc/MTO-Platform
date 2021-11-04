@@ -1374,6 +1374,15 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             
             % save data
             data_save = app.Edata;
+            
+            % fix convergence bug
+            for prob = 1:length(data_save.prob_cell)
+                for algo = 1:length(data_save.algo_cell)
+                    idx = 1:data_save.tasks_num_list(prob) * data_save.reps;
+                    data_save.result(prob, algo).convergence = data_save.result(prob, algo).convergence(idx, :);
+                end
+            end
+            
             save([dir_name, file_name], 'data_save');
         end
 
