@@ -2,9 +2,6 @@ classdef Algorithm < handle
 
     properties
         name % algorithm's name
-        pop_size % population size
-        iter_num % num of max iteration
-        eva_num % num of max evaluation
     end
 
     methods
@@ -14,15 +11,6 @@ classdef Algorithm < handle
             % cannot be changed
 
             obj.name = name;
-        end
-
-        function obj = setPreRun(obj, pre_run_list)
-            % set pre run parameter pre_run_list [pop_size, iter_num, eva_num]
-            % cannot be changed
-
-            obj.pop_size = pre_run_list(1);
-            obj.iter_num = pre_run_list(2);
-            obj.eva_num = pre_run_list(3);
         end
 
         function name = getName(obj)

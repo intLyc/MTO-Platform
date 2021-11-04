@@ -9,18 +9,12 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         TestGridLayout               matlab.ui.container.GridLayout
         TPanel1                      matlab.ui.container.Panel
         TP1GridLayout                matlab.ui.container.GridLayout
-        TPopSizeEditField            matlab.ui.control.NumericEditField
-        TPopSizeEditFieldLabel       matlab.ui.control.Label
-        TEndNumEditField             matlab.ui.control.NumericEditField
-        TEndNumEditFieldLabel        matlab.ui.control.Label
         AlgorithmDropDownLabel       matlab.ui.control.Label
         TAlgorithmDropDown           matlab.ui.control.DropDown
         TAlgorithmTree               matlab.ui.container.Tree
         TProblemTree                 matlab.ui.container.Tree
         TProblemDropDown             matlab.ui.control.DropDown
         ProblemDropDownLabel         matlab.ui.control.Label
-        EndTypeLabel_2               matlab.ui.control.Label
-        TEndTypeDropDown             matlab.ui.control.DropDown
         TPanel2                      matlab.ui.container.Panel
         TP2GridLayout                matlab.ui.container.GridLayout
         TP21GridLayout               matlab.ui.container.GridLayout
@@ -61,16 +55,10 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         EAlgorithmsAddButton         matlab.ui.control.Button
         ERepsEditField               matlab.ui.control.NumericEditField
         ERunTimesEditFieldLabel      matlab.ui.control.Label
-        EEndNumEditField             matlab.ui.control.NumericEditField
-        EEndNumEditFieldLabel        matlab.ui.control.Label
-        EPopSizeEditField            matlab.ui.control.NumericEditField
-        EPopSizeEditFieldLabel       matlab.ui.control.Label
         EAlgorithmsListBox           matlab.ui.control.ListBox
         AlgorithmsListBox_2Label     matlab.ui.control.Label
         EProblemsListBox             matlab.ui.control.ListBox
         ProblemsListBox_2Label       matlab.ui.control.Label
-        EndTypeLabel                 matlab.ui.control.Label
-        EEndTypeDropDown             matlab.ui.control.DropDown
         ELoadDataButton              matlab.ui.control.Button
         ESaveDataButton              matlab.ui.control.Button
         EPanel2                      matlab.ui.container.Panel
@@ -216,9 +204,6 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % in Test module
             
             app.TStartButton.Enable = value;
-            app.TPopSizeEditField.Enable = value;
-            app.TEndTypeDropDown.Enable = value;
-            app.TEndNumEditField.Enable = value;
             app.TAlgorithmDropDown.Enable = value;
             app.TAlgorithmTree.Enable = value;
             app.TProblemDropDown.Enable = value;
@@ -231,9 +216,6 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             
             app.EStartButton.Enable = value;
             app.ERepsEditField.Enable = value;
-            app.EPopSizeEditField.Enable = value;
-            app.EEndTypeDropDown.Enable = value;
-            app.EEndNumEditField.Enable = value;
             app.EAlgorithmsAddButton.Enable = value;
             app.EProblemsAddButton.Enable = value;
             app.EAlgorithmsListBox.Enable = value;
@@ -779,9 +761,9 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             iter_num = data_selected(1).NodeData.iter_num;
             eva_num = data_selected(1).NodeData.eva_num;
             for i = 2:data_num
-                if data_selected(i).NodeData.pop_size ~= pop_size || ...
-                        data_selected(i).NodeData.iter_num ~= iter_num || ...
-                        data_selected(i).NodeData.eva_num ~= eva_num
+                if ~isequal(data_selected(i).NodeData.pop_size, pop_size) || ...
+                        ~isequal(data_selected(i).NodeData.iter_num, iter_num) || ...
+                        ~isequal(data_selected(i).NodeData.eva_num, eva_num)
                 msg = 'The data''s pop_size or iter_num or eva_num not equal';
                 uiconfirm(app.MTOPlatformUIFigure, msg, 'error', 'Icon','warning');
                 result = false;
@@ -897,17 +879,20 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             end
             
             pop_node = uitreenode(data_node);
-            pop_node.Text = ['Pop Size: ', num2str(data_node.NodeData.pop_size)];
+            text = num2str(data_node.NodeData.pop_size', '%d, ');
+            pop_node.Text = ['Pop Size: ', text(1:end-1)];
             pop_node.NodeData = pop_node.Text;
             pop_node.ContextMenu = app.DDataContextMenu;
             
             iter_node = uitreenode(data_node);
-            iter_node.Text = ['Iteration Num: ', num2str(data_node.NodeData.iter_num)];
+            text = num2str(data_node.NodeData.iter_num', '%d, ');
+            iter_node.Text = ['Iteration Num: ', text(1:end-1)];
             iter_node.NodeData = iter_node.Text;
             iter_node.ContextMenu = app.DDataContextMenu;
             
             eva_node = uitreenode(data_node);
-            eva_node.Text = ['Evaluation Num: ', num2str(data_node.NodeData.eva_num)];
+            text = num2str(data_node.NodeData.eva_num', '%d, ');
+            eva_node.Text = ['Evaluation Num: ', text(1:end-1)];
             eva_node.NodeData = eva_node.Text;
             eva_node.ContextMenu = app.DDataContextMenu;
         end
@@ -1038,19 +1023,8 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             prob_name = app.TProblemTree.Children(1).Text;
             tasks_num = length(app.TProblemTree.Children(1).NodeData.getTasks());
             
-            % get this experiment's parameters
-            switch app.TEndTypeDropDown.Value
-                case 'Iteration'
-                    iter_num = app.TEndNumEditField.Value;
-                    eva_num = inf;
-                case 'Evaluation'
-                    iter_num = inf;
-                    eva_num = app.TEndNumEditField.Value;
-            end
-            pre_run_list = [app.TPopSizeEditField.Value, iter_num, eva_num];
-            
             % run
-            app.Tdata = singleRun(app.TAlgorithmTree.Children(1).NodeData, app.TProblemTree.Children(1).NodeData, pre_run_list);
+            app.Tdata = singleRun(app.TAlgorithmTree.Children(1).NodeData, app.TProblemTree.Children(1).NodeData);
             app.Tdata.algo_name = algo_name;
             app.Tdata.prob_name = prob_name;
             app.Tdata.tasks_num = tasks_num;
@@ -1177,23 +1151,19 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                     app.Edata.result(prob, algo).convergence = [];
                 end
             end
-            % get this experiment's parameters
-            switch app.EEndTypeDropDown.Value
-                case 'Iteration'
-                    iter_num = app.EEndNumEditField.Value;
-                    eva_num = inf;
-                case 'Evaluation'
-                    iter_num = inf;
-                    eva_num = app.EEndNumEditField.Value;
-            end
-            pre_run_list = [app.EPopSizeEditField.Value, iter_num, eva_num];
             app.Edata.reps = 0;
-            app.Edata.pop_size = app.EPopSizeEditField.Value;
-            app.Edata.iter_num = iter_num;
-            app.Edata.eva_num = eva_num;
+            for prob = 1:prob_num
+                run_parameter_list = app.EProblemsTree.Children(prob).NodeData.getRunParameterList();
+                app.Edata.pop_size(prob) = run_parameter_list(1);
+                app.Edata.iter_num(prob) = run_parameter_list(2);
+                app.Edata.eva_num(prob) = run_parameter_list(3);
+            end
+            app.Edata.pop_size = app.Edata.pop_size';
+            app.Edata.iter_num = app.Edata.iter_num';
+            app.Edata.eva_num = app.Edata.eva_num';
             app.Edata.algo_cell = algo_cell;
             app.Edata.prob_cell = prob_cell';
-            app.Edata.tasks_num_list = tasks_num_list;
+            app.Edata.tasks_num_list = tasks_num_list';
             
             % reset table and convergence
             app.Etable_reps = zeros(length(prob_cell), length(algo_cell));
@@ -1212,7 +1182,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                         app.EcheckPauseStopStatus();
                         
                         % run
-                        data = singleRun(app.EAlgorithmsTree.Children(algo).NodeData, app.EProblemsTree.Children(prob).NodeData, pre_run_list);
+                        data = singleRun(app.EAlgorithmsTree.Children(algo).NodeData, app.EProblemsTree.Children(prob).NodeData);
                         app.Edata.result(prob, algo).clock_time = app.Edata.result(prob, algo).clock_time + data.clock_time;
                         % BUG: when p_il ~= 0, convergence vartical not same
                         app.Edata.result(prob, algo).convergence = [app.Edata.result(prob, algo).convergence; data.convergence];
@@ -1688,9 +1658,9 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                 end
                 for prob = 1:length(data_selected(i).NodeData.prob_cell)
                     data_save.reps = data_selected(i).NodeData.reps;
-                    data_save.pop_size = data_selected(i).NodeData.pop_size;
-                    data_save.iter_num = data_selected(i).NodeData.iter_num;
-                    data_save.eva_num = data_selected(i).NodeData.eva_num;
+                    data_save.pop_size = [[], data_selected(i).NodeData.pop_size(prob)];
+                    data_save.iter_num = [[], data_selected(i).NodeData.iter_num(prob)];
+                    data_save.eva_num = [[], data_selected(i).NodeData.eva_num(prob)];
                     data_save.algo_cell = data_selected(i).NodeData.algo_cell;
                     data_save.prob_cell = data_selected(i).NodeData.prob_cell(prob);
                     data_save.tasks_num_list = [[], data_selected(i).NodeData.tasks_num_list(prob)];
@@ -1774,7 +1744,27 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         function DProblemsMergeButtonPushed(app, event)
             % merge problems, with same pop, iteration, evaluate, reps and algorithms
             
-            if ~app.DcheckMergeData() || ~app.DcheckMergeReps() || ~app.DcheckMergeAlgorithms()
+            data_selected = app.DDataTree.SelectedNodes;
+            app.Ddata_mark = [];
+            data_num = 0;
+            for i = 1:length(data_selected)
+                if isa(data_selected(i).Parent, 'matlab.ui.container.Tree')
+                    data_num = data_num + 1;
+                    app.Ddata_mark(i) = 1;
+                else
+                    app.Ddata_mark(i) = 0;
+                end
+            end
+            if data_num < 2
+                msg = 'Select at least 2 data node to merge';
+                uiconfirm(app.MTOPlatformUIFigure, msg, 'error', 'Icon','warning');
+                result = false;
+                return;
+            end
+            
+            data_selected = data_selected(app.Ddata_mark == 1);
+            
+            if ~app.DcheckMergeReps() || ~app.DcheckMergeAlgorithms()
                 return;
             end
             
@@ -1782,14 +1772,17 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             data_selected = app.DDataTree.SelectedNodes;
             data_selected = data_selected(app.Ddata_mark == 1);
             data_save.reps = data_selected(1).NodeData.reps;
-            data_save.pop_size = data_selected(1).NodeData.pop_size;
-            data_save.iter_num = data_selected(1).NodeData.iter_num;
-            data_save.eva_num = data_selected(1).NodeData.eva_num;
             data_save.algo_cell = data_selected(1).NodeData.algo_cell;
             data_save.prob_cell = {};
             data_save.tasks_num_list = [];
+            data_save.pop_size = [];
+            data_save.iter_num = [];
+            data_save.eva_num = [];
             for i = 1:length(data_selected)
-                data_save.tasks_num_list = [data_save.tasks_num_list, data_selected(i).NodeData.tasks_num_list];
+                data_save.pop_size = [data_save.pop_size; data_selected(i).NodeData.pop_size];
+                data_save.iter_num = [data_save.iter_num; data_selected(i).NodeData.iter_num];
+                data_save.eva_num = [data_save.eva_num; data_selected(i).NodeData.eva_num];
+                data_save.tasks_num_list = [data_save.tasks_num_list; data_selected(i).NodeData.tasks_num_list];
                 prob_start = length(data_save.prob_cell) + 1;
                 data_save.prob_cell = [data_save.prob_cell; data_selected(i).NodeData.prob_cell];
                 prob_end = length(data_save.prob_cell);
@@ -1934,43 +1927,15 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % Create TP1GridLayout
             app.TP1GridLayout = uigridlayout(app.TPanel1);
             app.TP1GridLayout.ColumnWidth = {'fit', '1x'};
-            app.TP1GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x'};
+            app.TP1GridLayout.RowHeight = {'fit', '1x', 'fit', '1x'};
             app.TP1GridLayout.ColumnSpacing = 5;
             app.TP1GridLayout.Padding = [5 5 5 5];
             app.TP1GridLayout.BackgroundColor = [1 1 1];
 
-            % Create TPopSizeEditField
-            app.TPopSizeEditField = uieditfield(app.TP1GridLayout, 'numeric');
-            app.TPopSizeEditField.HorizontalAlignment = 'center';
-            app.TPopSizeEditField.Layout.Row = 1;
-            app.TPopSizeEditField.Layout.Column = 2;
-            app.TPopSizeEditField.Value = 100;
-
-            % Create TPopSizeEditFieldLabel
-            app.TPopSizeEditFieldLabel = uilabel(app.TP1GridLayout);
-            app.TPopSizeEditFieldLabel.FontWeight = 'bold';
-            app.TPopSizeEditFieldLabel.Layout.Row = 1;
-            app.TPopSizeEditFieldLabel.Layout.Column = 1;
-            app.TPopSizeEditFieldLabel.Text = 'Pop Size';
-
-            % Create TEndNumEditField
-            app.TEndNumEditField = uieditfield(app.TP1GridLayout, 'numeric');
-            app.TEndNumEditField.HorizontalAlignment = 'center';
-            app.TEndNumEditField.Layout.Row = 3;
-            app.TEndNumEditField.Layout.Column = 2;
-            app.TEndNumEditField.Value = 1000;
-
-            % Create TEndNumEditFieldLabel
-            app.TEndNumEditFieldLabel = uilabel(app.TP1GridLayout);
-            app.TEndNumEditFieldLabel.FontWeight = 'bold';
-            app.TEndNumEditFieldLabel.Layout.Row = 3;
-            app.TEndNumEditFieldLabel.Layout.Column = 1;
-            app.TEndNumEditFieldLabel.Text = 'End Num';
-
             % Create AlgorithmDropDownLabel
             app.AlgorithmDropDownLabel = uilabel(app.TP1GridLayout);
             app.AlgorithmDropDownLabel.FontWeight = 'bold';
-            app.AlgorithmDropDownLabel.Layout.Row = 4;
+            app.AlgorithmDropDownLabel.Layout.Row = 1;
             app.AlgorithmDropDownLabel.Layout.Column = 1;
             app.AlgorithmDropDownLabel.Text = 'Algorithm';
 
@@ -1979,7 +1944,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.TAlgorithmDropDown.Items = {};
             app.TAlgorithmDropDown.ValueChangedFcn = createCallbackFcn(app, @TAlgorithmDropDownValueChanged, true);
             app.TAlgorithmDropDown.BackgroundColor = [1 1 1];
-            app.TAlgorithmDropDown.Layout.Row = 4;
+            app.TAlgorithmDropDown.Layout.Row = 1;
             app.TAlgorithmDropDown.Layout.Column = 2;
             app.TAlgorithmDropDown.Value = {};
 
@@ -1988,7 +1953,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.TAlgorithmTree.Multiselect = 'on';
             app.TAlgorithmTree.NodeTextChangedFcn = createCallbackFcn(app, @TAlgorithmTreeNodeTextChanged, true);
             app.TAlgorithmTree.Editable = 'on';
-            app.TAlgorithmTree.Layout.Row = 5;
+            app.TAlgorithmTree.Layout.Row = 2;
             app.TAlgorithmTree.Layout.Column = [1 2];
 
             % Create TProblemTree
@@ -1996,7 +1961,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.TProblemTree.Multiselect = 'on';
             app.TProblemTree.NodeTextChangedFcn = createCallbackFcn(app, @TProblemTreeNodeTextChanged, true);
             app.TProblemTree.Editable = 'on';
-            app.TProblemTree.Layout.Row = 7;
+            app.TProblemTree.Layout.Row = 4;
             app.TProblemTree.Layout.Column = [1 2];
 
             % Create TProblemDropDown
@@ -2004,31 +1969,16 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.TProblemDropDown.Items = {};
             app.TProblemDropDown.ValueChangedFcn = createCallbackFcn(app, @TProblemDropDownValueChanged, true);
             app.TProblemDropDown.BackgroundColor = [1 1 1];
-            app.TProblemDropDown.Layout.Row = 6;
+            app.TProblemDropDown.Layout.Row = 3;
             app.TProblemDropDown.Layout.Column = 2;
             app.TProblemDropDown.Value = {};
 
             % Create ProblemDropDownLabel
             app.ProblemDropDownLabel = uilabel(app.TP1GridLayout);
             app.ProblemDropDownLabel.FontWeight = 'bold';
-            app.ProblemDropDownLabel.Layout.Row = 6;
+            app.ProblemDropDownLabel.Layout.Row = 3;
             app.ProblemDropDownLabel.Layout.Column = 1;
             app.ProblemDropDownLabel.Text = 'Problem';
-
-            % Create EndTypeLabel_2
-            app.EndTypeLabel_2 = uilabel(app.TP1GridLayout);
-            app.EndTypeLabel_2.FontWeight = 'bold';
-            app.EndTypeLabel_2.Layout.Row = 2;
-            app.EndTypeLabel_2.Layout.Column = 1;
-            app.EndTypeLabel_2.Text = 'End Type';
-
-            % Create TEndTypeDropDown
-            app.TEndTypeDropDown = uidropdown(app.TP1GridLayout);
-            app.TEndTypeDropDown.Items = {'Iteration', 'Evaluation'};
-            app.TEndTypeDropDown.BackgroundColor = [1 1 1];
-            app.TEndTypeDropDown.Layout.Row = 2;
-            app.TEndTypeDropDown.Layout.Column = 2;
-            app.TEndTypeDropDown.Value = 'Iteration';
 
             % Create TPanel2
             app.TPanel2 = uipanel(app.TestGridLayout);
@@ -2307,7 +2257,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % Create EP1GridLayout
             app.EP1GridLayout = uigridlayout(app.EPanel1);
             app.EP1GridLayout.ColumnWidth = {'fit', '1x', 70};
-            app.EP1GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x'};
+            app.EP1GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x'};
             app.EP1GridLayout.ColumnSpacing = 5;
             app.EP1GridLayout.Padding = [5 5 5 5];
             app.EP1GridLayout.BackgroundColor = [1 1 1];
@@ -2318,7 +2268,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EProblemsAddButton.VerticalAlignment = 'top';
             app.EProblemsAddButton.BackgroundColor = [0.702 1 0.702];
             app.EProblemsAddButton.FontWeight = 'bold';
-            app.EProblemsAddButton.Layout.Row = 9;
+            app.EProblemsAddButton.Layout.Row = 6;
             app.EProblemsAddButton.Layout.Column = 3;
             app.EProblemsAddButton.Text = 'Add';
 
@@ -2328,7 +2278,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EAlgorithmsAddButton.VerticalAlignment = 'top';
             app.EAlgorithmsAddButton.BackgroundColor = [0.702 1 0.702];
             app.EAlgorithmsAddButton.FontWeight = 'bold';
-            app.EAlgorithmsAddButton.Layout.Row = 7;
+            app.EAlgorithmsAddButton.Layout.Row = 4;
             app.EAlgorithmsAddButton.Layout.Column = 3;
             app.EAlgorithmsAddButton.Text = 'Add';
 
@@ -2346,46 +2296,18 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.ERunTimesEditFieldLabel.Layout.Column = 1;
             app.ERunTimesEditFieldLabel.Text = 'Run Times';
 
-            % Create EEndNumEditField
-            app.EEndNumEditField = uieditfield(app.EP1GridLayout, 'numeric');
-            app.EEndNumEditField.HorizontalAlignment = 'center';
-            app.EEndNumEditField.Layout.Row = 6;
-            app.EEndNumEditField.Layout.Column = [2 3];
-            app.EEndNumEditField.Value = 1000;
-
-            % Create EEndNumEditFieldLabel
-            app.EEndNumEditFieldLabel = uilabel(app.EP1GridLayout);
-            app.EEndNumEditFieldLabel.FontWeight = 'bold';
-            app.EEndNumEditFieldLabel.Layout.Row = 6;
-            app.EEndNumEditFieldLabel.Layout.Column = 1;
-            app.EEndNumEditFieldLabel.Text = 'End Num';
-
-            % Create EPopSizeEditField
-            app.EPopSizeEditField = uieditfield(app.EP1GridLayout, 'numeric');
-            app.EPopSizeEditField.HorizontalAlignment = 'center';
-            app.EPopSizeEditField.Layout.Row = 4;
-            app.EPopSizeEditField.Layout.Column = [2 3];
-            app.EPopSizeEditField.Value = 100;
-
-            % Create EPopSizeEditFieldLabel
-            app.EPopSizeEditFieldLabel = uilabel(app.EP1GridLayout);
-            app.EPopSizeEditFieldLabel.FontWeight = 'bold';
-            app.EPopSizeEditFieldLabel.Layout.Row = 4;
-            app.EPopSizeEditFieldLabel.Layout.Column = 1;
-            app.EPopSizeEditFieldLabel.Text = 'Pop Size';
-
             % Create EAlgorithmsListBox
             app.EAlgorithmsListBox = uilistbox(app.EP1GridLayout);
             app.EAlgorithmsListBox.Items = {};
             app.EAlgorithmsListBox.Multiselect = 'on';
-            app.EAlgorithmsListBox.Layout.Row = 8;
+            app.EAlgorithmsListBox.Layout.Row = 5;
             app.EAlgorithmsListBox.Layout.Column = [1 3];
             app.EAlgorithmsListBox.Value = {};
 
             % Create AlgorithmsListBox_2Label
             app.AlgorithmsListBox_2Label = uilabel(app.EP1GridLayout);
             app.AlgorithmsListBox_2Label.FontWeight = 'bold';
-            app.AlgorithmsListBox_2Label.Layout.Row = 7;
+            app.AlgorithmsListBox_2Label.Layout.Row = 4;
             app.AlgorithmsListBox_2Label.Layout.Column = 1;
             app.AlgorithmsListBox_2Label.Text = 'Algorithms';
 
@@ -2393,31 +2315,16 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EProblemsListBox = uilistbox(app.EP1GridLayout);
             app.EProblemsListBox.Items = {};
             app.EProblemsListBox.Multiselect = 'on';
-            app.EProblemsListBox.Layout.Row = 10;
+            app.EProblemsListBox.Layout.Row = 7;
             app.EProblemsListBox.Layout.Column = [1 3];
             app.EProblemsListBox.Value = {};
 
             % Create ProblemsListBox_2Label
             app.ProblemsListBox_2Label = uilabel(app.EP1GridLayout);
             app.ProblemsListBox_2Label.FontWeight = 'bold';
-            app.ProblemsListBox_2Label.Layout.Row = 9;
+            app.ProblemsListBox_2Label.Layout.Row = 6;
             app.ProblemsListBox_2Label.Layout.Column = 1;
             app.ProblemsListBox_2Label.Text = 'Problems';
-
-            % Create EndTypeLabel
-            app.EndTypeLabel = uilabel(app.EP1GridLayout);
-            app.EndTypeLabel.FontWeight = 'bold';
-            app.EndTypeLabel.Layout.Row = 5;
-            app.EndTypeLabel.Layout.Column = 1;
-            app.EndTypeLabel.Text = 'End Type';
-
-            % Create EEndTypeDropDown
-            app.EEndTypeDropDown = uidropdown(app.EP1GridLayout);
-            app.EEndTypeDropDown.Items = {'Iteration', 'Evaluation'};
-            app.EEndTypeDropDown.BackgroundColor = [1 1 1];
-            app.EEndTypeDropDown.Layout.Row = 5;
-            app.EEndTypeDropDown.Layout.Column = [2 3];
-            app.EEndTypeDropDown.Value = 'Iteration';
 
             % Create ELoadDataButton
             app.ELoadDataButton = uibutton(app.EP1GridLayout, 'push');

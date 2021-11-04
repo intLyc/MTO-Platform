@@ -35,12 +35,11 @@ classdef MFPSO < Algorithm
             obj.c3 = sgtr2double(parameter_cell{8});
         end
 
-        function data = run(obj, Tasks, pre_run_list)
-            obj.setPreRun(pre_run_list);
+        function data = run(obj, Tasks, run_parameter_list)
+            pop = run_parameter_list(1);
+            gen = run_parameter_list(2);
+            eva_num = run_parameter_list(3);
             rmp = obj.rmp;
-            pop = obj.pop_size;
-            gen = obj.iter_num;
-            eva_num = obj.eva_num;
             selection_process = obj.selection_process;
             p_il = obj.p_il;
             wmax = obj.wmax;
@@ -141,7 +140,7 @@ classdef MFPSO < Algorithm
             while ite < gen && TotalEvaluations(ite) < eva_num
 
                 if gen == inf
-                    w1 = wmax -(wmax - wmin) * TotalEvaluations(ite) / eva_num;
+                    w1 = wmax - (wmax - wmin) * TotalEvaluations(ite) / eva_num;
                 else
                     w1 = wmax - (wmax - wmin) * ite / gen;
                 end
