@@ -46,20 +46,16 @@
 ![Test Module Tasks](./Readme_Figure/MTO-Platform%20Test%20Module.png)
 ![Test Module Convergence](./Readme_Figure/MTO-Platform%20Test%20Module%202.png)
 
-1. 参数设置
-    - Pop Size: 种群大小
-    - End Type: 终止条件 (Iteration 迭代次数 / Evaluation 评价次数)
-    - End Num: 终止条件的最大值
-2. 算法选择
+1. 算法选择
     - 选取一个算法，显示在Algorithm Tree中
     - 打开Algorithm Node会显示算法参数设置。*双击修改*
-3. 问题选择
+2. 问题选择
     - 选取一个问题，显示在Problem Tree中
     - 打开Problem Node会显示问题参数设置。*双击修改*
-4. 问题1维图像
+3. 问题1维图像
     - 在右侧Axes区域右上角选择Tasks Figure (1D)
     - 每选取一个问题，就绘制该问题自变量在1维上所有任务的图像。*为方便观察任务间特征，将每个任务的适应值归一化展示*
-5. 收敛图
+4. 收敛图
     - 在右侧Axes区域右上角选择Convergence
     - 选取算法和任务后，点击Start按钮，会在Axes区域绘制该算法在该问题每个任务上的收敛图像
 
@@ -70,9 +66,6 @@
 
 1. 参数设置
     - Run Times: 独立运行次数
-    - Pop Size: 种群大小
-    - End Type: 终止条件 (Iteration 迭代次数 / Evaluation 评价次数)
-    - End Num: 终止条件的最大值 
 
 2. 算法选择
     - 在Algorithms中选择算法后，点击Add按钮，会将算法添加到Selected Algorithms Tree中，可以展开算法，双击修改参数或算法名称。*可多选，右键全选，可重复添加*

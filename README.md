@@ -46,20 +46,16 @@ Environment: **Matlab >= R2020b**
 ![Test Module Tasks](./Readme_Figure/MTO-Platform%20Test%20Module.png)
 ![Test Module Convergence](./Readme_Figure/MTO-Platform%20Test%20Module%202.png)
 
-1. Parameter setting
-    - Pop Size: population size
-    - End Type: Ending condition (Iteration / Evaluation)
-    - End Num: the maximum value of the termination condition
-2. Algorithm selection
+1. Algorithm selection
     - Select an algorithm to be displayed in the Algorithm Tree
     - Open the Algorithm Node and it will show the algorithm parameter settings. *double click to modify it*
-3. Problem selection
+2. Problem selection
     - Select a problem and display it in the Problem Tree
     - Open the Problem Node to display the problem parameter settings. *double click to modify it*
-4. 1-dimensional image of the problem
+3. 1-dimensional image of the problem
     - Select Tasks Figure (1D) in the upper right corner of the Axes area on the Test Module right.
     - For each selected problem, draw the image of all the tasks of the problem independent variable in 1D. *To facilitate the observation of inter-task characteristics, the adaptation value of each task is normalized to show*
-5. Convergence graph
+4. Convergence graph
     - Select Convergence in the upper right corner of the Axes area on the right
     - After selecting the algorithm and task, click the Start button, the convergence image of the algorithm on each task of the problem will be plotted in the Axes area
 
@@ -70,9 +66,6 @@ Environment: **Matlab >= R2020b**
 
 1. parameter settings
     - Run Times: Number of independent runs
-    - Pop Size: population size
-    - End Type: Termination condition (Iteration / Evaluation)
-    - End Num: the maximum value of the termination condition 
 
 2. Algorithm selection
     - After selecting an algorithm in Algorithms, click Add button, it will add the algorithm to Selected Algorithms Tree, you can expand the algorithm and double click to modify the parameters or algorithm name, double-click to modify the parameters or algorithm name. *Multi-selectable, right-click to select all, can be added repeatedly*
