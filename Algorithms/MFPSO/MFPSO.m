@@ -1,4 +1,12 @@
 classdef MFPSO < Algorithm
+    % @InProceedings{Feng2017MFDE-MFPSO,
+    %     author    = {Feng, L. and Zhou, W. and Zhou, L. and Jiang, S. W. and Zhong, J. H. and Da, B. S. and Zhu, Z. X. and Wang, Y.},
+    %     booktitle = {2017 IEEE Congress on Evolutionary Computation (CEC)},
+    %     title     = {An empirical study of multifactorial PSO and multifactorial DE},
+    %     year      = {2017},
+    %     pages     = {921-928},
+    %     doi       = {10.1109/CEC.2017.7969407},
+    % }
 
     properties (SetAccess = private)
         rmp = 0.3
