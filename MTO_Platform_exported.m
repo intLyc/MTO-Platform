@@ -261,7 +261,6 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             for p = 1:2:length(parameter)
                 para_name_node = uitreenode(algo_node);
                 para_name_node.Text = ['[ ', parameter{p}, ' ]'];
-                para_name_node.Text
                 para_name_node.NodeData = para_name_node.Text;
                 para_name_node.ContextMenu = app.ESelectedAlgoContextMenu;
                 para_value_node = uitreenode(algo_node);
@@ -1937,7 +1936,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % Create MTOPlatformUIFigure and hide until all components are created
             app.MTOPlatformUIFigure = uifigure('Visible', 'off');
             app.MTOPlatformUIFigure.Color = [1 1 1];
-            app.MTOPlatformUIFigure.Position = [100 100 1157 747];
+            app.MTOPlatformUIFigure.Position = [100 100 1201 750];
             app.MTOPlatformUIFigure.Name = 'MTO Platform';
             app.MTOPlatformUIFigure.WindowStyle = 'modal';
 
@@ -1990,6 +1989,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.TAlgorithmDropDown = uidropdown(app.TP1GridLayout);
             app.TAlgorithmDropDown.Items = {};
             app.TAlgorithmDropDown.ValueChangedFcn = createCallbackFcn(app, @TAlgorithmDropDownValueChanged, true);
+            app.TAlgorithmDropDown.Tooltip = {'Select algorithm'};
             app.TAlgorithmDropDown.BackgroundColor = [1 1 1];
             app.TAlgorithmDropDown.Layout.Row = 1;
             app.TAlgorithmDropDown.Layout.Column = 2;
@@ -2015,6 +2015,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.TProblemDropDown = uidropdown(app.TP1GridLayout);
             app.TProblemDropDown.Items = {};
             app.TProblemDropDown.ValueChangedFcn = createCallbackFcn(app, @TProblemDropDownValueChanged, true);
+            app.TProblemDropDown.Tooltip = {'Select problem'};
             app.TProblemDropDown.BackgroundColor = [1 1 1];
             app.TProblemDropDown.Layout.Row = 3;
             app.TProblemDropDown.Layout.Column = 2;
@@ -2054,6 +2055,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.TShowTypeDropDown = uidropdown(app.TP21GridLayout);
             app.TShowTypeDropDown.Items = {'Tasks Figure (1D)', 'Convergence'};
             app.TShowTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @TShowTypeDropDownValueChanged, true);
+            app.TShowTypeDropDown.Tooltip = {'Show type'};
             app.TShowTypeDropDown.FontWeight = 'bold';
             app.TShowTypeDropDown.BackgroundColor = [1 1 1];
             app.TShowTypeDropDown.Layout.Row = 1;
@@ -2075,6 +2077,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.TStartButton.BusyAction = 'cancel';
             app.TStartButton.BackgroundColor = [0.6706 0.949 0.6706];
             app.TStartButton.FontWeight = 'bold';
+            app.TStartButton.Tooltip = {''};
             app.TStartButton.Layout.Row = 1;
             app.TStartButton.Layout.Column = 2;
             app.TStartButton.Text = 'Start';
@@ -2173,6 +2176,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.ETestTypeDropDown = uidropdown(app.EP3T1GridLayout);
             app.ETestTypeDropDown.Items = {'None', 'Rank sum test', 'Signed rank test'};
             app.ETestTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @ETestTypeDropDownValueChanged, true);
+            app.ETestTypeDropDown.Tooltip = {'Statistical Analysis (Only for Fitness)'};
             app.ETestTypeDropDown.BackgroundColor = [1 1 1];
             app.ETestTypeDropDown.Layout.Row = 1;
             app.ETestTypeDropDown.Layout.Column = 5;
@@ -2182,6 +2186,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EAlgorithmDropDown = uidropdown(app.EP3T1GridLayout);
             app.EAlgorithmDropDown.Items = {'Algorithm'};
             app.EAlgorithmDropDown.ValueChangedFcn = createCallbackFcn(app, @EAlgorithmDropDownValueChanged, true);
+            app.EAlgorithmDropDown.Tooltip = {'Statistical Analysis main Algorithm (Only for Fitness)'};
             app.EAlgorithmDropDown.BackgroundColor = [1 1 1];
             app.EAlgorithmDropDown.Layout.Row = 1;
             app.EAlgorithmDropDown.Layout.Column = 6;
@@ -2191,6 +2196,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EShowTypeDropDown = uidropdown(app.EP3T1GridLayout);
             app.EShowTypeDropDown.Items = {'Mean', 'Mean (Std)', 'Median', 'Median (Std)'};
             app.EShowTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EShowTypeDropDownValueChanged, true);
+            app.EShowTypeDropDown.Tooltip = {'Data type (Only for Fitness)'};
             app.EShowTypeDropDown.BackgroundColor = [1 1 1];
             app.EShowTypeDropDown.Layout.Row = 1;
             app.EShowTypeDropDown.Layout.Column = 4;
@@ -2200,6 +2206,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EDataTypeDropDown = uidropdown(app.EP3T1GridLayout);
             app.EDataTypeDropDown.Items = {'Reps', 'Fitness', 'Score', 'Time used'};
             app.EDataTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EDataTypeDropDownValueChanged, true);
+            app.EDataTypeDropDown.Tooltip = {'Show Type'};
             app.EDataTypeDropDown.BackgroundColor = [1 1 1];
             app.EDataTypeDropDown.Layout.Row = 1;
             app.EDataTypeDropDown.Layout.Column = 3;
@@ -2209,6 +2216,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EHighlightTypeDropDown = uidropdown(app.EP3T1GridLayout);
             app.EHighlightTypeDropDown.Items = {'None', 'Highlight best', 'Highlight best worst'};
             app.EHighlightTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EHighlightTypeDropDownValueChanged, true);
+            app.EHighlightTypeDropDown.Tooltip = {'Highlight type'};
             app.EHighlightTypeDropDown.BackgroundColor = [1 1 1];
             app.EHighlightTypeDropDown.Layout.Row = 1;
             app.EHighlightTypeDropDown.Layout.Column = 7;
@@ -2219,6 +2227,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.ESaveTableButton.ButtonPushedFcn = createCallbackFcn(app, @ESaveTableButtonPushed, true);
             app.ESaveTableButton.BackgroundColor = [0.702 1 0.702];
             app.ESaveTableButton.FontWeight = 'bold';
+            app.ESaveTableButton.Tooltip = {'Save current table view to file'};
             app.ESaveTableButton.Layout.Row = 1;
             app.ESaveTableButton.Layout.Column = 1;
             app.ESaveTableButton.Text = 'Save';
@@ -2256,6 +2265,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EProblemsDropDown = uidropdown(app.EP3F1GridLayout);
             app.EProblemsDropDown.Items = {'Problem '};
             app.EProblemsDropDown.ValueChangedFcn = createCallbackFcn(app, @EProblemsDropDownValueChanged, true);
+            app.EProblemsDropDown.Tooltip = {'Task'};
             app.EProblemsDropDown.BackgroundColor = [1 1 1];
             app.EProblemsDropDown.Layout.Row = 1;
             app.EProblemsDropDown.Layout.Column = 5;
@@ -2265,6 +2275,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EYLimTypeDropDown = uidropdown(app.EP3F1GridLayout);
             app.EYLimTypeDropDown.Items = {'log(fitness)', 'fitness'};
             app.EYLimTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EYLimTypeDropDownValueChanged, true);
+            app.EYLimTypeDropDown.Tooltip = {'YLim Type'};
             app.EYLimTypeDropDown.BackgroundColor = [1 1 1];
             app.EYLimTypeDropDown.Layout.Row = 1;
             app.EYLimTypeDropDown.Layout.Column = 4;
@@ -2275,6 +2286,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.ESaveAllFigureButton.ButtonPushedFcn = createCallbackFcn(app, @ESaveAllFigureButtonPushed, true);
             app.ESaveAllFigureButton.BackgroundColor = [0.702 1 0.702];
             app.ESaveAllFigureButton.FontWeight = 'bold';
+            app.ESaveAllFigureButton.Tooltip = {'Select save dir and it will save all figure to ''dir/Figure/'''};
             app.ESaveAllFigureButton.Layout.Row = 1;
             app.ESaveAllFigureButton.Layout.Column = 1;
             app.ESaveAllFigureButton.Text = 'Save All Figure';
@@ -2282,6 +2294,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % Create EFigureTypeDropDown
             app.EFigureTypeDropDown = uidropdown(app.EP3F1GridLayout);
             app.EFigureTypeDropDown.Items = {'eps', 'png', 'pdf'};
+            app.EFigureTypeDropDown.Tooltip = {'Save figure type'};
             app.EFigureTypeDropDown.BackgroundColor = [1 1 1];
             app.EFigureTypeDropDown.Layout.Row = 1;
             app.EFigureTypeDropDown.Layout.Column = 3;
@@ -2315,6 +2328,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EProblemsAddButton.VerticalAlignment = 'top';
             app.EProblemsAddButton.BackgroundColor = [0.702 1 0.702];
             app.EProblemsAddButton.FontWeight = 'bold';
+            app.EProblemsAddButton.Tooltip = {'Add selected problems'};
             app.EProblemsAddButton.Layout.Row = 6;
             app.EProblemsAddButton.Layout.Column = 3;
             app.EProblemsAddButton.Text = 'Add';
@@ -2325,6 +2339,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EAlgorithmsAddButton.VerticalAlignment = 'top';
             app.EAlgorithmsAddButton.BackgroundColor = [0.702 1 0.702];
             app.EAlgorithmsAddButton.FontWeight = 'bold';
+            app.EAlgorithmsAddButton.Tooltip = {'Add selected algorithms'};
             app.EAlgorithmsAddButton.Layout.Row = 4;
             app.EAlgorithmsAddButton.Layout.Column = 3;
             app.EAlgorithmsAddButton.Text = 'Add';
@@ -2378,6 +2393,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.ELoadDataButton.ButtonPushedFcn = createCallbackFcn(app, @ELoadDataButtonPushed, true);
             app.ELoadDataButton.BackgroundColor = [0.502 0.702 1];
             app.ELoadDataButton.FontWeight = 'bold';
+            app.ELoadDataButton.Tooltip = {'Load data_save.mat to show detials'};
             app.ELoadDataButton.Layout.Row = 1;
             app.ELoadDataButton.Layout.Column = [1 3];
             app.ELoadDataButton.Text = 'Load Data';
@@ -2387,6 +2403,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.ESaveDataButton.ButtonPushedFcn = createCallbackFcn(app, @ESaveDataButtonPushed, true);
             app.ESaveDataButton.BackgroundColor = [0.702 1 0.702];
             app.ESaveDataButton.FontWeight = 'bold';
+            app.ESaveDataButton.Tooltip = {'Save finished data to mat file'};
             app.ESaveDataButton.Layout.Row = 2;
             app.ESaveDataButton.Layout.Column = [1 3];
             app.ESaveDataButton.Text = 'Save Data';
@@ -2472,6 +2489,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EAlgorithmsDelButton.ButtonPushedFcn = createCallbackFcn(app, @EAlgorithmsDelButtonPushed, true);
             app.EAlgorithmsDelButton.BackgroundColor = [1 1 0.702];
             app.EAlgorithmsDelButton.FontWeight = 'bold';
+            app.EAlgorithmsDelButton.Tooltip = {'Delete selected algorithms'};
             app.EAlgorithmsDelButton.Layout.Row = 4;
             app.EAlgorithmsDelButton.Layout.Column = 2;
             app.EAlgorithmsDelButton.Text = 'Delete';
@@ -2481,6 +2499,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EProblemsDelButton.ButtonPushedFcn = createCallbackFcn(app, @EProblemsDelButtonPushed, true);
             app.EProblemsDelButton.BackgroundColor = [1 1 0.702];
             app.EProblemsDelButton.FontWeight = 'bold';
+            app.EProblemsDelButton.Tooltip = {'Delete selected problems'};
             app.EProblemsDelButton.Layout.Row = 6;
             app.EProblemsDelButton.Layout.Column = 2;
             app.EProblemsDelButton.Text = 'Delete';
