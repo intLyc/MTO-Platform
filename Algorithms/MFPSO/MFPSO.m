@@ -22,25 +22,26 @@ classdef MFPSO < Algorithm
     methods
 
         function parameter = getParameter(obj)
-            parameter = {'Random Mating Probability (rmp)', num2str(obj.rmp), ...
-                        'elitist / roulette wheel', obj.selection_process, ...
-                        'Local Search Probability (p_il)', num2str(obj.p_il), ...
-                        'Inertia Weight Max (wmax)', num2str(obj.wmax), ...
-                        'Inertia Weight Min (wmin)', num2str(obj.wmin), ...
+            parameter = {'rmp: Random Mating Probability', num2str(obj.rmp), ...
+                        '("elitist"/"roulette wheel"): Selection Type', obj.selection_process, ...
+                        'p_il: Local Search Probability', num2str(obj.p_il), ...
+                        'wmax: Inertia Weight Max', num2str(obj.wmax), ...
+                        'wmin: Inertia Weight Min', num2str(obj.wmin), ...
                         'c1', num2str(obj.c1), ...
                         'c2', num2str(obj.c2), ...
                         'c3', num2str(obj.c3)};
         end
 
         function obj = setParameter(obj, parameter_cell)
-            obj.rmp = str2double(parameter_cell{1});
-            obj.selection_process = parameter_cell{2};
-            obj.p_il = str2double(parameter_cell{3});
-            obj.wmax = str2double(parameter_cell{4});
-            obj.wmin = str2double(parameter_cell{5});
-            obj.c1 = sgtr2double(parameter_cell{6});
-            obj.c2 = sgtr2double(parameter_cell{7});
-            obj.c3 = sgtr2double(parameter_cell{8});
+            count = 1;
+            obj.rmp = str2double(parameter_cell{count}); count = count + 1;
+            obj.selection_process = parameter_cell{count}; count = count + 1;
+            obj.p_il = str2double(parameter_cell{count}); count = count + 1;
+            obj.wmax = str2double(parameter_cell{count}); count = count + 1;
+            obj.wmin = str2double(parameter_cell{count}); count = count + 1;
+            obj.c1 = sgtr2double(parameter_cell{count}); count = count + 1;
+            obj.c2 = sgtr2double(parameter_cell{count}); count = count + 1;
+            obj.c3 = sgtr2double(parameter_cell{count}); count = count + 1;
         end
 
         function data = run(obj, Tasks, run_parameter_list)

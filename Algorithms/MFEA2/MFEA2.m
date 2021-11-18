@@ -21,19 +21,21 @@ classdef MFEA2 < Algorithm
     methods
 
         function parameter = getParameter(obj)
-            parameter = {'elitist / roulette wheel', obj.selection_process, ...
-                        'Local Search Probability (p_il)', num2str(obj.p_il), ...
-                        'SBX Crossover length (mu)', num2str(obj.mu), ...
-                        'Ploy Mutation length (mum)', num2str(obj.mum), ...
-                        'Variable Swap Probability (probswap)', num2str(obj.probswap)};
+            parameter = {'("elitist"/"roulette wheel"): Selection Type', obj.selection_process, ...
+                        'p_il: Local Search Probability', num2str(obj.p_il), ...
+                        'mu: SBX Crossover Length', num2str(obj.mu), ...
+                        'mum: Ploy Mutation length', num2str(obj.mum), ...
+                        'probSwap: Variable Swap Probability', num2str(obj.probswap)};
         end
 
         function obj = setParameter(obj, parameter_cell)
-            obj.selection_process = parameter_cell{1};
-            obj.p_il = str2double(parameter_cell{2});
-            obj.mu = str2num(parameter_cell{3});
-            obj.mum = str2num(parameter_cell{4});
-            obj.probswap = str2double(parameter_cell{5});
+            count = 1;
+            obj.selection_process = parameter_cell{count}; count = count + 1;
+            obj.p_il = str2double(parameter_cell{count}); count = count + 1;
+            obj.mu = str2num(parameter_cell{count}); count = count + 1;
+            obj.sigma = str2double(parameter_cell{count}); count = count + 1;
+            obj.mum = str2num(parameter_cell{count}); count = count + 1;
+            obj.probswap = str2double(parameter_cell{count}); count = count + 1;
         end
 
         function data = run(obj, Tasks, run_parameter_list)
