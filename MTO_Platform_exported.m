@@ -261,6 +261,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             for p = 1:2:length(parameter)
                 para_name_node = uitreenode(algo_node);
                 para_name_node.Text = ['[ ', parameter{p}, ' ]'];
+                para_name_node.Text
                 para_name_node.NodeData = para_name_node.Text;
                 para_name_node.ContextMenu = app.ESelectedAlgoContextMenu;
                 para_value_node = uitreenode(algo_node);
@@ -383,7 +384,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                 p.MarkerSize = app.marker_size;
                 hold(app.TUIAxes, 'on');
                 
-                xlabel(app.TUIAxes, 'Iteration');
+                xlabel(app.TUIAxes, 'Generation');
                 ylabel(app.TUIAxes, 'log(fitness)');
                 grid(app.TUIAxes, 'on');
                 tasks_name = [tasks_name, ['T', num2str(task)]];
@@ -707,7 +708,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                 hold(app.EConvergenceTrendUIAxes, 'on');
             end
             legend(app.EConvergenceTrendUIAxes, strrep(app.Edata.algo_cell, '_', '\_'));
-            xlabel(app.EConvergenceTrendUIAxes, 'Iteration');
+            xlabel(app.EConvergenceTrendUIAxes, 'Generation');
             ylabel(app.EConvergenceTrendUIAxes, app.EYLimTypeDropDown.Value);
             xlim(app.EConvergenceTrendUIAxes, [1, max_x]);
             grid(app.EConvergenceTrendUIAxes, 'on');
@@ -760,7 +761,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             end
             
             data_selected = data_selected(app.Ddata_mark == 1);
-            % check pop, iteration and evaluate
+            % check pop, generation and evaluate
             pop_size = data_selected(1).NodeData.pop_size;
             iter_num = data_selected(1).NodeData.iter_num;
             eva_num = data_selected(1).NodeData.eva_num;
@@ -884,19 +885,19 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             
             pop_node = uitreenode(data_node);
             text = num2str(data_node.NodeData.pop_size', '%d, ');
-            pop_node.Text = ['Pop Size: ', text(1:end-1)];
+            pop_node.Text = ['Population Size: ', text(1:end-1)];
             pop_node.NodeData = pop_node.Text;
             pop_node.ContextMenu = app.DDataContextMenu;
             
             iter_node = uitreenode(data_node);
             text = num2str(data_node.NodeData.iter_num', '%d, ');
-            iter_node.Text = ['Iteration Num: ', text(1:end-1)];
+            iter_node.Text = ['Generation Max: ', text(1:end-1)];
             iter_node.NodeData = iter_node.Text;
             iter_node.ContextMenu = app.DDataContextMenu;
             
             eva_node = uitreenode(data_node);
             text = num2str(data_node.NodeData.eva_num', '%d, ');
-            eva_node.Text = ['Evaluation Num: ', text(1:end-1)];
+            eva_node.Text = ['Evaluation Max: ', text(1:end-1)];
             eva_node.NodeData = eva_node.Text;
             eva_node.ContextMenu = app.DDataContextMenu;
         end
@@ -1692,7 +1693,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
 
         % Button pushed function: DRepsMergeButton
         function DRepsMergeButtonPushed(app, event)
-            % merge reps, with same pop, iteration, evaluate, algorithms and problems
+            % merge reps, with same pop, generation, evaluate, algorithms and problems
             
             if ~app.DcheckMergeData() || ~app.DcheckMergeAlgorithms() || ~app.DcheckMergeProblems()
                 return;
@@ -1731,7 +1732,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
 
         % Button pushed function: DAlgorithmsMergeButton
         function DAlgorithmsMergeButtonPushed(app, event)
-            % merge algorithms, with same pop, iteration, evaluate, reps and problems
+            % merge algorithms, with same pop, generation, evaluate, reps and problems
             
             if ~app.DcheckMergeData() || ~app.DcheckMergeReps() || ~app.DcheckMergeProblems()
                 return;
@@ -1760,7 +1761,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
 
         % Button pushed function: DProblemsMergeButton
         function DProblemsMergeButtonPushed(app, event)
-            % merge problems, with same pop, iteration, evaluate, reps and algorithms
+            % merge problems, with same pop, generation, evaluate, reps and algorithms
             
             data_selected = app.DDataTree.SelectedNodes;
             app.Ddata_mark = [];
@@ -1908,7 +1909,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % Create MTOPlatformUIFigure and hide until all components are created
             app.MTOPlatformUIFigure = uifigure('Visible', 'off');
             app.MTOPlatformUIFigure.Color = [1 1 1];
-            app.MTOPlatformUIFigure.Position = [100 100 1216 709];
+            app.MTOPlatformUIFigure.Position = [100 100 1157 747];
             app.MTOPlatformUIFigure.Name = 'MTO Platform';
             app.MTOPlatformUIFigure.WindowStyle = 'modal';
 
@@ -2260,7 +2261,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
 
             % Create EConvergenceTrendUIAxes
             app.EConvergenceTrendUIAxes = uiaxes(app.EP3FGridLayout);
-            xlabel(app.EConvergenceTrendUIAxes, 'Iteration')
+            xlabel(app.EConvergenceTrendUIAxes, 'Generation')
             ylabel(app.EConvergenceTrendUIAxes, 'fitness')
             app.EConvergenceTrendUIAxes.PlotBoxAspectRatio = [1.37847866419295 1 1];
             app.EConvergenceTrendUIAxes.Layout.Row = 2;

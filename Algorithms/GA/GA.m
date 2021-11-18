@@ -10,17 +10,18 @@ classdef GA < Algorithm
     methods
 
         function parameter = getParameter(obj)
-            parameter = {'elitist / roulette wheel', obj.selection_process, ...
-                        'Local Search Probability (p_il)', num2str(obj.p_il), ...
-                        'SBX Crossover length (mu)', num2str(obj.mu), ...
-                        'Mutation Sigma (sigma)', num2str(obj.sigma)};
+            parameter = {'("elitist"/"roulette wheel"): Selection Type', obj.selection_process, ...
+                        'p_il: Local Search Probability', num2str(obj.p_il), ...
+                        'mu: SBX Crossover Length', num2str(obj.mu), ...
+                        'sigma: Mutation Sigma ', num2str(obj.sigma)};
         end
 
         function obj = setParameter(obj, parameter_cell)
-            obj.selection_process = parameter_cell{1};
-            obj.p_il = str2double(parameter_cell{2});
-            obj.mu = str2num(parameter_cell{3});
-            obj.sigma = str2double(parameter_cell{4});
+            count = 1;
+            obj.selection_process = parameter_cell{count}; count = count + 1;
+            obj.p_il = str2double(parameter_cell{count}); count = count + 1;
+            obj.mu = str2num(parameter_cell{count}); count = count + 1;
+            obj.sigma = str2double(parameter_cell{count}); count = count + 1;
         end
 
         function data = run(obj, Tasks, run_parameter_list)

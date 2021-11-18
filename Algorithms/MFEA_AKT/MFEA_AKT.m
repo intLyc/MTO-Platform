@@ -21,19 +21,20 @@ classdef MFEA_AKT < Algorithm
     methods
 
         function parameter = getParameter(obj)
-            parameter = {'Random Mating Probability (rmp)', num2str(obj.rmp), ...
-                        'elitist / roulette wheel', obj.selection_process, ...
-                        'Local Search Probability (p_il)', num2str(obj.p_il), ...
-                        'SBX Crossover length (mu)', num2str(obj.mu), ...
-                        'Ploy Mutation length (mum)', num2str(obj.mum)};
+            parameter = {'rmp: Random Mating Probability', num2str(obj.rmp), ...
+                        '("elitist"/"roulette wheel"): Selection Type', obj.selection_process, ...
+                        'p_il: Local Search Probability', num2str(obj.p_il), ...
+                        'mu: SBX Crossover Length', num2str(obj.mu), ...
+                        'mum: Ploy Mutation length', num2str(obj.mum)};
         end
 
         function obj = setParameter(obj, parameter_cell)
-            obj.rmp = str2double(parameter_cell{1});
-            obj.selection_process = parameter_cell{2};
-            obj.p_il = str2double(parameter_cell{3});
-            obj.mu = str2num(parameter_cell{4});
-            obj.mum = str2num(parameter_cell{5});
+            count = 1;
+            obj.rmp = str2double(parameter_cell{count}); count = count + 1;
+            obj.selection_process = parameter_cell{count}; count = count + 1;
+            obj.p_il = str2double(parameter_cell{count}); count = count + 1;
+            obj.mu = str2num(parameter_cell{count}); count = count + 1;
+            obj.mum = str2num(parameter_cell{count}); count = count + 1;
         end
 
         function data = run(obj, Tasks, run_parameter_list)
@@ -361,7 +362,7 @@ classdef MFEA_AKT < Algorithm
                 end
 
                 if strcmp(selection_process, 'elitist')
-                    [xxx, y] = sort(-[intpopulation.scalar_fitness]);
+                    [xxx, y] = sort(- [intpopulation.scalar_fitness]);
                     intpopulation = intpopulation(y);
                     population = intpopulation(1:pop);
                 elseif strcmp(selection_process, 'roulette wheel')

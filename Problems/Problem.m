@@ -3,7 +3,7 @@ classdef Problem < handle
     properties
         name % problem's name
         pop_size = 100 % population size
-        iter_num = 1000 % num of max iteration
+        iter_num = 1000 % num of max generation
         eva_num = inf % num of max evaluation
     end
 
@@ -33,9 +33,9 @@ classdef Problem < handle
         function run_parameter = getRunParameter(obj)
             % get run_parameter
 
-            run_parameter = {'Population Size', num2str(obj.pop_size), ...
-                        'Iteration Num', num2str(obj.iter_num), ...
-                            'Evaluation Num', num2str(obj.eva_num)};
+            run_parameter = {'N: Population Size', num2str(obj.pop_size), ...
+                        'G: Generation Max', num2str(obj.iter_num), ...
+                            'E: Evaluation Max', num2str(obj.eva_num)};
         end
 
         function obj = setRunParameter(obj, run_parameter)
