@@ -267,6 +267,8 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                 para_value_node.Text = parameter{p+1};
                 para_value_node.ContextMenu = app.ESelectedAlgoContextMenu;
             end
+            
+            expand(algo_node);
         end
         
         function TupdateProblem(app)
@@ -293,6 +295,8 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                 para_value_node.Text = parameter{p+1};
                 para_value_node.ContextMenu = app.ESelectedProbContextMenu;
             end
+            
+            expand(prob_node);
         end
         
         function TupdateUIAxes(app)
@@ -1068,6 +1072,13 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                     para_value_node.ContextMenu = app.ESelectedAlgoContextMenu;
                 end
             end
+            
+            % collapse other node and expand this node
+            all_node = algo_node.Parent.Children;
+            for i = 1:length(all_node)
+                collapse(all_node(i));
+            end
+            expand(algo_node);
         end
 
         % Menu selected function: ProblemsSelectAllMenu
@@ -1103,6 +1114,13 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                     para_value_node.ContextMenu = app.ESelectedProbContextMenu;
                 end
             end
+            
+            % collapse other node and expand this node
+            all_node = prob_node.Parent.Children;
+            for i = 1:length(all_node)
+                collapse(all_node(i));
+            end
+            expand(prob_node);
         end
 
         % Button pushed function: EStartButton
