@@ -1,4 +1,14 @@
 classdef MFEA2 < Algorithm
+    % @Article{bali2019MFEA2,
+    %     author     = {Bali, Kavitesh Kumar and Ong, Yew-Soon and Gupta, Abhishek and Tan, Puay Siew},
+    %     journal    = {IEEE Transactions on Evolutionary Computation},
+    %     title      = {Multifactorial evolutionary algorithm with online transfer parameter estimation: MFEA-II},
+    %     year       = {2019},
+    %     number     = {1},
+    %     pages      = {69--83},
+    %     volume     = {24},
+    %     publisher  = {IEEE},
+    % }
 
     properties (SetAccess = private)
         selection_process = 'elitist'
