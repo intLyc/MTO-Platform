@@ -527,6 +527,32 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             end
             drawnow;
         end
+       
+        function EupdateTableScore(app)
+            % update table score
+            
+            if ~strcmp(app.EDataTypeDropDown.Value, 'Score')
+                return;
+            end
+            
+            score = zeros(size(app.Etable_reps));
+            row_i = 1;
+            for prob = 1:length(app.Edata.prob_cell)
+                tasks_num = app.Edata.tasks_num_list(prob);
+                for task = 1:tasks_num
+                    mean_task = mean(app.Efitness(row_i, :, :), "all");
+                    std_task = std(app.Efitness(row_i, :, :), 0, "all");
+                    for algo = 1:length(app.Edata.algo_cell)
+                        score(prob, algo) = score(prob, algo) + mean((app.Efitness(row_i, algo, :) - mean_task)./std_task);
+                    end
+                    row_i = row_i + 1;
+                end
+            end
+
+            app.Etable_data = score;
+            app.EUITable.Data = app.Etable_data;
+            drawnow;
+        end
         
         function EupdateTableTimeUsed(app)
             % update table time used
@@ -639,6 +665,8 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                 case 'Fitness'
                     app.EupdateTableFitness();
                     app.EupdateTableTest();
+                case 'Score'
+                    app.EupdateTableScore();
                 case 'Time used'
                     app.EupdateTableTimeUsed();
             end
@@ -1439,7 +1467,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % save table
             
             % check selected file name
-            filter = {'*.csv';'*.xlsx';'*.txt';'*.*'};
+            filter = {'*.xlsx';'*.csv';'*.txt';'*.*'};
             [file_name, dir_name] = uiputfile(filter);
             figure(app.MTOPlatformUIFigure);
             if file_name == 0
@@ -2170,7 +2198,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
 
             % Create EDataTypeDropDown
             app.EDataTypeDropDown = uidropdown(app.EP3T1GridLayout);
-            app.EDataTypeDropDown.Items = {'Reps', 'Fitness', 'Time used'};
+            app.EDataTypeDropDown.Items = {'Reps', 'Fitness', 'Score', 'Time used'};
             app.EDataTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EDataTypeDropDownValueChanged, true);
             app.EDataTypeDropDown.BackgroundColor = [1 1 1];
             app.EDataTypeDropDown.Layout.Row = 1;
