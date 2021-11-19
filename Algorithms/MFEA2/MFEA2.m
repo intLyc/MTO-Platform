@@ -13,8 +13,8 @@ classdef MFEA2 < Algorithm
     properties (SetAccess = private)
         selection_process = 'elitist'
         p_il = 0;
-        mu = 15; % index of Simulated Binary Crossover (tunable)
-        mum = 15; % index of polynomial mutation
+        mu = 2; % index of Simulated Binary Crossover (tunable)
+        mum = 5; % index of polynomial mutation
         probswap = 0.5; % probability of variable swap
     end
 
@@ -23,8 +23,8 @@ classdef MFEA2 < Algorithm
         function parameter = getParameter(obj)
             parameter = {'("elitist"/"roulette wheel"): Selection Type', obj.selection_process, ...
                         'p_il: Local Search Probability', num2str(obj.p_il), ...
-                        'mu: SBX Crossover Length', num2str(obj.mu), ...
-                        'mum: Ploy Mutation length', num2str(obj.mum), ...
+                        'mu: index of Simulated Binary Crossover (tunable)', num2str(obj.mu), ...
+                        'mum: index of polynomial mutation', num2str(obj.mum), ...
                         'probSwap: Variable Swap Probability', num2str(obj.probswap)};
         end
 

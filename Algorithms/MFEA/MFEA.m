@@ -14,8 +14,8 @@ classdef MFEA < Algorithm
         rmp = 0.3
         selection_process = 'elitist'
         p_il = 0
-        mu = 10 % 模拟二进制交叉的染色体长度
-        sigma = 0.02 % 高斯变异的标准差
+        mu = 2; % index of Simulated Binary Crossover (tunable)
+        mum = 5; % index of polynomial mutation
     end
 
     methods
@@ -24,8 +24,8 @@ classdef MFEA < Algorithm
             parameter = {'rmp: Random Mating Probability', num2str(obj.rmp), ...
                         '("elitist"/"roulette wheel"): Selection Type', obj.selection_process, ...
                         'p_il: Local Search Probability', num2str(obj.p_il), ...
-                        'mu: SBX Crossover Length', num2str(obj.mu), ...
-                        'sigma: Mutation Sigma ', num2str(obj.sigma)};
+                        'mu: index of Simulated Binary Crossover (tunable)', num2str(obj.mu), ...
+                        'mum: index of polynomial mutation', num2str(obj.mum)};
         end
 
         function obj = setParameter(obj, parameter_cell)
@@ -34,7 +34,7 @@ classdef MFEA < Algorithm
             obj.selection_process = parameter_cell{count}; count = count + 1;
             obj.p_il = str2double(parameter_cell{count}); count = count + 1;
             obj.mu = str2num(parameter_cell{count}); count = count + 1;
-            obj.sigma = str2double(parameter_cell{count}); count = count + 1;
+            obj.mum = str2double(parameter_cell{count}); count = count + 1;
         end
 
         function data = run(obj, Tasks, run_parameter_list)
@@ -45,7 +45,7 @@ classdef MFEA < Algorithm
             selection_process = obj.selection_process;
             p_il = obj.p_il;
             mu = obj.mu;
-            sigma = obj.sigma;
+            mum = obj.mum;
 
             tic % 计时开始
 
@@ -186,9 +186,9 @@ classdef MFEA < Algorithm
                         % child(count).rnvec(swap_indicator) = temp;
                     else
                         % 变异
-                        child(count) = mutate(child(count), population(p1), D_multitask, sigma);
+                        child(count) = mutate(child(count), population(p1), D_multitask, mum);
                         child(count).skill_factor = population(p1).skill_factor;
-                        child(count + 1) = mutate(child(count + 1), population(p2), D_multitask, sigma);
+                        child(count + 1) = mutate(child(count + 1), population(p2), D_multitask, mum);
                         child(count + 1).skill_factor = population(p2).skill_factor;
                     end
 
