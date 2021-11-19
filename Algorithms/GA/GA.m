@@ -56,7 +56,7 @@ classdef GA < Algorithm
                 % TotalEvaluations = zeros(1, gen);
 
                 for i = 1:sub_pop
-                    population(i) = Chromosome_MFEA();
+                    population(i) = Chromosome_GA();
                     population(i) = initialize(population(i), D);
                 end
 
@@ -79,8 +79,8 @@ classdef GA < Algorithm
                     for i = 1:ceil(length(population) / 2)
                         p1 = indorder(i);
                         p2 = indorder(i + fix(length(population) / 2));
-                        child(count) = Chromosome_MFEA();
-                        child(count + 1) = Chromosome_MFEA();
+                        child(count) = Chromosome_GA();
+                        child(count + 1) = Chromosome_GA();
                         u = rand(1, D);
                         cf = zeros(1, D);
                         cf(u <= 0.5) = (2 * u(u <= 0.5)).^(1 / (mu + 1));
@@ -88,7 +88,7 @@ classdef GA < Algorithm
                         child(count) = crossover(child(count), population(p1), population(p2), cf);
                         child(count + 1) = crossover(child(count + 1), population(p2), population(p1), cf);
 
-                        if rand(1) < 0.1
+                        if rand(1) < 1
                             child(count) = mutate(child(count), child(count), D, mum);
                             child(count + 1) = mutate(child(count + 1), child(count + 1), D, mum);
                         end

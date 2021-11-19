@@ -1,5 +1,4 @@
 classdef Particle
-
     properties
         rnvec; % (genotype)--> decode to find design variables --> (phenotype)
         pbest;
@@ -12,7 +11,6 @@ classdef Particle
     end
 
     methods
-
         function object = initialize(object, D)
             object.rnvec = rand(1, D);
             object.pbest = object.rnvec;
@@ -20,18 +18,14 @@ classdef Particle
         end
 
         function [object, calls] = evaluate(object, Tasks, p_il, no_of_tasks, options)
-
             if object.skill_factor == 0
                 calls = 0;
-
                 for i = 1:no_of_tasks
                     [object.factorial_costs(i), xxx, funcCount] = fnceval(Tasks(i), object.rnvec, p_il, options);
                     calls = calls + funcCount;
                 end
-
             else
                 object.factorial_costs(1:no_of_tasks) = inf;
-
                 for i = 1:no_of_tasks
 
                     if object.skill_factor == i
@@ -39,11 +33,8 @@ classdef Particle
                         calls = funcCount;
                         break;
                     end
-
                 end
-
             end
-
         end
 
         function [object, calls] = evaluate_SOO(object, Task, p_il, options)
@@ -60,40 +51,32 @@ classdef Particle
 
         % pbest update
         function object = pbestUpdate(object)
-
             if object.factorial_costs(object.skill_factor) < object.pbestFitness
                 object.pbestFitness = object.factorial_costs(object.skill_factor);
                 object.pbest = object.rnvec;
             end
-
         end
 
         function object = pbestUpdate_SOO(object)
-
             if object.factorial_costs < object.pbestFitness
                 object.pbestFitness = object.factorial_costs;
                 object.pbest = object.rnvec;
             end
-
         end
 
         % velocity update
         function object = velocityUpdate(object, gbest, rmp, w1, c1, c2, c3, no_of_tasks)
             len = length(object.velocity);
-
             if rand() < rmp
                 object.velocity = w1 * object.velocity + c1 * rand(1, len) .* (object.pbest - object.rnvec) ...
                     +c2 * rand(1, len) .* (gbest(object.skill_factor, :) - object.rnvec) + c3 * rand(1, len) .* (gbest(randi([1, no_of_tasks]), :) - object.rnvec);
-
                 if rand() < 0.5
                     object.skill_factor = randi([1, no_of_tasks]);
                 end
-
             else
                 object.velocity = w1 * object.velocity + c1 * rand(1, len) .* (object.pbest - object.rnvec) ...
                     +c2 * rand(1, len) .* (gbest(object.skill_factor, :) - object.rnvec);
             end
-
         end
 
         function object = velocityUpdate_SOO(object, gbest, w1, c1, c2)
@@ -101,7 +84,5 @@ classdef Particle
             object.velocity = w1 * object.velocity + c1 * rand(1, len) .* (object.pbest - object.rnvec) ...
                 +c2 * rand(1, len) .* (gbest - object.rnvec);
         end
-
     end
-
 end

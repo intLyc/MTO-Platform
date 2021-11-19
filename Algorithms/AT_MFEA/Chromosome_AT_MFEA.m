@@ -30,11 +30,6 @@ classdef Chromosome_AT_MFEA
             end
         end
 
-        function [object, calls] = evaluate_SOO(object, Task, p_il, options)
-            [object.factorial_costs, object.rnvec, funcCount] = fnceval(Task, object.rnvec, p_il, options);
-            calls = funcCount;
-        end
-
         % SBX
         function object = crossover(object, p1, p2, cf)
             object.rnvec = 0.5 * ((1 + cf) .* p1.rnvec + (1 - cf) .* p2.rnvec);

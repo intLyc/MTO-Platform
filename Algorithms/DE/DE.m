@@ -56,7 +56,7 @@ classdef DE < Algorithm
                 % TotalEvaluations = zeros(1, gen);
 
                 for i = 1:sub_pop
-                    population(i) = Chromosome_MFDE();
+                    population(i) = Chromosome_DE();
                     population(i) = initialize(population(i), D);
                 end
 
@@ -108,7 +108,7 @@ classdef DE < Algorithm
 
                         end
 
-                        child(count) = Chromosome_MFDE();
+                        child(count) = Chromosome_DE();
                         child(count).rnvec = z;
 
                         count = count + 1;
