@@ -11,33 +11,45 @@ classdef EMEA < Algorithm
     % }
 
     properties (SetAccess = private)
-        Snum = 10
-        Gap = 10
-        mu = 2; % index of Simulated Binary Crossover (tunable)
-        mum = 5; % index of polynomial mutation
+        Op = 'GA/DE';
+        Snum = 10;
+        Gap = 10;
+        GA_mu = 2; % index of Simulated Binary Crossover (tunable)
+        GA_mum = 5; % index of polynomial mutation
+        DE_F = 0.5;
+        DE_pCR = 0.6;
     end
 
     methods
 
         function parameter = getParameter(obj)
-            parameter = {'S: Transfer num', num2str(obj.Snum), ...
+            parameter = {'Op: Operator (Split with /)', obj.Op, ...
+                        'S: Transfer num', num2str(obj.Snum), ...
                         'G: Transfer Gap', num2str(obj.Gap), ...
-                        'mu: index of Simulated Binary Crossover (tunable)', num2str(obj.mu), ...
-                        'mum: index of polynomial mutation', num2str(obj.mum)};
+                        'mu: index of Simulated Binary Crossover (tunable)', num2str(obj.GA_mu), ...
+                        'mum: index of polynomial mutation', num2str(obj.GA_mum), ...
+                        'F: DE Mutation Factor', num2str(obj.DE_F), ...
+                        'pCR: DE Crossover Probability', num2str(obj.DE_pCR)};
         end
 
         function obj = setParameter(obj, parameter_cell)
             count = 1;
+            obj.Op = parameter_cell{count}; count = count + 1;
             obj.Snum = str2num(parameter_cell{count}); count = count + 1;
             obj.Gap = str2num(parameter_cell{count}); count = count + 1;
-            obj.mu = str2num(parameter_cell{count}); count = count + 1;
-            obj.mum = str2double(parameter_cell{count}); count = count + 1;
+            obj.GA_mu = str2num(parameter_cell{count}); count = count + 1;
+            obj.GA_mum = str2double(parameter_cell{count}); count = count + 1;
+            obj.DE_F = str2double(parameter_cell{count}); count = count + 1;
+            obj.DE_pCR = str2double(parameter_cell{count}); count = count + 1;
         end
 
         function data = run(obj, Tasks, run_parameter_list)
             pop = run_parameter_list(1);
             gen = run_parameter_list(2);
             eva_num = run_parameter_list(3);
+
+            % get operator
+            op_list = split(obj.Op, '/');
 
             tic
             no_of_tasks = length(Tasks); % 任务数量
@@ -84,39 +96,15 @@ classdef EMEA < Algorithm
                 for t = 1:no_of_tasks
                     parent = population{t};
 
-                    % % indirect Transfer, only use for generate child
-                    % if obj.Snum > 0 && mod(iter, obj.Gap) == 0
-                    %     inject_num = fix(obj.Snum ./ (no_of_tasks - 1));
-                    %     inject_pop = Chromosome_EMEA.empty();
-                    %     for tt = 1:no_of_tasks
-                    %         if t == tt
-                    %             continue;
-                    %         end
-                    %         curr_pop = reshape([population{t}.rnvec], length(population{t}), length(population{t}(1).rnvec));
-                    %         his_pop = reshape([population{tt}.rnvec], length(population{t}), length(population{tt}(1).rnvec));
-                    %         [~, his_best_idx] = sort([population{tt}.fitness]);
-                    %         his_best = population{tt}(his_best_idx(1:inject_num));
-                    %         his_best = reshape([his_best.rnvec], length(his_best), length(his_best(1).rnvec));
-                    %         inject = mDA(curr_pop, his_pop, his_best);
+                    op_idx = mod(t - 1, length(op_list)) + 1;
+                    op = op_list{op_idx};
 
-                    %         % change to chromosome
-                    %         for i = 1:size(inject, 1)
-                    %             c = Chromosome_EMEA();
-                    %             c.rnvec = inject(i, :);
-                    %             c.rnvec(c.rnvec < 0) = 0;
-                    %             c.rnvec(c.rnvec > 1) = 1;
-                    %             inject_pop = [inject_pop, c];
-                    %         end
-                    %     end
-                    %     replace_idx = randperm(length(parent), length(inject_pop));
-                    %     parent(replace_idx) = inject_pop;
-                    % end
-
-                    % if t == 1
-                    child = obj.operator_GA(parent, D(t), obj.mu, obj.mum);
-                    % else
-                    % child = obj.operator_DE(parent, 0.5, 0.6);
-                    % end
+                    switch op
+                        case 'GA'
+                            child = obj.operator_GA(parent, D(t), obj.GA_mu, obj.GA_mum);
+                        case 'DE'
+                            child = obj.operator_DE(parent, obj.DE_F, obj.DE_pCR);
+                    end
 
                     % Direct Transfer
                     if obj.Snum > 0 && mod(iter, obj.Gap) == 0
