@@ -121,7 +121,7 @@ classdef EMEA < Algorithm
 
                     % Direct Transfer
                     if obj.Snum > 0 && mod(iter, obj.Gap) == 0
-                        inject_num = fix(obj.Snum ./ (no_of_tasks - 1));
+                        inject_num = round(obj.Snum ./ (no_of_tasks - 1));
                         inject_pop = Chromosome_EMEA.empty();
                         for tt = 1:no_of_tasks
                             if t == tt
