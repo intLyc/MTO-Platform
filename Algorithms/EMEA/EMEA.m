@@ -47,11 +47,6 @@ classdef EMEA < Algorithm
                 pop = pop + no_of_tasks - mod(pop, no_of_tasks);
             end
 
-            % fix Tnum
-            if obj.Snum >= ceil(pop / no_of_tasks)
-                obj.Snum = ceil(pop / no_of_tasks);
-            end
-
             sub_pop = ceil(pop / no_of_tasks);
             D = zeros(1, no_of_tasks);
             population = {};
@@ -117,7 +112,11 @@ classdef EMEA < Algorithm
                     %     parent(replace_idx) = inject_pop;
                     % end
 
+                    % if t == 1
                     child = obj.operator_GA(parent, D(t), obj.mu, obj.mum);
+                    % else
+                    % child = obj.operator_DE(parent, 0.5, 0.6);
+                    % end
 
                     % Direct Transfer
                     if obj.Snum > 0 && mod(iter, obj.Gap) == 0
@@ -128,7 +127,7 @@ classdef EMEA < Algorithm
                                 continue;
                             end
                             curr_pop = reshape([population{t}.rnvec], length(population{t}), length(population{t}(1).rnvec));
-                            his_pop = reshape([population{tt}.rnvec], length(population{t}), length(population{tt}(1).rnvec));
+                            his_pop = reshape([population{tt}.rnvec], length(population{tt}), length(population{tt}(1).rnvec));
                             [~, his_best_idx] = sort([population{tt}.fitness]);
                             his_best = population{tt}(his_best_idx(1:inject_num));
                             his_best = reshape([his_best.rnvec], length(his_best), length(his_best(1).rnvec));
@@ -158,7 +157,7 @@ classdef EMEA < Algorithm
                     intpopulation(length(population{t}) + 1:length(population{t}) + length(child)) = child;
                     [~, y] = sort([intpopulation.fitness]);
                     intpopulation = intpopulation(y);
-                    population{t} = intpopulation(1:length(parent));
+                    population{t} = intpopulation(1:length(population{t}));
 
                     [bestobj_iter, min_idx] = min([population{t}.fitness]);
                     if bestobj_iter < bestobj(t)
@@ -193,55 +192,57 @@ classdef EMEA < Algorithm
                 child(count) = crossover(child(count), population(p1), population(p2), cf);
                 child(count + 1) = crossover(child(count + 1), population(p2), population(p1), cf);
 
-                child(count) = mutate(child(count), child(count), D, mum);
-                child(count + 1) = mutate(child(count + 1), child(count + 1), D, mum);
+                if rand(1) < 1
+                    child(count) = mutate(child(count), child(count), D, mum);
+                    child(count + 1) = mutate(child(count + 1), child(count + 1), D, mum);
+                end
 
                 count = count + 2;
             end
 
         end
 
-        % function child = operator_DE(obj, population, F, pCR)
+        function child = operator_DE(obj, population, F, pCR)
 
-        %     if length(population) < 2
-        %         child = population;
-        %         return;
-        %     end
+            if length(population) < 2
+                child = population;
+                return;
+            end
 
-        %     for i = 1:length(population)
-        %         x = population(i).rnvec; % 提取个体位置
-        %         A = randperm(length(population));
-        %         A(A == i) = []; % 当前个体所排位置腾空（产生变异中间体时当前个体不参与）
-        %         p1 = A(1);
-        %         p2 = A(mod(2 - 1, length(A)) + 1);
-        %         p3 = A(mod(3 - 1, length(A)) + 1);
-        %         % 变异操作 Mutation
-        %         % beta=unifrnd(beta_min,beta_max,VarSize); % 随机产生缩放因子
+            for i = 1:length(population)
+                x = population(i).rnvec; % 提取个体位置
+                A = randperm(length(population));
+                A(A == i) = []; % 当前个体所排位置腾空（产生变异中间体时当前个体不参与）
+                p1 = A(1);
+                p2 = A(mod(2 - 1, length(A)) + 1);
+                p3 = A(mod(3 - 1, length(A)) + 1);
+                % 变异操作 Mutation
+                % beta=unifrnd(beta_min,beta_max,VarSize); % 随机产生缩放因子
 
-        %         y = population(p1).rnvec + F * (population(p2).rnvec - population(p3).rnvec); % 产生中间体
-        %         % 防止中间体越界
-        %         lb = 0; % 参数取值下界
-        %         ub = 1; % 参数取值上界
-        %         y = max(y, lb);
-        %         y = min(y, ub);
+                y = population(p1).rnvec + F * (population(p2).rnvec - population(p3).rnvec); % 产生中间体
+                % 防止中间体越界
+                lb = 0; % 参数取值下界
+                ub = 1; % 参数取值上界
+                y = max(y, lb);
+                y = min(y, ub);
 
-        %         z = zeros(size(x)); % 初始化一个新个体
-        %         j0 = randi([1, numel(x)]); % 产生一个伪随机数，即选取待交换维度编号
+                z = zeros(size(x)); % 初始化一个新个体
+                j0 = randi([1, numel(x)]); % 产生一个伪随机数，即选取待交换维度编号
 
-        %         for j = 1:numel(x) % 遍历每个维度
+                for j = 1:numel(x) % 遍历每个维度
 
-        %             if j == j0 || rand <= pCR % 如果当前维度是待交换维度或者随机概率小于交叉概率
-        %                 z(j) = y(j); % 新个体当前维度值等于中间体对应维度值
-        %             else
-        %                 z(j) = x(j); % 新个体当前维度值等于当前个体对应维度值
-        %             end
+                    if j == j0 || rand <= pCR % 如果当前维度是待交换维度或者随机概率小于交叉概率
+                        z(j) = y(j); % 新个体当前维度值等于中间体对应维度值
+                    else
+                        z(j) = x(j); % 新个体当前维度值等于当前个体对应维度值
+                    end
 
-        %         end
+                end
 
-        %         child(i) = Chromosome_EMEA();
-        %         child(i).rnvec = z;
-        %     end
+                child(i) = Chromosome_EMEA();
+                child(i).rnvec = z;
+            end
 
-        % end
+        end
     end
 end

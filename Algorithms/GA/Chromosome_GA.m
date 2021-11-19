@@ -1,7 +1,10 @@
-classdef Chromosome_EMEA
+classdef Chromosome_GA
     properties
         rnvec;
-        fitness;
+        factorial_costs;
+        factorial_ranks;
+        scalar_fitness;
+        skill_factor;
     end
 
     methods
@@ -10,8 +13,8 @@ classdef Chromosome_EMEA
             object.rnvec = rand(1, D);
         end
 
-        function [object, calls] = evaluate(object, Task)
-            [object.fitness, object.rnvec, funcCount] = fnceval(Task, object.rnvec, 0, 0);
+        function [object, calls] = evaluate_SOO(object, Task, p_il, options)
+            [object.factorial_costs, object.rnvec, funcCount] = fnceval(Task, object.rnvec, p_il, options);
             calls = funcCount;
         end
 
