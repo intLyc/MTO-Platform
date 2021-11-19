@@ -3,8 +3,8 @@ classdef GA < Algorithm
     properties (SetAccess = private)
         selection_process = 'elitist'
         p_il = 0
-        mu = 10 % 模拟二进制交叉的染色体长度
-        sigma = 0.02 % 高斯变异的标准差
+        mu = 2; % index of Simulated Binary Crossover (tunable)
+        mum = 5; % index of polynomial mutation
     end
 
     methods
@@ -12,8 +12,8 @@ classdef GA < Algorithm
         function parameter = getParameter(obj)
             parameter = {'("elitist"/"roulette wheel"): Selection Type', obj.selection_process, ...
                         'p_il: Local Search Probability', num2str(obj.p_il), ...
-                        'mu: SBX Crossover Length', num2str(obj.mu), ...
-                        'sigma: Mutation Sigma ', num2str(obj.sigma)};
+                        'mu: index of Simulated Binary Crossover (tunable)', num2str(obj.mu), ...
+                        'mum: index of polynomial mutation', num2str(obj.mum)};
         end
 
         function obj = setParameter(obj, parameter_cell)

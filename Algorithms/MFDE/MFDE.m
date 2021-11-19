@@ -13,7 +13,7 @@ classdef MFDE < Algorithm
         selection_process = 'elitist'
         p_il = 0
         F = 0.5
-        pCR = 0.9
+        pCR = 0.6
     end
 
     methods
