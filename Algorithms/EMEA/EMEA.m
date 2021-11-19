@@ -117,7 +117,7 @@ classdef EMEA < Algorithm
                     %     parent(replace_idx) = inject_pop;
                     % end
 
-                    child = obj.operator_GA(parent, D(t), obj.mu, obj.GA_pM, obj.mum);
+                    child = obj.operator_GA(parent, D(t), obj.mu, obj.mum);
 
                     % Direct Transfer
                     if obj.Snum > 0 && mod(iter, obj.Gap) == 0
