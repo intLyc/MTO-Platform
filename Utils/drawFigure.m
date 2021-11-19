@@ -78,7 +78,7 @@ classdef drawFigure < handle
             xlim([1, max_x]);
 
             if ~isempty(obj.title_str)
-                title(strrep(obj.title_str, '_', '\_'));
+                title(strrep(obj.title_str, '_', '-'));
             end
 
             if ~isempty(obj.xlabel_str)
