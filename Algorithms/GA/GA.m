@@ -21,7 +21,7 @@ classdef GA < Algorithm
             obj.selection_process = parameter_cell{count}; count = count + 1;
             obj.p_il = str2double(parameter_cell{count}); count = count + 1;
             obj.mu = str2num(parameter_cell{count}); count = count + 1;
-            obj.sigma = str2double(parameter_cell{count}); count = count + 1;
+            obj.mum = str2double(parameter_cell{count}); count = count + 1;
         end
 
         function data = run(obj, Tasks, run_parameter_list)
@@ -31,7 +31,7 @@ classdef GA < Algorithm
             selection_process = obj.selection_process;
             p_il = obj.p_il;
             mu = obj.mu;
-            sigma = obj.sigma;
+            mum = obj.mum;
             data.convergence = [];
 
             tic
@@ -89,8 +89,8 @@ classdef GA < Algorithm
                         child(count + 1) = crossover(child(count + 1), population(p2), population(p1), cf);
 
                         if rand(1) < 0.1
-                            child(count) = mutate(child(count), child(count), D, sigma);
-                            child(count + 1) = mutate(child(count + 1), child(count + 1), D, sigma);
+                            child(count) = mutate(child(count), child(count), D, mum);
+                            child(count + 1) = mutate(child(count + 1), child(count + 1), D, mum);
                         end
 
                         count = count + 2;
