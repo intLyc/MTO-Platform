@@ -1,7 +1,7 @@
 classdef WCCI2020_MaTSO10 < Problem
 
     properties
-        task_size = 5;
+        task_size = 10;
         dims = 50;
     end
 
