@@ -33,7 +33,6 @@ classdef AT_MFEA < Algorithm
             obj.selection_process = parameter_cell{count}; count = count + 1;
             obj.p_il = str2double(parameter_cell{count}); count = count + 1;
             obj.mu = str2num(parameter_cell{count}); count = count + 1;
-            obj.sigma = str2double(parameter_cell{count}); count = count + 1;
             obj.mum = str2num(parameter_cell{count}); count = count + 1;
             obj.probswap = str2double(parameter_cell{count}); count = count + 1;
         end
