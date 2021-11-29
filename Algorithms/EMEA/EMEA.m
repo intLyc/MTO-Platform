@@ -119,7 +119,24 @@ classdef EMEA < Algorithm
                             [~, his_best_idx] = sort([population{tt}.fitness]);
                             his_best = population{tt}(his_best_idx(1:inject_num));
                             his_best = reshape([his_best.rnvec], length(his_best), length(his_best(1).rnvec));
+                            % curr
+                            minrange = Tasks(t).Lb(1:Tasks(t).dims);
+                            maxrange = Tasks(t).Ub(1:Tasks(t).dims);
+                            y = maxrange - minrange;
+                            curr_pop = y .* curr_pop + minrange;
+                            % his
+                            minrange = Tasks(tt).Lb(1:Tasks(tt).dims);
+                            maxrange = Tasks(tt).Ub(1:Tasks(tt).dims);
+                            y = maxrange - minrange;
+                            his_pop = y .* his_pop + minrange;
+
                             inject = mDA(curr_pop, his_pop, his_best);
+
+                            % map to [0,1]
+                            minrange = Tasks(t).Lb(1:Tasks(t).dims);
+                            maxrange = Tasks(t).Ub(1:Tasks(t).dims);
+                            y = maxrange - minrange;
+                            inject = (inject - minrange) ./ y;
 
                             % change to chromosome
                             for i = 1:size(inject, 1)
@@ -132,6 +149,7 @@ classdef EMEA < Algorithm
                         end
                         replace_idx = randperm(length(child), length(inject_pop));
                         child(replace_idx) = inject_pop;
+                        % child = [child, inject_pop];
                     end
 
                     for i = 1:length(child)
