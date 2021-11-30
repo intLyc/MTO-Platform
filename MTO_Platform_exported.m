@@ -307,6 +307,8 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             switch type
                 case 'Tasks Figure (1D)'
                     app.TupdateTasksFigure();
+                case 'Tasks Figure (1D real)'
+                    app.TupdateTasksFigure();
                 case 'Convergence'
                     app.TupdateConvergence();
             end
@@ -336,7 +338,10 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                 
                 fmin = min(f);
                 fmax = max(f);
-                f = (f - fmin) / (fmax - fmin);
+                if isempty(strfind(app.TShowTypeDropDown.Value, 'real'))
+                    f = (f - fmin) / (fmax - fmin);
+                end
+                
                 p1 = plot(app.TUIAxes, x, f);
                 p1.Color = color(mod(no-1, size(color, 1))+1, :);
                 p1.LineWidth = 1;
@@ -2053,7 +2058,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
 
             % Create TShowTypeDropDown
             app.TShowTypeDropDown = uidropdown(app.TP21GridLayout);
-            app.TShowTypeDropDown.Items = {'Tasks Figure (1D)', 'Convergence'};
+            app.TShowTypeDropDown.Items = {'Tasks Figure (1D)', 'Tasks Figure (1D real)', 'Convergence'};
             app.TShowTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @TShowTypeDropDownValueChanged, true);
             app.TShowTypeDropDown.Tooltip = {'Show type'};
             app.TShowTypeDropDown.FontWeight = 'bold';
