@@ -1,13 +1,13 @@
 classdef MFEA2 < Algorithm
-    % @Article{bali2019MFEA2,
-    %     author     = {Bali, Kavitesh Kumar and Ong, Yew-Soon and Gupta, Abhishek and Tan, Puay Siew},
-    %     journal    = {IEEE Transactions on Evolutionary Computation},
-    %     title      = {Multifactorial evolutionary algorithm with online transfer parameter estimation: MFEA-II},
-    %     year       = {2019},
-    %     number     = {1},
-    %     pages      = {69--83},
-    %     volume     = {24},
-    %     publisher  = {IEEE},
+    % @article{bali2019MFEA2,
+    %     author = {Bali, Kavitesh Kumar and Ong, Yew - Soon and Gupta, Abhishek and Tan, Puay Siew},
+    %     journal = {IEEE Transactions on Evolutionary Computation},
+    %     title = {Multifactorial Evolutionary Algorithm With Online Transfer Parameter Estimation:MFEA - II},
+    %     year = {2020},
+    %     volume = {24},
+    %     number = {1},
+    %     pages = {69 - 83},
+    %     doi = {10.1109 / TEVC.2019.2906927},
     % }
 
     properties (SetAccess = private)

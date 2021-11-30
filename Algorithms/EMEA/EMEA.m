@@ -1,13 +1,13 @@
 classdef EMEA < Algorithm
-    % @Article{feng2018EMEA,
-    %     author     = {Feng, Liang and Zhou, Lei and Zhong, Jinghui and Gupta, Abhishek and Ong, Yew-Soon and Tan, Kay-Chen and Qin, Alex Kai},
-    %     journal    = {IEEE transactions on cybernetics},
-    %     title      = {Evolutionary multitasking via explicit autoencoding},
-    %     year       = {2018},
-    %     number     = {9},
-    %     pages      = {3457--3470},
-    %     volume     = {49},
-    %     publisher  = {IEEE},
+    % @article{feng2018EMEA,
+    %     author = {Feng, Liang and Zhou, Lei and Zhong, Jinghui and Gupta, Abhishek and Ong, Yew - Soon and Tan, Kay - Chen and Qin, A. K.},
+    %     journal = {IEEE Transactions on Cybernetics},
+    %     title = {Evolutionary Multitasking via Explicit Autoencoding},
+    %     year = {2019},
+    %     volume = {49},
+    %     number = {9},
+    %     pages = {3457 - 3470},
+    %     doi = {10.1109 / TCYB.2018.2845361},
     % }
 
     properties (SetAccess = private)
