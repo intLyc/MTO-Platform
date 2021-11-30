@@ -331,7 +331,7 @@ classdef AT_MFEA < Algorithm
             % data_MFEA.R = R;
             % data_MFEA.rmpMean = rmp_mean; % mean rmp values across all independent runs
 
-            data.clock_time = toc; % ????
+            data.clock_time = toc;
             data.convergence = EvBestFitness;
 
         end
