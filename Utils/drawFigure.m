@@ -70,7 +70,7 @@ classdef drawFigure < handle
                 end
                 p = plot(obj.x_cell{i}, obj.y_cell{i}, ['-', marker]);
                 p.LineWidth = 1;
-                p.MarkerIndices = 1:round(max_x / 10):max_x;
+                p.MarkerIndices = 1:50:max_x;
                 p.MarkerSize = 5;
                 hold on;
             end

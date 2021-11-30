@@ -124,7 +124,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         line_width = 1.5
         marker_list = {'o', '*', 'x', '^', '+', 'p', 'v', 's', 'd', '<', '>', 'h'}
         marker_size = 7
-        marker_num = 10
+        marker_indices = 50
         
         % Test Module
         Tdata % data
@@ -386,7 +386,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                 
                 p = plot(app.TUIAxes, x, y, ['-', marker]);
                 p.LineWidth = app.line_width;
-                p.MarkerIndices = 1:round(x(end)/app.marker_num):x(end);
+                p.MarkerIndices = 1:app.marker_indices:x(end);
                 p.MarkerSize = app.marker_size;
                 hold(app.TUIAxes, 'on');
                 
@@ -737,7 +737,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                 end
                 p = plot(app.EConvergenceTrendUIAxes, x_cell{i}, y_cell{i}, ['-', marker]);
                 p.LineWidth = app.line_width;
-                p.MarkerIndices = 1:round(max_x/app.marker_num):max_x;
+                p.MarkerIndices = 1:app.marker_indices:max_x;
                 p.MarkerSize = app.marker_size;
                 hold(app.EConvergenceTrendUIAxes, 'on');
             end
