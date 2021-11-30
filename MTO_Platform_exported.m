@@ -164,6 +164,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                     end
                 end
             end
+            app.algo_load = sort_nat(app.algo_load);
             
             % read problems
             prob_folders = split(genpath(fullfile(fileparts(mfilename('fullpath')),'Problems')),pathsep);
@@ -178,6 +179,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                     end
                 end
             end
+            app.prob_load = sort_nat(app.prob_load);
             
         end
         
