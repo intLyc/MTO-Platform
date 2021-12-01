@@ -17,7 +17,7 @@ classdef EMEA < Algorithm
         GA_mu = 2; % index of Simulated Binary Crossover (tunable)
         GA_mum = 5; % index of polynomial mutation
         DE_F = 0.5;
-        DE_pCR = 0.6;
+        DE_pCR = 0.9;
     end
 
     methods
@@ -97,7 +97,14 @@ classdef EMEA < Algorithm
                             his_best = population{tt}(his_best_idx(1:inject_num));
                             his_best = reshape([his_best.rnvec], length(his_best), length(his_best(1).rnvec));
 
+                            % map to original
+                            curr_pop = (Tasks(t).Ub - Tasks(t).Lb) .* curr_pop + Tasks(t).Lb;
+                            his_pop = (Tasks(tt).Ub - Tasks(tt).Lb) .* his_pop + Tasks(tt).Lb;
+
                             inject = mDA(curr_pop, his_pop, his_best);
+
+                            % mat to [0,1]
+                            inject = (inject - Tasks(t).Lb) ./ (Tasks(t).Ub - Tasks(t).Lb);
 
                             for i = 1:size(inject, 1)
                                 c = Individual();

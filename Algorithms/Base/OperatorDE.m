@@ -13,10 +13,8 @@ classdef OperatorDE
                 offspring(i) = OperatorDE.mutate_rand_1(offspring(i), population(x1), population(x2), population(x3), F);
                 offspring(i) = OperatorDE.crossover(offspring(i), population(i), pCR);
 
-                lb_idx = offspring(i).rnvec < Task.Lb;
-                offspring(i).rnvec(lb_idx) = Task.Lb(lb_idx);
-                ub_idx = offspring(i).rnvec > Task.Ub;
-                offspring(i).rnvec(ub_idx) = Task.Ub(ub_idx);
+                offspring(i).rnvec(offspring(i).rnvec > 1) = 1;
+                offspring(i).rnvec(offspring(i).rnvec < 0) = 0;
             end
             if callfun
                 [offspring, calls] = evaluate(offspring, Task);
