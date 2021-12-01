@@ -24,36 +24,41 @@ classdef OperatorDE
         end
 
         function [offspring, calls] = generateMF(callfun, population, Tasks, rmp, F, pCR)
-            count = 1;
-            for i = 1:ceil(length(population) / 2)
-                p1 = indorder(i);
-                p2 = indorder(i + fix(length(population) / 2));
-                offspring(count) = Individual();
-                offspring(count).factorial_costs = inf(1, length(Tasks));
-                offspring(count + 1) = Individual();
-                offspring(count + 1).factorial_costs = inf(1, length(Tasks));
+            group = cell([1, length(Tasks)]);
+            for i = 1:length(population)
+                group{population(i).skill_factor} = [group{population(i).skill_factor}, i];
+            end
+            for i = 1:length(population)
+                offspring(i) = Individual();
+                offspring(i).factorial_costs = inf(1, length(Tasks));
 
-                if (population(p1).skill_factor == population(p2).skill_factor) || rand < rmp
-                    u = rand(1, max([Tasks.dims]));
-                    cf = zeros(1, max([Tasks.dims]));
-                    cf(u <= 0.5) = (2 * u(u <= 0.5)).^(1 / (mu + 1));
-                    cf(u > 0.5) = (2 * (1 - u(u > 0.5))).^(-1 / (mu + 1));
+                other = [];
+                for t = 1:length(group)
+                    if population(i).skill_factor ~= t
+                        other = [other, group{t}];
+                    end
+                end
+                other = other(randperm(length(other)));
 
-                    offspring(count) = OperatorGA.crossover(offspring(count), population(p1), population(p2), cf);
-                    offspring(count + 1) = OperatorGA.crossover(offspring(count + 1), population(p2), population(p1), cf);
-
-                    p = [p1, p2];
-                    offspring(count).skill_factor = population(p(randi(2))).skill_factor;
-                    offspring(count + 1).skill_factor = population(p(randi(2))).skill_factor;
+                A = randperm(length(group{population(i).skill_factor}));
+                A = group{population(i).skill_factor}(A);
+                A(A == i) = [];
+                x1 = A(1);
+                if rand < rmp
+                    x2 = other(mod(2 - 1, length(other)) + 1);
+                    x3 = other(mod(3 - 1, length(other)) + 1);
+                    offspring(i).skill_factor = population(x2).skill_factor;
                 else
-                    offspring(count) = OperatorGA.mutate(population(p1), max([Tasks.dims]), mum);
-                    offspring(count + 1) = OperatorGA.mutate(population(p2), max([Tasks.dims]), mum);
+                    x2 = A(mod(2 - 1, length(A)) + 1);
+                    x3 = A(mod(3 - 1, length(A)) + 1);
+                    offspring(i).skill_factor = population(x1).skill_factor;
                 end
-                for x = count:count + 1
-                    offspring(x).rnvec(offspring(x).rnvec > 1) = 1;
-                    offspring(x).rnvec(offspring(x).rnvec < 0) = 0;
-                end
-                count = count + 2;
+
+                offspring(i) = OperatorDE.mutate_rand_1(offspring(i), population(x1), population(x2), population(x3), F);
+                offspring(i) = OperatorDE.crossover(offspring(i), population(i), pCR);
+
+                offspring(i).rnvec(offspring(i).rnvec > 1) = 1;
+                offspring(i).rnvec(offspring(i).rnvec < 0) = 0;
             end
             if callfun
                 offspring_temp = Individual.empty();
