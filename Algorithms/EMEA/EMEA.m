@@ -50,16 +50,13 @@ classdef EMEA < Algorithm
             pop_size = fixPopSize(pop_size, length(Tasks));
             tic
 
-            % get operator
             op_list = split(obj.Op, '/');
-
             sub_pop = round(pop_size / length(Tasks));
             population = {};
             fnceval_calls = 0;
 
-            % initialize
             for t = 1:length(Tasks)
-                [population{t}, calls] = initialize(sub_pop, Tasks(t));
+                [population{t}, calls] = initialize(1, sub_pop, Tasks(t));
                 fnceval_calls = fnceval_calls + calls;
 
                 [bestobj(t), idx] = min([population{t}.factorial_costs]);
@@ -120,7 +117,7 @@ classdef EMEA < Algorithm
                         offspring(replace_idx) = inject_pop;
                     end
 
-                    [offspring, calls] = evaluate(offspring, Tasks(t));
+                    [offspring, calls] = evaluate(offspring, Tasks(t), 1);
                     fnceval_calls = fnceval_calls + calls;
 
                     [bestobj_offspring, idx] = min([offspring.factorial_costs]);

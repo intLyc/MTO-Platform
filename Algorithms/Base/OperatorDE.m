@@ -17,7 +17,7 @@ classdef OperatorDE
                 offspring(i).rnvec(offspring(i).rnvec < 0) = 0;
             end
             if callfun
-                [offspring, calls] = evaluate(offspring, Task);
+                [offspring, calls] = evaluate(offspring, Task, 1);
             else
                 calls = 0;
             end
