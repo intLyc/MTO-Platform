@@ -10,8 +10,6 @@ classdef MFDE < Algorithm
 
     properties (SetAccess = private)
         rmp = 0.3
-        selection_process = 'elitist'
-        p_il = 0
         F = 0.5
         pCR = 0.9
     end
@@ -20,8 +18,6 @@ classdef MFDE < Algorithm
 
         function parameter = getParameter(obj)
             parameter = {'rmp: Random Mating Probability', num2str(obj.rmp), ...
-                        '("elitist"/"roulette wheel"): Selection Type', obj.selection_process, ...
-                        'p_il: Local Search Probability', num2str(obj.p_il), ...
                         'F: Mutation Factor', num2str(obj.F), ...
                         'pCR: Crossover Probability', num2str(obj.pCR)};
         end
@@ -29,276 +25,346 @@ classdef MFDE < Algorithm
         function obj = setParameter(obj, parameter_cell)
             count = 1;
             obj.rmp = str2double(parameter_cell{count}); count = count + 1;
-            obj.selection_process = parameter_cell{count}; count = count + 1;
-            obj.p_il = str2double(parameter_cell{count}); count = count + 1;
             obj.F = str2double(parameter_cell{count}); count = count + 1;
             obj.pCR = str2double(parameter_cell{count}); count = count + 1;
         end
 
         function data = run(obj, Tasks, run_parameter_list)
-            pop = run_parameter_list(1);
-            gen = run_parameter_list(2);
+            pop_size = run_parameter_list(1);
+            iter_num = run_parameter_list(2);
             eva_num = run_parameter_list(3);
-            rmp = obj.rmp;
-            selection_process = obj.selection_process;
-            p_il = obj.p_il;
-            F = obj.F;
-            pCR = obj.pCR;
-
+            pop_size = fixPopSize(pop_size, length(Tasks));
             tic
 
-            no_of_tasks = length(Tasks);
+            fnceval_calls = 0;
 
-            if mod(pop, no_of_tasks) ~= 0
-                pop = pop + no_of_tasks - mod(pop, no_of_tasks);
-            end
+            % initialize
+            [population, calls] = initialize(pop_size, Tasks, length(Tasks));
+            fnceval_calls = fnceval_calls + calls;
 
-            if no_of_tasks <= 1
-                error('At least 2 tasks required for MFDE');
-            end
-
-            D = zeros(1, no_of_tasks);
-
-            for i = 1:no_of_tasks
-                D(i) = Tasks(i).dims;
-            end
-
-            D_multitask = max(D);
-            options = optimoptions(@fminunc, 'Display', 'off', 'Algorithm', 'quasi-newton', 'MaxIter', 2); % settings for individual learning
-
-            fnceval_calls = zeros(1);
-            calls_per_individual = zeros(1, pop);
-            bestobj = Inf(1, no_of_tasks);
-            bestFncErrorValue = zeros(100, 60);
-
-            for i = 1:pop
-                population(i) = Chromosome_MFDE();
-                population(i) = initialize(population(i), D_multitask);
-                population(i).skill_factor = 0;
-            end
-
-            for i = 1:pop
-                [population(i), calls_per_individual(i)] = evaluate(population(i), Tasks, p_il, no_of_tasks, options);
-            end
-
-            fnceval_calls = fnceval_calls + sum(calls_per_individual);
-            TotalEvaluations(1) = fnceval_calls;
-
-            factorial_cost = zeros(1, pop);
-
-            for i = 1:no_of_tasks
-
-                for j = 1:pop
-                    factorial_cost(j) = population(j).factorial_costs(i);
+            for t = 1:length(Tasks)
+                for i = 1:pop_size
+                    factorial_costs(i) = population(i).factorial_costs(t);
                 end
-
-                [xxx, y] = sort(factorial_cost);
-                population = population(y);
-
-                for j = 1:pop
-                    population(j).factorial_ranks(i) = j;
+                [~, rank] = sort(factorial_costs);
+                for i = 1:pop_size
+                    population(i).factorial_ranks(t) = rank(i);
                 end
-
-                bestobj(i) = population(1).factorial_costs(i);
-                EvBestFitness(i, 1) = bestobj(i);
-                bestInd_data(i) = population(1);
+                bestobj(t) = population(rank(1)).factorial_costs(t);
+                data.bestInd_data{t} = population(rank(1)).rnvec;
+                data.convergence(t, 1) = bestobj(t);
             end
 
-            for i = 1:pop
-                [xxx, yyy] = min(population(i).factorial_ranks);
-                x = find(population(i).factorial_ranks == xxx);
-                equivalent_skills = length(x);
+            % calculate skill factor
+            for i = 1:pop_size
+                min_rank = min(population(i).factorial_ranks);
+                min_idx = find(population(i).factorial_ranks == min_rank);
 
-                if equivalent_skills > 1
-                    population(i).skill_factor = x(1 + round((equivalent_skills - 1) * rand(1)));
-                    tmp = population(i).factorial_costs(population(i).skill_factor);
-                    population(i).factorial_costs(1:no_of_tasks) = inf;
-                    population(i).factorial_costs(population(i).skill_factor) = tmp;
-                else
-                    population(i).skill_factor = yyy;
-                    tmp = population(i).factorial_costs(population(i).skill_factor);
-                    population(i).factorial_costs(1:no_of_tasks) = inf;
-                    population(i).factorial_costs(population(i).skill_factor) = tmp;
-                end
-
+                population(i).skill_factor = min_idx(randi(length(min_idx)));
+                population(i).factorial_costs(1:population(i).skill_factor - 1) = inf;
+                population(i).factorial_costs(population(i).skill_factor + 1:end) = inf;
             end
 
-            lb = zeros(1, D_multitask); % 参数取值下界
-            ub = ones(1, D_multitask); % 参数取值上界
             generation = 1;
-
-            while generation < gen && TotalEvaluations(generation) < eva_num
+            while generation < iter_num && fnceval_calls < eva_num
                 generation = generation + 1;
-                count = 1;
 
-                group = cell([1, no_of_tasks]); % replace the 2 task MFDE asf and bsf
+                [offspring, calls] = OperatorDE.generateMF(1, population, Tasks, obj.rmp, obj.F, obj.pCR);
+                fnceval_calls = fnceval_calls + calls;
 
-                for j = 1:pop
-                    group{population(j).skill_factor} = [group{population(j).skill_factor}, j];
+                population = [population, offspring];
+
+                for t = 1:length(Tasks)
+                    for i = 1:length(population)
+                        factorial_costs(i) = population(i).factorial_costs(t);
+                    end
+                    [bestobj_offspring, idx] = min(factorial_costs);
+                    if bestobj_offspring < bestobj(t)
+                        bestobj(t) = bestobj_offspring;
+                        data.bestInd_data{t} = population(idx).rnvec;
+                    end
+                    data.convergence(t, generation) = bestobj(t);
+
+                    [~, rank] = sort(factorial_costs);
+                    for i = 1:length(population)
+                        population(rank(i)).factorial_ranks(t) = i;
+                    end
+                end
+                for i = 1:length(population)
+                    population(i).scalar_fitness = 1 / min([population(i).factorial_ranks]);
                 end
 
-                for i = 1:pop
-                    x = population(i).rnvec; % 提取个体基因型
+                [~, rank] = sort(- [population.scalar_fitness]);
+                population = population(rank(1:pop_size));
+            end
+            data.clock_time = toc;
+        end
+    end
+end
 
-                    isf = population(i).skill_factor;
+pop = run_parameter_list(1);
+gen = run_parameter_list(2);
+eva_num = run_parameter_list(3);
+rmp = obj.rmp;
+selection_process = obj.selection_process;
+p_il = obj.p_il;
+F = obj.F;
+pCR = obj.pCR;
 
-                    igroup = group{isf};
-                    A = randperm(length(igroup));
-                    igroup = igroup(A);
+tic
 
-                    childsf = 0;
+no_of_tasks = length(Tasks);
 
-                    for j = 1:length(igroup)
+if mod(pop, no_of_tasks) ~= 0
+    pop = pop + no_of_tasks - mod(pop, no_of_tasks);
+end
 
-                        if igroup(j) == i
-                            igroup(j) = [];
-                            break;
-                        end
+if no_of_tasks <= 1
+    error('At least 2 tasks required for MFDE');
+end
 
-                    end
+D = zeros(1, no_of_tasks);
 
-                    if ~isempty(igroup)
-                        p1 = igroup(1);
-                    else
-                        p1 = other(1);
-                    end
+for i = 1:no_of_tasks
+    D(i) = Tasks(i).dims;
+end
 
-                    urmp = rand(1);
+D_multitask = max(D);
+options = optimoptions(@fminunc, 'Display', 'off', 'Algorithm', 'quasi-newton', 'MaxIter', 2); % settings for individual learning
 
-                    other = [];
+fnceval_calls = zeros(1);
+calls_per_individual = zeros(1, pop);
+bestobj = Inf(1, no_of_tasks);
+bestFncErrorValue = zeros(100, 60);
 
-                    for sf = 1:length(group)
+for i = 1:pop
+    population(i) = Chromosome_MFDE();
+    population(i) = initialize(population(i), D_multitask);
+    population(i).skill_factor = 0;
+end
 
-                        if sf ~= isf
-                            other = [other, group{sf}];
-                        end
+for i = 1:pop
+    [population(i), calls_per_individual(i)] = evaluate(population(i), Tasks, p_il, no_of_tasks, options);
+end
 
-                    end
+fnceval_calls = fnceval_calls + sum(calls_per_individual);
+TotalEvaluations(1) = fnceval_calls;
 
-                    other = other(randperm(length(other)));
+factorial_cost = zeros(1, pop);
 
-                    if urmp <= rmp
-                        p2 = other(mod(2 - 1, length(other)) + 1);
-                        p3 = other(mod(3 - 1, length(other)) + 1);
-                        childsf = 1;
-                    else
+for i = 1:no_of_tasks
 
-                        if ~isempty(igroup)
-                            p2 = igroup(mod(2 - 1, length(igroup)) + 1);
-                            p3 = igroup(mod(3 - 1, length(igroup)) + 1);
-                        else
-                            p2 = other(mod(2 - 1, length(other)) + 1);
-                            p3 = other(mod(3 - 1, length(other)) + 1);
-                        end
+    for j = 1:pop
+        factorial_cost(j) = population(j).factorial_costs(i);
+    end
 
-                    end
+    [xxx, y] = sort(factorial_cost);
+    population = population(y);
 
-                    % 变异操作 Mutation
-                    y = population(p1).rnvec + F * (population(p2).rnvec - population(p3).rnvec); % 产生中间体
-                    % 防止中间体越界
-                    y = max(y, lb);
-                    y = min(y, ub);
+    for j = 1:pop
+        population(j).factorial_ranks(i) = j;
+    end
 
-                    z = zeros(size(x)); % 初始化一个新个体
-                    j0 = randi([1, numel(x)]); % 产生一个伪随机数，即选取待交换维度编号
+    bestobj(i) = population(1).factorial_costs(i);
+    EvBestFitness(i, 1) = bestobj(i);
+    bestInd_data(i) = population(1);
+end
 
-                    for j = 1:numel(x) % 遍历每个维度
+for i = 1:pop
+    [xxx, yyy] = min(population(i).factorial_ranks);
+    x = find(population(i).factorial_ranks == xxx);
+    equivalent_skills = length(x);
 
-                        if j == j0 || rand <= pCR % 如果当前维度是待交换维度或者随机概率小于交叉概率
-                            z(j) = y(j); % 新个体当前维度值等于中间体对应维度值
-                        else
-                            z(j) = x(j); % 新个体当前维度值等于当前个体对应维度值
-                        end
+    if equivalent_skills > 1
+        population(i).skill_factor = x(1 + round((equivalent_skills - 1) * rand(1)));
+        tmp = population(i).factorial_costs(population(i).skill_factor);
+        population(i).factorial_costs(1:no_of_tasks) = inf;
+        population(i).factorial_costs(population(i).skill_factor) = tmp;
+    else
+        population(i).skill_factor = yyy;
+        tmp = population(i).factorial_costs(population(i).skill_factor);
+        population(i).factorial_costs(1:no_of_tasks) = inf;
+        population(i).factorial_costs(population(i).skill_factor) = tmp;
+    end
 
-                    end
+end
 
-                    child(count) = Chromosome_MFDE();
-                    child(count).rnvec = z;
+lb = zeros(1, D_multitask); % 参数取值下界
+ub = ones(1, D_multitask); % 参数取值上界
+generation = 1;
 
-                    if childsf == 0
-                        child(count).skill_factor = population(i).skill_factor;
-                    else
-                        u = rand(1);
-                        child(count).skill_factor(u <= 0.5) = population(i).skill_factor;
-                        child(count).skill_factor(u > 0.5) = randi([1, no_of_tasks]);
-                    end
+while generation < gen && TotalEvaluations(generation) < eva_num
+    generation = generation + 1;
+    count = 1;
 
-                    count = count + 1;
+    group = cell([1, no_of_tasks]); % replace the 2 task MFDE asf and bsf
 
-                end
+    for j = 1:pop
+        group{population(j).skill_factor} = [group{population(j).skill_factor}, j];
+    end
 
-                for i = 1:pop
-                    [child(i), calls_per_individual(i)] = evaluate(child(i), Tasks, p_il, no_of_tasks, options);
-                end
+    for i = 1:pop
+        x = population(i).rnvec; % 提取个体基因型
 
-                fnceval_calls = fnceval_calls + sum(calls_per_individual);
-                TotalEvaluations(generation) = fnceval_calls;
+        isf = population(i).skill_factor;
 
-                intpopulation(1:pop) = population;
-                intpopulation(pop + 1:2 * pop) = child;
-                factorial_cost = zeros(1, 2 * pop);
+        igroup = group{isf};
+        A = randperm(length(igroup));
+        igroup = igroup(A);
 
-                for i = 1:no_of_tasks
+        childsf = 0;
 
-                    for j = 1:2 * pop
-                        factorial_cost(j) = intpopulation(j).factorial_costs(i);
-                    end
+        for j = 1:length(igroup)
 
-                    [xxx, y] = sort(factorial_cost);
-                    intpopulation = intpopulation(y);
-
-                    for j = 1:2 * pop
-                        intpopulation(j).factorial_ranks(i) = j;
-                    end
-
-                    if intpopulation(1).factorial_costs(i) <= bestobj(i)
-                        bestobj(i) = intpopulation(1).factorial_costs(i);
-                        bestInd_data(i) = intpopulation(1);
-                    end
-
-                    EvBestFitness(i, generation) = bestobj(i);
-
-                    if mod(fnceval_calls, 3000) == 0
-                        bestFncErrorValue(fnceval_calls / 3000, 1) = fnceval_calls;
-                        bestFncErrorValue(fnceval_calls / 3000, i + 1) = bestobj(i);
-                    end
-
-                end
-
-                for i = 1:2 * pop
-                    [xxx, yyy] = min(intpopulation(i).factorial_ranks);
-                    intpopulation(i).skill_factor = yyy;
-                    intpopulation(i).scalar_fitness = 1 / xxx;
-                end
-
-                if strcmp(selection_process, 'elitist')
-                    [xxx, y] = sort(- [intpopulation.scalar_fitness]);
-                    intpopulation = intpopulation(y);
-                    population = intpopulation(1:pop);
-                elseif strcmp(selection_process, 'roulette wheel')
-
-                    for i = 1:no_of_tasks
-                        skill_group(i).individuals = intpopulation([intpopulation.skill_factor] == i);
-                    end
-
-                    count = 0;
-
-                    while count < pop
-                        count = count + 1;
-                        skill = mod(count, no_of_tasks) + 1;
-                        population(count) = skill_group(skill).individuals(RouletteWheelSelection([skill_group(skill).individuals.scalar_fitness]));
-                    end
-
-                end
-
-                % disp(['MFDE Generation = ', num2str(generation), ' best factorial costs = ', num2str(bestobj)]);
+            if igroup(j) == i
+                igroup(j) = [];
+                break;
             end
 
-            data.clock_time = toc; % 计时结束
-            data.convergence = EvBestFitness;
         end
 
-        % dlmwrite(['MTSOO_P', num2str(index), '.txt'], bestFncErrorValue, 'precision', 6);
+        if ~isempty(igroup)
+            p1 = igroup(1);
+        else
+            p1 = other(1);
+        end
+
+        urmp = rand(1);
+
+        other = [];
+
+        for sf = 1:length(group)
+
+            if sf ~= isf
+                other = [other, group{sf}];
+            end
+
+        end
+
+        other = other(randperm(length(other)));
+
+        if urmp <= rmp
+            p2 = other(mod(2 - 1, length(other)) + 1);
+            p3 = other(mod(3 - 1, length(other)) + 1);
+            childsf = 1;
+        else
+
+            if ~isempty(igroup)
+                p2 = igroup(mod(2 - 1, length(igroup)) + 1);
+                p3 = igroup(mod(3 - 1, length(igroup)) + 1);
+            else
+                p2 = other(mod(2 - 1, length(other)) + 1);
+                p3 = other(mod(3 - 1, length(other)) + 1);
+            end
+
+        end
+
+        % 变异操作 Mutation
+        y = population(p1).rnvec + F * (population(p2).rnvec - population(p3).rnvec); % 产生中间体
+        % 防止中间体越界
+        y = max(y, lb);
+        y = min(y, ub);
+
+        z = zeros(size(x)); % 初始化一个新个体
+        j0 = randi([1, numel(x)]); % 产生一个伪随机数，即选取待交换维度编号
+
+        for j = 1:numel(x) % 遍历每个维度
+
+            if j == j0 || rand <= pCR % 如果当前维度是待交换维度或者随机概率小于交叉概率
+                z(j) = y(j); % 新个体当前维度值等于中间体对应维度值
+            else
+                z(j) = x(j); % 新个体当前维度值等于当前个体对应维度值
+            end
+
+        end
+
+        child(count) = Chromosome_MFDE();
+        child(count).rnvec = z;
+
+        if childsf == 0
+            child(count).skill_factor = population(i).skill_factor;
+        else
+            u = rand(1);
+            child(count).skill_factor(u <= 0.5) = population(i).skill_factor;
+            child(count).skill_factor(u > 0.5) = randi([1, no_of_tasks]);
+        end
+
+        count = count + 1;
+
     end
+
+    for i = 1:pop
+        [child(i), calls_per_individual(i)] = evaluate(child(i), Tasks, p_il, no_of_tasks, options);
+    end
+
+    fnceval_calls = fnceval_calls + sum(calls_per_individual);
+    TotalEvaluations(generation) = fnceval_calls;
+
+    intpopulation(1:pop) = population;
+    intpopulation(pop + 1:2 * pop) = child;
+    factorial_cost = zeros(1, 2 * pop);
+
+    for i = 1:no_of_tasks
+
+        for j = 1:2 * pop
+            factorial_cost(j) = intpopulation(j).factorial_costs(i);
+        end
+
+        [xxx, y] = sort(factorial_cost);
+        intpopulation = intpopulation(y);
+
+        for j = 1:2 * pop
+            intpopulation(j).factorial_ranks(i) = j;
+        end
+
+        if intpopulation(1).factorial_costs(i) <= bestobj(i)
+            bestobj(i) = intpopulation(1).factorial_costs(i);
+            bestInd_data(i) = intpopulation(1);
+        end
+
+        EvBestFitness(i, generation) = bestobj(i);
+
+        if mod(fnceval_calls, 3000) == 0
+            bestFncErrorValue(fnceval_calls / 3000, 1) = fnceval_calls;
+            bestFncErrorValue(fnceval_calls / 3000, i + 1) = bestobj(i);
+        end
+
+    end
+
+    for i = 1:2 * pop
+        [xxx, yyy] = min(intpopulation(i).factorial_ranks);
+        intpopulation(i).skill_factor = yyy;
+        intpopulation(i).scalar_fitness = 1 / xxx;
+    end
+
+    if strcmp(selection_process, 'elitist')
+        [xxx, y] = sort(- [intpopulation.scalar_fitness]);
+        intpopulation = intpopulation(y);
+        population = intpopulation(1:pop);
+    elseif strcmp(selection_process, 'roulette wheel')
+
+        for i = 1:no_of_tasks
+            skill_group(i).individuals = intpopulation([intpopulation.skill_factor] == i);
+        end
+
+        count = 0;
+
+        while count < pop
+            count = count + 1;
+            skill = mod(count, no_of_tasks) + 1;
+            population(count) = skill_group(skill).individuals(RouletteWheelSelection([skill_group(skill).individuals.scalar_fitness]));
+        end
+
+    end
+
+    % disp(['MFDE Generation = ', num2str(generation), ' best factorial costs = ', num2str(bestobj)]);
+end
+
+data.clock_time = toc; % 计时结束
+data.convergence = EvBestFitness;
+end
+
+% dlmwrite(['MTSOO_P', num2str(index), '.txt'], bestFncErrorValue, 'precision', 6);
+end
 
 end
