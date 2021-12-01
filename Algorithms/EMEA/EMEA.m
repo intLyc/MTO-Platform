@@ -56,7 +56,7 @@ classdef EMEA < Algorithm
             fnceval_calls = 0;
 
             for t = 1:length(Tasks)
-                [population{t}, calls] = initialize(1, sub_pop, Tasks(t));
+                [population{t}, calls] = initialize(sub_pop, Tasks(t), 1);
                 fnceval_calls = fnceval_calls + calls;
 
                 [bestobj(t), idx] = min([population{t}.factorial_costs]);
