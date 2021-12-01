@@ -18,12 +18,9 @@ classdef OperatorGA
                     offspring(count) = OperatorGA.mutate(offspring(count), offspring(count), Task.dims, mum);
                     offspring(count + 1) = OperatorGA.mutate(offspring(count + 1), offspring(count + 1), Task.dims, mum);
                 end
-                % fix bound
                 for x = count:count + 1
-                    lb_idx = offspring(x).rnvec < Task.Lb;
-                    offspring(x).rnvec(lb_idx) = Task.Lb(lb_idx);
-                    ub_idx = offspring(x).rnvec > Task.Ub;
-                    offspring(x).rnvec(ub_idx) = Task.Ub(ub_idx);
+                    offspring(x).rnvec(offspring(x).rnvec > 1) = 1;
+                    offspring(x).rnvec(offspring(x).rnvec < 0) = 0;
                 end
                 count = count + 2;
             end
