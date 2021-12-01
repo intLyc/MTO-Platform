@@ -89,7 +89,7 @@ classdef MFEA < Algorithm
 
                     [~, rank] = sort(factorial_costs);
                     for i = 1:length(population)
-                        population(i).factorial_ranks(t) = rank(i);
+                        population(rank(i)).factorial_ranks(t) = i;
                     end
                 end
                 for i = 1:length(population)
