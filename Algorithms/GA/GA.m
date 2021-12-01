@@ -1,146 +1,65 @@
 classdef GA < Algorithm
 
     properties (SetAccess = private)
-        selection_process = 'elitist'
-        p_il = 0
         mu = 2; % index of Simulated Binary Crossover (tunable)
         mum = 5; % index of polynomial mutation
     end
 
     methods
-
         function parameter = getParameter(obj)
-            parameter = {'("elitist"/"roulette wheel"): Selection Type', obj.selection_process, ...
-                        'p_il: Local Search Probability', num2str(obj.p_il), ...
-                        'mu: index of Simulated Binary Crossover (tunable)', num2str(obj.mu), ...
+            parameter = {'mu: index of Simulated Binary Crossover (tunable)', num2str(obj.mu), ...
                         'mum: index of polynomial mutation', num2str(obj.mum)};
         end
 
         function obj = setParameter(obj, parameter_cell)
             count = 1;
-            obj.selection_process = parameter_cell{count}; count = count + 1;
-            obj.p_il = str2double(parameter_cell{count}); count = count + 1;
-            obj.mu = str2num(parameter_cell{count}); count = count + 1;
+            obj.mu = str2double(parameter_cell{count}); count = count + 1;
             obj.mum = str2double(parameter_cell{count}); count = count + 1;
         end
 
         function data = run(obj, Tasks, run_parameter_list)
-            pop = run_parameter_list(1);
-            gen = run_parameter_list(2);
+            pop_size = run_parameter_list(1);
+            iter_num = run_parameter_list(2);
             eva_num = run_parameter_list(3);
-            selection_process = obj.selection_process;
-            p_il = obj.p_il;
-            mu = obj.mu;
-            mum = obj.mum;
+            pop_size = fixPopSize(pop_size, length(Tasks));
             data.convergence = [];
-
+            data.bestInd_data = [];
             tic
 
-            no_of_tasks = length(Tasks); % 任务数量
-
-            if mod(pop, no_of_tasks) ~= 0
-                pop = pop + no_of_tasks - mod(pop, no_of_tasks);
-            end
-
-            sub_pop = int32(pop / no_of_tasks);
-
-            for sub_task = 1:no_of_tasks
+            sub_pop = round(pop_size / length(Tasks));
+            for sub_task = 1:length(Tasks)
                 Task = Tasks(sub_task);
-
-                D = Task.dims;
-                options = optimoptions(@fminunc, 'Display', 'off', 'Algorithm', 'quasi-newton', 'MaxIter', 5);
-
                 fnceval_calls = 0;
-                calls_per_individual = zeros(1, sub_pop);
-                % EvBestFitness = zeros(1, gen);
-                % TotalEvaluations = zeros(1, gen);
 
-                for i = 1:sub_pop
-                    population(i) = Chromosome_GA();
-                    population(i) = initialize(population(i), D);
-                end
+                [population, calls] = initialize(sub_pop, Task);
+                fnceval_calls = fnceval_calls + calls;
 
-                for i = 1:sub_pop
-                    [population(i), calls_per_individual(i)] = evaluate_SOO(population(i), Task, p_il, options);
-                end
-
-                fnceval_calls = fnceval_calls + sum(calls_per_individual);
-                TotalEvaluations(1) = fnceval_calls;
-                bestobj = min([population.factorial_costs]);
-                EvBestFitness(1) = bestobj;
+                [bestobj, idx] = min([population.factorial_costs]);
+                bestInd_data = population(idx).rnvec;
+                convergence(1) = bestobj;
 
                 generation = 1;
-
-                while generation < gen && TotalEvaluations(generation) < int32(eva_num / no_of_tasks)
+                while generation < iter_num && fnceval_calls < round(eva_num / length(Tasks))
                     generation = generation + 1;
-                    indorder = randperm(length(population));
-                    count = 1;
 
-                    for i = 1:ceil(length(population) / 2)
-                        p1 = indorder(i);
-                        p2 = indorder(i + fix(length(population) / 2));
-                        child(count) = Chromosome_GA();
-                        child(count + 1) = Chromosome_GA();
-                        u = rand(1, D);
-                        cf = zeros(1, D);
-                        cf(u <= 0.5) = (2 * u(u <= 0.5)).^(1 / (mu + 1));
-                        cf(u > 0.5) = (2 * (1 - u(u > 0.5))).^(-1 / (mu + 1));
-                        child(count) = crossover(child(count), population(p1), population(p2), cf);
-                        child(count + 1) = crossover(child(count + 1), population(p2), population(p1), cf);
+                    [offspring, calls] = OperatorGA.generate(1, population, Task, obj.mu, obj.mum);
+                    fnceval_calls = fnceval_calls + calls;
 
-                        if rand(1) < 1
-                            child(count) = mutate(child(count), child(count), D, mum);
-                            child(count + 1) = mutate(child(count + 1), child(count + 1), D, mum);
-                        end
-
-                        count = count + 2;
+                    [bestobj_offspring, idx] = min([offspring.factorial_costs]);
+                    if bestobj_offspring < bestobj
+                        bestobj = bestobj_offspring;
+                        bestInd_data = offspring(idx).rnvec;
                     end
+                    convergence(generation) = bestobj;
 
-                    for i = 1:sub_pop
-                        [child(i), calls_per_individual(i)] = evaluate_SOO(child(i), Task, p_il, options);
-                    end
-
-                    fnceval_calls = fnceval_calls + sum(calls_per_individual);
-                    TotalEvaluations(generation) = fnceval_calls;
-
-                    intpopulation(1:sub_pop) = population;
-                    intpopulation(sub_pop + 1:2 * sub_pop) = child(1:sub_pop);
-                    [xxx, y] = sort([intpopulation.factorial_costs]);
-                    intpopulation = intpopulation(y);
-
-                    for i = 1:2 * sub_pop
-                        intpopulation(i).scalar_fitness = 1 / i;
-                    end
-
-                    if intpopulation(1).factorial_costs <= bestobj
-                        bestobj = intpopulation(1).factorial_costs;
-                        bestInd_data = intpopulation(1);
-                    end
-
-                    EvBestFitness(generation) = bestobj;
-
-                    if strcmp(selection_process, 'elitist')
-                        [xxx, y] = sort(- [intpopulation.scalar_fitness]);
-                        intpopulation = intpopulation(y);
-                        population = intpopulation(1:sub_pop);
-                    elseif strcmp(selection_process, 'roulette wheel')
-
-                        for i = 1:sub_pop
-                            population(i) = intpopulation(RouletteWheelSelection([intpopulation.scalar_fitness]));
-                        end
-
-                    end
-
-                    % disp(['SOO Generation ', num2str(generation), ' best objective = ', num2str(bestobj)])
+                    population = [population, offspring];
+                    [~, rank] = sort([population.factorial_costs]);
+                    population = population(rank(1:sub_pop));
                 end
-
-                data.convergence = [data.convergence; EvBestFitness];
+                data.convergence = [data.convergence; convergence];
+                data.bestInd_data = [data.bestInd_data, bestInd_data];
             end
-
             data.clock_time = toc;
-
         end
-
     end
-
 end
