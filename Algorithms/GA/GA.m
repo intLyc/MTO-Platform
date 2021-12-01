@@ -31,7 +31,7 @@ classdef GA < Algorithm
                 Task = Tasks(sub_task);
                 fnceval_calls = 0;
 
-                [population, calls] = initialize(sub_pop, Task);
+                [population, calls] = initialize(1, sub_pop, Task);
                 fnceval_calls = fnceval_calls + calls;
 
                 [bestobj, idx] = min([population.factorial_costs]);

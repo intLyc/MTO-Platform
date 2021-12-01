@@ -25,7 +25,7 @@ classdef OperatorGA
                 count = count + 2;
             end
             if callfun
-                [offspring, calls] = evaluate(offspring, Task);
+                [offspring, calls] = evaluate(offspring, Task, 1);
             else
                 calls = 0;
             end
