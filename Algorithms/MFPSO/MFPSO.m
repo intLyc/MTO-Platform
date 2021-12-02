@@ -10,8 +10,6 @@ classdef MFPSO < Algorithm
 
     properties (SetAccess = private)
         rmp = 0.3
-        selection_process = 'elitist'
-        p_il = 0
         wmax = 0.9; % inertia weight
         wmin = 0.4; % inertia weight
         c1 = 0.2;
@@ -23,8 +21,6 @@ classdef MFPSO < Algorithm
 
         function parameter = getParameter(obj)
             parameter = {'rmp: Random Mating Probability', num2str(obj.rmp), ...
-                        '("elitist"/"roulette wheel"): Selection Type', obj.selection_process, ...
-                        'p_il: Local Search Probability', num2str(obj.p_il), ...
                         'wmax: Inertia Weight Max', num2str(obj.wmax), ...
                         'wmin: Inertia Weight Min', num2str(obj.wmin), ...
                         'c1', num2str(obj.c1), ...
@@ -35,190 +31,96 @@ classdef MFPSO < Algorithm
         function obj = setParameter(obj, parameter_cell)
             count = 1;
             obj.rmp = str2double(parameter_cell{count}); count = count + 1;
-            obj.selection_process = parameter_cell{count}; count = count + 1;
-            obj.p_il = str2double(parameter_cell{count}); count = count + 1;
             obj.wmax = str2double(parameter_cell{count}); count = count + 1;
             obj.wmin = str2double(parameter_cell{count}); count = count + 1;
-            obj.c1 = sgtr2double(parameter_cell{count}); count = count + 1;
-            obj.c2 = sgtr2double(parameter_cell{count}); count = count + 1;
-            obj.c3 = sgtr2double(parameter_cell{count}); count = count + 1;
+            obj.c1 = str2double(parameter_cell{count}); count = count + 1;
+            obj.c2 = str2double(parameter_cell{count}); count = count + 1;
+            obj.c3 = str2double(parameter_cell{count}); count = count + 1;
         end
 
         function data = run(obj, Tasks, run_parameter_list)
-            pop = run_parameter_list(1);
-            gen = run_parameter_list(2);
+            pop_size = run_parameter_list(1);
+            iter_num = run_parameter_list(2);
             eva_num = run_parameter_list(3);
-            rmp = obj.rmp;
-            selection_process = obj.selection_process;
-            p_il = obj.p_il;
-            wmax = obj.wmax;
-            wmin = obj.wmin;
-            c1 = obj.c1;
-            c2 = obj.c2;
-            c3 = obj.c3;
-
+            pop_size = fixPopSize(pop_size, length(Tasks));
             tic
 
-            no_of_tasks = length(Tasks);
+            fnceval_calls = 0;
 
-            if mod(pop, no_of_tasks) ~= 0
-                pop = pop + no_of_tasks - mod(pop, no_of_tasks);
-            end
+            % initialize
+            [population, calls] = initialize(IndividualPSO, pop_size, Tasks, length(Tasks));
+            fnceval_calls = fnceval_calls + calls;
 
-            if no_of_tasks <= 1
-                error('At least 2 tasks required for MFEA');
-            end
-
-            w11 = gen;
-            c11 = gen;
-            c22 = gen;
-            c33 = gen;
-
-            D = zeros(1, no_of_tasks);
-
-            for i = 1:no_of_tasks
-                D(i) = Tasks(i).dims;
-            end
-
-            D_multitask = max(D);
-
-            options = optimoptions(@fminunc, 'Display', 'off', 'Algorithm', 'quasi-newton', 'MaxIter', 2); % settings for individual learning
-
-            fnceval_calls = zeros(1);
-            calls_per_individual = zeros(1, pop);
-            bestobj = Inf(1, no_of_tasks);
-
-            for i = 1:pop
-                population(i) = Particle();
-                population(i) = initialize(population(i), D_multitask);
-                population(i).skill_factor = 0;
-            end
-
-            for i = 1:pop
-                [population(i), calls_per_individual(i)] = evaluate(population(i), Tasks, p_il, no_of_tasks, options);
-            end
-
-            fnceval_calls = fnceval_calls + sum(calls_per_individual);
-            TotalEvaluations(1) = fnceval_calls;
-
-            factorial_cost = zeros(1, pop);
-
-            for i = 1:no_of_tasks
-
-                for j = 1:pop
-                    factorial_cost(j) = population(j).factorial_costs(i);
+            for t = 1:length(Tasks)
+                for i = 1:pop_size
+                    factorial_costs(i) = population(i).factorial_costs(t);
                 end
-
-                [xxx, y] = sort(factorial_cost);
-                population = population(y); % reorder the population according to factorial_cost of current task
-
-                for j = 1:pop
-                    population(j).factorial_ranks(i) = j;
+                [~, rank] = sort(factorial_costs);
+                for i = 1:pop_size
+                    population(i).factorial_ranks(t) = rank(i);
                 end
-
-                bestobj(i) = population(1).factorial_costs(i);
-                gbest(i, :) = population(1).rnvec;
-                EvBestFitness(i, 1) = bestobj(i);
-                bestInd_data(i) = population(1);
+                bestobj(t) = population(rank(1)).factorial_costs(t);
+                data.bestX{t} = population(rank(1)).rnvec;
+                data.convergence(t, 1) = bestobj(t);
             end
 
-            for i = 1:pop
-                [xxx, yyy] = min(population(i).factorial_ranks);
-                x = find(population(i).factorial_ranks == xxx);
-                equivalent_skills = length(x);
+            % calculate skill factor
+            for i = 1:pop_size
+                min_rank = min(population(i).factorial_ranks);
+                min_idx = find(population(i).factorial_ranks == min_rank);
 
-                if equivalent_skills > 1 % If having best fitness on multiple tasks, random choose one and set the factorial_costs of others as inf
-                    population(i).skill_factor = x(1 + round((equivalent_skills - 1) * rand(1)));
-                    tmp = population(i).factorial_costs(population(i).skill_factor);
-                    population(i).factorial_costs(1:no_of_tasks) = inf;
-                    population(i).factorial_costs(population(i).skill_factor) = tmp;
-                    population(i).pbestFitness = tmp;
-                else % else, just set the skill_factor and set the factorial_costs of others as inf
-                    population(i).skill_factor = yyy;
-                    tmp = population(i).factorial_costs(population(i).skill_factor);
-                    population(i).factorial_costs(1:no_of_tasks) = inf;
-                    population(i).factorial_costs(population(i).skill_factor) = tmp;
-                    population(i).pbestFitness = tmp;
-                end
+                population(i).skill_factor = min_idx(randi(length(min_idx)));
+                population(i).factorial_costs(1:population(i).skill_factor - 1) = inf;
+                population(i).factorial_costs(population(i).skill_factor + 1:end) = inf;
 
+                population(i).pbest = population(i).rnvec;
+                population(i).velocity = 0.1 * population(i).pbest;
+                population(i).pbestFitness = population(i).factorial_costs(population(i).skill_factor);
             end
 
-            ite = 1;
-            noImpove = 0;
+            generation = 1;
+            while generation < iter_num && fnceval_calls < eva_num
+                generation = generation + 1;
 
-            while ite < gen && TotalEvaluations(ite) < eva_num
-
-                if gen == inf
-                    w1 = wmax - (wmax - wmin) * TotalEvaluations(ite) / eva_num;
+                if iter_num == inf
+                    w = obj.wmax - (obj.wmax - obj.wmin) * fnceval_calls / eva_num;
                 else
-                    w1 = wmax - (wmax - wmin) * ite / gen;
+                    w = obj.wmax - (obj.wmax - obj.wmin) * generation / iter_num;
                 end
 
-                if ~mod(ite, 10) && noImpove >= 20
-                    %restart
-                    for i = 1:pop
-                        population(i) = velocityUpdate(population(i), gbest, rmp, w11, c11, c22, c33, no_of_tasks);
+                [offspring, calls] = OperatorPSO.generateMF(1, population, Tasks, obj.rmp, w, obj.c1, obj.c2, obj.c3, data.bestX);
+                fnceval_calls = fnceval_calls + calls;
+
+                population = [population, offspring];
+
+                for t = 1:length(Tasks)
+                    for i = 1:length(population)
+                        factorial_costs(i) = population(i).factorial_costs(t);
                     end
-
-                else
-
-                    for i = 1:pop
-                        population(i) = velocityUpdate(population(i), gbest, rmp, w1, c1, c2, c3, no_of_tasks);
+                    [bestobj_offspring, idx] = min(factorial_costs);
+                    if bestobj_offspring < bestobj(t)
+                        bestobj(t) = bestobj_offspring;
+                        data.bestX{t} = population(idx).rnvec;
                     end
+                    data.convergence(t, generation) = bestobj(t);
 
-                end
-
-                for i = 1:pop
-                    population(i) = positionUpdate(population(i));
-                end
-
-                for i = 1:pop
-                    population(i) = pbestUpdate(population(i));
-                end
-
-                for i = 1:pop
-                    [population(i), calls_per_individual(i)] = evaluate(population(i), Tasks, p_il, no_of_tasks, options);
-                end
-
-                fnceval_calls = fnceval_calls + sum(calls_per_individual);
-                TotalEvaluations(ite + 1) = fnceval_calls;
-
-                factorial_cost = zeros(1, pop);
-
-                for i = 1:no_of_tasks
-
-                    for j = 1:pop
-                        factorial_cost(j) = population(j).factorial_costs(i);
+                    [~, rank] = sort(factorial_costs);
+                    for i = 1:length(population)
+                        population(rank(i)).factorial_ranks(t) = i;
                     end
-
-                    [xxx, y] = sort(factorial_cost);
-                    population = population(y);
-
-                    for j = 1:pop
-                        population(j).factorial_ranks(i) = j;
-                    end
-
-                    if population(1).factorial_costs(i) <= bestobj(i)
-                        bestobj(i) = population(1).factorial_costs(i);
-                        gbest(i, :) = population(1).rnvec;
-                        bestInd_data(i) = population(1);
-                        noImpove = 0;
-                    else
-                        noImpove = noImpove + 1;
-                    end
-
-                    EvBestFitness(i, ite + 1) = bestobj(i);
-
+                end
+                for i = 1:length(population)
+                    population(i).scalar_fitness = 1 / min([population(i).factorial_ranks]);
                 end
 
-                % disp(['MFPSO iteration = ', num2str(ite), ' best factorial costs = ', num2str(bestobj)]);
-                ite = ite + 1;
+                [~, rank] = sort(- [population.scalar_fitness]);
+                population = population(rank(1:pop_size));
             end
-
-            data.clock_time = toc; % 计时结束
-            data.convergence = EvBestFitness;
+            % map to real bound
+            for t = 1:length(Tasks)
+                data.bestX{t} = Tasks(t).Lb + data.bestX{t}(1:Tasks(t).dims) .* (Tasks(t).Ub - Tasks(t).Lb);
+            end
+            data.clock_time = toc;
         end
-
     end
-
 end
