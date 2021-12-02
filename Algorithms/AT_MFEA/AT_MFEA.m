@@ -12,6 +12,8 @@ classdef AT_MFEA < Algorithm
 
     properties (SetAccess = private)
         rmp = 0.3
+        selection_process = 'elitist'
+        p_il = 0;
         mu = 2; % index of Simulated Binary Crossover (tunable)
         mum = 5; % index of polynomial mutation
         probswap = 0.5; % probability of variable swap
@@ -21,6 +23,8 @@ classdef AT_MFEA < Algorithm
 
         function parameter = getParameter(obj)
             parameter = {'rmp: Random Mating Probability', num2str(obj.rmp), ...
+                        '("elitist"/"roulette wheel"): Selection Type', obj.selection_process, ...
+                        'p_il: Local Search Probability', num2str(obj.p_il), ...
                         'mu: index of Simulated Binary Crossover (tunable)', num2str(obj.mu), ...
                         'mum: index of polynomial mutation', num2str(obj.mum), ...
                         'probSwap: Variable Swap Probability', num2str(obj.probswap)};
@@ -29,72 +33,113 @@ classdef AT_MFEA < Algorithm
         function obj = setParameter(obj, parameter_cell)
             count = 1;
             obj.rmp = str2double(parameter_cell{count}); count = count + 1;
+            obj.selection_process = parameter_cell{count}; count = count + 1;
+            obj.p_il = str2double(parameter_cell{count}); count = count + 1;
             obj.mu = str2num(parameter_cell{count}); count = count + 1;
             obj.mum = str2num(parameter_cell{count}); count = count + 1;
             obj.probswap = str2double(parameter_cell{count}); count = count + 1;
         end
 
         function data = run(obj, Tasks, run_parameter_list)
-            pop_size = run_parameter_list(1);
-            iter_num = run_parameter_list(2);
+            pop = run_parameter_list(1);
+            gen = run_parameter_list(2);
             eva_num = run_parameter_list(3);
-            pop_size = fixPopSize(pop_size, length(Tasks));
+            rmp = obj.rmp;
+            selection_process = obj.selection_process;
+            p_il = obj.p_il;
+            mu = obj.mu;
+            mum = obj.mum;
+            probswap = obj.probswap;
+
             tic
+            no_of_tasks = length(Tasks);
+            if mod(pop, no_of_tasks) ~= 0
+                pop = pop + no_of_tasks - mod(pop, no_of_tasks);
+            end
+            if no_of_tasks <= 1
+                error('At least 2 tasks required for MFEA');
+            end
+            D = zeros(1, no_of_tasks);
+            for i = 1:no_of_tasks
+                D(i) = Tasks(i).dims;
+            end
+            D_multitask = max(D);
 
-            fnceval_calls = 0;
+            options = optimoptions(@fminunc, 'Display', 'off', 'Algorithm', 'quasi-newton', 'MaxIter', 2); % local search - optional.
 
-            % initialize
-            [population, calls] = initialize(pop_size, Tasks, length(Tasks));
-            fnceval_calls = fnceval_calls + calls;
+            fnceval_calls = zeros(1);
+            calls_per_individual = zeros(1, pop);
+            bestobj = Inf(1, no_of_tasks);
             rmpval = inf(gen);
+
+            for i = 1:pop
+                population(i) = Chromosome_AT_MFEA();
+                population(i) = initialize(population(i), D_multitask);
+                population(i).skill_factor = 0;
+            end
+            for i = 1:pop
+                [population(i), calls_per_individual(i)] = evaluate(population(i), Tasks, p_il, no_of_tasks, options);
+            end
+
+            fnceval_calls = fnceval_calls + sum(calls_per_individual);
+            TotalEvaluations(1) = fnceval_calls;
+
             rmpval(1) = 0;
 
-            for t = 1:length(Tasks)
-                for i = 1:pop_size
-                    factorial_costs(i) = population(i).factorial_costs(t);
+            factorial_cost = zeros(1, pop);
+            for i = 1:no_of_tasks
+                for j = 1:pop
+                    factorial_cost(j) = population(j).factorial_costs(i);
                 end
-                [~, rank] = sort(factorial_costs);
-                for i = 1:pop_size
-                    population(i).factorial_ranks(t) = rank(i);
+                [xxx, y] = sort(factorial_cost);
+                population = population(y);
+                for j = 1:pop
+                    population(j).factorial_ranks(i) = j;
                 end
-                bestobj(t) = population(rank(1)).factorial_costs(t);
-                data.bestInd_data{t} = population(rank(1)).rnvec;
-                data.convergence(t, 1) = bestobj(t);
+                bestobj(i) = population(1).factorial_costs(i);
+                EvBestFitness(i, 1) = bestobj(i);
+                bestInd_data(i) = population(1);
+            end
+            for i = 1:pop
+                [xxx, yyy] = min(population(i).factorial_ranks);
+                x = find(population(i).factorial_ranks == xxx);
+                equivalent_skills = length(x);
+                if equivalent_skills > 1
+                    population(i).skill_factor = x(1 + round((equivalent_skills - 1) * rand(1)));
+                    tmp = population(i).factorial_costs(population(i).skill_factor);
+                    population(i).factorial_costs(1:no_of_tasks) = inf;
+                    population(i).factorial_costs(population(i).skill_factor) = tmp;
+                else
+                    population(i).skill_factor = yyy;
+                    tmp = population(i).factorial_costs(population(i).skill_factor);
+                    population(i).factorial_costs(1:no_of_tasks) = inf;
+                    population(i).factorial_costs(population(i).skill_factor) = tmp;
+                end
             end
 
-            % calculate skill factor
-            for i = 1:pop_size
-                min_rank = min(population(i).factorial_ranks);
-                min_idx = find(population(i).factorial_ranks == min_rank);
-
-                population(i).skill_factor = min_idx(randi(length(min_idx)));
-                population(i).factorial_costs(1:population(i).skill_factor - 1) = inf;
-                population(i).factorial_costs(population(i).skill_factor + 1:end) = inf;
-            end
-
-            
-            [mu_tasks, Sigma_tasks] = InitialDistribution(population, length(Tasks));
+            [mu_tasks, Sigma_tasks] = InitialDistribution(population, no_of_tasks);
 
             generation = 1;
-            while generation < iter_num && fnceval_calls < eva_num
-                generation = generation + 1;
+
+            while generation < gen && TotalEvaluations(generation) < eva_num
+                generation = generation +1;
 
                 %Extract task specific data sets
-                for i = 1:length(Tasks)
+                for i = 1:no_of_tasks
                     subpops(i).data = [];
                 end
 
-                for i = 1:pop_size
+                for i = 1:pop
                     subpops(population(i).skill_factor).data = [subpops(population(i).skill_factor).data; population(i).rnvec];
                 end
 
-                RMP = obj.rmp * ones(length(Tasks), length(Tasks)); % Prespecified rmp
+                RMP = rmp * ones(no_of_tasks, no_of_tasks); % Prespecified rmp
 
-                indorder = randperm(pop_size);
+                indorder = randperm(pop);
                 count = 1;
-                for i = 1:pop_size / 2
+                for i = 1:pop / 2
                     p1 = indorder(i);
-                    p2 = indorder(i + (pop_size / 2));
+                    p2 = indorder(i + (pop / 2));
                     child(count) = Chromosome_AT_MFEA();
                     child(count + 1) = Chromosome_AT_MFEA();
 
@@ -217,24 +262,24 @@ classdef AT_MFEA < Algorithm
                     count = count + 2;
                 end
 
-                for i = 1:pop_size
-                    [child(i), calls_per_individual(i)] = evaluate(child(i), Tasks, p_il, length(Tasks), options);
+                for i = 1:pop
+                    [child(i), calls_per_individual(i)] = evaluate(child(i), Tasks, p_il, no_of_tasks, options);
                 end
                 fnceval_calls = fnceval_calls + sum(calls_per_individual);
                 TotalEvaluations(generation) = fnceval_calls;
 
                 rmpval(generation) = rmp;
 
-                intpopulation(1:pop_size) = population;
-                intpopulation(pop_size + 1:2 * pop_size) = child;
-                factorial_cost = zeros(1, 2 * pop_size);
-                for i = 1:length(Tasks)
-                    for j = 1:2 * pop_size
+                intpopulation(1:pop) = population;
+                intpopulation(pop + 1:2 * pop) = child;
+                factorial_cost = zeros(1, 2 * pop);
+                for i = 1:no_of_tasks
+                    for j = 1:2 * pop
                         factorial_cost(j) = intpopulation(j).factorial_costs(i);
                     end
                     [xxx, y] = sort(factorial_cost);
                     intpopulation = intpopulation(y);
-                    for j = 1:2 * pop_size
+                    for j = 1:2 * pop
                         intpopulation(j).factorial_ranks(i) = j;
                     end
                     if intpopulation(1).factorial_costs(i) <= bestobj(i)
@@ -243,7 +288,7 @@ classdef AT_MFEA < Algorithm
                     end
                     EvBestFitness(i, generation) = bestobj(i);
                 end
-                for i = 1:2 * pop_size
+                for i = 1:2 * pop
                     [xxx, yyy] = min(intpopulation(i).factorial_ranks);
                     intpopulation(i).skill_factor = yyy;
                     intpopulation(i).scalar_fitness = 1 / xxx;
@@ -252,21 +297,21 @@ classdef AT_MFEA < Algorithm
                 if strcmp(selection_process, 'elitist')
                     [xxx, y] = sort(- [intpopulation.scalar_fitness]);
                     intpopulation = intpopulation(y);
-                    population = intpopulation(1:pop_size);
+                    population = intpopulation(1:pop);
                 elseif strcmp(selection_process, 'roulette wheel')
-                    for i = 1:length(Tasks)
+                    for i = 1:no_of_tasks
                         skill_group(i).individuals = intpopulation([intpopulation.skill_factor] == i);
                     end
                     count = 0;
-                    while count < pop_size
+                    while count < pop
                         count = count + 1;
-                        skill = mod(count, length(Tasks)) + 1;
+                        skill = mod(count, no_of_tasks) + 1;
                         population(count) = skill_group(skill).individuals(RouletteWheelSelection([skill_group(skill).individuals.scalar_fitness]));
                     end
                 end
 
                 % Updates of the progresisonal representation models
-                [mu_tasks, Sigma_tasks] = DistributionUpdate(mu_tasks, Sigma_tasks, population, length(Tasks));
+                [mu_tasks, Sigma_tasks] = DistributionUpdate(mu_tasks, Sigma_tasks, population, no_of_tasks);
 
                 % store all pairwise learned rmp values at every generation
                 Upper = RMP(find(~triu(ones(size(RMP))))); % store upper triangle only since RMP matrix is symmetric.
