@@ -29,10 +29,9 @@ classdef DE < Algorithm
             sub_pop = round(pop_size / length(Tasks));
             for sub_task = 1:length(Tasks)
                 Task = Tasks(sub_task);
-                fnceval_calls = 0;
 
-                [population, calls] = initialize(Individual, sub_pop, Task, 1);
-                fnceval_calls = fnceval_calls + calls;
+                % initialize
+                [population, fnceval_calls] = initialize(Individual, sub_pop, Task, 1);
 
                 [bestobj, idx] = min([population.factorial_costs]);
                 bestX = population(idx).rnvec;
@@ -42,18 +41,19 @@ classdef DE < Algorithm
                 while generation < iter_num && fnceval_calls < round(eva_num / length(Tasks))
                     generation = generation + 1;
 
+                    % generation
                     [offspring, calls] = OperatorDE.generate(1, population, Task, obj.F, obj.pCR);
                     fnceval_calls = fnceval_calls + calls;
 
-                    [bestobj_offspring, idx] = min([offspring.factorial_costs]);
-                    if bestobj_offspring < bestobj
-                        bestobj = bestobj_offspring;
+                    % selection
+                    replace = [population.factorial_costs] > [offspring.factorial_costs];
+                    population(replace) = offspring(replace);
+                    [bestobj_now, idx] = min([population.factorial_costs]);
+                    if bestobj_now < bestobj
+                        bestobj = bestobj_now;
                         bestX = offspring(idx).rnvec;
                     end
                     convergence(generation) = bestobj;
-
-                    replace = [population.factorial_costs] > [offspring.factorial_costs];
-                    population(replace) = offspring(replace);
                 end
                 data.convergence = [data.convergence; convergence];
                 data.bestX = [data.bestX, bestX];

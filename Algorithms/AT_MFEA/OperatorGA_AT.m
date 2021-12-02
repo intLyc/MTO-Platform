@@ -1,4 +1,4 @@
-classdef OperatorAT < OperatorGA
+classdef OperatorGA_AT < OperatorGA
     methods (Static)
         function [offspring, calls] = generateMF(callfun, population, Tasks, rmp, mu, mum, probswap, mu_tasks, Sigma_tasks)
             Individual_class = class(population(1));
@@ -19,11 +19,11 @@ classdef OperatorAT < OperatorGA
 
                 if population(p1).skill_factor == population(p2).skill_factor
                     % crossover
-                    offspring(count) = OperatorMFEA2.crossover(offspring(count), population(p1), population(p2), cf);
-                    offspring(count + 1) = OperatorMFEA2.crossover(offspring(count + 1), population(p2), population(p1), cf);
+                    offspring(count) = OperatorGA_AT.crossover(offspring(count), population(p1), population(p2), cf);
+                    offspring(count + 1) = OperatorGA_AT.crossover(offspring(count + 1), population(p2), population(p1), cf);
                     % mutate
-                    offspring(count) = OperatorMFEA2.mutate(offspring(count), max([Tasks.dims]), mum);
-                    offspring(count + 1) = OperatorMFEA2.mutate(offspring(count + 1), max([Tasks.dims]), mum);
+                    offspring(count) = OperatorGA_AT.mutate(offspring(count), max([Tasks.dims]), mum);
+                    offspring(count + 1) = OperatorGA_AT.mutate(offspring(count + 1), max([Tasks.dims]), mum);
                     % variable swap (uniform X)
                     swap_indicator = (rand(1, max([Tasks.dims])) >= probswap);
                     temp = offspring(count + 1).rnvec(swap_indicator);
@@ -40,11 +40,11 @@ classdef OperatorAT < OperatorGA
                     pm1.rnvec = AT_Transfer(population(p1).rnvec, mu_tasks{population(p1).skill_factor}, Sigma_tasks{population(p1).skill_factor}, mu_tasks{population(p2).skill_factor}, Sigma_tasks{population(p2).skill_factor});
                     pm2.rnvec = AT_Transfer(population(p2).rnvec, mu_tasks{population(p2).skill_factor}, Sigma_tasks{population(p2).skill_factor}, mu_tasks{population(p1).skill_factor}, Sigma_tasks{population(p1).skill_factor});
                     % crossover
-                    offspring(count) = OperatorMFEA2.crossover(offspring(count), pm1, population(p2), cf);
-                    offspring(count + 1) = OperatorMFEA2.crossover(offspring(count + 1), population(p1), pm2, cf);
+                    offspring(count) = OperatorGA_AT.crossover(offspring(count), pm1, population(p2), cf);
+                    offspring(count + 1) = OperatorGA_AT.crossover(offspring(count + 1), population(p1), pm2, cf);
                     % mutate
-                    offspring(count) = OperatorMFEA2.mutate(offspring(count), max([Tasks.dims]), mum);
-                    offspring(count + 1) = OperatorMFEA2.mutate(offspring(count + 1), max([Tasks.dims]), mum);
+                    offspring(count) = OperatorGA_AT.mutate(offspring(count), max([Tasks.dims]), mum);
+                    offspring(count + 1) = OperatorGA_AT.mutate(offspring(count + 1), max([Tasks.dims]), mum);
                     % imitate
                     p = [p1, p2];
                     offspring(count).skill_factor = population(p(randi(2))).skill_factor;
@@ -60,11 +60,11 @@ classdef OperatorAT < OperatorGA
                         end
                         temp_offspring = feval(Individual_class);
                         % crossover
-                        offspring(count + x - 1) = OperatorMFEA2.crossover(offspring(count + x - 1), population(p(x)), population(idx), cf);
-                        temp_offspring = OperatorMFEA2.crossover(temp_offspring, population(idx), population(p(x)), cf);
+                        offspring(count + x - 1) = OperatorGA_AT.crossover(offspring(count + x - 1), population(p(x)), population(idx), cf);
+                        temp_offspring = OperatorGA_AT.crossover(temp_offspring, population(idx), population(p(x)), cf);
                         % mutate
-                        offspring(count + x - 1) = OperatorMFEA2.mutate(offspring(count + x - 1), max([Tasks.dims]), mum);
-                        temp_offspring = OperatorMFEA2.mutate(temp_offspring, max([Tasks.dims]), mum);
+                        offspring(count + x - 1) = OperatorGA_AT.mutate(offspring(count + x - 1), max([Tasks.dims]), mum);
+                        temp_offspring = OperatorGA_AT.mutate(temp_offspring, max([Tasks.dims]), mum);
                         % variable swap (uniform X)
                         swap_indicator = (rand(1, max([Tasks.dims])) >= probswap);
                         offspring(count + x - 1).rnvec(swap_indicator) = temp_offspring.rnvec(swap_indicator);

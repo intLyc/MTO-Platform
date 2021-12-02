@@ -40,34 +40,12 @@ classdef MFEA_AKT < Algorithm
             pop_size = fixPopSize(pop_size, length(Tasks));
             tic
 
-            fnceval_calls = 0;
-            cfb_record = [];
-
             % initialize
-            [population, calls] = initialize(IndividualAKT, pop_size, Tasks, length(Tasks));
-            fnceval_calls = fnceval_calls + calls;
-
-            for t = 1:length(Tasks)
-                for i = 1:pop_size
-                    factorial_costs(i) = population(i).factorial_costs(t);
-                end
-                [~, rank] = sort(factorial_costs);
-                for i = 1:pop_size
-                    population(i).factorial_ranks(t) = rank(i);
-                end
-                bestobj(t) = population(rank(1)).factorial_costs(t);
-                data.bestX{t} = population(rank(1)).rnvec;
-                data.convergence(t, 1) = bestobj(t);
-            end
-
-            % calculate skill factor and initialize akt parameter
+            [population, fnceval_calls, bestobj, data.bestX] = initializeMF(IndividualAKT, pop_size, Tasks, length(Tasks));
+            data.convergence(:, 1) = bestobj;
+            % initialize akt
+            cfb_record = [];
             for i = 1:pop_size
-                min_rank = min(population(i).factorial_ranks);
-                min_idx = find(population(i).factorial_ranks == min_rank);
-                population(i).skill_factor = min_idx(randi(length(min_idx)));
-                population(i).factorial_costs(1:population(i).skill_factor - 1) = inf;
-                population(i).factorial_costs(population(i).skill_factor + 1:end) = inf;
-
                 population(i).isTran = 0;
                 population(i).cx_factor = randi(6);
                 population(i).parNum = 0;
@@ -77,7 +55,8 @@ classdef MFEA_AKT < Algorithm
             while generation < iter_num && fnceval_calls < eva_num
                 generation = generation + 1;
 
-                [offspring, calls] = OperatorAKT.generateMF(1, population, Tasks, obj.rmp, obj.mu, obj.mum);
+                % generation
+                [offspring, calls] = OperatorGA_AKT.generateMF(1, population, Tasks, obj.rmp, obj.mu, obj.mum);
                 fnceval_calls = fnceval_calls + calls;
 
                 % calculate best cx_factor
@@ -119,30 +98,14 @@ classdef MFEA_AKT < Algorithm
                 end
 
                 % selection
-                population = [population, offspring];
+                [population, bestobj_now, bestX_now] = selectMF(population, offspring, Tasks, pop_size, bestobj);
                 for t = 1:length(Tasks)
-                    for i = 1:length(population)
-                        factorial_costs(i) = population(i).factorial_costs(t);
-                    end
-                    [bestobj_offspring, idx] = min(factorial_costs);
-                    if bestobj_offspring < bestobj(t)
-                        bestobj(t) = bestobj_offspring;
-                        data.bestX{t} = population(idx).rnvec;
-                    end
-                    data.convergence(t, generation) = bestobj(t);
-
-                    [~, rank] = sort(factorial_costs);
-                    for i = 1:length(population)
-                        population(rank(i)).factorial_ranks(t) = i;
+                    if bestobj(t) ~= bestobj_now(t)
+                        bestobj(t) = bestobj_now(t);
+                        data.bestX{t} = bestX_now{t};
                     end
                 end
-                for i = 1:length(population)
-                    population(i).scalar_fitness = 1 / min([population(i).factorial_ranks]);
-                    population(i).isTran = 0;
-                    population(i).parNum = 0;
-                end
-                [~, rank] = sort(- [population.scalar_fitness]);
-                population = population(rank(1:pop_size));
+                data.convergence(:, generation) = bestobj;
             end
             % map to real bound
             for t = 1:length(Tasks)
