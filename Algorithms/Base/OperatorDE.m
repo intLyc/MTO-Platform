@@ -1,8 +1,9 @@
 classdef OperatorDE
     methods (Static)
         function [offspring, calls] = generate(callfun, population, Task, F, pCR)
+            Individual_class = class(population(1));
             for i = 1:length(population)
-                offspring(i) = Individual();
+                offspring(i) = feval(Individual_class);
 
                 A = randperm(length(population));
                 A(A == i) = [];
@@ -24,12 +25,13 @@ classdef OperatorDE
         end
 
         function [offspring, calls] = generateMF(callfun, population, Tasks, rmp, F, pCR)
+            Individual_class = class(population(1));
             group = cell([1, length(Tasks)]);
             for i = 1:length(population)
                 group{population(i).skill_factor} = [group{population(i).skill_factor}, i];
             end
             for i = 1:length(population)
-                offspring(i) = Individual();
+                offspring(i) = feval(Individual_class);
                 offspring(i).factorial_costs = inf(1, length(Tasks));
 
                 other = [];
@@ -61,7 +63,7 @@ classdef OperatorDE
                 offspring(i).rnvec(offspring(i).rnvec < 0) = 0;
             end
             if callfun
-                offspring_temp = Individual.empty();
+                offspring_temp = feval(Individual_class).empty();
                 calls = 0;
                 for t = 1:length(Tasks)
                     offspring_t = offspring([offspring.skill_factor] == t);
