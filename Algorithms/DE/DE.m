@@ -23,7 +23,7 @@ classdef DE < Algorithm
             eva_num = run_parameter_list(3);
             pop_size = fixPopSize(pop_size, length(Tasks));
             data.convergence = [];
-            data.bestX = [];
+            data.bestX = {};
             tic
 
             sub_pop = round(pop_size / length(Tasks));
