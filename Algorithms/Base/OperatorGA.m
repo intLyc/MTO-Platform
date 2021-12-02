@@ -51,22 +51,22 @@ classdef OperatorGA
                     cf = zeros(1, max([Tasks.dims]));
                     cf(u <= 0.5) = (2 * u(u <= 0.5)).^(1 / (mu + 1));
                     cf(u > 0.5) = (2 * (1 - u(u > 0.5))).^(-1 / (mu + 1));
-
                     offspring(count) = OperatorGA.crossover(offspring(count), population(p1), population(p2), cf);
                     offspring(count + 1) = OperatorGA.crossover(offspring(count + 1), population(p2), population(p1), cf);
-
+                    % % mutate
+                    % offspring(count) = OperatorGA.mutate(offspring(count), max([Tasks.dims]), mum);
+                    % offspring(count + 1) = OperatorGA.mutate(offspring(count + 1), max([Tasks.dims]), mum);
+                    % imitate
                     p = [p1, p2];
                     offspring(count).skill_factor = population(p(randi(2))).skill_factor;
                     offspring(count + 1).skill_factor = population(p(randi(2))).skill_factor;
 
-                    % mutate
-                    offspring(count) = OperatorGA.mutate(offspring(count), max([Tasks.dims]), mum);
-                    offspring(count + 1) = OperatorGA.mutate(offspring(count + 1), max([Tasks.dims]), mum);
                 else
                     % mutate
                     offspring(count) = OperatorGA.mutate(population(p1), max([Tasks.dims]), mum);
-                    offspring(count).skill_factor = population(p1).skill_factor;
                     offspring(count + 1) = OperatorGA.mutate(population(p2), max([Tasks.dims]), mum);
+                    % imitate
+                    offspring(count).skill_factor = population(p1).skill_factor;
                     offspring(count).skill_factor = population(p2).skill_factor;
                 end
                 for x = count:count + 1
