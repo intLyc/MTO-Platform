@@ -53,7 +53,7 @@ classdef MFEA2 < Algorithm
                     population(i).factorial_ranks(t) = rank(i);
                 end
                 bestobj(t) = population(rank(1)).factorial_costs(t);
-                data.bestInd_data{t} = population(rank(1)).rnvec;
+                data.bestX{t} = population(rank(1)).rnvec;
                 data.convergence(t, 1) = bestobj(t);
             end
 
@@ -92,7 +92,7 @@ classdef MFEA2 < Algorithm
                     [bestobj_offspring, idx] = min(factorial_costs);
                     if bestobj_offspring < bestobj(t)
                         bestobj(t) = bestobj_offspring;
-                        data.bestInd_data{t} = population(idx).rnvec;
+                        data.bestX{t} = population(idx).rnvec;
                     end
                     data.convergence(t, generation) = bestobj(t);
 
@@ -106,6 +106,10 @@ classdef MFEA2 < Algorithm
                 end
                 [~, rank] = sort(- [population.scalar_fitness]);
                 population = population(rank(1:pop_size));
+            end
+            % map to real bound
+            for t = 1:length(Tasks)
+                data.bestX{t} = Tasks(t).Lb + data.bestX{t} .* (Tasks(t).Ub - Tasks(t).Lb);
             end
             data.clock_time = toc;
         end

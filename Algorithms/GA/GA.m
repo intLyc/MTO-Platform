@@ -23,7 +23,7 @@ classdef GA < Algorithm
             eva_num = run_parameter_list(3);
             pop_size = fixPopSize(pop_size, length(Tasks));
             data.convergence = [];
-            data.bestInd_data = [];
+            data.bestX = [];
             tic
 
             sub_pop = round(pop_size / length(Tasks));
@@ -35,7 +35,7 @@ classdef GA < Algorithm
                 fnceval_calls = fnceval_calls + calls;
 
                 [bestobj, idx] = min([population.factorial_costs]);
-                bestInd_data = population(idx).rnvec;
+                bestX = population(idx).rnvec;
                 convergence(1) = bestobj;
 
                 generation = 1;
@@ -48,7 +48,7 @@ classdef GA < Algorithm
                     [bestobj_offspring, idx] = min([offspring.factorial_costs]);
                     if bestobj_offspring < bestobj
                         bestobj = bestobj_offspring;
-                        bestInd_data = offspring(idx).rnvec;
+                        bestX = offspring(idx).rnvec;
                     end
                     convergence(generation) = bestobj;
 
@@ -57,7 +57,9 @@ classdef GA < Algorithm
                     population = population(rank(1:sub_pop));
                 end
                 data.convergence = [data.convergence; convergence];
-                data.bestInd_data = [data.bestInd_data, bestInd_data];
+                data.bestX = [data.bestX, bestX];
+                % map to real bound
+                data.bestX{sub_task} = Task.Lb + data.bestX{sub_task} .* (Task.Ub - Task.Lb);
             end
             data.clock_time = toc;
         end

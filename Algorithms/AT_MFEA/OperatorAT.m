@@ -1,13 +1,12 @@
-classdef OperatorMFEA2 < OperatorGA
+classdef OperatorAT < OperatorGA
     methods (Static)
-        function [offspring, calls] = generateMF(callfun, population, Tasks, RMP, mu, mum, probswap)
+        function [offspring, calls] = generateMF(callfun, population, Tasks, rmp, mu, mum, probswap, mu_tasks, Sigma_tasks)
             Individual_class = class(population(1));
             indorder = randperm(length(population));
             count = 1;
             for i = 1:ceil(length(population) / 2)
                 p1 = indorder(i);
                 p2 = indorder(i + fix(length(population) / 2));
-                rmp = RMP(population(p1).skill_factor, population(p2).skill_factor);
                 offspring(count) = feval(Individual_class);
                 offspring(count).factorial_costs = inf(1, length(Tasks));
                 offspring(count + 1) = feval(Individual_class);
@@ -18,10 +17,31 @@ classdef OperatorMFEA2 < OperatorGA
                 cf(u <= 0.5) = (2 * u(u <= 0.5)).^(1 / (mu + 1));
                 cf(u > 0.5) = (2 * (1 - u(u > 0.5))).^(-1 / (mu + 1));
 
-                if (population(p1).skill_factor == population(p2).skill_factor) || rand < rmp
+                if population(p1).skill_factor == population(p2).skill_factor
                     % crossover
                     offspring(count) = OperatorMFEA2.crossover(offspring(count), population(p1), population(p2), cf);
                     offspring(count + 1) = OperatorMFEA2.crossover(offspring(count + 1), population(p2), population(p1), cf);
+                    % mutate
+                    offspring(count) = OperatorMFEA2.mutate(offspring(count), max([Tasks.dims]), mum);
+                    offspring(count + 1) = OperatorMFEA2.mutate(offspring(count + 1), max([Tasks.dims]), mum);
+                    % variable swap (uniform X)
+                    swap_indicator = (rand(1, max([Tasks.dims])) >= probswap);
+                    temp = offspring(count + 1).rnvec(swap_indicator);
+                    offspring(count + 1).rnvec(swap_indicator) = offspring(count).rnvec(swap_indicator);
+                    offspring(count).rnvec(swap_indicator) = temp;
+                    % imitate
+                    p = [p1, p2];
+                    offspring(count).skill_factor = population(p(randi(2))).skill_factor;
+                    offspring(count + 1).skill_factor = population(p(randi(2))).skill_factor;
+                elseif rand < rmp
+                    % affine transformation
+                    pm1 = population(p1);
+                    pm2 = population(p2);
+                    pm1.rnvec = AT_Transfer(population(p1).rnvec, mu_tasks{population(p1).skill_factor}, Sigma_tasks{population(p1).skill_factor}, mu_tasks{population(p2).skill_factor}, Sigma_tasks{population(p2).skill_factor});
+                    pm2.rnvec = AT_Transfer(population(p2).rnvec, mu_tasks{population(p2).skill_factor}, Sigma_tasks{population(p2).skill_factor}, mu_tasks{population(p1).skill_factor}, Sigma_tasks{population(p1).skill_factor});
+                    % crossover
+                    offspring(count) = OperatorMFEA2.crossover(offspring(count), pm1, population(p2), cf);
+                    offspring(count + 1) = OperatorMFEA2.crossover(offspring(count + 1), population(p1), pm2, cf);
                     % mutate
                     offspring(count) = OperatorMFEA2.mutate(offspring(count), max([Tasks.dims]), mum);
                     offspring(count + 1) = OperatorMFEA2.mutate(offspring(count + 1), max([Tasks.dims]), mum);
@@ -29,14 +49,6 @@ classdef OperatorMFEA2 < OperatorGA
                     p = [p1, p2];
                     offspring(count).skill_factor = population(p(randi(2))).skill_factor;
                     offspring(count + 1).skill_factor = population(p(randi(2))).skill_factor;
-
-                    if population(p1).skill_factor == population(p2).skill_factor
-                        % variable swap (uniform X)
-                        swap_indicator = (rand(1, max([Tasks.dims])) >= probswap);
-                        temp = offspring(count + 1).rnvec(swap_indicator);
-                        offspring(count + 1).rnvec(swap_indicator) = offspring(count).rnvec(swap_indicator);
-                        offspring(count).rnvec(swap_indicator) = temp;
-                    end
                 else
                     % Randomly pick another individual from the same task
                     p = [p1, p2];

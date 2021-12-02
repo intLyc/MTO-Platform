@@ -60,7 +60,7 @@ classdef EMEA < Algorithm
                 fnceval_calls = fnceval_calls + calls;
 
                 [bestobj(t), idx] = min([population{t}.factorial_costs]);
-                data.bestInd_data{t} = population{t}(idx).rnvec;
+                data.bestX{t} = population{t}(idx).rnvec;
                 data.convergence(t, 1) = bestobj(t);
             end
 
@@ -123,7 +123,7 @@ classdef EMEA < Algorithm
                     [bestobj_offspring, idx] = min([offspring.factorial_costs]);
                     if bestobj_offspring < bestobj(t)
                         bestobj(t) = bestobj_offspring;
-                        data.bestInd_data{t} = offspring(idx).rnvec;
+                        data.bestX{t} = offspring(idx).rnvec;
                     end
                     data.convergence(t, generation) = bestobj(t);
 
@@ -137,6 +137,10 @@ classdef EMEA < Algorithm
                             population{t}(replace) = offspring(replace);
                     end
                 end
+            end
+            % map to real bound
+            for t = 1:length(Tasks)
+                data.bestX{t} = Tasks(t).Lb + data.bestX{t} .* (Tasks(t).Ub - Tasks(t).Lb);
             end
             data.clock_time = toc;
         end
