@@ -1,14 +1,14 @@
-function [population, calls] = initialize(pop_size, Tasks, tasks_num)
+function [population, calls] = initialize(Individual_class, pop_size, Tasks, tasks_num)
     if tasks_num == 1
         for i = 1:pop_size
-            population(i) = Individual();
+            population(i) = Individual_class();
             population(i).rnvec = rand(1, Tasks.dims);
         end
         [population, calls] = evaluate(population, Tasks, 1);
     elseif tasks_num > 1
         % multifactorial
         for i = 1:pop_size
-            population(i) = Individual();
+            population(i) = Individual_class();
             population(i).rnvec = rand(1, max([Tasks.dims]));
             population(i).skill_factor = 0;
             population(i).factorial_costs = inf(1, tasks_num);
