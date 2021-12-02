@@ -59,7 +59,7 @@ classdef GA < Algorithm
                 data.convergence = [data.convergence; convergence];
                 data.bestX = [data.bestX, bestX];
                 % map to real bound
-                data.bestX{sub_task} = Task.Lb + data.bestX{sub_task} .* (Task.Ub - Task.Lb);
+                data.bestX{sub_task} = Task.Lb + data.bestX{sub_task}(1:Task.dims) .* (Task.Ub - Task.Lb);
             end
             data.clock_time = toc;
         end

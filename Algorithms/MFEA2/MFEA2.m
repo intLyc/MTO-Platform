@@ -109,7 +109,7 @@ classdef MFEA2 < Algorithm
             end
             % map to real bound
             for t = 1:length(Tasks)
-                data.bestX{t} = Tasks(t).Lb + data.bestX{t} .* (Tasks(t).Ub - Tasks(t).Lb);
+                data.bestX{t} = Tasks(t).Lb + data.bestX{t}(1:Tasks(t).dims) .* (Tasks(t).Ub - Tasks(t).Lb);
             end
             data.clock_time = toc;
         end
