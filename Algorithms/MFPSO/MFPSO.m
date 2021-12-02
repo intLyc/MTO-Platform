@@ -67,11 +67,10 @@ classdef MFPSO < Algorithm
                 end
 
                 % generation
-                [offspring, calls] = OperatorPSO.generateMF(1, population, Tasks, obj.rmp, w, obj.c1, obj.c2, obj.c3, no_improve, generation, data.bestX);
+                [population, calls] = OperatorPSO.generateMF(1, population, Tasks, obj.rmp, w, obj.c1, obj.c2, obj.c3, data.bestX);
                 fnceval_calls = fnceval_calls + calls;
 
-                population = [population, offspring];
-
+                % update best
                 for t = 1:length(Tasks)
                     for i = 1:length(population)
                         factorial_costs(i) = population(i).factorial_costs(t);
@@ -85,23 +84,9 @@ classdef MFPSO < Algorithm
                         no_improve = no_improve + 1;
                     end
                     data.convergence(t, generation) = bestobj(t);
-
-                    [~, rank] = sort(factorial_costs);
-                    for i = 1:length(population)
-                        population(rank(i)).factorial_ranks(t) = i;
-                    end
                 end
-                for i = 1:length(population)
-                    population(i).scalar_fitness = 1 / min([population(i).factorial_ranks]);
-                end
-
-                [~, rank] = sort(- [population.scalar_fitness]);
-                population = population(rank(1:pop_size));
             end
-            % map to real bound
-            for t = 1:length(Tasks)
-                data.bestX{t} = Tasks(t).Lb + data.bestX{t}(1:Tasks(t).dims) .* (Tasks(t).Ub - Tasks(t).Lb);
-            end
+            data.bestX = bin2real(data.bestX, Tasks);
             data.clock_time = toc;
         end
     end
