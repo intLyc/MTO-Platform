@@ -18,7 +18,6 @@ classdef MFEA_AKT < Algorithm
     end
 
     methods
-
         function parameter = getParameter(obj)
             parameter = {'rmp: Random Mating Probability', num2str(obj.rmp), ...
                         'ginterval', num2str(obj.ginterval), ...
@@ -121,7 +120,6 @@ classdef MFEA_AKT < Algorithm
 
                 % selection
                 population = [population, offspring];
-
                 for t = 1:length(Tasks)
                     for i = 1:length(population)
                         factorial_costs(i) = population(i).factorial_costs(t);
@@ -143,7 +141,6 @@ classdef MFEA_AKT < Algorithm
                     population(i).isTran = 0;
                     population(i).parNum = 0;
                 end
-
                 [~, rank] = sort(- [population.scalar_fitness]);
                 population = population(rank(1:pop_size));
             end

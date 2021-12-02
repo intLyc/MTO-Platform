@@ -18,7 +18,6 @@ classdef OperatorAKT < OperatorGA
                     cf = zeros(1, max([Tasks.dims]));
                     cf(u <= 0.5) = (2 * u(u <= 0.5)).^(1 / (mu + 1));
                     cf(u > 0.5) = (2 * (1 - u(u > 0.5))).^(-1 / (mu + 1));
-
                     p = [p1, p2];
                     if population(p1).skill_factor == population(p2).skill_factor
                         offspring(count) = OperatorAKT.crossover(offspring(count), population(p1), population(p2), cf);
@@ -36,7 +35,10 @@ classdef OperatorAKT < OperatorGA
                         offspring(count).isTran = 1;
                         offspring(count + 1).isTran = 1;
                     end
-
+                    % mutate
+                    offspring(count) = OperatorAKT.mutate(offspring(count), max([Tasks.dims]), mum);
+                    offspring(count + 1) = OperatorAKT.mutate(offspring(count + 1), max([Tasks.dims]), mum);
+                    % imitate
                     rand_p = p(randi(2));
                     offspring(count).skill_factor = population(rand_p).skill_factor;
                     if offspring(count).isTran == 1
@@ -47,15 +49,12 @@ classdef OperatorAKT < OperatorGA
                     if offspring(count + 1).isTran == 1
                         offspring(count + 1).parNum = rand_p;
                     end
-
-                    % mutate
-                    offspring(count) = OperatorAKT.mutate(offspring(count), max([Tasks.dims]), mum);
-                    offspring(count + 1) = OperatorAKT.mutate(offspring(count + 1), max([Tasks.dims]), mum);
                 else
                     % mutate
                     offspring(count) = OperatorAKT.mutate(population(p1), max([Tasks.dims]), mum);
-                    offspring(count).skill_factor = population(p1).skill_factor;
                     offspring(count + 1) = OperatorAKT.mutate(population(p2), max([Tasks.dims]), mum);
+                    % imitate
+                    offspring(count).skill_factor = population(p1).skill_factor;
                     offspring(count + 1).skill_factor = population(p2).skill_factor;
                 end
                 for x = count:count + 1
