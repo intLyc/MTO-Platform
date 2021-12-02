@@ -39,8 +39,6 @@ classdef MFEA2 < Algorithm
             tic
 
             fnceval_calls = 0;
-            rmpval(1) = 0;
-            rmp = 0;
 
             % initialize
             [population, calls] = initialize(Individual, pop_size, Tasks, length(Tasks));
