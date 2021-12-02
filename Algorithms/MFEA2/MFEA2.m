@@ -60,19 +60,10 @@ classdef MFEA2 < Algorithm
                 fnceval_calls = fnceval_calls + calls;
 
                 % selection
-                [population, bestobj_now, bestX_now] = selectMF(population, offspring, Tasks, pop_size, bestobj);
-                for t = 1:length(Tasks)
-                    if bestobj(t) ~= bestobj_now(t)
-                        bestobj(t) = bestobj_now(t);
-                        data.bestX{t} = bestX_now{t};
-                    end
-                end
+                [population, bestobj, data.bestX] = selectMF(population, offspring, Tasks, pop_size, bestobj, data.bestX);
                 data.convergence(:, generation) = bestobj;
             end
-            % map to real bound
-            for t = 1:length(Tasks)
-                data.bestX{t} = Tasks(t).Lb + data.bestX{t}(1:Tasks(t).dims) .* (Tasks(t).Ub - Tasks(t).Lb);
-            end
+            data.bestX = bin2real(data.bestX, Tasks);
             data.clock_time = toc;
         end
     end
