@@ -41,7 +41,7 @@ classdef MFEA < Algorithm
             fnceval_calls = 0;
 
             % initialize
-            [population, calls] = initialize(pop_size, Tasks, length(Tasks));
+            [population, calls] = initialize(Individual, pop_size, Tasks, length(Tasks));
             fnceval_calls = fnceval_calls + calls;
 
             for t = 1:length(Tasks)
