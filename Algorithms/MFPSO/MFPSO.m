@@ -46,6 +46,7 @@ classdef MFPSO < Algorithm
             tic
 
             fnceval_calls = 0;
+            no_improve = 0;
 
             % initialize
             [population, calls] = initialize(IndividualPSO, pop_size, Tasks, length(Tasks));
@@ -88,7 +89,7 @@ classdef MFPSO < Algorithm
                     w = obj.wmax - (obj.wmax - obj.wmin) * generation / iter_num;
                 end
 
-                [offspring, calls] = OperatorPSO.generateMF(1, population, Tasks, obj.rmp, w, obj.c1, obj.c2, obj.c3, data.bestX);
+                [offspring, calls] = OperatorPSO.generateMF(1, population, Tasks, obj.rmp, w, obj.c1, obj.c2, obj.c3, no_improve, generation, data.bestX);
                 fnceval_calls = fnceval_calls + calls;
 
                 population = [population, offspring];
@@ -101,6 +102,9 @@ classdef MFPSO < Algorithm
                     if bestobj_offspring < bestobj(t)
                         bestobj(t) = bestobj_offspring;
                         data.bestX{t} = population(idx).rnvec;
+                        no_improve = 0;
+                    else
+                        no_improve = no_improve + 1;
                     end
                     data.convergence(t, generation) = bestobj(t);
 

@@ -1,12 +1,17 @@
 classdef OperatorPSO
     methods (Static)
-        function [offspring, calls] = generateMF(callfun, population, Tasks, rmp, w, c1, c2, c3, gbest)
+        function [offspring, calls] = generateMF(callfun, population, Tasks, rmp, w, c1, c2, c3, no_improve, generation, gbest)
             Individual_class = class(population(1));
             for i = 1:length(population)
                 offspring(i) = population(i);
                 offspring(i).factorial_costs = inf(1, length(Tasks));
 
-                offspring(i) = OperatorPSO.velocityUpdate(offspring(i), gbest, rmp, w, c1, c2, c3, length(Tasks));
+                if ~mod(generation, 10) && no_improve >= 20
+                    big = 1000;
+                    offspring(i) = OperatorPSO.velocityUpdate(offspring(i), gbest, rmp, big, big, big, big, length(Tasks));
+                else
+                    offspring(i) = OperatorPSO.velocityUpdate(offspring(i), gbest, rmp, w, c1, c2, c3, length(Tasks));
+                end
                 offspring(i) = OperatorPSO.positionUpdate(offspring(i));
                 offspring(i) = OperatorPSO.pbestUpdate(offspring(i));
             end
