@@ -71,6 +71,7 @@ classdef EMEA < Algorithm
                 for t = 1:length(Tasks)
                     parent = population{t};
 
+                    % generation
                     op_idx = mod(t - 1, length(op_list)) + 1;
                     op = op_list{op_idx};
                     switch op
@@ -127,6 +128,7 @@ classdef EMEA < Algorithm
                     end
                     data.convergence(t, generation) = bestobj(t);
 
+                    % selection
                     switch op
                         case 'GA'
                             population{t} = [population{t}, offspring];
@@ -138,10 +140,7 @@ classdef EMEA < Algorithm
                     end
                 end
             end
-            % map to real bound
-            for t = 1:length(Tasks)
-                data.bestX{t} = Tasks(t).Lb + data.bestX{t}(1:Tasks(t).dims) .* (Tasks(t).Ub - Tasks(t).Lb);
-            end
+            data.bestX = bin2real(data.bestX, Tasks);
             data.clock_time = toc;
         end
     end

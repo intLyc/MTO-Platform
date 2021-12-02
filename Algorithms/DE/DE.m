@@ -57,9 +57,8 @@ classdef DE < Algorithm
                 end
                 data.convergence = [data.convergence; convergence];
                 data.bestX = [data.bestX, bestX];
-                % map to real bound
-                data.bestX{sub_task} = Task.Lb + data.bestX{sub_task}(1:Task.dims) .* (Task.Ub - Task.Lb);
             end
+            data.bestX = bin2real(data.bestX, Tasks);
             data.clock_time = toc;
         end
     end
