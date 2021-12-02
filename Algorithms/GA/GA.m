@@ -42,19 +42,20 @@ classdef GA < Algorithm
                 while generation < iter_num && fnceval_calls < round(eva_num / length(Tasks))
                     generation = generation + 1;
 
+                    % generation
                     [offspring, calls] = OperatorGA.generate(1, population, Task, obj.mu, obj.mum);
                     fnceval_calls = fnceval_calls + calls;
 
-                    [bestobj_offspring, idx] = min([offspring.factorial_costs]);
-                    if bestobj_offspring < bestobj
-                        bestobj = bestobj_offspring;
-                        bestX = offspring(idx).rnvec;
-                    end
-                    convergence(generation) = bestobj;
-
+                    % selection
                     population = [population, offspring];
                     [~, rank] = sort([population.factorial_costs]);
                     population = population(rank(1:sub_pop));
+                    [bestobj_now, idx] = min([population.factorial_costs]);
+                    if bestobj_now < bestobj
+                        bestobj = bestobj_now;
+                        bestX = offspring(idx).rnvec;
+                    end
+                    convergence(generation) = bestobj;
                 end
                 data.convergence = [data.convergence; convergence];
                 data.bestX = [data.bestX, bestX];

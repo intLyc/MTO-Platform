@@ -22,9 +22,6 @@ classdef OperatorGA_LDA < OperatorGA
                     % crossover
                     offspring(count) = OperatorGA_LDA.crossover(offspring(count), population(p1), population(p2), cf);
                     offspring(count + 1) = OperatorGA_LDA.crossover(offspring(count + 1), population(p2), population(p1), cf);
-                    % % mutate
-                    % offspring(count) = OperatorMFEA2.mutate(offspring(count), max([Tasks.dims]), mum);
-                    % offspring(count + 1) = OperatorMFEA2.mutate(offspring(count + 1), max([Tasks.dims]), mum);
                     % imitate
                     p = [p1, p2];
                     offspring(count).skill_factor = population(p(randi(2))).skill_factor;

@@ -45,35 +45,12 @@ classdef MFPSO < Algorithm
             pop_size = fixPopSize(pop_size, length(Tasks));
             tic
 
-            fnceval_calls = 0;
-            no_improve = 0;
-
             % initialize
-            [population, calls] = initialize(IndividualPSO, pop_size, Tasks, length(Tasks));
-            fnceval_calls = fnceval_calls + calls;
-
-            for t = 1:length(Tasks)
-                for i = 1:pop_size
-                    factorial_costs(i) = population(i).factorial_costs(t);
-                end
-                [~, rank] = sort(factorial_costs);
-                for i = 1:pop_size
-                    population(i).factorial_ranks(t) = rank(i);
-                end
-                bestobj(t) = population(rank(1)).factorial_costs(t);
-                data.bestX{t} = population(rank(1)).rnvec;
-                data.convergence(t, 1) = bestobj(t);
-            end
-
-            % calculate skill factor
+            [population, fnceval_calls, bestobj, data.bestX] = initializeMF(IndividualPSO, pop_size, Tasks, length(Tasks));
+            data.convergence(:, 1) = bestobj;
+            % initialize pso
+            no_improve = 0;
             for i = 1:pop_size
-                min_rank = min(population(i).factorial_ranks);
-                min_idx = find(population(i).factorial_ranks == min_rank);
-
-                population(i).skill_factor = min_idx(randi(length(min_idx)));
-                population(i).factorial_costs(1:population(i).skill_factor - 1) = inf;
-                population(i).factorial_costs(population(i).skill_factor + 1:end) = inf;
-
                 population(i).pbest = population(i).rnvec;
                 population(i).velocity = 0.1 * population(i).pbest;
                 population(i).pbestFitness = population(i).factorial_costs(population(i).skill_factor);
@@ -89,6 +66,7 @@ classdef MFPSO < Algorithm
                     w = obj.wmax - (obj.wmax - obj.wmin) * generation / iter_num;
                 end
 
+                % generation
                 [offspring, calls] = OperatorPSO.generateMF(1, population, Tasks, obj.rmp, w, obj.c1, obj.c2, obj.c3, no_improve, generation, data.bestX);
                 fnceval_calls = fnceval_calls + calls;
 
