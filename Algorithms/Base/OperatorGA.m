@@ -1,7 +1,7 @@
 classdef OperatorGA
     methods (Static)
         function [offspring, calls] = generate(callfun, population, Task, mu, mum)
-            if isempty(population)
+            if length(population) <= 2
                 offspring = population;
                 calls = 0;
                 return;
@@ -14,16 +14,16 @@ classdef OperatorGA
                 p2 = indorder(i + fix(length(population) / 2));
                 offspring(count) = feval(Individual_class);
                 offspring(count + 1) = feval(Individual_class);
-                u = rand(1, Task.dims);
-                cf = zeros(1, Task.dims);
+                u = rand(1, length(population(1).rnvec));
+                cf = zeros(1, length(population(1).rnvec));
                 cf(u <= 0.5) = (2 * u(u <= 0.5)).^(1 / (mu + 1));
                 cf(u > 0.5) = (2 * (1 - u(u > 0.5))).^(-1 / (mu + 1));
 
                 offspring(count) = OperatorGA.crossover(offspring(count), population(p1), population(p2), cf);
                 offspring(count + 1) = OperatorGA.crossover(offspring(count + 1), population(p2), population(p1), cf);
 
-                offspring(count) = OperatorGA.mutate(offspring(count), Task.dims, mum);
-                offspring(count + 1) = OperatorGA.mutate(offspring(count + 1), Task.dims, mum);
+                offspring(count) = OperatorGA.mutate(offspring(count), length(population(1).rnvec), mum);
+                offspring(count + 1) = OperatorGA.mutate(offspring(count + 1), length(population(1).rnvec), mum);
 
                 for x = count:count + 1
                     offspring(x).rnvec(offspring(x).rnvec > 1) = 1;
