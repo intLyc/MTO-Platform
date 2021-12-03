@@ -1,6 +1,11 @@
 classdef OperatorDE
     methods (Static)
         function [offspring, calls] = generate(callfun, population, Task, F, pCR)
+            if isempty(population)
+                offspring = population;
+                calls = 0;
+                return;
+            end
             Individual_class = class(population(1));
             for i = 1:length(population)
                 offspring(i) = feval(Individual_class);
@@ -25,6 +30,11 @@ classdef OperatorDE
         end
 
         function [offspring, calls] = generateMF(callfun, population, Tasks, rmp, F, pCR)
+            if isempty(population)
+                offspring = population;
+                calls = 0;
+                return;
+            end
             Individual_class = class(population(1));
             group = cell([1, length(Tasks)]);
             for i = 1:length(population)

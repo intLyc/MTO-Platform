@@ -1,7 +1,10 @@
 classdef OperatorPSO
     methods (Static)
         function [population, calls] = generate(callfun, population, Task, w, c1, c2, gbest)
-            Individual_class = class(population(1));
+            if isempty(population)
+                calls = 0;
+                return;
+            end
             for i = 1:length(population)
                 population(i) = OperatorPSO.velocityUpdate(population(i), gbest, w, c1, c2);
                 population(i) = OperatorPSO.positionUpdate(population(i));
@@ -15,6 +18,10 @@ classdef OperatorPSO
         end
 
         function [population, calls] = generateMF(callfun, population, Tasks, rmp, w, c1, c2, c3, gbest)
+            if isempty(population)
+                calls = 0;
+                return;
+            end
             Individual_class = class(population(1));
             for i = 1:length(population)
                 population(i) = OperatorPSO.velocityUpdateMF(population(i), gbest, rmp, w, c1, c2, c3, length(Tasks));
