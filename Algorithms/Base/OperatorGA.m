@@ -1,6 +1,11 @@
 classdef OperatorGA
     methods (Static)
         function [offspring, calls] = generate(callfun, population, Task, mu, mum)
+            if isempty(population)
+                offspring = population;
+                calls = 0;
+                return;
+            end
             Individual_class = class(population(1));
             indorder = randperm(length(population));
             count = 1;
@@ -34,6 +39,11 @@ classdef OperatorGA
         end
 
         function [offspring, calls] = generateMF(callfun, population, Tasks, rmp, mu, mum)
+            if isempty(population)
+                offspring = population;
+                calls = 0;
+                return;
+            end
             Individual_class = class(population(1));
             indorder = randperm(length(population));
             count = 1;
