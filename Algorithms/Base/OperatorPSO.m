@@ -1,9 +1,23 @@
 classdef OperatorPSO
     methods (Static)
+        function [population, calls] = generate(callfun, population, Task, w, c1, c2, gbest)
+            Individual_class = class(population(1));
+            for i = 1:length(population)
+                population(i) = OperatorPSO.velocityUpdate(population(i), gbest, w, c1, c2);
+                population(i) = OperatorPSO.positionUpdate(population(i));
+                population(i) = OperatorPSO.pbestUpdate(population(i));
+            end
+            if callfun
+                [population, calls] = evaluate(population, Task, 1);
+            else
+                calls = 0;
+            end
+        end
+
         function [population, calls] = generateMF(callfun, population, Tasks, rmp, w, c1, c2, c3, gbest)
             Individual_class = class(population(1));
             for i = 1:length(population)
-                population(i) = OperatorPSO.velocityUpdate(population(i), gbest, rmp, w, c1, c2, c3, length(Tasks));
+                population(i) = OperatorPSO.velocityUpdateMF(population(i), gbest, rmp, w, c1, c2, c3, length(Tasks));
                 population(i) = OperatorPSO.positionUpdate(population(i));
                 population(i) = OperatorPSO.pbestUpdate(population(i));
             end
@@ -23,7 +37,14 @@ classdef OperatorPSO
         end
 
         % velocity update
-        function object = velocityUpdate(object, gbest, rmp, w, c1, c2, c3, tasks_num)
+        function object = velocityUpdate(object, gbest, w, c1, c2)
+            len = length(object.velocity);
+            object.velocity = w * object.velocity + ...
+                c1 * rand(1, len) .* (object.pbest - object.rnvec) + ...
+                c2 * rand(1, len) .* (gbest - object.rnvec);
+        end
+
+        function object = velocityUpdateMF(object, gbest, rmp, w, c1, c2, c3, tasks_num)
             len = length(object.velocity);
             if rand < rmp
                 object.velocity = w * object.velocity + ...
