@@ -1,7 +1,7 @@
 classdef OperatorDE
     methods (Static)
         function [offspring, calls] = generate(callfun, population, Task, F, pCR)
-            if isempty(population)
+            if length(population) <= 3
                 offspring = population;
                 calls = 0;
                 return;
