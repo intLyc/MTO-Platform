@@ -49,7 +49,6 @@ classdef MFPSO < Algorithm
             [population, fnceval_calls, bestobj, data.bestX] = initializeMF(IndividualPSO, pop_size, Tasks, length(Tasks));
             data.convergence(:, 1) = bestobj;
             % initialize pso
-            no_improve = 0;
             for i = 1:pop_size
                 population(i).pbest = population(i).rnvec;
                 population(i).velocity = 0.1 * population(i).pbest;
@@ -79,9 +78,6 @@ classdef MFPSO < Algorithm
                     if bestobj_offspring < bestobj(t)
                         bestobj(t) = bestobj_offspring;
                         data.bestX{t} = population(idx).rnvec;
-                        no_improve = 0;
-                    else
-                        no_improve = no_improve + 1;
                     end
                     data.convergence(t, generation) = bestobj(t);
                 end
