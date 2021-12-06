@@ -1,4 +1,4 @@
-classdef MFEA2 < Algorithm
+classdef MFEA_II < Algorithm
     % @article{bali2019MFEA2,
     %     author = {Bali, Kavitesh Kumar and Ong, Yew - Soon and Gupta, Abhishek and Tan, Puay Siew},
     %     journal = {IEEE Transactions on Evolutionary Computation},
