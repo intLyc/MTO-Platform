@@ -1206,6 +1206,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                 for prob = 1:prob_num
                     app.Edata.result(prob, algo).clock_time = 0;
                     app.Edata.result(prob, algo).convergence = [];
+                    app.Edata.result(prob, algo).bestX = {};
                 end
             end
             app.Edata.reps = 0;
@@ -1241,8 +1242,8 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                         % run
                         data = singleRun(app.EAlgorithmsTree.Children(algo).NodeData, app.EProblemsTree.Children(prob).NodeData);
                         app.Edata.result(prob, algo).clock_time = app.Edata.result(prob, algo).clock_time + data.clock_time;
-                        % BUG: when p_il ~= 0, convergence vartical not same
                         app.Edata.result(prob, algo).convergence = [app.Edata.result(prob, algo).convergence; data.convergence];
+                        app.Edata.result(prob, algo).bestX = [app.Edata.result(prob, algo).bestX; data.bestX];
                         
                         app.Etable_reps(prob, algo) = rep;
                         app.EupdateTableReps();
@@ -1758,7 +1759,6 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                 for prob = 1:length(data_save.prob_cell)
                     for algo = 1:length(data_save.algo_cell)
                         data_save.result(prob, algo).clock_time = data_save.result(prob, algo).clock_time + data_selected(i).NodeData.result(prob, algo).clock_time;
-                        % BUG: when p_il ~= 0, convergence vartical not same
                         data_save.result(prob, algo).convergence = [data_save.result(prob, algo).convergence; data_selected(i).NodeData.result(prob, algo).convergence];
                     end
                 end
