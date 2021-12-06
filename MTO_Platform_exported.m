@@ -188,8 +188,10 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             
             app.TAlgorithmDropDown.Items = {};
             app.TProblemDropDown.Items = {};
-            app.TAlgorithmDropDown.Items = app.algo_load;
-            app.TProblemDropDown.Items = app.prob_load;
+            app.TAlgorithmDropDown.Items = strrep(app.algo_load, '_', '-');
+            app.TAlgorithmDropDown.ItemsData = app.algo_load;
+            app.TProblemDropDown.Items = strrep(app.prob_load, '_', '-');
+            app.TProblemDropDown.ItemsData = app.prob_load;
         end
         
         function EloadAlgoProb(app)
@@ -197,8 +199,10 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             
             app.EAlgorithmsListBox.Items(:) = [];
             app.EProblemsListBox.Items(:) = [];
-            app.EAlgorithmsListBox.Items = app.algo_load;
-            app.EProblemsListBox.Items = app.prob_load;
+            app.EAlgorithmsListBox.Items = strrep(app.algo_load, '_', '-');
+            app.EAlgorithmsListBox.ItemsData = app.algo_load;
+            app.EProblemsListBox.Items = strrep(app.prob_load, '_', '-');
+            app.EProblemsListBox.ItemsData = app.prob_load;
         end
         
         function TstartEnable(app, value)
@@ -252,7 +256,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.TAlgorithmTree.Children.delete;
             
             algo_name = app.TAlgorithmDropDown.Value;
-            eval(['algo_obj = ', algo_name, '("', algo_name, '");']);
+            eval(['algo_obj = ', algo_name, '("', strrep(algo_name, '_', '-'), '");']);
             algo_node = uitreenode(app.TAlgorithmTree);
             algo_node.Text = algo_obj.getName();
             algo_node.NodeData = algo_obj;
@@ -279,7 +283,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.TProblemTree.Children.delete;
             
             prob_name = app.TProblemDropDown.Value;
-            eval(['prob_obj = ', prob_name, '("',prob_name, '");']);
+            eval(['prob_obj = ', prob_name, '("', strrep(prob_name, '_', '-'), '");']);
             prob_node = uitreenode(app.TProblemTree);
             prob_node.Text = prob_obj.getName();
             prob_node.NodeData = prob_obj;
@@ -1089,7 +1093,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             
             algo_selected = app.EAlgorithmsListBox.Value;
             for i= 1:length(algo_selected)
-                eval(['algo_obj = ', algo_selected{i}, '("', algo_selected{i}, '");']);
+                eval(['algo_obj = ', algo_selected{i}, '("', strrep(algo_selected{i}, '_', '-'), '");']);
                 algo_node = uitreenode(app.EAlgorithmsTree);
                 algo_node.Text = algo_obj.getName();
                 algo_node.NodeData = algo_obj;
@@ -1131,7 +1135,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             
             prob_selected = app.EProblemsListBox.Value;
             for i= 1:length(prob_selected)
-                eval(['prob_obj = ', prob_selected{i}, '("',prob_selected{i}, '");']);
+                eval(['prob_obj = ', prob_selected{i}, '("', strrep(prob_selected{i}, '_', '-'), '");']);
                 prob_node = uitreenode(app.EProblemsTree);
                 prob_node.Text = prob_obj.getName();
                 prob_node.NodeData = prob_obj;
