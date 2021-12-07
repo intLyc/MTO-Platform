@@ -1244,7 +1244,13 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                             % run
                             data = singleRun(app.EAlgorithmsTree.Children(algo).NodeData, app.EProblemsTree.Children(prob).NodeData);
                             app.Edata.result(prob, algo).clock_time = app.Edata.result(prob, algo).clock_time + data.clock_time;
-                            app.Edata.result(prob, algo).convergence = [app.Edata.result(prob, algo).convergence; data.convergence];
+                            if app.Edata.result(prob, algo).convergence
+                                gen = min(size(app.Edata.result(prob, algo).convergence, 2), size(data.convergence, 2));
+                                app.Edata.result(prob, algo).convergence = [app.Edata.result(prob, algo).convergence(:, 1:gen); data.convergence(:, 1:gen)];
+                            else
+                                app.Edata.result(prob, algo).convergence = data.convergence;
+                            end
+                            
                             app.Edata.result(prob, algo).bestX = [app.Edata.result(prob, algo).bestX; data.bestX];
                             
                             app.Etable_reps(prob, algo) = rep;
@@ -1265,16 +1271,20 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                         algo_obj = app.EAlgorithmsTree.Children(algo).NodeData;
                         prob_obj = app.EProblemsTree.Children(prob).NodeData;
                         clock_time = 0;
-                        convergence = [];
+                        convergence = {};
                         bestX = {};
                         parfor rep = 1:reps
                             data = singleRun(algo_obj, prob_obj);
                             clock_time = clock_time + data.clock_time;
-                            convergence = [convergence; data.convergence];
+                            convergence = [convergence; {data.convergence}];
                             bestX = [bestX; data.bestX];
                         end
+                        app.Edata.result(prob, algo).convergence = convergence{1};
+                        for rep = 2:reps
+                            gen = min(size(app.Edata.result(prob, algo).convergence, 2), size(convergence{rep}, 2));
+                            app.Edata.result(prob, algo).convergence = [app.Edata.result(prob, algo).convergence(:, 1:gen); convergence{rep}(:, 1:gen)];
+                        end
                         app.Edata.result(prob, algo).clock_time = clock_time;
-                        app.Edata.result(prob, algo).convergence = convergence;
                         app.Edata.result(prob, algo).bestX = bestX;
                         app.Etable_reps(prob, algo) = reps;
                         app.EupdateTableReps();
