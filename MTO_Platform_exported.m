@@ -61,6 +61,8 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         ProblemsListBox_2Label       matlab.ui.control.Label
         ELoadDataButton              matlab.ui.control.Button
         ESaveDataButton              matlab.ui.control.Button
+        ParallelDropDownLabel        matlab.ui.control.Label
+        EParallelDropDown            matlab.ui.control.DropDown
         EPanel2                      matlab.ui.container.Panel
         EP2GridLayout                matlab.ui.container.GridLayout
         EStartButton                 matlab.ui.control.Button
@@ -231,6 +233,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EAlgorithmsTree.Enable = value;
             app.EProblemsTree.Enable = value;
             app.ELoadDataButton.Enable = value;
+            app.EParallelDropDown.Enable = value;
             app.EPauseButton.Enable = ~value;
             app.EStopButton.Enable = ~value;
         end
@@ -1083,7 +1086,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % select all algorithms
             
             if ~isempty(app.EAlgorithmsListBox.Items)
-                app.EAlgorithmsListBox.Value = app.EAlgorithmsListBox.Items;
+                app.EAlgorithmsListBox.Value = app.EAlgorithmsListBox.ItemsData;
             end
         end
 
@@ -1125,7 +1128,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % select all problems
             
             if ~isempty(app.EProblemsListBox.Items)
-                app.EProblemsListBox.Value = app.EProblemsListBox.Items;
+                app.EProblemsListBox.Value = app.EProblemsListBox.ItemsData;
             end
         end
 
@@ -1232,24 +1235,53 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             
             % main experiment loop
             tStart = tic;
-            for rep = 1:app.ERepsEditField.Value
-                
+            if app.EParallelDropDown.Value == 0
+                for rep = 1:app.ERepsEditField.Value
+                    for prob = 1:prob_num
+                        for algo = 1:algo_num
+                            % check pause and stop
+                            app.EcheckPauseStopStatus();
+                            % run
+                            data = singleRun(app.EAlgorithmsTree.Children(algo).NodeData, app.EProblemsTree.Children(prob).NodeData);
+                            app.Edata.result(prob, algo).clock_time = app.Edata.result(prob, algo).clock_time + data.clock_time;
+                            app.Edata.result(prob, algo).convergence = [app.Edata.result(prob, algo).convergence; data.convergence];
+                            app.Edata.result(prob, algo).bestX = [app.Edata.result(prob, algo).bestX; data.bestX];
+                            
+                            app.Etable_reps(prob, algo) = rep;
+                            app.EupdateTableReps();
+                        end
+                    end
+                    app.Edata.reps = rep;
+                    app.EcalculatePre();
+                    app.EupdateTable();
+                    app.EresetConvergenceProblemsDropDown();
+                    app.EupdateConvergenceAxes();
+                end
+            else
+                % start parallel
+                reps = app.ERepsEditField.Value;
                 for prob = 1:prob_num
                     for algo = 1:algo_num
-                        % check pause and stop
-                        app.EcheckPauseStopStatus();
-                        
-                        % run
-                        data = singleRun(app.EAlgorithmsTree.Children(algo).NodeData, app.EProblemsTree.Children(prob).NodeData);
-                        app.Edata.result(prob, algo).clock_time = app.Edata.result(prob, algo).clock_time + data.clock_time;
-                        app.Edata.result(prob, algo).convergence = [app.Edata.result(prob, algo).convergence; data.convergence];
-                        app.Edata.result(prob, algo).bestX = [app.Edata.result(prob, algo).bestX; data.bestX];
-                        
-                        app.Etable_reps(prob, algo) = rep;
+                        algo_obj = app.EAlgorithmsTree.Children(algo).NodeData;
+                        prob_obj = app.EProblemsTree.Children(prob).NodeData;
+                        clock_time = 0;
+                        convergence = [];
+                        bestX = {};
+                        parfor rep = 1:reps
+                            data = singleRun(algo_obj, prob_obj);
+                            clock_time = clock_time + data.clock_time;
+                            convergence = [convergence; data.convergence];
+                            bestX = [bestX; data.bestX];
+                        end
+                        app.Edata.result(prob, algo).clock_time = clock_time;
+                        app.Edata.result(prob, algo).convergence = convergence;
+                        app.Edata.result(prob, algo).bestX = bestX;
+                        app.Etable_reps(prob, algo) = reps;
                         app.EupdateTableReps();
+                        app.EcheckPauseStopStatus();
                     end
                 end
-                app.Edata.reps = rep;
+                app.Edata.reps = reps;
                 app.EcalculatePre();
                 app.EupdateTable();
                 app.EresetConvergenceProblemsDropDown();
@@ -1947,7 +1979,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % Create MTOPlatformUIFigure and hide until all components are created
             app.MTOPlatformUIFigure = uifigure('Visible', 'off');
             app.MTOPlatformUIFigure.Color = [1 1 1];
-            app.MTOPlatformUIFigure.Position = [100 100 1201 750];
+            app.MTOPlatformUIFigure.Position = [100 100 1224 755];
             app.MTOPlatformUIFigure.Name = 'MTO Platform';
             app.MTOPlatformUIFigure.WindowStyle = 'modal';
 
@@ -2328,7 +2360,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % Create EP1GridLayout
             app.EP1GridLayout = uigridlayout(app.EPanel1);
             app.EP1GridLayout.ColumnWidth = {'fit', '1x', 70};
-            app.EP1GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x'};
+            app.EP1GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x', 'fit'};
             app.EP1GridLayout.ColumnSpacing = 5;
             app.EP1GridLayout.Padding = [5 5 5 5];
             app.EP1GridLayout.BackgroundColor = [1 1 1];
@@ -2340,7 +2372,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EProblemsAddButton.BackgroundColor = [0.702 1 0.702];
             app.EProblemsAddButton.FontWeight = 'bold';
             app.EProblemsAddButton.Tooltip = {'Add selected problems'};
-            app.EProblemsAddButton.Layout.Row = 6;
+            app.EProblemsAddButton.Layout.Row = 7;
             app.EProblemsAddButton.Layout.Column = 3;
             app.EProblemsAddButton.Text = 'Add';
 
@@ -2351,7 +2383,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EAlgorithmsAddButton.BackgroundColor = [0.702 1 0.702];
             app.EAlgorithmsAddButton.FontWeight = 'bold';
             app.EAlgorithmsAddButton.Tooltip = {'Add selected algorithms'};
-            app.EAlgorithmsAddButton.Layout.Row = 4;
+            app.EAlgorithmsAddButton.Layout.Row = 5;
             app.EAlgorithmsAddButton.Layout.Column = 3;
             app.EAlgorithmsAddButton.Text = 'Add';
 
@@ -2373,14 +2405,14 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EAlgorithmsListBox = uilistbox(app.EP1GridLayout);
             app.EAlgorithmsListBox.Items = {};
             app.EAlgorithmsListBox.Multiselect = 'on';
-            app.EAlgorithmsListBox.Layout.Row = 5;
+            app.EAlgorithmsListBox.Layout.Row = 6;
             app.EAlgorithmsListBox.Layout.Column = [1 3];
             app.EAlgorithmsListBox.Value = {};
 
             % Create AlgorithmsListBox_2Label
             app.AlgorithmsListBox_2Label = uilabel(app.EP1GridLayout);
             app.AlgorithmsListBox_2Label.FontWeight = 'bold';
-            app.AlgorithmsListBox_2Label.Layout.Row = 4;
+            app.AlgorithmsListBox_2Label.Layout.Row = 5;
             app.AlgorithmsListBox_2Label.Layout.Column = 1;
             app.AlgorithmsListBox_2Label.Text = 'Algorithms';
 
@@ -2388,14 +2420,14 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EProblemsListBox = uilistbox(app.EP1GridLayout);
             app.EProblemsListBox.Items = {};
             app.EProblemsListBox.Multiselect = 'on';
-            app.EProblemsListBox.Layout.Row = 7;
+            app.EProblemsListBox.Layout.Row = 8;
             app.EProblemsListBox.Layout.Column = [1 3];
             app.EProblemsListBox.Value = {};
 
             % Create ProblemsListBox_2Label
             app.ProblemsListBox_2Label = uilabel(app.EP1GridLayout);
             app.ProblemsListBox_2Label.FontWeight = 'bold';
-            app.ProblemsListBox_2Label.Layout.Row = 6;
+            app.ProblemsListBox_2Label.Layout.Row = 7;
             app.ProblemsListBox_2Label.Layout.Column = 1;
             app.ProblemsListBox_2Label.Text = 'Problems';
 
@@ -2418,6 +2450,23 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.ESaveDataButton.Layout.Row = 2;
             app.ESaveDataButton.Layout.Column = [1 3];
             app.ESaveDataButton.Text = 'Save Data';
+
+            % Create ParallelDropDownLabel
+            app.ParallelDropDownLabel = uilabel(app.EP1GridLayout);
+            app.ParallelDropDownLabel.FontWeight = 'bold';
+            app.ParallelDropDownLabel.Layout.Row = 4;
+            app.ParallelDropDownLabel.Layout.Column = 1;
+            app.ParallelDropDownLabel.Text = 'Parallel';
+
+            % Create EParallelDropDown
+            app.EParallelDropDown = uidropdown(app.EP1GridLayout);
+            app.EParallelDropDown.Items = {'Enable', 'Disable'};
+            app.EParallelDropDown.ItemsData = [1 0];
+            app.EParallelDropDown.FontWeight = 'bold';
+            app.EParallelDropDown.BackgroundColor = [1 1 1];
+            app.EParallelDropDown.Layout.Row = 4;
+            app.EParallelDropDown.Layout.Column = [2 3];
+            app.EParallelDropDown.Value = 1;
 
             % Create EPanel2
             app.EPanel2 = uipanel(app.ExperimentsGridLayout);
