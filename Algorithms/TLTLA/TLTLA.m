@@ -53,7 +53,7 @@ classdef TLTLA < Algorithm
                     child_rnvec = zeros(size(population(parent)));
                     pool = population([population.skill_factor] == t);
                     for d = 1:max([Tasks.dims])
-                        x = randperm(length(pool), 3);
+                        x = randperm(length(pool), min(3, length(pool)));
                         if rand > 0.5
                             child_rnvec(d) = pool(x(1)).rnvec(dimen) + 0.5 * rand * (pool(x(2)).rnvec(dimen) - pool(x(3)).rnvec(dimen));
                         else
