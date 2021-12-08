@@ -40,6 +40,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
         EDataTypeDropDown            matlab.ui.control.DropDown
         EHighlightTypeDropDown       matlab.ui.control.DropDown
         ESaveTableButton             matlab.ui.control.Button
+        EDataFormatDropDown          matlab.ui.control.DropDown
         EUITable                     matlab.ui.control.Table
         EFigureTab                   matlab.ui.container.Tab
         EP3FGridLayout               matlab.ui.container.GridLayout
@@ -492,11 +493,12 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                 return;
             end
             show_type = app.EShowTypeDropDown.Value;
+            format_str = app.EDataFormatDropDown.Value;
             
             if strcmp(show_type, 'Mean')
                 fitness_mean = mean(app.Efitness, 3);
                 app.Etable_data = fitness_mean;
-                app.Etable_view = sprintfc('%.2d', fitness_mean);
+                app.Etable_view = sprintfc(format_str, fitness_mean);
             elseif strcmp(show_type, 'Mean (Std)')
                 fitness_mean = mean(app.Efitness, 3);
                 fitness_std = std(app.Efitness, 0, 3);
@@ -504,11 +506,11 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                 x = zeros([size(fitness_mean, 1), 2*size(fitness_mean, 2)]);
                 x(:, 1:2:end) = fitness_mean;
                 x(:, 2:2:end) = fitness_std;
-                app.Etable_view = sprintfc('%.2d (%.2d)', x);
+                app.Etable_view = sprintfc([format_str,' (%.2d)'], x);
             elseif strcmp(show_type, 'Median')
                 fitness_median = median(app.Efitness, 3);
                 app.Etable_data = fitness_median;
-                app.Etable_view = sprintfc('%.2d', fitness_median);
+                app.Etable_view = sprintfc(format_str, fitness_median);
             elseif strcmp(show_type, 'Median (Std)')
                 fitness_median = median(app.Efitness, 3);
                 fitness_std = std(app.Efitness, 0, 3);
@@ -516,7 +518,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                 x = zeros([size(fitness_median, 1), 2*size(fitness_median, 2)]);
                 x(:, 1:2:end) = fitness_median;
                 x(:, 2:2:end) = fitness_std;
-                app.Etable_view = sprintfc('%.2d (%.2d)', x);
+                app.Etable_view = sprintfc([format_str, '(%.2d)'], x);
             end
             
             if ~isempty(app.Etable_view_test)
@@ -1245,14 +1247,18 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                             data = singleRun(app.EAlgorithmsTree.Children(algo).NodeData, app.EProblemsTree.Children(prob).NodeData);
                             app.Edata.result(prob, algo).clock_time = app.Edata.result(prob, algo).clock_time + data.clock_time;
                             if app.Edata.result(prob, algo).convergence
-                                gen = min(size(app.Edata.result(prob, algo).convergence, 2), size(data.convergence, 2));
-                                app.Edata.result(prob, algo).convergence = [app.Edata.result(prob, algo).convergence(:, 1:gen); data.convergence(:, 1:gen)];
+                                gen_old = size(app.Edata.result(prob, algo).convergence, 2);
+                                gen_new = size(data.convergence, 2);
+                                if gen_old < gen_new
+                                    app.Edata.result(prob, algo).convergence = [app.Edata.result(prob, algo).convergence, repmat(app.Edata.result(prob, algo).convergence(:, gen_old), 1, gen_new-gen_old)];
+                                else
+                                    data.convergence = [data.convergence, repmat(data.convergence(:, gen_new), 1, gen_old-gen_new)];
+                                end
+                                app.Edata.result(prob, algo).convergence = [app.Edata.result(prob, algo).convergence; data.convergence];
                             else
                                 app.Edata.result(prob, algo).convergence = data.convergence;
                             end
-                            
                             app.Edata.result(prob, algo).bestX = [app.Edata.result(prob, algo).bestX; data.bestX];
-                            
                             app.Etable_reps(prob, algo) = rep;
                             app.EupdateTableReps();
                         end
@@ -1281,8 +1287,14 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                         end
                         app.Edata.result(prob, algo).convergence = convergence{1};
                         for rep = 2:reps
-                            gen = min(size(app.Edata.result(prob, algo).convergence, 2), size(convergence{rep}, 2));
-                            app.Edata.result(prob, algo).convergence = [app.Edata.result(prob, algo).convergence(:, 1:gen); convergence{rep}(:, 1:gen)];
+                            gen_old = size(app.Edata.result(prob, algo).convergence, 2);
+                            gen_new = size(convergence{rep}, 2);
+                            if gen_old < gen_new
+                                app.Edata.result(prob, algo).convergence = [app.Edata.result(prob, algo).convergence, repmat(app.Edata.result(prob, algo).convergence(:, gen_old), 1, gen_new-gen_old)];
+                            else
+                                convergence{rep} = [convergence{rep}, repmat(convergence{rep}(:, gen_new), 1, gen_old-gen_new)];
+                            end
+                            app.Edata.result(prob, algo).convergence = [app.Edata.result(prob, algo).convergence; convergence{rep}];
                         end
                         app.Edata.result(prob, algo).clock_time = clock_time;
                         app.Edata.result(prob, algo).bestX = bestX;
@@ -1978,6 +1990,11 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.DDataTree.SelectedNodes = selected;
             drawnow;
         end
+
+        % Value changed function: EDataFormatDropDown
+        function EDataFormatDropDownValueChanged(app, event)
+            app.EupdateTableFitness();
+        end
     end
 
     % Component initialization
@@ -1989,7 +2006,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             % Create MTOPlatformUIFigure and hide until all components are created
             app.MTOPlatformUIFigure = uifigure('Visible', 'off');
             app.MTOPlatformUIFigure.Color = [1 1 1];
-            app.MTOPlatformUIFigure.Position = [100 100 1224 755];
+            app.MTOPlatformUIFigure.Position = [100 100 1229 751];
             app.MTOPlatformUIFigure.Name = 'MTO Platform';
             app.MTOPlatformUIFigure.WindowStyle = 'modal';
 
@@ -2217,7 +2234,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
 
             % Create EP3T1GridLayout
             app.EP3T1GridLayout = uigridlayout(app.EP3TGridLayout);
-            app.EP3T1GridLayout.ColumnWidth = {'fit', '1x', 'fit', 'fit', 'fit', 'fit', 'fit'};
+            app.EP3T1GridLayout.ColumnWidth = {'fit', '1x', 'fit', 'fit', 'fit', 'fit', 'fit', 'fit'};
             app.EP3T1GridLayout.RowHeight = {'fit'};
             app.EP3T1GridLayout.ColumnSpacing = 5;
             app.EP3T1GridLayout.Padding = [0 5 0 0];
@@ -2232,7 +2249,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.ETestTypeDropDown.Tooltip = {'Statistical Analysis (Only for Fitness)'};
             app.ETestTypeDropDown.BackgroundColor = [1 1 1];
             app.ETestTypeDropDown.Layout.Row = 1;
-            app.ETestTypeDropDown.Layout.Column = 5;
+            app.ETestTypeDropDown.Layout.Column = 6;
             app.ETestTypeDropDown.Value = 'None';
 
             % Create EAlgorithmDropDown
@@ -2242,7 +2259,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EAlgorithmDropDown.Tooltip = {'Statistical Analysis main Algorithm (Only for Fitness)'};
             app.EAlgorithmDropDown.BackgroundColor = [1 1 1];
             app.EAlgorithmDropDown.Layout.Row = 1;
-            app.EAlgorithmDropDown.Layout.Column = 6;
+            app.EAlgorithmDropDown.Layout.Column = 7;
             app.EAlgorithmDropDown.Value = 'Algorithm';
 
             % Create EShowTypeDropDown
@@ -2272,7 +2289,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.EHighlightTypeDropDown.Tooltip = {'Highlight type'};
             app.EHighlightTypeDropDown.BackgroundColor = [1 1 1];
             app.EHighlightTypeDropDown.Layout.Row = 1;
-            app.EHighlightTypeDropDown.Layout.Column = 7;
+            app.EHighlightTypeDropDown.Layout.Column = 8;
             app.EHighlightTypeDropDown.Value = 'None';
 
             % Create ESaveTableButton
@@ -2284,6 +2301,16 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             app.ESaveTableButton.Layout.Row = 1;
             app.ESaveTableButton.Layout.Column = 1;
             app.ESaveTableButton.Text = 'Save';
+
+            % Create EDataFormatDropDown
+            app.EDataFormatDropDown = uidropdown(app.EP3T1GridLayout);
+            app.EDataFormatDropDown.Items = {'%.2d', '%.3d', '%.4d', '%.5d'};
+            app.EDataFormatDropDown.ValueChangedFcn = createCallbackFcn(app, @EDataFormatDropDownValueChanged, true);
+            app.EDataFormatDropDown.Tooltip = {'Show Type'};
+            app.EDataFormatDropDown.BackgroundColor = [1 1 1];
+            app.EDataFormatDropDown.Layout.Row = 1;
+            app.EDataFormatDropDown.Layout.Column = 5;
+            app.EDataFormatDropDown.Value = '%.2d';
 
             % Create EUITable
             app.EUITable = uitable(app.EP3TGridLayout);
