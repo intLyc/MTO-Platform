@@ -107,10 +107,8 @@ classdef EMEA < Algorithm
                             for i = 1:size(inject, 1)
                                 c = Individual();
                                 c.rnvec = inject(i, :);
-                                lb_idx = c.rnvec < Tasks(t).Lb;
-                                c.rnvec(lb_idx) = Tasks(t).Lb(lb_idx);
-                                ub_idx = c.rnvec > Tasks(t).Ub;
-                                c.rnvec(ub_idx) = Tasks(t).Ub(ub_idx);
+                                c.rnvec(c.rnvec > 1) = 1;
+                                c.rnvec(c.rnvec < 0) = 0;
                                 inject_pop = [inject_pop, c];
                             end
                         end
