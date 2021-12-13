@@ -1,13 +1,11 @@
 classdef AT_MFEA < Algorithm
-    % @article{xue2020AT - MFEA,
-    %     author = {Xue, Xiaoming and Zhang, Kai and Tan, Kay Chen and Feng, Liang and Wang, Jian and Chen, Guodong and Zhao, Xinggang and Zhang, Liming and Yao, Jun},
-    %     journal = {IEEE Transactions on Cybernetics},
-    %     title = {Affine Transformation - Enhanced Multifactorial Optimization for Heterogeneous Problems},
-    %     year = {2020},
-    %     volume = {},
-    %     number = {},
-    %     pages = {1 - 15},
-    %     doi = {10.1109 / TCYB.2020.3036393},
+    % @Article{Xue2020AT-MFEA,
+    %   author     = {Xue, Xiaoming and Zhang, Kai and Tan, Kay Chen and Feng, Liang and Wang, Jian and Chen, Guodong and Zhao, Xinggang and Zhang, Liming and Yao, Jun},
+    %   journal    = {IEEE Transactions on Cybernetics},
+    %   title      = {Affine Transformation-Enhanced Multifactorial Optimization for Heterogeneous Problems},
+    %   year       = {2020},
+    %   pages      = {1-15},
+    %   doi        = {10.1109/TCYB.2020.3036393},
     % }
 
     properties (SetAccess = private)

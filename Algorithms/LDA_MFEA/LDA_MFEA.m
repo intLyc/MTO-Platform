@@ -1,13 +1,11 @@
 classdef LDA_MFEA < Algorithm
-    % @inproceedings{bali2017LDA-MFEA,
-    %     author    = {Bali, Kavitesh Kumar and Gupta, Abhishek and Feng, Liang and Ong, Yew Soon and Tan Puay Siew},
-    %     booktitle = {2017 IEEE Congress on Evolutionary Computation (CEC)},
-    %     title     = {Linearized domain adaptation in evolutionary multitasking},
-    %     year      = {2017},
-    %     volume    = {},
-    %     number    = {},
-    %     pages     = {1295-1302},
-    %     doi       = {10.1109/CEC.2017.7969454},
+    % @inproceedings{Bali2017LDA-MFEA,
+    %   author    = {Bali, Kavitesh Kumar and Gupta, Abhishek and Feng, Liang and Ong, Yew Soon and Tan Puay Siew},
+    %   booktitle = {2017 IEEE Congress on Evolutionary Computation (CEC)},
+    %   title     = {Linearized Domain Adaptation in Evolutionary Multitasking},
+    %   year      = {2017},
+    %   pages     = {1295-1302},
+    %   doi       = {10.1109/CEC.2017.7969454},
     % }
 
     properties (SetAccess = private)

@@ -1,13 +1,13 @@
 classdef MFEA_AKT < Algorithm
-    % @article{zhou2020MFEA - AKT,
-    %     author = {Zhou, Lei and Feng, Liang and Tan, Kay Chen and Zhong, Jinghui and Zhu, Zexuan and Liu, Kai and Chen, Chao},
-    %     journal = {IEEE Transactions on Cybernetics},
-    %     title = {Toward Adaptive Knowledge Transfer in Multifactorial Evolutionary Computation},
-    %     year = {2021},
-    %     volume = {51},
-    %     number = {5},
-    %     pages = {2563 - 2576},
-    %     doi = {10.1109 / TCYB.2020.2974100},
+    % @Article{Zhou2021MFEA-AKT,
+    %   author     = {Zhou, Lei and Feng, Liang and Tan, Kay Chen and Zhong, Jinghui and Zhu, Zexuan and Liu, Kai and Chen, Chao},
+    %   journal    = {IEEE Transactions on Cybernetics},
+    %   title      = {Toward Adaptive Knowledge Transfer in Multifactorial Evolutionary Computation},
+    %   year       = {2021},
+    %   number     = {5},
+    %   pages      = {2563-2576},
+    %   volume     = {51},
+    %   doi        = {10.1109/TCYB.2020.2974100},
     % }
 
     properties (SetAccess = private)

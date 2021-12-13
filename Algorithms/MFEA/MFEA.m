@@ -1,13 +1,13 @@
 classdef MFEA < Algorithm
-    % @article{Gupta2016MFEA,
-    %     author = {Gupta, Abhishek and Ong, Yew - Soon and Feng, Liang},
-    %     journal = {IEEE Transactions on Evolutionary Computation},
-    %     title = {Multifactorial Evolution:Toward Evolutionary Multitasking},
-    %     year = {2016},
-    %     number = {3},
-    %     pages = {343 - 357},
-    %     volume = {20},
-    %     doi = {10.1109 / TEVC.2015.2458037},
+    % @Article{Gupta2016MFEA,
+    %   author     = {Gupta, Abhishek and Ong, Yew-Soon and Feng, Liang},
+    %   journal    = {IEEE Transactions on Evolutionary Computation},
+    %   title      = {Multifactorial Evolution: Toward Evolutionary Multitasking},
+    %   year       = {2016},
+    %   number     = {3},
+    %   pages      = {343-357},
+    %   volume     = {20},
+    %   doi        = {10.1109/TEVC.2015.2458037},
     % }
 
     properties (SetAccess = private)
