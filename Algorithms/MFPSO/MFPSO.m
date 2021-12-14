@@ -51,7 +51,7 @@ classdef MFPSO < Algorithm
             % initialize pso
             for i = 1:pop_size
                 population(i).pbest = population(i).rnvec;
-                population(i).velocity = 0.1 * population(i).pbest;
+                population(i).velocity = 0;
                 population(i).pbestFitness = population(i).factorial_costs(population(i).skill_factor);
             end
 
