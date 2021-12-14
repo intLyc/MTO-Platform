@@ -2426,10 +2426,13 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
 
             % Create ERepsEditField
             app.ERepsEditField = uieditfield(app.EP1GridLayout, 'numeric');
+            app.ERepsEditField.Limits = [1 Inf];
+            app.ERepsEditField.RoundFractionalValues = 'on';
+            app.ERepsEditField.ValueDisplayFormat = '%d';
             app.ERepsEditField.HorizontalAlignment = 'center';
             app.ERepsEditField.Layout.Row = 3;
             app.ERepsEditField.Layout.Column = [2 3];
-            app.ERepsEditField.Value = 20;
+            app.ERepsEditField.Value = 30;
 
             % Create ERunTimesEditFieldLabel
             app.ERunTimesEditFieldLabel = uilabel(app.EP1GridLayout);
