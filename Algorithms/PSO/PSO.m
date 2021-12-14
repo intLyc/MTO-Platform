@@ -44,7 +44,7 @@ classdef PSO < Algorithm
                 % initialize pso
                 for i = 1:sub_pop
                     population(i).pbest = population(i).rnvec;
-                    population(i).velocity = 0.1 * population(i).pbest;
+                    population(i).velocity = 0;
                     population(i).pbestFitness = population(i).factorial_costs;
                 end
 
