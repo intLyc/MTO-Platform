@@ -1,5 +1,8 @@
 # temporary save data file
 data_*
 
+# test file
+test*
+
 # macos trash
 .DS_Store
