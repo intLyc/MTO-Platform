@@ -1,4 +1,4 @@
-classdef SREMTO_fix < Algorithm
+classdef SREMTO < Algorithm
     % @Article{Zheng2020SREMTO,
     %   author     = {Zheng, Xiaolong and Qin, A. K. and Gong, Maoguo and Zhou, Deyun},
     %   journal    = {IEEE Transactions on Evolutionary Computation},
