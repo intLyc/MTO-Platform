@@ -1,4 +1,4 @@
-classdef SREMTO < Algorithm
+classdef SREMTO_fix < Algorithm
     % @Article{Zheng2020SREMTO,
     %   author     = {Zheng, Xiaolong and Qin, A. K. and Gong, Maoguo and Zhou, Deyun},
     %   journal    = {IEEE Transactions on Evolutionary Computation},
@@ -56,12 +56,12 @@ classdef SREMTO < Algorithm
                 end
                 [~, rank] = sort(factorial_costs);
                 for i = 1:pop_size
-                    population(i).factorial_ranks(t) = rank(i);
+                    population(rank(i)).factorial_ranks(t) = i;
                     % get ability vector
-                    if population(i).factorial_ranks(t) <= sub_pop
-                        population(i).ability_vector(t) = a1 * population(i).factorial_ranks(t) + b1;
+                    if population(rank(i)).factorial_ranks(t) <= sub_pop
+                        population(rank(i)).ability_vector(t) = a1 * population(rank(i)).factorial_ranks(t) + b1;
                     else
-                        population(i).ability_vector(t) = a2 * population(i).factorial_ranks(t) + b2;
+                        population(rank(i)).ability_vector(t) = a2 * population(rank(i)).factorial_ranks(t) + b2;
                     end
                 end
                 bestobj(t) = population(rank(1)).factorial_costs(t);
