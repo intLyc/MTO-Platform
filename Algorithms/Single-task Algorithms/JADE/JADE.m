@@ -72,21 +72,10 @@ classdef JADE < Algorithm
 
                     % selection
                     replace = [population.factorial_costs] > [offspring.factorial_costs];
-                    population(replace) = offspring(replace);
-                    [bestobj_now, idx] = min([population.factorial_costs]);
-                    if bestobj_now < bestobj
-                        bestobj = bestobj_now;
-                        bestX = offspring(idx).rnvec;
-                    end
-                    convergence(generation) = bestobj;
 
                     % calculate SF SCR
-                    SF = []; SCR = [];
-                    succpop = population(replace);
-                    for i = 1:sum(replace)
-                        SF = [SF, succpop(i).F];
-                        SCR = [SCR, succpop(i).pCR];
-                    end
+                    SF = [population(replace).F];
+                    SCR = [population(replace).pCR];
 
                     % update uF uCR
                     for i = 1:length(SF)
@@ -94,6 +83,14 @@ classdef JADE < Algorithm
                         uF = (1 - obj.c) * uF + obj.c .* newSF;
                         uCR = (1 - obj.c) * uCR + obj.c .* mean(SCR);
                     end
+
+                    population(replace) = offspring(replace);
+                    [bestobj_now, idx] = min([population.factorial_costs]);
+                    if bestobj_now < bestobj
+                        bestobj = bestobj_now;
+                        bestX = offspring(idx).rnvec;
+                    end
+                    convergence(generation) = bestobj;
                 end
                 data.convergence = [data.convergence; convergence];
                 data.bestX = [data.bestX, bestX];
