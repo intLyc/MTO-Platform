@@ -18,7 +18,6 @@ classdef MFPSO < Algorithm
     end
 
     methods
-
         function parameter = getParameter(obj)
             parameter = {'rmp: Random Mating Probability', num2str(obj.rmp), ...
                         'wmax: Inertia Weight Max', num2str(obj.wmax), ...
@@ -66,7 +65,7 @@ classdef MFPSO < Algorithm
                 end
 
                 % generation
-                [population, calls] = OperatorPSO.generateMF(1, population, Tasks, obj.rmp, w, obj.c1, obj.c2, obj.c3, data.bestX);
+                [population, calls] = OperatorMFPSO.generate(1, population, Tasks, obj.rmp, w, obj.c1, obj.c2, obj.c3, data.bestX);
                 fnceval_calls = fnceval_calls + calls;
 
                 % update best

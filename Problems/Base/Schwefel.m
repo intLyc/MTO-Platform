@@ -1,5 +1,5 @@
 function obj = Schwefel(x, M, opt)
-    %SCHWEFEL function
+    % SCHWEFEL function
     %   - var: design variable vector
     var = x;
     dim = length(var);

@@ -1,5 +1,5 @@
 function obj = Weierstrass(var, M, opt)
-    %WEIERSTASS function
+    % WEIERSTASS function
     %   - var: design variable vector
     %   - M: rotation matrix
     %   - opt: shift vector

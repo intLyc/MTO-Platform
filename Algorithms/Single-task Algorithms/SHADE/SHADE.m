@@ -39,7 +39,7 @@ classdef SHADE < Algorithm
                 Task = Tasks(sub_task);
 
                 % initialize
-                [population, fnceval_calls] = initialize(Individual_JA, sub_pop, Task, 1);
+                [population, fnceval_calls] = initialize(IndividualJADE, sub_pop, Task, 1);
 
                 % initialize parameter
                 H_idx = 1;
@@ -71,7 +71,7 @@ classdef SHADE < Algorithm
                     end
 
                     % generation
-                    [offspring, calls] = OperatorDE_JA.generate(1, population, Task, obj.p);
+                    [offspring, calls] = OperatorJADE.generate(1, population, Task, obj.p);
                     fnceval_calls = fnceval_calls + calls;
 
                     % selection
@@ -92,7 +92,7 @@ classdef SHADE < Algorithm
                         MCR(H_idx) = MCR(mod(H_idx + obj.H - 2, obj.H) + 1);
                     end
                     H_idx = mod(H_idx, obj.H) + 1;
-                    
+
                     population(replace) = offspring(replace);
                     [bestobj_now, idx] = min([population.factorial_costs]);
                     if bestobj_now < bestobj

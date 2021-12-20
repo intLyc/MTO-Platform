@@ -1,4 +1,8 @@
 function [population, calls] = initialize(Individual_class, pop_size, Tasks, tasks_num)
+    %% Initialize and evaluate the population
+    % Input: Individual_class, pop_size, Tasks, tasks_num
+    % Output: population, calls (function calls number)
+
     if tasks_num == 1
         for i = 1:pop_size
             population(i) = Individual_class();
@@ -6,7 +10,6 @@ function [population, calls] = initialize(Individual_class, pop_size, Tasks, tas
         end
         [population, calls] = evaluate(population, Tasks, 1);
     elseif tasks_num > 1
-        % multifactorial
         for i = 1:pop_size
             population(i) = Individual_class();
             population(i).rnvec = rand(1, max([Tasks.dims]));

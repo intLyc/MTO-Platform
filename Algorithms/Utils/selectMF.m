@@ -1,4 +1,8 @@
 function [population, bestobj, bestX] = selectMF(population, offspring, Tasks, pop_size, bestobj, bestX)
+    %% Multifactorial - Elite selection based on scalar fitness
+    % Input: population (old), offspring, Tasks, pop_size, bestobj, bestX
+    % Output: population (new), bestobj, bestX
+
     population = [population, offspring];
 
     for t = 1:length(Tasks)

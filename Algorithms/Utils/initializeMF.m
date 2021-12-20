@@ -1,4 +1,8 @@
 function [population, calls, bestobj, bestX] = initializeMF(Individual_class, pop_size, Tasks, tasks_num)
+    %% Multifactorial - Initialize and evaluate the population
+    % Input: Individual_class, pop_size, Tasks, tasks_num
+    % Output: population, calls (function calls number), bestobj, bestX
+
     [population, calls] = initialize(Individual_class, pop_size, Tasks, tasks_num);
 
     for t = 1:length(Tasks)
@@ -13,7 +17,7 @@ function [population, calls, bestobj, bestX] = initializeMF(Individual_class, po
         bestX{t} = population(rank(1)).rnvec;
     end
 
-    % calculate skill factor
+    % Calculate skill factor
     for i = 1:pop_size
         min_rank = min(population(i).factorial_ranks);
         min_idx = find(population(i).factorial_ranks == min_rank);

@@ -1,5 +1,5 @@
 function obj = Rosenbrock(x, M, opt)
-    %ROSENBROCK function
+    % ROSENBROCK function
     %   - var: design variable vector
     var = x;
     dim = length(var);

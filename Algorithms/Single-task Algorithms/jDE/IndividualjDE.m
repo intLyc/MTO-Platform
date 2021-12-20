@@ -1,4 +1,4 @@
-classdef Individual_j < Individual
+classdef IndividualjDE < Individual
     properties
         F;
         pCR;

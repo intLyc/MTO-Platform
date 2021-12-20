@@ -15,7 +15,6 @@ classdef MFDE < Algorithm
     end
 
     methods
-
         function parameter = getParameter(obj)
             parameter = {'rmp: Random Mating Probability', num2str(obj.rmp), ...
                         'F: Mutation Factor', num2str(obj.F), ...
@@ -45,7 +44,7 @@ classdef MFDE < Algorithm
                 generation = generation + 1;
 
                 % generation
-                [offspring, calls] = OperatorDE.generateMF(1, population, Tasks, obj.rmp, obj.F, obj.pCR);
+                [offspring, calls] = OperatorMFDE.generate(1, population, Tasks, obj.rmp, obj.F, obj.pCR);
                 fnceval_calls = fnceval_calls + calls;
 
                 % selection

@@ -16,7 +16,6 @@ classdef TLTLA < Algorithm
     end
 
     methods
-
         function parameter = getParameter(obj)
             parameter = {'rmp: Random Mating Probability', num2str(obj.rmp), ...
                         'mu: index of Simulated Binary Crossover (tunable)', num2str(obj.mu), ...
@@ -47,7 +46,7 @@ classdef TLTLA < Algorithm
 
                 % Inter-Task Knowledge Transfer
                 % generation
-                [offspring, calls] = OperatorGA.generateMF(1, population, Tasks, obj.rmp, obj.mu, obj.mum);
+                [offspring, calls] = OperatorMFEA.generate(1, population, Tasks, obj.rmp, obj.mu, obj.mum);
                 fnceval_calls = fnceval_calls + calls;
                 % selection
                 [population, bestobj, data.bestX] = selectMF(population, offspring, Tasks, pop_size, bestobj, data.bestX);

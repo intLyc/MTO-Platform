@@ -1,5 +1,5 @@
 function obj = Griewank(var, M, opt)
-    %GRIEWANK function
+    % GRIEWANK function
     %   - var: design variable vector
     %   - M: rotation matrix
     %   - opt: shift vector
