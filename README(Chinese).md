@@ -19,7 +19,7 @@
 
 ### 运行MTO Platform
 
-- matlab运行**MTO_Platform_exported.m**文件
+- matlab运行**MTO.m**文件
 
 ### 加入自己的算法
 

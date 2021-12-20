@@ -19,7 +19,7 @@ Environment: **Matlab >= R2020b**
 
 ### Run MTO Platform
 
-- matlab run **MTO_Platform_exported.m**
+- matlab run **MTO.m**
 
 ### Add your own algorithm
 
