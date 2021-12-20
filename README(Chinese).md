@@ -23,20 +23,20 @@
 
 ### 加入自己的算法
 
-- 继承Algorithm文件夹下的**Algorithm**类实现新的算法类，并放入Problem文件夹或其子文件夹内
+- 继承Algorithms文件夹下的**Base/Algorithm**类实现新的算法类，并放入Algorithms文件夹或其子文件夹内
 - 按照Algorithm类中的各虚函数的注释实现继承的虚函数。
 - *可参考MFEA算法的实现*
 
 ### 加入自己的问题
 
-- 继承Problem文件夹下的**Problem**类实现新的问题类，并放入Problem文件夹或其子文件夹内
+- 继承Problem文件夹下的**Base/Problem**类实现新的问题类，并放入Problem文件夹或其子文件夹内
 - 按照Problem类中的各虚函数的注释实现继承的虚函数。
-- *可参考CI_H问题的实现*
+- *可参考CEC2017_MTSO问题的实现*
 
 ### 使用App Designer修改GUI界面
 
-- 使用matlab的App Designer打开**MTO_Platform.mlapp**工程文件，进行GUI界面的修改
-- 修改完后导出为MTO_Platform_exported.m文件
+- 使用matlab的App Designer打开**GUI/MTO_Platform.mlapp**工程文件，进行GUI界面的修改
+- 修改完后导出为MTO.m文件
 
 
 ## 功能
@@ -48,7 +48,7 @@
 
 1. 算法选择
     - 选取一个算法，显示在Algorithm Tree中
-    - 打开Algorithm Node会显示算法参数设置。*双击修改*
+    - 打开Algorithm会显示算法参数设置。*双击修改*
 2. 问题选择
     - 选取一个问题，显示在Problem Tree中
     - 打开Problem Node会显示问题参数设置。*双击修改*
@@ -66,13 +66,14 @@
 
 1. 参数设置
     - Run Times: 独立运行次数
+    - Parallel: 并行执行
 
 2. 算法选择
-    - 在Algorithms中选择算法后，点击Add按钮，会将算法添加到Selected Algorithms Tree中，可以展开算法，双击修改参数或算法名称。*可多选，右键全选，可重复添加*
+    - 在Algorithms中选择算法后，点击Add按钮，会将算法添加到Selected Algorithms中，可以展开算法，双击修改参数或算法名称。*可多选，右键全选，可重复添加*
     - 在Selected Algorithms中选择算法，点击Delete按钮删除所选算法。*可多选，右键全选*
 
 3. 问题选择
-    - 在Problems中选择问题后，点击Add按钮，会将问题添加到Selected Problems Tree中，可以展开问题，双击修改参数或问题名称。*可多选，右键全选，可重复添加*
+    - 在Problems中选择问题后，点击Add按钮，会将问题添加到Selected Problems中，可以展开问题，双击修改参数或问题名称。*可多选，右键全选，可重复添加*
     - 在Selected Problems中选择问题，点击Delete按钮删除所选问题。*可多选，右键全选* 
 
 4. 开始/暂停/终止
@@ -82,17 +83,36 @@
   
 5. 表格统计
     - 右侧选取Table，显示实验数据
-    - 显示数据，选择 [ Reps / Fitness / Time Used ] 显示 [ 当前独立运行次数 / 适应值 / 运行时间 ]
-    - 数据类型，选取Fitness后，选择 [ Mean / Mean (Std) / Median/ Median (Std) ] 显示 [ 平均值 / 平均值 (标准差) / 中值 / 中值 (标准差) ]
-    - 统计测试，选取Fitness后，选择 [ None / Rank sum test / Signed rank test ] 显示 [ 无统计测试 / 秩和检验 / 符号秩检验 ]
-    - 高亮数据，选择 [ None / Highlight best / Highlight best worst ] 显示 [ 无高亮 / 高亮最优值 / 高亮最优值和最差值 ]
-    - 保存数据，点击Save按钮，保存当前表格内容。*无法保存高亮*
+    - 显示数据
+      - Reps 独立运行次数
+      - Fitness 目标值/适应值
+      - Score 多任务分数
+      - Time Used 运行时间
+    - 数据类型
+      - Mean 平均
+      - Mean (Std) 平均 (标准差)
+      - Median 中位数
+      - Median (Std) 中位数 (标准差)
+    - 精度
+      - %.2d
+      - %.4d
+    - 统计测试 (Fitness)
+      - None
+      - Rank sum test 秩和检验
+      - Signed rank test 符号秩检验
+    - 高亮数据
+      - None 无高亮
+      - Highlight best 高亮最优值
+      - Highlight best worst 高亮最优值和最差值
+    - 保存数据，点击Save按钮，保存当前表格内容
 
 6. 收敛图
     - 右侧选取Figure，显示实验收敛图
-    - Y轴类型，选择 [ log(fitness) / fitness ] 修改Y轴类型为 [ 适应值对数 / 适应值 ]
+    - Y轴类型
+      - log(fitness)
+      - fitness
     - 问题选择，选择某一问题的某个任务，显示该任务各算法的收敛图
-    - 保存所有数据，选取保存文件类型，点击Save All Firuge按钮保存所有任务的收敛图。*可修改Utils文件夹下的drawFigure.m调整绘制细节*
+    - 保存所有数据，选取保存文件类型，点击Save All Firuge按钮保存所有任务的收敛图。*可修改GUI/Utils文件夹下的**drawFigure.m**调整绘制细节*
 
 7. 读取/保存数据
     - 保存数据，点击Save Data按钮，保存当前运行实验的数据
