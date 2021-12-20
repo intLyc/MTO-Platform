@@ -1,4 +1,4 @@
-classdef MTO_Platform_exported < matlab.apps.AppBase
+classdef MTO < matlab.apps.AppBase
 
     % Properties that correspond to app components
     properties (Access = public)
@@ -460,7 +460,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
             end
             
             app.Efitness = [];
-            app.Etime_used = [];
+            app.Etime_used = {};
             % calculate fitness
             for algo = 1:length(app.Edata.algo_cell)
                 row_i = 1;
@@ -471,7 +471,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
                         app.Efitness(row_i, algo, :) = convergence_task(:, end);
                         row_i = row_i + 1;
                     end
-                    app.Etime_used(prob, algo) = app.Edata.result(prob, algo).clock_time;
+                    app.Etime_used(prob, algo) = {char(duration([0, 0, app.Edata.result(prob, algo).clock_time]))};
                 end
             end
         end
@@ -2912,7 +2912,7 @@ classdef MTO_Platform_exported < matlab.apps.AppBase
     methods (Access = public)
 
         % Construct app
-        function app = MTO_Platform_exported
+        function app = MTO
 
             % Create UIFigure and components
             createComponents(app)
