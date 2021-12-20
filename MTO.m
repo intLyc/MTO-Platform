@@ -971,7 +971,7 @@ classdef MTO < matlab.apps.AppBase
             % add path
             addpath(genpath('./Algorithms/'));
             addpath(genpath('./Problems/'));
-            addpath(genpath('./Utils/'));
+            addpath(genpath('./GUI/'));
             
             app.readAlgoProb();
             app.EloadAlgoProb();
