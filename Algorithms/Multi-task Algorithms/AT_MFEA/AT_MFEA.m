@@ -13,6 +13,7 @@ classdef AT_MFEA < Algorithm
         mu = 2; % index of Simulated Binary Crossover (tunable)
         mum = 5; % index of polynomial mutation
         probswap = 0.5; % probability of variable swap
+        ooo
     end
 
     methods
