@@ -1,4 +1,4 @@
-classdef OperatorDE_JA
+classdef OperatorJADE
     methods (Static)
         function [offspring, calls] = generate(callfun, population, Task, p)
             if length(population) <= 3
@@ -25,8 +25,8 @@ classdef OperatorDE_JA
                 x1 = A(1);
                 x2 = A(mod(2 - 1, length(A)) + 1);
 
-                offspring(i) = OperatorDE_JA.mutate_current_pbest_1(offspring(i), population(i), population(pbest), population(x1), population(x2));
-                offspring(i) = OperatorDE_JA.crossover(offspring(i), population(i));
+                offspring(i) = OperatorJADE.mutate_current_pbest_1(offspring(i), population(i), population(pbest), population(x1), population(x2));
+                offspring(i) = OperatorJADE.crossover(offspring(i), population(i));
 
                 offspring(i).rnvec(offspring(i).rnvec > 1) = 1;
                 offspring(i).rnvec(offspring(i).rnvec < 0) = 0;

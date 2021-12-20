@@ -1,5 +1,5 @@
 function obj = Sphere(x, M, opt)
-    %Sphere function
+    % Sphere function
     %   - var: design variable vector
     %   - M: rotation matrix
     %   - opt: shift vector

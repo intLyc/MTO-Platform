@@ -73,7 +73,7 @@ classdef LDA_MFEA < Algorithm
                 end
 
                 % generation
-                [offspring, calls] = OperatorGA_LDA.generateMF(1, population, Tasks, obj.rmp, obj.mu, obj.mum, M);
+                [offspring, calls] = OperatorMFEA_LDA.generate(1, population, Tasks, obj.rmp, obj.mu, obj.mum, M);
                 fnceval_calls = fnceval_calls + calls;
 
                 % selection

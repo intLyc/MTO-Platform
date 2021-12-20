@@ -1,6 +1,6 @@
-classdef OperatorGA_AKT < OperatorGA
+classdef OperatorMFEA_AKT < OperatorMFEA
     methods (Static)
-        function [offspring, calls] = generateMF(callfun, population, Tasks, rmp, mu, mum)
+        function [offspring, calls] = generate(callfun, population, Tasks, rmp, mu, mum)
             Individual_class = class(population(1));
             indorder = randperm(length(population));
             count = 1;
@@ -20,24 +20,24 @@ classdef OperatorGA_AKT < OperatorGA
                     cf(u > 0.5) = (2 * (1 - u(u > 0.5))).^(-1 / (mu + 1));
                     p = [p1, p2];
                     if population(p1).skill_factor == population(p2).skill_factor
-                        offspring(count) = OperatorGA_AKT.crossover(offspring(count), population(p1), population(p2), cf);
-                        offspring(count + 1) = OperatorGA_AKT.crossover(offspring(count + 1), population(p2), population(p1), cf);
+                        offspring(count) = OperatorMFEA_AKT.crossover(offspring(count), population(p1), population(p2), cf);
+                        offspring(count + 1) = OperatorMFEA_AKT.crossover(offspring(count + 1), population(p2), population(p1), cf);
                         offspring(count).cx_factor = population(p1).cx_factor;
                         offspring(count + 1).cx_factor = population(p2).cx_factor;
                         offspring(count).isTran = 0;
                         offspring(count + 1).isTran = 0;
                     else
                         alpha = population(p(randi(2))).cx_factor;
-                        offspring(count) = OperatorGA_AKT.hyberCX(offspring(count), population(p1), population(p2), cf, alpha);
-                        offspring(count + 1) = OperatorGA_AKT.hyberCX(offspring(count + 1), population(p2), population(p1), cf, alpha);
+                        offspring(count) = OperatorMFEA_AKT.hyberCX(offspring(count), population(p1), population(p2), cf, alpha);
+                        offspring(count + 1) = OperatorMFEA_AKT.hyberCX(offspring(count + 1), population(p2), population(p1), cf, alpha);
                         offspring(count).cx_factor = alpha;
                         offspring(count + 1).cx_factor = alpha;
                         offspring(count).isTran = 1;
                         offspring(count + 1).isTran = 1;
                     end
                     % mutate
-                    offspring(count) = OperatorGA_AKT.mutate(offspring(count), max([Tasks.dims]), mum);
-                    offspring(count + 1) = OperatorGA_AKT.mutate(offspring(count + 1), max([Tasks.dims]), mum);
+                    offspring(count) = OperatorMFEA_AKT.mutate(offspring(count), max([Tasks.dims]), mum);
+                    offspring(count + 1) = OperatorMFEA_AKT.mutate(offspring(count + 1), max([Tasks.dims]), mum);
                     % imitate
                     rand_p = p(randi(2));
                     offspring(count).skill_factor = population(rand_p).skill_factor;
@@ -51,8 +51,8 @@ classdef OperatorGA_AKT < OperatorGA
                     end
                 else
                     % mutate
-                    offspring(count) = OperatorGA_AKT.mutate(population(p1), max([Tasks.dims]), mum);
-                    offspring(count + 1) = OperatorGA_AKT.mutate(population(p2), max([Tasks.dims]), mum);
+                    offspring(count) = OperatorMFEA_AKT.mutate(population(p1), max([Tasks.dims]), mum);
+                    offspring(count + 1) = OperatorMFEA_AKT.mutate(population(p2), max([Tasks.dims]), mum);
                     % imitate
                     offspring(count).skill_factor = population(p1).skill_factor;
                     offspring(count + 1).skill_factor = population(p2).skill_factor;
@@ -81,18 +81,18 @@ classdef OperatorGA_AKT < OperatorGA
         function object = hyberCX(object, p1, p2, cf, alpha)
             switch alpha
                 case 1
-                    object = OperatorGA_AKT.tpcrossover(object, p1, p2);
+                    object = OperatorMFEA_AKT.tpcrossover(object, p1, p2);
                 case 2
-                    object = OperatorGA_AKT.ufcrossover(object, p1, p2);
+                    object = OperatorMFEA_AKT.ufcrossover(object, p1, p2);
                 case 3
-                    object = OperatorGA_AKT.aricrossover(object, p1, p2);
+                    object = OperatorMFEA_AKT.aricrossover(object, p1, p2);
                 case 4
-                    object = OperatorGA_AKT.geocrossover(object, p1, p2);
+                    object = OperatorMFEA_AKT.geocrossover(object, p1, p2);
                 case 5
                     a = 0.3;
-                    object = OperatorGA_AKT.blxacrossover(object, p1, p2, a);
+                    object = OperatorMFEA_AKT.blxacrossover(object, p1, p2, a);
                 case 6
-                    object = OperatorGA_AKT.crossover(object, p1, p2, cf);
+                    object = OperatorMFEA_AKT.crossover(object, p1, p2, cf);
             end
         end
 

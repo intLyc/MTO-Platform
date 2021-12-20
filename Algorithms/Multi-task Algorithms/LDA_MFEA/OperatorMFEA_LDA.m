@@ -1,6 +1,6 @@
-classdef OperatorGA_LDA < OperatorGA
+classdef OperatorMFEA_LDA < OperatorMFEA
     methods (Static)
-        function [offspring, calls] = generateMF(callfun, population, Tasks, rmp, mu, mum, M)
+        function [offspring, calls] = generate(callfun, population, Tasks, rmp, mu, mum, M)
             Individual_class = class(population(1));
             indorder = randperm(length(population));
             count = 1;
@@ -20,8 +20,8 @@ classdef OperatorGA_LDA < OperatorGA
 
                 if population(p1).skill_factor == population(p2).skill_factor || rand < rmp
                     % crossover
-                    offspring(count) = OperatorGA_LDA.crossover(offspring(count), population(p1), population(p2), cf);
-                    offspring(count + 1) = OperatorGA_LDA.crossover(offspring(count + 1), population(p2), population(p1), cf);
+                    offspring(count) = OperatorGA.crossover(offspring(count), population(p1), population(p2), cf);
+                    offspring(count + 1) = OperatorGA.crossover(offspring(count + 1), population(p2), population(p1), cf);
                     % imitate
                     p = [p1, p2];
                     offspring(count).skill_factor = population(p(randi(2))).skill_factor;
@@ -47,11 +47,11 @@ classdef OperatorGA_LDA < OperatorGA
                     end
 
                     % map t1 to t2 (low to high dim)
-                    [m1, m2] = OperatorGA_LDA.mapping(M{t1}, M{t2});
+                    [m1, m2] = OperatorMFEA_LDA.mapping(M{t1}, M{t2});
                     temp_offspring.rnvec = population(p1).rnvec * m1;
                     % crossover
-                    offspring(count) = OperatorGA_LDA.crossover(offspring(count), temp_offspring, population(p2), cf);
-                    offspring(count + 1) = OperatorGA_LDA.crossover(offspring(count + 1), population(p2), temp_offspring, cf);
+                    offspring(count) = OperatorGA.crossover(offspring(count), temp_offspring, population(p2), cf);
+                    offspring(count + 1) = OperatorGA.crossover(offspring(count + 1), population(p2), temp_offspring, cf);
                     % imitate
                     p = [p1, p2];
                     rand_p = p(randi(2));

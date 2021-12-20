@@ -1,4 +1,4 @@
-classdef OperatorDE_rankj < OperatorDE_j
+classdef OperatorjDE_rank < OperatorjDE
     methods (Static)
         function [offspring, calls] = generate(callfun, population, Task, t1, t2)
             if length(population) <= 3
@@ -48,8 +48,8 @@ classdef OperatorDE_rankj < OperatorDE_j
                     offspring(i).pCR = rand;
                 end
 
-                offspring(i) = OperatorDE_rankj.mutate_rand_1(offspring(i), population(x1), population(x2), population(x3));
-                offspring(i) = OperatorDE_rankj.crossover(offspring(i), population(i));
+                offspring(i) = OperatorjDE_rank.mutate_rand_1(offspring(i), population(x1), population(x2), population(x3));
+                offspring(i) = OperatorjDE_rank.crossover(offspring(i), population(i));
 
                 offspring(i).rnvec(offspring(i).rnvec > 1) = 1;
                 offspring(i).rnvec(offspring(i).rnvec < 0) = 0;

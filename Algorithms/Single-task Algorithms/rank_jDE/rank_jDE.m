@@ -41,7 +41,7 @@ classdef rank_jDE < Algorithm
                 Task = Tasks(sub_task);
 
                 % initialize
-                [population, fnceval_calls] = initialize(Individual_j, sub_pop, Task, 1);
+                [population, fnceval_calls] = initialize(IndividualjDE, sub_pop, Task, 1);
                 % initialize F and pCR
                 for i = 1:length(population)
                     population(i).F = rand * 0.9 + 0.1;
@@ -57,7 +57,7 @@ classdef rank_jDE < Algorithm
                     generation = generation + 1;
 
                     % generation
-                    [offspring, calls] = OperatorDE_rankj.generate(1, population, Task, obj.t1, obj.t2);
+                    [offspring, calls] = OperatorjDE_rank.generate(1, population, Task, obj.t1, obj.t2);
                     fnceval_calls = fnceval_calls + calls;
 
                     % selection

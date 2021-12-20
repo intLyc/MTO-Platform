@@ -20,7 +20,6 @@ classdef SREMTO < Algorithm
     end
 
     methods
-
         function parameter = getParameter(obj)
             parameter = {'TH: two line segments point', num2str(obj.TH), ...
                         'mu: index of Simulated Binary Crossover (tunable)', num2str(obj.mu), ...

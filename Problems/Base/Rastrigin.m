@@ -1,5 +1,5 @@
 function obj = Rastrigin(var, M, opt)
-    %Rastrigin function
+    % Rastrigin function
     %   - var: design variable vector
     %   - M: rotation matrix
     %   - opt: shift vector

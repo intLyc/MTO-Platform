@@ -17,7 +17,6 @@ classdef MFEA_II < Algorithm
     end
 
     methods
-
         function parameter = getParameter(obj)
             parameter = {'mu: index of Simulated Binary Crossover (tunable)', num2str(obj.mu), ...
                         'mum: index of polynomial mutation', num2str(obj.mum), ...
@@ -56,7 +55,7 @@ classdef MFEA_II < Algorithm
                 RMP = learnRMP(subpops, [Tasks.dims]); % learning RMP matrix online at every generation.
 
                 % generation
-                [offspring, calls] = OperatorGA_2.generateMF(1, population, Tasks, RMP, obj.mu, obj.mum, obj.probswap);
+                [offspring, calls] = OperatorMFEA2.generate(1, population, Tasks, RMP, obj.mu, obj.mum, obj.probswap);
                 fnceval_calls = fnceval_calls + calls;
 
                 % selection

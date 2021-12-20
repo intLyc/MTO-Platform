@@ -1,5 +1,5 @@
 function obj = Ackley(var, M, opt)
-    %Ackley function
+    % Ackley function
     %   - var: design variable vector
     %   - M: rotation matrix
     %   - opt: shift vector

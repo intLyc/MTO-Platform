@@ -39,7 +39,7 @@ classdef JADE < Algorithm
                 Task = Tasks(sub_task);
 
                 % initialize
-                [population, fnceval_calls] = initialize(Individual_JA, sub_pop, Task, 1);
+                [population, fnceval_calls] = initialize(IndividualJADE, sub_pop, Task, 1);
 
                 % initialize uF uCR
                 uF = 0.5;
@@ -67,7 +67,7 @@ classdef JADE < Algorithm
                     end
 
                     % generation
-                    [offspring, calls] = OperatorDE_JA.generate(1, population, Task, obj.p);
+                    [offspring, calls] = OperatorJADE.generate(1, population, Task, obj.p);
                     fnceval_calls = fnceval_calls + calls;
 
                     % selection

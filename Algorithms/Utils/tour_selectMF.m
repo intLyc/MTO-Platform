@@ -1,4 +1,8 @@
 function [population, bestobj, bestX] = tour_selectMF(population, offspring, Tasks, pop_size, bestobj, bestX)
+    %% Multifactorial - Tournament selection based on scalar fitness
+    % Input: population (old), offspring, Tasks, pop_size, bestobj, bestX
+    % Output: population (new), bestobj, bestX
+
     ostart = length(population) + 1;
     population = [population, offspring];
 

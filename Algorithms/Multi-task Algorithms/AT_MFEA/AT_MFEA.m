@@ -16,7 +16,6 @@ classdef AT_MFEA < Algorithm
     end
 
     methods
-
         function parameter = getParameter(obj)
             parameter = {'rmp: Random Mating Probability', num2str(obj.rmp), ...
                         'mu: index of Simulated Binary Crossover (tunable)', num2str(obj.mu), ...
@@ -50,7 +49,7 @@ classdef AT_MFEA < Algorithm
                 generation = generation + 1;
 
                 % generation
-                [offspring, calls] = OperatorGA_AT.generateMF(1, population, Tasks, obj.rmp, obj.mu, obj.mum, obj.probswap, mu_tasks, Sigma_tasks);
+                [offspring, calls] = OperatorMFEA_AT.generate(1, population, Tasks, obj.rmp, obj.mu, obj.mum, obj.probswap, mu_tasks, Sigma_tasks);
                 fnceval_calls = fnceval_calls + calls;
 
                 % selection

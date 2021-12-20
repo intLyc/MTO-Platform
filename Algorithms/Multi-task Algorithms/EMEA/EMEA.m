@@ -21,7 +21,6 @@ classdef EMEA < Algorithm
     end
 
     methods
-
         function parameter = getParameter(obj)
             parameter = {'Op: Operator (Split with /)', obj.Op, ...
                         'S: Transfer num', num2str(obj.Snum), ...
