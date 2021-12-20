@@ -12,7 +12,6 @@ classdef drawFigure < handle
     end
 
     methods
-
         function obj = setXY(obj, x_cell, y_cell)
             obj.x_cell = x_cell;
             obj.y_cell = y_cell;
@@ -53,11 +52,9 @@ classdef drawFigure < handle
             max_x = 0;
 
             for i = 1:length(obj.x_cell)
-
                 if obj.x_cell{i}(end) > max_x
                     max_x = obj.x_cell{i}(end);
                 end
-
             end
 
             marker_list = {'o', '*', 'x', '^', '+', 'p', 'v', 's', 'd', '<', '>', 'h'};
@@ -80,15 +77,12 @@ classdef drawFigure < handle
             if ~isempty(obj.title_str)
                 title(strrep(obj.title_str, '_', '-'));
             end
-
             if ~isempty(obj.xlabel_str)
                 xlabel(strrep(obj.xlabel_str, '_', '\_'));
             end
-
             if ~isempty(obj.ylabel_str)
                 ylabel(strrep(obj.ylabel_str, '_', '\_'));
             end
-
             if ~isempty(obj.legend_cell)
                 legend(strrep(obj.legend_cell, '_', '\_'));
             end
@@ -96,9 +90,6 @@ classdef drawFigure < handle
             file_name = [obj.save_dir, obj.title_str, '.', obj.figure_type];
 
             exportgraphics(fig, file_name);
-
         end
-
     end
-
 end
