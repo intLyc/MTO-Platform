@@ -231,6 +231,8 @@ classdef MTO < matlab.apps.AppBase
             
             app.EStartButton.Enable = value;
             app.ERepsEditField.Enable = value;
+            app.EParallelDropDown.Enable = value;
+            app.ESTEADropDown.Enable = value;
             app.EAlgorithmsAddButton.Enable = value;
             app.EProblemsAddButton.Enable = value;
             app.EAlgorithmsListBox.Enable = value;
@@ -241,7 +243,6 @@ classdef MTO < matlab.apps.AppBase
             app.EProblemsTree.Enable = value;
             app.ELoadDataButton.Enable = value;
             app.ESaveDataButton.Enable = value;
-            app.EParallelDropDown.Enable = value;
             app.EPauseButton.Enable = ~value;
             app.EStopButton.Enable = ~value;
         end
