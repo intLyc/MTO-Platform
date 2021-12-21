@@ -1,4 +1,4 @@
-function [tfsol] = learn_anomaly_detection(curr_pop, his_pop, NL)
+function tfsol = learn_anomaly_detection(curr_pop, his_pop, NL)
     %% Learning anomaly detection model of task tn
     % Input: curr_pop (rnvec matrix), his_pop (rnvec matrix), NL (anomaly detection parameter)
     % Output: tfsol (candidate transferred solutions)
