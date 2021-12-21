@@ -13,7 +13,7 @@ classdef MFEA_II < Algorithm
     properties (SetAccess = private)
         mu = 2; % index of Simulated Binary Crossover (tunable)
         mum = 5; % index of polynomial mutation
-        probswap = 0.5; % probability of variable swap
+        probswap = 0; % probability of variable swap
     end
 
     methods

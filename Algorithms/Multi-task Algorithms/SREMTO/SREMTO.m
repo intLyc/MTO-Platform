@@ -14,7 +14,7 @@ classdef SREMTO < Algorithm
     % }
 
     properties (SetAccess = private)
-        TH = 0.9;
+        TH = 0.3;
         mu = 2;
         mum = 5;
     end
