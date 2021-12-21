@@ -60,10 +60,11 @@ classdef MTO < matlab.apps.AppBase
         AlgorithmsListBox_2Label     matlab.ui.control.Label
         EProblemsListBox             matlab.ui.control.ListBox
         ProblemsListBox_2Label       matlab.ui.control.Label
-        ELoadDataButton              matlab.ui.control.Button
-        ESaveDataButton              matlab.ui.control.Button
         ParallelDropDownLabel        matlab.ui.control.Label
         EParallelDropDown            matlab.ui.control.DropDown
+        STEALabel                    matlab.ui.control.Label
+        ESTEADropDown                matlab.ui.control.DropDown
+        ELoadDataButton              matlab.ui.control.Button
         EPanel2                      matlab.ui.container.Panel
         EP2GridLayout                matlab.ui.container.GridLayout
         EStartButton                 matlab.ui.control.Button
@@ -75,6 +76,7 @@ classdef MTO < matlab.apps.AppBase
         ESelectedProblemsLabel       matlab.ui.control.Label
         EAlgorithmsDelButton         matlab.ui.control.Button
         EProblemsDelButton           matlab.ui.control.Button
+        ESaveDataButton              matlab.ui.control.Button
         DataProcessTab               matlab.ui.container.Tab
         DataProcessGridLayout        matlab.ui.container.GridLayout
         DPanel1                      matlab.ui.container.Panel
@@ -157,6 +159,10 @@ classdef MTO < matlab.apps.AppBase
             % read algorithms
             algo_folders = split(genpath(fullfile(fileparts(mfilename('fullpath')),'Algorithms')),pathsep);
             for i = 1:length(algo_folders)
+                % check single-task exclude
+                if ~app.ESTEADropDown.Value && ~isempty(strfind(algo_folders{i}, 'Single-task'))
+                    continue;
+                end
                 files = what(algo_folders{i});
                 files = files.m;
                 for j = 1:length(files)
@@ -234,6 +240,7 @@ classdef MTO < matlab.apps.AppBase
             app.EAlgorithmsTree.Enable = value;
             app.EProblemsTree.Enable = value;
             app.ELoadDataButton.Enable = value;
+            app.ESaveDataButton.Enable = value;
             app.EParallelDropDown.Enable = value;
             app.EPauseButton.Enable = ~value;
             app.EStopButton.Enable = ~value;
@@ -460,7 +467,7 @@ classdef MTO < matlab.apps.AppBase
             end
             
             app.Efitness = [];
-            app.Etime_used = {};
+            app.Etime_used = [];
             % calculate fitness
             for algo = 1:length(app.Edata.algo_cell)
                 row_i = 1;
@@ -471,7 +478,7 @@ classdef MTO < matlab.apps.AppBase
                         app.Efitness(row_i, algo, :) = convergence_task(:, end);
                         row_i = row_i + 1;
                     end
-                    app.Etime_used(prob, algo) = {char(duration([0, 0, app.Edata.result(prob, algo).clock_time]))};
+                    app.Etime_used(prob, algo) = app.Edata.result(prob, algo).clock_time;
                 end
             end
         end
@@ -574,7 +581,13 @@ classdef MTO < matlab.apps.AppBase
             
             time_used = app.Etime_used;
             app.Etable_data = time_used;
-            app.EUITable.Data = time_used;
+            time_used_char = {};
+            for prob = 1:size(app.Etable_data, 1)
+                for algo = 1:size(app.Etable_data, 2)
+                    time_used_char{prob, algo} = char(duration([0, 0, app.Etable_data(prob, algo)]));
+                end
+            end
+            app.EUITable.Data = time_used_char;
             drawnow;
         end
         
@@ -1083,6 +1096,13 @@ classdef MTO < matlab.apps.AppBase
             app.TstartEnable(true);
         end
 
+        % Value changed function: ESTEADropDown
+        function ESTEADropDownValueChanged(app, event)
+            app.readAlgoProb();
+            app.TloadAlgoProb();
+            app.EloadAlgoProb();
+        end
+
         % Context menu opening function: EAlgorithmsContextMenu
         function EAlgorithmsContextMenuOpening(app, event)
             % select all algorithms
@@ -1475,6 +1495,11 @@ classdef MTO < matlab.apps.AppBase
 
         % Value changed function: EShowTypeDropDown
         function EShowTypeDropDownValueChanged(app, event)
+            app.EupdateTableFitness();
+        end
+
+        % Value changed function: EDataFormatDropDown
+        function EDataFormatDropDownValueChanged(app, event)
             app.EupdateTableFitness();
         end
 
@@ -1990,11 +2015,6 @@ classdef MTO < matlab.apps.AppBase
             app.DDataTree.SelectedNodes = selected;
             drawnow;
         end
-
-        % Value changed function: EDataFormatDropDown
-        function EDataFormatDropDownValueChanged(app, event)
-            app.EupdateTableFitness();
-        end
     end
 
     % Component initialization
@@ -2006,7 +2026,7 @@ classdef MTO < matlab.apps.AppBase
             % Create MTOPlatformUIFigure and hide until all components are created
             app.MTOPlatformUIFigure = uifigure('Visible', 'off');
             app.MTOPlatformUIFigure.Color = [1 1 1];
-            app.MTOPlatformUIFigure.Position = [100 100 1229 751];
+            app.MTOPlatformUIFigure.Position = [100 100 1229 819];
             app.MTOPlatformUIFigure.Name = 'MTO Platform';
             app.MTOPlatformUIFigure.WindowStyle = 'modal';
 
@@ -2397,7 +2417,7 @@ classdef MTO < matlab.apps.AppBase
             % Create EP1GridLayout
             app.EP1GridLayout = uigridlayout(app.EPanel1);
             app.EP1GridLayout.ColumnWidth = {'fit', '1x', 70};
-            app.EP1GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x', 'fit'};
+            app.EP1GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x', 'fit'};
             app.EP1GridLayout.ColumnSpacing = 5;
             app.EP1GridLayout.Padding = [5 5 5 5];
             app.EP1GridLayout.BackgroundColor = [1 1 1];
@@ -2409,7 +2429,7 @@ classdef MTO < matlab.apps.AppBase
             app.EProblemsAddButton.BackgroundColor = [0.702 1 0.702];
             app.EProblemsAddButton.FontWeight = 'bold';
             app.EProblemsAddButton.Tooltip = {'Add selected problems'};
-            app.EProblemsAddButton.Layout.Row = 7;
+            app.EProblemsAddButton.Layout.Row = 6;
             app.EProblemsAddButton.Layout.Column = 3;
             app.EProblemsAddButton.Text = 'Add';
 
@@ -2420,7 +2440,7 @@ classdef MTO < matlab.apps.AppBase
             app.EAlgorithmsAddButton.BackgroundColor = [0.702 1 0.702];
             app.EAlgorithmsAddButton.FontWeight = 'bold';
             app.EAlgorithmsAddButton.Tooltip = {'Add selected algorithms'};
-            app.EAlgorithmsAddButton.Layout.Row = 5;
+            app.EAlgorithmsAddButton.Layout.Row = 4;
             app.EAlgorithmsAddButton.Layout.Column = 3;
             app.EAlgorithmsAddButton.Text = 'Add';
 
@@ -2430,14 +2450,14 @@ classdef MTO < matlab.apps.AppBase
             app.ERepsEditField.RoundFractionalValues = 'on';
             app.ERepsEditField.ValueDisplayFormat = '%d';
             app.ERepsEditField.HorizontalAlignment = 'center';
-            app.ERepsEditField.Layout.Row = 3;
+            app.ERepsEditField.Layout.Row = 1;
             app.ERepsEditField.Layout.Column = [2 3];
             app.ERepsEditField.Value = 30;
 
             % Create ERunTimesEditFieldLabel
             app.ERunTimesEditFieldLabel = uilabel(app.EP1GridLayout);
             app.ERunTimesEditFieldLabel.FontWeight = 'bold';
-            app.ERunTimesEditFieldLabel.Layout.Row = 3;
+            app.ERunTimesEditFieldLabel.Layout.Row = 1;
             app.ERunTimesEditFieldLabel.Layout.Column = 1;
             app.ERunTimesEditFieldLabel.Text = 'Run Times';
 
@@ -2445,14 +2465,14 @@ classdef MTO < matlab.apps.AppBase
             app.EAlgorithmsListBox = uilistbox(app.EP1GridLayout);
             app.EAlgorithmsListBox.Items = {};
             app.EAlgorithmsListBox.Multiselect = 'on';
-            app.EAlgorithmsListBox.Layout.Row = 6;
+            app.EAlgorithmsListBox.Layout.Row = 5;
             app.EAlgorithmsListBox.Layout.Column = [1 3];
             app.EAlgorithmsListBox.Value = {};
 
             % Create AlgorithmsListBox_2Label
             app.AlgorithmsListBox_2Label = uilabel(app.EP1GridLayout);
             app.AlgorithmsListBox_2Label.FontWeight = 'bold';
-            app.AlgorithmsListBox_2Label.Layout.Row = 5;
+            app.AlgorithmsListBox_2Label.Layout.Row = 4;
             app.AlgorithmsListBox_2Label.Layout.Column = 1;
             app.AlgorithmsListBox_2Label.Text = 'Algorithms';
 
@@ -2460,41 +2480,21 @@ classdef MTO < matlab.apps.AppBase
             app.EProblemsListBox = uilistbox(app.EP1GridLayout);
             app.EProblemsListBox.Items = {};
             app.EProblemsListBox.Multiselect = 'on';
-            app.EProblemsListBox.Layout.Row = 8;
+            app.EProblemsListBox.Layout.Row = 7;
             app.EProblemsListBox.Layout.Column = [1 3];
             app.EProblemsListBox.Value = {};
 
             % Create ProblemsListBox_2Label
             app.ProblemsListBox_2Label = uilabel(app.EP1GridLayout);
             app.ProblemsListBox_2Label.FontWeight = 'bold';
-            app.ProblemsListBox_2Label.Layout.Row = 7;
+            app.ProblemsListBox_2Label.Layout.Row = 6;
             app.ProblemsListBox_2Label.Layout.Column = 1;
             app.ProblemsListBox_2Label.Text = 'Problems';
-
-            % Create ELoadDataButton
-            app.ELoadDataButton = uibutton(app.EP1GridLayout, 'push');
-            app.ELoadDataButton.ButtonPushedFcn = createCallbackFcn(app, @ELoadDataButtonPushed, true);
-            app.ELoadDataButton.BackgroundColor = [0.502 0.702 1];
-            app.ELoadDataButton.FontWeight = 'bold';
-            app.ELoadDataButton.Tooltip = {'Load data_save.mat to show detials'};
-            app.ELoadDataButton.Layout.Row = 1;
-            app.ELoadDataButton.Layout.Column = [1 3];
-            app.ELoadDataButton.Text = 'Load Data';
-
-            % Create ESaveDataButton
-            app.ESaveDataButton = uibutton(app.EP1GridLayout, 'push');
-            app.ESaveDataButton.ButtonPushedFcn = createCallbackFcn(app, @ESaveDataButtonPushed, true);
-            app.ESaveDataButton.BackgroundColor = [0.702 1 0.702];
-            app.ESaveDataButton.FontWeight = 'bold';
-            app.ESaveDataButton.Tooltip = {'Save finished data to mat file'};
-            app.ESaveDataButton.Layout.Row = 2;
-            app.ESaveDataButton.Layout.Column = [1 3];
-            app.ESaveDataButton.Text = 'Save Data';
 
             % Create ParallelDropDownLabel
             app.ParallelDropDownLabel = uilabel(app.EP1GridLayout);
             app.ParallelDropDownLabel.FontWeight = 'bold';
-            app.ParallelDropDownLabel.Layout.Row = 4;
+            app.ParallelDropDownLabel.Layout.Row = 2;
             app.ParallelDropDownLabel.Layout.Column = 1;
             app.ParallelDropDownLabel.Text = 'Parallel';
 
@@ -2504,9 +2504,38 @@ classdef MTO < matlab.apps.AppBase
             app.EParallelDropDown.ItemsData = [1 0];
             app.EParallelDropDown.FontWeight = 'bold';
             app.EParallelDropDown.BackgroundColor = [1 1 1];
-            app.EParallelDropDown.Layout.Row = 4;
+            app.EParallelDropDown.Layout.Row = 2;
             app.EParallelDropDown.Layout.Column = [2 3];
             app.EParallelDropDown.Value = 1;
+
+            % Create STEALabel
+            app.STEALabel = uilabel(app.EP1GridLayout);
+            app.STEALabel.FontWeight = 'bold';
+            app.STEALabel.Tooltip = {'Single-task EA Option'};
+            app.STEALabel.Layout.Row = 3;
+            app.STEALabel.Layout.Column = 1;
+            app.STEALabel.Text = 'STEA';
+
+            % Create ESTEADropDown
+            app.ESTEADropDown = uidropdown(app.EP1GridLayout);
+            app.ESTEADropDown.Items = {'Exclude', 'Include'};
+            app.ESTEADropDown.ItemsData = [0 1];
+            app.ESTEADropDown.ValueChangedFcn = createCallbackFcn(app, @ESTEADropDownValueChanged, true);
+            app.ESTEADropDown.FontWeight = 'bold';
+            app.ESTEADropDown.BackgroundColor = [1 1 1];
+            app.ESTEADropDown.Layout.Row = 3;
+            app.ESTEADropDown.Layout.Column = [2 3];
+            app.ESTEADropDown.Value = 0;
+
+            % Create ELoadDataButton
+            app.ELoadDataButton = uibutton(app.EP1GridLayout, 'push');
+            app.ELoadDataButton.ButtonPushedFcn = createCallbackFcn(app, @ELoadDataButtonPushed, true);
+            app.ELoadDataButton.BackgroundColor = [0.502 0.702 1];
+            app.ELoadDataButton.FontWeight = 'bold';
+            app.ELoadDataButton.Tooltip = {'Load data_save.mat to show detials'};
+            app.ELoadDataButton.Layout.Row = 8;
+            app.ELoadDataButton.Layout.Column = [1 3];
+            app.ELoadDataButton.Text = 'Load Data';
 
             % Create EPanel2
             app.EPanel2 = uipanel(app.ExperimentsGridLayout);
@@ -2517,7 +2546,7 @@ classdef MTO < matlab.apps.AppBase
             % Create EP2GridLayout
             app.EP2GridLayout = uigridlayout(app.EPanel2);
             app.EP2GridLayout.ColumnWidth = {'2x', 70};
-            app.EP2GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x'};
+            app.EP2GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x', 'fit'};
             app.EP2GridLayout.ColumnSpacing = 5;
             app.EP2GridLayout.Padding = [5 5 5 5];
             app.EP2GridLayout.BackgroundColor = [1 1 1];
@@ -2603,6 +2632,16 @@ classdef MTO < matlab.apps.AppBase
             app.EProblemsDelButton.Layout.Row = 6;
             app.EProblemsDelButton.Layout.Column = 2;
             app.EProblemsDelButton.Text = 'Delete';
+
+            % Create ESaveDataButton
+            app.ESaveDataButton = uibutton(app.EP2GridLayout, 'push');
+            app.ESaveDataButton.ButtonPushedFcn = createCallbackFcn(app, @ESaveDataButtonPushed, true);
+            app.ESaveDataButton.BackgroundColor = [0.702 1 0.702];
+            app.ESaveDataButton.FontWeight = 'bold';
+            app.ESaveDataButton.Tooltip = {'Save finished data to mat file'};
+            app.ESaveDataButton.Layout.Row = 8;
+            app.ESaveDataButton.Layout.Column = [1 2];
+            app.ESaveDataButton.Text = 'Save Data';
 
             % Create DataProcessTab
             app.DataProcessTab = uitab(app.MTOPlatformTabGroup);
