@@ -11,7 +11,7 @@ function [population, calls, bestobj, bestCV, bestX] = initializeMF(Individual_c
         end
         [~, rank] = sort(factorial_costs);
         for i = 1:pop_size
-            population(i).factorial_ranks(t) = rank(i);
+            population(rank(i)).factorial_ranks(t) = i;
         end
         bestobj(t) = population(rank(1)).factorial_costs(t);
         bestCV(t) = population(rank(1)).constraint_violation(t);
