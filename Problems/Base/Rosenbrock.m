@@ -1,6 +1,7 @@
-function obj = Rosenbrock(x, M, opt)
+function [obj, con] = Rosenbrock(x, M, opt)
     % ROSENBROCK function
     %   - var: design variable vector
+    con = 0;
     var = x;
     dim = length(var);
     var = (M * (var - opt)')';

@@ -1,8 +1,9 @@
-function obj = Sphere(x, M, opt)
+function [obj, con] = Sphere(x, M, opt)
     % Sphere function
     %   - var: design variable vector
     %   - M: rotation matrix
     %   - opt: shift vector
+    con = 0;
     var = x;
     dim = length(var);
     var = (M * (var - opt)')';

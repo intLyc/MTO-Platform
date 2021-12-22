@@ -1,8 +1,9 @@
-function obj = Ackley(var, M, opt)
+function [obj, con] = Ackley(var, M, opt)
     % Ackley function
     %   - var: design variable vector
     %   - M: rotation matrix
     %   - opt: shift vector
+    con = 0;
     dim = length(var);
     var = (M * (var - opt)')';
     sum1 = 0; sum2 = 0;

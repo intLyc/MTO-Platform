@@ -351,7 +351,12 @@ classdef MTO < matlab.apps.AppBase
                     maxrange = Tasks(no).Ub(1);
                     y = maxrange - minrange;
                     vars = y .* x(i) + minrange;
-                    f(i) = Tasks(no).fnc(vars);
+                    [ff, con] = Tasks(no).fnc(vars);
+                    if sum(con) > 0
+                        f(i) = NaN;
+                    else
+                        f(i) = ff;
+                    end
                 end
                 
                 fmin = min(f);
