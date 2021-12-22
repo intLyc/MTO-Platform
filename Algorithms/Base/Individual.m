@@ -4,6 +4,7 @@ classdef Individual
     properties
         rnvec; % gene
         factorial_costs; % object
+        constraint_violation;
 
         % multifactorial parameter
         factorial_ranks;

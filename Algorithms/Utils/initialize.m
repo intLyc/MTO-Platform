@@ -15,6 +15,7 @@ function [population, calls] = initialize(Individual_class, pop_size, Tasks, tas
             population(i).rnvec = rand(1, max([Tasks.dims]));
             population(i).skill_factor = 0;
             population(i).factorial_costs = inf(1, tasks_num);
+            population(i).constraint_violation = inf(1, tasks_num);
         end
         calls = 0;
         for t = 1:tasks_num
