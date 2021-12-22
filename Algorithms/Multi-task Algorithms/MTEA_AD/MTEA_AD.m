@@ -47,6 +47,7 @@ classdef MTEA_AD < Algorithm
                 [bestobj(t), idx] = min([population{t}.factorial_costs]);
                 data.bestX{t} = population{t}(idx).rnvec;
                 data.convergence(t, 1) = bestobj(t);
+                data.convergence_cv(t, 1) = population{t}(idx).constraint_violation;
             end
 
             generation = 1;
@@ -113,6 +114,9 @@ classdef MTEA_AD < Algorithm
                     if bestobj_temp < bestobj(t)
                         bestobj(t) = bestobj_temp;
                         data.bestX{t} = population{t}(idx).rnvec;
+                        data.convergence_cv(t, generation) = population{t}(idx).constraint_violation;
+                    else
+                        data.convergence_cv(t, generation) = data.convergence_cv(t, generation - 1);
                     end
                     data.convergence(t, generation) = bestobj(t);
                 end

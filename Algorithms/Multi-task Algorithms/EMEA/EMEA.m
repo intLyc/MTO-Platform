@@ -61,6 +61,7 @@ classdef EMEA < Algorithm
                 [bestobj(t), idx] = min([population{t}.factorial_costs]);
                 data.bestX{t} = population{t}(idx).rnvec;
                 data.convergence(t, 1) = bestobj(t);
+                data.convergence_cv(t, 1) = population{t}(idx).constraint_violation;
             end
 
             generation = 1;
@@ -122,6 +123,9 @@ classdef EMEA < Algorithm
                     if bestobj_offspring < bestobj(t)
                         bestobj(t) = bestobj_offspring;
                         data.bestX{t} = offspring(idx).rnvec;
+                        data.convergence_cv(t, generation) = offspring(idx).constraint_violation;
+                    else
+                        data.convergence_cv(t, generation) = data.convergence_cv(t, generation - 1);
                     end
                     data.convergence(t, generation) = bestobj(t);
 

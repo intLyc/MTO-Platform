@@ -41,8 +41,9 @@ classdef MFEA_AKT < Algorithm
             tic
 
             % initialize
-            [population, fnceval_calls, bestobj, data.bestX] = initializeMF(IndividualAKT, pop_size, Tasks, length(Tasks));
+            [population, fnceval_calls, bestobj, bestCV, data.bestX] = initializeMF(IndividualAKT, pop_size, Tasks, length(Tasks));
             data.convergence(:, 1) = bestobj;
+            data.convergence_cv(:, 1) = bestCV;
             % initialize akt
             cfb_record = [];
             for i = 1:pop_size
@@ -98,8 +99,9 @@ classdef MFEA_AKT < Algorithm
                 end
 
                 % selection
-                [population, bestobj, data.bestX] = selectMF(population, offspring, Tasks, pop_size, bestobj, data.bestX);
+                [population, bestobj, bestCV, data.bestX] = selectMF(population, offspring, Tasks, pop_size, bestobj, bestCV, data.bestX);
                 data.convergence(:, generation) = bestobj;
+                data.convergence_cv(:, generation) = bestCV;
             end
             data.bestX = bin2real(data.bestX, Tasks);
             data.clock_time = toc;

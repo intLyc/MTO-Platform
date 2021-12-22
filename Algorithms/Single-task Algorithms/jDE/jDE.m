@@ -33,6 +33,7 @@ classdef jDE < Algorithm
             eva_num = run_parameter_list(3);
             pop_size = fixPopSize(pop_size, length(Tasks));
             data.convergence = [];
+            data.convergence_cv = [];
             data.bestX = {};
             tic
 
@@ -51,6 +52,7 @@ classdef jDE < Algorithm
                 [bestobj, idx] = min([population.factorial_costs]);
                 bestX = population(idx).rnvec;
                 convergence(1) = bestobj;
+                convergence_cv(1) = population(idx).constraint_violation;
 
                 generation = 1;
                 while generation < iter_num && fnceval_calls < round(eva_num / length(Tasks))
@@ -67,10 +69,14 @@ classdef jDE < Algorithm
                     if bestobj_now < bestobj
                         bestobj = bestobj_now;
                         bestX = offspring(idx).rnvec;
+                        convergence_cv(generation) = offspring(idx).constraint_violation;
+                    else
+                        convergence_cv(generation) = convergence_cv(generation - 1);
                     end
                     convergence(generation) = bestobj;
                 end
                 data.convergence = [data.convergence; convergence];
+                data.convergence_cv = [data.convergence_cv; convergence_cv];
                 data.bestX = [data.bestX, bestX];
             end
             data.bestX = bin2real(data.bestX, Tasks);

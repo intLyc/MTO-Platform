@@ -43,10 +43,13 @@ classdef OperatorGA_SRE < OperatorGA
                     for t = 1:length(Tasks)
                         if t == taski || rand < offspring(i).ability_vector(t)
                             x = (Tasks(t).Ub - Tasks(t).Lb) .* offspring(i).rnvec(1:Tasks(t).dims) + Tasks(t).Lb;
-                            offspring(i).factorial_costs(t) = Tasks(t).fnc(x);
+                            [f, cv] = Tasks(t).fnc(x);
+                            offspring(i).factorial_costs(t) = f;
+                            offspring(i).constraint_violation(t) = cv;
                             calls = calls + 1;
                         else
                             offspring(i).factorial_costs(t) = inf;
+                            offspring(i).constraint_violation(t) = inf;
                         end
                     end
                 end

@@ -1,4 +1,4 @@
-function [population, bestobj, bestX] = tour_selectMF(population, offspring, Tasks, pop_size, bestobj, bestX)
+function [population, bestobj, bestCV, bestX] = tour_selectMF(population, offspring, Tasks, pop_size, bestobj, bestCV, bestX)
     %% Multifactorial - Tournament selection based on scalar fitness
     % Input: population (old), offspring, Tasks, pop_size, bestobj, bestX
     % Output: population (new), bestobj, bestX
@@ -13,6 +13,7 @@ function [population, bestobj, bestX] = tour_selectMF(population, offspring, Tas
         [bestobj_offspring, idx] = min(factorial_costs);
         if bestobj_offspring < bestobj(t)
             bestobj(t) = bestobj_offspring;
+            bestCV(t) = population(idx).constraint_violation(t);
             bestX{t} = population(idx).rnvec;
         end
 
