@@ -138,6 +138,7 @@ classdef MTO < matlab.apps.AppBase
         Edata % data
         Estop_flag % stop button clicked flag
         Efitness % fitness calculated
+        Ecv % cv calculated
         Etime_used % time_used calculated
         Etable_data % table data for calculate
         Etable_view % table data view
@@ -327,7 +328,9 @@ classdef MTO < matlab.apps.AppBase
                     app.TupdateTasksFigure();
                 case 'Tasks Figure (1D real)'
                     app.TupdateTasksFigure();
-                case 'Convergence'
+                case 'Convergence (Obj)'
+                    app.TupdateConvergence();
+                case 'Convergence (CV)'
                     app.TupdateConvergence();
             end
         end
@@ -352,7 +355,7 @@ classdef MTO < matlab.apps.AppBase
                     y = maxrange - minrange;
                     vars = y .* x(i) + minrange;
                     [ff, con] = Tasks(no).fnc(vars);
-                    if sum(con) > 0
+                    if con > 0
                         f(i) = NaN;
                     else
                         f(i) = ff;
@@ -396,7 +399,11 @@ classdef MTO < matlab.apps.AppBase
             % draw
             tasks_name = {};
             for task = 1:app.Tdata.tasks_num
-                convergence = app.Tdata.convergence(task, :);
+                if ~isempty(strfind(app.TShowTypeDropDown.Value, 'Obj'))
+                    convergence = app.Tdata.convergence(task, :);
+                elseif ~isempty(strfind(app.TShowTypeDropDown.Value, 'CV'))
+                    convergence = app.Tdata.convergence_cv(task, :);
+                end
                 x = 1:size(convergence,2);
                 y = log(convergence);
                 if task > length(app.marker_list)
@@ -459,6 +466,8 @@ classdef MTO < matlab.apps.AppBase
                 case 'Fitness'
                     app.EUITable.RowName = prob_row_cell;
                     app.EUITable.RowName = [app.EUITable.RowName; '+/-/='];
+                case 'CV'
+                    app.EUITable.RowName = prob_row_cell;
                 otherwise
                     app.EUITable.RowName = prob_cell;
             end
@@ -473,6 +482,7 @@ classdef MTO < matlab.apps.AppBase
             end
             
             app.Efitness = [];
+            app.Ecv = [];
             app.Etime_used = [];
             % calculate fitness
             for algo = 1:length(app.Edata.algo_cell)
@@ -482,6 +492,8 @@ classdef MTO < matlab.apps.AppBase
                     for task = 1:tasks_num
                         convergence_task = app.Edata.result(prob, algo).convergence(task:tasks_num:end, :);
                         app.Efitness(row_i, algo, :) = convergence_task(:, end);
+                        convergence_cv_task = app.Edata.result(prob, algo).convergence_cv(task:tasks_num:end, :);
+                        app.Ecv(row_i, algo, :) = convergence_cv_task(:, end);
                         row_i = row_i + 1;
                     end
                     app.Etime_used(prob, algo) = app.Edata.result(prob, algo).clock_time;
@@ -502,31 +514,35 @@ classdef MTO < matlab.apps.AppBase
         function EupdateTableFitness(app)
             % update table fitness
             
-            if ~strcmp(app.EDataTypeDropDown.Value, 'Fitness')
+            if strcmp(app.EDataTypeDropDown.Value, 'Fitness')
+                data_fitness = app.Efitness;
+            elseif strcmp(app.EDataTypeDropDown.Value, 'CV')
+                data_fitness = app.Ecv;
+            else
                 return;
             end
             show_type = app.EShowTypeDropDown.Value;
             format_str = app.EDataFormatDropDown.Value;
             
             if strcmp(show_type, 'Mean')
-                fitness_mean = mean(app.Efitness, 3);
+                fitness_mean = mean(data_fitness, 3);
                 app.Etable_data = fitness_mean;
                 app.Etable_view = sprintfc(format_str, fitness_mean);
             elseif strcmp(show_type, 'Mean (Std)')
-                fitness_mean = mean(app.Efitness, 3);
-                fitness_std = std(app.Efitness, 0, 3);
+                fitness_mean = mean(data_fitness, 3);
+                fitness_std = std(data_fitness, 0, 3);
                 app.Etable_data = fitness_mean;
                 x = zeros([size(fitness_mean, 1), 2*size(fitness_mean, 2)]);
                 x(:, 1:2:end) = fitness_mean;
                 x(:, 2:2:end) = fitness_std;
                 app.Etable_view = sprintfc([format_str,' (%.2d)'], x);
             elseif strcmp(show_type, 'Median')
-                fitness_median = median(app.Efitness, 3);
+                fitness_median = median(data_fitness, 3);
                 app.Etable_data = fitness_median;
                 app.Etable_view = sprintfc(format_str, fitness_median);
             elseif strcmp(show_type, 'Median (Std)')
-                fitness_median = median(app.Efitness, 3);
-                fitness_std = std(app.Efitness, 0, 3);
+                fitness_median = median(data_fitness, 3);
+                fitness_std = std(data_fitness, 0, 3);
                 app.Etable_data = fitness_median;
                 x = zeros([size(fitness_median, 1), 2*size(fitness_median, 2)]);
                 x(:, 1:2:end) = fitness_median;
@@ -701,6 +717,8 @@ classdef MTO < matlab.apps.AppBase
                     app.EupdateTableTest();
                 case 'Score'
                     app.EupdateTableScore();
+                case 'CV'
+                    app.EupdateTableFitness();
                 case 'Time used'
                     app.EupdateTableTimeUsed();
             end
@@ -739,16 +757,31 @@ classdef MTO < matlab.apps.AppBase
             prob = value(1);
             task = value(2);
             tasks_num = app.Edata.tasks_num_list(prob);
-            for algo = 1:length(app.Edata.algo_cell)
-                convergence_task = app.Edata.result(prob, algo).convergence(task:tasks_num:end, :);
-                convergence = mean(convergence_task, 1);
-                x_cell{algo} = 1:size(convergence,2);
-                y_cell{algo} = convergence;
-            end
+            
             switch app.EYLimTypeDropDown.Value
                 case 'log(fitness)'
+                    for algo = 1:length(app.Edata.algo_cell)
+                        convergence_task = app.Edata.result(prob, algo).convergence(task:tasks_num:end, :);
+                        convergence = mean(convergence_task, 1);
+                        x_cell{algo} = 1:size(convergence,2);
+                        y_cell{algo} = convergence;
+                    end
                     for i = 1:length(y_cell)
                         y_cell{i} = log(y_cell{i});
+                    end
+                case 'fitness'
+                    for algo = 1:length(app.Edata.algo_cell)
+                        convergence_task = app.Edata.result(prob, algo).convergence(task:tasks_num:end, :);
+                        convergence = mean(convergence_task, 1);
+                        x_cell{algo} = 1:size(convergence,2);
+                        y_cell{algo} = convergence;
+                    end
+                case 'CV'
+                    for algo = 1:length(app.Edata.algo_cell)
+                        convergence_task = app.Edata.result(prob, algo).convergence_cv(task:tasks_num:end, :);
+                        convergence = mean(convergence_task, 1);
+                        x_cell{algo} = 1:size(convergence,2);
+                        y_cell{algo} = convergence;
                     end
             end
             max_x = 0;
@@ -1237,6 +1270,7 @@ classdef MTO < matlab.apps.AppBase
                 for prob = 1:prob_num
                     app.Edata.result(prob, algo).clock_time = 0;
                     app.Edata.result(prob, algo).convergence = [];
+                    app.Edata.result(prob, algo).convergence_cv = [];
                     app.Edata.result(prob, algo).bestX = {};
                 end
             end
@@ -1277,12 +1311,16 @@ classdef MTO < matlab.apps.AppBase
                                 gen_new = size(data.convergence, 2);
                                 if gen_old < gen_new
                                     app.Edata.result(prob, algo).convergence = [app.Edata.result(prob, algo).convergence, repmat(app.Edata.result(prob, algo).convergence(:, gen_old), 1, gen_new-gen_old)];
+                                    app.Edata.result(prob, algo).convergence_cv = [app.Edata.result(prob, algo).convergence_cv, repmat(app.Edata.result(prob, algo).convergence_cv(:, gen_old), 1, gen_new-gen_old)];
                                 else
                                     data.convergence = [data.convergence, repmat(data.convergence(:, gen_new), 1, gen_old-gen_new)];
+                                    data.convergence_cv = [data.convergence_cv, repmat(data.convergence_cv(:, gen_new), 1, gen_old-gen_new)];
                                 end
                                 app.Edata.result(prob, algo).convergence = [app.Edata.result(prob, algo).convergence; data.convergence];
+                                app.Edata.result(prob, algo).convergence_cv = [app.Edata.result(prob, algo).convergence_cv; data.convergence_cv];
                             else
                                 app.Edata.result(prob, algo).convergence = data.convergence;
+                                app.Edata.result(prob, algo).convergence_cv = data.convergence_cv;
                             end
                             app.Edata.result(prob, algo).bestX = [app.Edata.result(prob, algo).bestX; data.bestX];
                             app.Etable_reps(prob, algo) = rep;
@@ -1304,23 +1342,29 @@ classdef MTO < matlab.apps.AppBase
                         prob_obj = app.EProblemsTree.Children(prob).NodeData;
                         clock_time = 0;
                         convergence = {};
+                        convergence_cv = {};
                         bestX = {};
                         parfor rep = 1:reps
                             data = singleRun(algo_obj, prob_obj);
                             clock_time = clock_time + data.clock_time;
                             convergence = [convergence; {data.convergence}];
+                            convergence_cv = [convergence_cv; {data.convergence_cv}];
                             bestX = [bestX; data.bestX];
                         end
                         app.Edata.result(prob, algo).convergence = convergence{1};
+                        app.Edata.result(prob, algo).convergence_cv = convergence_cv{1};
                         for rep = 2:reps
                             gen_old = size(app.Edata.result(prob, algo).convergence, 2);
                             gen_new = size(convergence{rep}, 2);
                             if gen_old < gen_new
                                 app.Edata.result(prob, algo).convergence = [app.Edata.result(prob, algo).convergence, repmat(app.Edata.result(prob, algo).convergence(:, gen_old), 1, gen_new-gen_old)];
+                                app.Edata.result(prob, algo).convergence_cv = [app.Edata.result(prob, algo).convergence_cv, repmat(app.Edata.result(prob, algo).convergence_cv(:, gen_old), 1, gen_new-gen_old)];
                             else
                                 convergence{rep} = [convergence{rep}, repmat(convergence{rep}(:, gen_new), 1, gen_old-gen_new)];
+                                convergence_cv{rep} = [convergence_cv{rep}, repmat(convergence_cv{rep}(:, gen_new), 1, gen_old-gen_new)];
                             end
                             app.Edata.result(prob, algo).convergence = [app.Edata.result(prob, algo).convergence; convergence{rep}];
+                            app.Edata.result(prob, algo).convergence_cv = [app.Edata.result(prob, algo).convergence_cv; convergence_cv{rep}];
                         end
                         app.Edata.result(prob, algo).clock_time = clock_time;
                         app.Edata.result(prob, algo).bestX = bestX;
@@ -2032,7 +2076,7 @@ classdef MTO < matlab.apps.AppBase
             % Create MTOPlatformUIFigure and hide until all components are created
             app.MTOPlatformUIFigure = uifigure('Visible', 'off');
             app.MTOPlatformUIFigure.Color = [1 1 1];
-            app.MTOPlatformUIFigure.Position = [100 100 1229 819];
+            app.MTOPlatformUIFigure.Position = [100 100 1228 811];
             app.MTOPlatformUIFigure.Name = 'MTO Platform';
             app.MTOPlatformUIFigure.WindowStyle = 'modal';
 
@@ -2149,7 +2193,7 @@ classdef MTO < matlab.apps.AppBase
 
             % Create TShowTypeDropDown
             app.TShowTypeDropDown = uidropdown(app.TP21GridLayout);
-            app.TShowTypeDropDown.Items = {'Tasks Figure (1D)', 'Tasks Figure (1D real)', 'Convergence'};
+            app.TShowTypeDropDown.Items = {'Tasks Figure (1D)', 'Tasks Figure (1D real)', 'Convergence (Obj)', 'Convergence (CV)'};
             app.TShowTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @TShowTypeDropDownValueChanged, true);
             app.TShowTypeDropDown.Tooltip = {'Show type'};
             app.TShowTypeDropDown.FontWeight = 'bold';
@@ -2300,7 +2344,7 @@ classdef MTO < matlab.apps.AppBase
 
             % Create EDataTypeDropDown
             app.EDataTypeDropDown = uidropdown(app.EP3T1GridLayout);
-            app.EDataTypeDropDown.Items = {'Reps', 'Fitness', 'Score', 'Time used'};
+            app.EDataTypeDropDown.Items = {'Reps', 'Fitness', 'Score', 'CV', 'Time used'};
             app.EDataTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EDataTypeDropDownValueChanged, true);
             app.EDataTypeDropDown.Tooltip = {'Show Type'};
             app.EDataTypeDropDown.BackgroundColor = [1 1 1];
@@ -2379,7 +2423,7 @@ classdef MTO < matlab.apps.AppBase
 
             % Create EYLimTypeDropDown
             app.EYLimTypeDropDown = uidropdown(app.EP3F1GridLayout);
-            app.EYLimTypeDropDown.Items = {'log(fitness)', 'fitness'};
+            app.EYLimTypeDropDown.Items = {'log(fitness)', 'fitness', 'CV'};
             app.EYLimTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EYLimTypeDropDownValueChanged, true);
             app.EYLimTypeDropDown.Tooltip = {'YLim Type'};
             app.EYLimTypeDropDown.BackgroundColor = [1 1 1];
