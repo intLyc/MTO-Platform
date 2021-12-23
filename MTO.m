@@ -139,7 +139,6 @@ classdef MTO < matlab.apps.AppBase
         Edata % data
         Estop_flag % stop button clicked flag
         Efitness % fitness calculated
-        Ecv % cv calculated
         Etime_used % time_used calculated
         Etable_data % table data for calculate
         Etable_view % table data view
@@ -467,8 +466,6 @@ classdef MTO < matlab.apps.AppBase
                 case 'Fitness'
                     app.EUITable.RowName = prob_row_cell;
                     app.EUITable.RowName = [app.EUITable.RowName; '+/-/='];
-                case 'CV'
-                    app.EUITable.RowName = prob_row_cell;
                 otherwise
                     app.EUITable.RowName = prob_cell;
             end
@@ -483,7 +480,6 @@ classdef MTO < matlab.apps.AppBase
             end
             
             app.Efitness = [];
-            app.Ecv = [];
             app.Etime_used = [];
             % calculate fitness
             for algo = 1:length(app.Edata.algo_cell)
@@ -493,8 +489,6 @@ classdef MTO < matlab.apps.AppBase
                     for task = 1:tasks_num
                         convergence_task = app.Edata.result(prob, algo).convergence(task:tasks_num:end, :);
                         app.Efitness(row_i, algo, :) = convergence_task(:, end);
-                        convergence_cv_task = app.Edata.result(prob, algo).convergence_fr(task:tasks_num:end, :);
-                        app.Ecv(row_i, algo, :) = convergence_cv_task(:, end);
                         row_i = row_i + 1;
                     end
                     app.Etime_used(prob, algo) = app.Edata.result(prob, algo).clock_time;
@@ -719,8 +713,6 @@ classdef MTO < matlab.apps.AppBase
                     app.EupdateTableTest();
                 case 'Score'
                     app.EupdateTableScore();
-                case 'CV'
-                    app.EupdateTableFitness();
                 case 'Time used'
                     app.EupdateTableTimeUsed();
             end
@@ -2979,8 +2971,8 @@ classdef MTO < matlab.apps.AppBase
             app.ESelectedProbContextMenu = uicontextmenu(app.MTOPlatformUIFigure);
             
             % Assign app.ESelectedProbContextMenu
-            app.EProblemsTree.ContextMenu = app.ESelectedProbContextMenu;
             app.TProblemTree.ContextMenu = app.ESelectedProbContextMenu;
+            app.EProblemsTree.ContextMenu = app.ESelectedProbContextMenu;
 
             % Create SelectedProbSelectAllMenu
             app.SelectedProbSelectAllMenu = uimenu(app.ESelectedProbContextMenu);
