@@ -760,7 +760,7 @@ classdef MTO < matlab.apps.AppBase
                 case 'log(fitness)'
                     for algo = 1:length(app.Edata.algo_cell)
                         convergence_task = app.Edata.result(prob, algo).convergence(task:tasks_num:end, :);
-                        convergence = nanmean(convergence_task, 1);
+                        convergence = mean(convergence_task, 1);
                         x_cell{algo} = 1:size(convergence,2);
                         y_cell{algo} = convergence;
                     end
@@ -770,14 +770,14 @@ classdef MTO < matlab.apps.AppBase
                 case 'fitness'
                     for algo = 1:length(app.Edata.algo_cell)
                         convergence_task = app.Edata.result(prob, algo).convergence(task:tasks_num:end, :);
-                        convergence = nanmean(convergence_task, 1);
+                        convergence = mean(convergence_task, 1);
                         x_cell{algo} = 1:size(convergence,2);
                         y_cell{algo} = convergence;
                     end
                 case 'feasible rate'
                     for algo = 1:length(app.Edata.algo_cell)
                         convergence_task = app.Edata.result(prob, algo).convergence_fr(task:tasks_num:end, :);
-                        convergence = nanmean(convergence_task, 1);
+                        convergence = mean(convergence_task, 1);
                         x_cell{algo} = 1:size(convergence,2);
                         y_cell{algo} = convergence;
                     end
@@ -1642,7 +1642,7 @@ classdef MTO < matlab.apps.AppBase
                 for task = 1:tasks_num
                     for algo = 1:length(app.Edata.algo_cell)
                         convergence_task = app.Edata.result(prob, algo).convergence(task:tasks_num:end, :);
-                        convergence = nanmean(convergence_task, 1);
+                        convergence = mean(convergence_task, 1);
                         x_cell{algo} = 1:size(convergence,2);
                         y_cell{algo} = convergence;
                     end
