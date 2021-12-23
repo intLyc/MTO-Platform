@@ -14,8 +14,10 @@ classdef OperatorMFEA < OperatorGA
                 p2 = indorder(i + fix(length(population) / 2));
                 offspring(count) = feval(Individual_class);
                 offspring(count).factorial_costs = inf(1, length(Tasks));
+                offspring(count).constraint_violation = inf(1, length(Tasks));
                 offspring(count + 1) = feval(Individual_class);
                 offspring(count + 1).factorial_costs = inf(1, length(Tasks));
+                offspring(count + 1).constraint_violation = inf(1, length(Tasks));
 
                 if (population(p1).skill_factor == population(p2).skill_factor) || rand < rmp
                     % crossover
