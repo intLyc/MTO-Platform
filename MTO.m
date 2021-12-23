@@ -405,7 +405,7 @@ classdef MTO < matlab.apps.AppBase
                     convergence = app.Tdata.convergence_fr(task, :);
                 end
                 x = 1:size(convergence,2);
-                y = log(convergence);
+                y = convergence;
                 if task > length(app.marker_list)
                     marker = '';
                 else
