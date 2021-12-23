@@ -636,6 +636,9 @@ classdef MTO < matlab.apps.AppBase
                     x1 = reshape(app.Efitness(row_i, algo, :), 1, length(app.Efitness(row_i, algo, :)));
                     x2 = reshape(app.Efitness(row_i, algo_selected, :), 1, length(app.Efitness(row_i, algo_selected, :)));
                     p = 1;
+                    if sum(isnan(x1)) == length(x1) || sum(isnan(x2)) == length(x2)
+                        continue;
+                    end
                     if strcmp(test_type, 'Rank sum test')
                         p = ranksum(x1, x2);
                     elseif strcmp(test_type, 'Signed rank test')
@@ -2976,8 +2979,8 @@ classdef MTO < matlab.apps.AppBase
             app.ESelectedProbContextMenu = uicontextmenu(app.MTOPlatformUIFigure);
             
             % Assign app.ESelectedProbContextMenu
-            app.TProblemTree.ContextMenu = app.ESelectedProbContextMenu;
             app.EProblemsTree.ContextMenu = app.ESelectedProbContextMenu;
+            app.TProblemTree.ContextMenu = app.ESelectedProbContextMenu;
 
             % Create SelectedProbSelectAllMenu
             app.SelectedProbSelectAllMenu = uimenu(app.ESelectedProbContextMenu);
