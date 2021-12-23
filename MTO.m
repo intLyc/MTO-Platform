@@ -49,6 +49,7 @@ classdef MTO < matlab.apps.AppBase
         EYLimTypeDropDown            matlab.ui.control.DropDown
         ESaveAllFigureButton         matlab.ui.control.Button
         EFigureTypeDropDown          matlab.ui.control.DropDown
+        EMarkerIndicesEditField      matlab.ui.control.NumericEditField
         EConvergenceTrendUIAxes      matlab.ui.control.UIAxes
         EPanel1                      matlab.ui.container.Panel
         EP1GridLayout                matlab.ui.container.GridLayout
@@ -796,7 +797,7 @@ classdef MTO < matlab.apps.AppBase
                 end
                 p = plot(app.EConvergenceTrendUIAxes, x_cell{i}, y_cell{i}, ['-', marker]);
                 p.LineWidth = app.line_width;
-                p.MarkerIndices = 1:app.marker_indices:max_x;
+                p.MarkerIndices = 1:app.EMarkerIndicesEditField.Value:max_x;
                 p.MarkerSize = app.marker_size;
                 hold(app.EConvergenceTrendUIAxes, 'on');
             end
@@ -1663,6 +1664,11 @@ classdef MTO < matlab.apps.AppBase
             end
         end
 
+        % Value changed function: EMarkerIndicesEditField
+        function EMarkerIndicesEditFieldValueChanged(app, event)
+            app.EupdateConvergenceAxes()
+        end
+
         % Context menu opening function: DDataContextMenu
         function DDataContextMenuOpening(app, event)
             % select all data
@@ -2074,7 +2080,7 @@ classdef MTO < matlab.apps.AppBase
             % Create MTOPlatformUIFigure and hide until all components are created
             app.MTOPlatformUIFigure = uifigure('Visible', 'off');
             app.MTOPlatformUIFigure.Color = [1 1 1];
-            app.MTOPlatformUIFigure.Position = [100 100 1228 811];
+            app.MTOPlatformUIFigure.Position = [100 100 1224 721];
             app.MTOPlatformUIFigure.Name = 'MTO Platform';
             app.MTOPlatformUIFigure.WindowStyle = 'modal';
 
@@ -2401,7 +2407,7 @@ classdef MTO < matlab.apps.AppBase
 
             % Create EP3F1GridLayout
             app.EP3F1GridLayout = uigridlayout(app.EP3FGridLayout);
-            app.EP3F1GridLayout.ColumnWidth = {'fit', '1x', 'fit', 'fit', 'fit'};
+            app.EP3F1GridLayout.ColumnWidth = {'fit', 'fit', '1x', 'fit', 'fit', 'fit'};
             app.EP3F1GridLayout.RowHeight = {'fit'};
             app.EP3F1GridLayout.ColumnSpacing = 5;
             app.EP3F1GridLayout.Padding = [0 0 0 0];
@@ -2416,7 +2422,7 @@ classdef MTO < matlab.apps.AppBase
             app.EProblemsDropDown.Tooltip = {'Task'};
             app.EProblemsDropDown.BackgroundColor = [1 1 1];
             app.EProblemsDropDown.Layout.Row = 1;
-            app.EProblemsDropDown.Layout.Column = 5;
+            app.EProblemsDropDown.Layout.Column = 6;
             app.EProblemsDropDown.Value = 'Problem ';
 
             % Create EYLimTypeDropDown
@@ -2426,7 +2432,7 @@ classdef MTO < matlab.apps.AppBase
             app.EYLimTypeDropDown.Tooltip = {'YLim Type'};
             app.EYLimTypeDropDown.BackgroundColor = [1 1 1];
             app.EYLimTypeDropDown.Layout.Row = 1;
-            app.EYLimTypeDropDown.Layout.Column = 4;
+            app.EYLimTypeDropDown.Layout.Column = 5;
             app.EYLimTypeDropDown.Value = 'log(fitness)';
 
             % Create ESaveAllFigureButton
@@ -2445,8 +2451,18 @@ classdef MTO < matlab.apps.AppBase
             app.EFigureTypeDropDown.Tooltip = {'Save figure type'};
             app.EFigureTypeDropDown.BackgroundColor = [1 1 1];
             app.EFigureTypeDropDown.Layout.Row = 1;
-            app.EFigureTypeDropDown.Layout.Column = 3;
+            app.EFigureTypeDropDown.Layout.Column = 2;
             app.EFigureTypeDropDown.Value = 'eps';
+
+            % Create EMarkerIndicesEditField
+            app.EMarkerIndicesEditField = uieditfield(app.EP3F1GridLayout, 'numeric');
+            app.EMarkerIndicesEditField.Limits = [0 Inf];
+            app.EMarkerIndicesEditField.RoundFractionalValues = 'on';
+            app.EMarkerIndicesEditField.ValueChangedFcn = createCallbackFcn(app, @EMarkerIndicesEditFieldValueChanged, true);
+            app.EMarkerIndicesEditField.Tooltip = {'Marker Indices'};
+            app.EMarkerIndicesEditField.Layout.Row = 1;
+            app.EMarkerIndicesEditField.Layout.Column = 4;
+            app.EMarkerIndicesEditField.Value = 50;
 
             % Create EConvergenceTrendUIAxes
             app.EConvergenceTrendUIAxes = uiaxes(app.EP3FGridLayout);
