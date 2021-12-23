@@ -535,11 +535,11 @@ classdef MTO < matlab.apps.AppBase
                 x(:, 2:2:end) = fitness_std;
                 app.Etable_view = sprintfc([format_str,' (%.2d)'], x);
             elseif strcmp(show_type, 'Median')
-                fitness_median = median(data_fitness, 3);
+                fitness_median = nanmedian(data_fitness, 3);
                 app.Etable_data = fitness_median;
                 app.Etable_view = sprintfc(format_str, fitness_median);
             elseif strcmp(show_type, 'Median (Std)')
-                fitness_median = median(data_fitness, 3);
+                fitness_median = nanmedian(data_fitness, 3);
                 fitness_std = std(data_fitness, 0, 3);
                 app.Etable_data = fitness_median;
                 x = zeros([size(fitness_median, 1), 2*size(fitness_median, 2)]);
