@@ -324,7 +324,7 @@ classdef MTO < matlab.apps.AppBase
             cla(app.TUIAxes, 'reset');
             type = app.TShowTypeDropDown.Value;
             switch type
-                case 'Tasks Figure (1D)'
+                case 'Tasks Figure (1D unified)'
                     app.TupdateTasksFigure();
                 case 'Tasks Figure (1D real)'
                     app.TupdateTasksFigure();
