@@ -101,6 +101,8 @@ classdef JADE < Algorithm
                 data.convergence_cv = [data.convergence_cv; convergence_cv];
                 data.bestX = [data.bestX, bestX];
             end
+            data.convergence(data.convergence_cv > 0) = NaN;
+            data.convergence_fr = zeros(size(data.convergence));
             data.bestX = bin2real(data.bestX, Tasks);
             data.clock_time = toc;
         end

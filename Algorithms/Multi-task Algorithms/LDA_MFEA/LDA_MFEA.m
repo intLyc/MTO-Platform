@@ -82,6 +82,8 @@ classdef LDA_MFEA < Algorithm
                 data.convergence(:, generation) = bestobj;
                 data.convergence_cv(:, generation) = bestCV;
             end
+            data.convergence(data.convergence_cv > 0) = NaN;
+            data.convergence_fr = zeros(size(data.convergence));
             data.bestX = bin2real(data.bestX, Tasks);
             data.clock_time = toc;
         end

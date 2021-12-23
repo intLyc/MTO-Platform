@@ -141,6 +141,8 @@ classdef EMEA < Algorithm
                     end
                 end
             end
+            data.convergence(data.convergence_cv > 0) = NaN;
+            data.convergence_fr = zeros(size(data.convergence));
             data.bestX = bin2real(data.bestX, Tasks);
             data.clock_time = toc;
         end
