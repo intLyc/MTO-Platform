@@ -328,6 +328,8 @@ classdef MTO < matlab.apps.AppBase
                     app.TupdateTasksFigure();
                 case 'Tasks Figure (1D real)'
                     app.TupdateTasksFigure();
+                case 'Feasible Region (2D)'
+                    app.TupdateFeasibleRegion();
                 case 'Convergence (Obj)'
                     app.TupdateConvergence();
                 case 'Convergence (FR)'
@@ -374,11 +376,11 @@ classdef MTO < matlab.apps.AppBase
                 hold(app.TUIAxes, 'on');
                 
                 xmin = x(f == min(f));
-                fmin = min(f);
+                fmin = min(f) * ones(size(xmin));
                 p2 = plot(app.TUIAxes, xmin, fmin, '^');
                 p2.MarkerSize = 8;
-                p2.MarkerFaceColor = p1.Color;
-                p2.MarkerEdgeColor = p1.Color;
+                p2.MarkerFaceColor = color(mod(no-1, size(color, 1))+1, :);
+                p2.MarkerEdgeColor = color(mod(no-1, size(color, 1))+1, :);
                 hold(app.TUIAxes, 'on');
                 
                 legend_cell = [legend_cell, ['T', num2str(no)]];
@@ -386,6 +388,52 @@ classdef MTO < matlab.apps.AppBase
             end
             legend(app.TUIAxes, plot_handle, legend_cell);
             % legend(app.TUIAxes, legend_cell);
+        end
+        
+        function TupdateFeasibleRegion(app)
+            % update selected problem tasks feasible region
+            
+            Tasks = app.TProblemTree.Children(1).NodeData.getTasks();
+            no_of_tasks = length(Tasks);
+                                   
+            x = 0:1/200:1;
+            
+            legend_cell = {};
+            plot_handle = {};
+            
+            color = colororder;
+            for no = 1:no_of_tasks
+                %x = x + (1/100)/3;
+                %x = x(1:end-1);
+                x1 = [];
+                x2 = [];
+                minrange = Tasks(no).Lb(1);
+                maxrange = Tasks(no).Ub(1);
+                y = maxrange - minrange;
+                
+                for i = 1:length(x)
+                    for j = 1:length(x)
+                        vars1 = y .* x(i) + minrange;
+                        vars2 = y .* x(j) + minrange;
+                        [ff, con] = Tasks(no).fnc([vars1, vars2]);
+                        if con <= 0
+                            x1 = [x1, x(i)];
+                            x2 = [x2, x(j)];
+                        end
+                    end
+                end
+                
+                p1 = scatter(app.TUIAxes, x1, x2, 4, 'filled');
+                p1.MarkerFaceAlpha = 0.4;
+                p1.MarkerEdgeAlpha = 0.4;
+                p1.MarkerEdgeColor = color(mod(no-1, size(color, 1))+1, :);
+                % p1.MarkerFaceColor = color(mod(no-1, size(color, 1))+1, :);
+                hold(app.TUIAxes, 'on');
+                                
+                legend_cell = [legend_cell, ['T', num2str(no)]];
+                plot_handle = [plot_handle, p1];
+            end
+            legend(app.TUIAxes, plot_handle, legend_cell);
         end
         
         function TupdateConvergence(app)
@@ -2202,7 +2250,7 @@ classdef MTO < matlab.apps.AppBase
 
             % Create TShowTypeDropDown
             app.TShowTypeDropDown = uidropdown(app.TP21GridLayout);
-            app.TShowTypeDropDown.Items = {'Tasks Figure (1D unified)', 'Tasks Figure (1D real)', 'Convergence (Obj)', 'Convergence (FR)'};
+            app.TShowTypeDropDown.Items = {'Tasks Figure (1D unified)', 'Tasks Figure (1D real)', 'Feasible Region (2D)', 'Convergence (Obj)', 'Convergence (FR)'};
             app.TShowTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @TShowTypeDropDownValueChanged, true);
             app.TShowTypeDropDown.Tooltip = {'Show type'};
             app.TShowTypeDropDown.FontWeight = 'bold';
