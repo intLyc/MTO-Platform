@@ -65,12 +65,12 @@ classdef MTEA_AD < Algorithm
                         else
                             NL = epsilon(t);
                         end
-                        curr_pop = reshape([offspring.rnvec], length(offspring), length(offspring(1).rnvec));
+                        curr_pop = reshape([offspring.rnvec], length(offspring(1).rnvec), length(offspring))';
                         curr_pop = curr_pop(:, 1:Tasks(t).dims);
                         his_pop = [];
                         for tt = 1:length(Tasks)
                             if tt ~= t
-                                his_pop_tt = reshape([population{tt}.rnvec], length(population{tt}), length(population{tt}(1).rnvec));
+                                his_pop_tt = reshape([population{tt}.rnvec], length(population{tt}(1).rnvec), length(population{tt}))';
                                 his_pop_tt = [his_pop_tt, rand(size(his_pop_tt, 1), max([Tasks.dims]) - Tasks(tt).dims)];
                                 his_pop = [his_pop; his_pop_tt(:, 1:Tasks(t).dims)];
                             end

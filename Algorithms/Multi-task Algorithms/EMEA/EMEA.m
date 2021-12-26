@@ -89,7 +89,6 @@ classdef EMEA < Algorithm
                             if t == tt
                                 continue;
                             end
-                            curr_pop = population{t};
                             [~, curr_best_idx] = sort([population{t}.factorial_costs]);
                             curr_pop = population{t}(curr_best_idx);
                             curr_pop_rnvec = reshape([curr_pop.rnvec], length(curr_pop(1).rnvec), length(curr_pop))';
