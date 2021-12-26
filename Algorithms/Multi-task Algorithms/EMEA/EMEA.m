@@ -89,17 +89,22 @@ classdef EMEA < Algorithm
                             if t == tt
                                 continue;
                             end
-                            curr_pop = reshape([population{t}.rnvec], length(population{t}), length(population{t}(1).rnvec));
-                            his_pop = reshape([population{tt}.rnvec], length(population{tt}), length(population{tt}(1).rnvec));
+                            curr_pop = population{t};
+                            [~, curr_best_idx] = sort([population{t}.factorial_costs]);
+                            curr_pop = population{t}(curr_best_idx);
+                            curr_pop_rnvec = reshape([curr_pop.rnvec], length(curr_pop(1).rnvec), length(curr_pop))';
+
                             [~, his_best_idx] = sort([population{tt}.factorial_costs]);
-                            his_best = population{tt}(his_best_idx(1:inject_num));
-                            his_best = reshape([his_best.rnvec], length(his_best), length(his_best(1).rnvec));
+                            his_pop = population{tt}(his_best_idx);
+                            his_pop_rnvec = reshape([his_pop.rnvec], length(his_pop(1).rnvec), length(his_pop))';
+                            his_best_rnvec = his_pop_rnvec(1:inject_num, :);
 
                             % map to original
-                            curr_pop = (Tasks(t).Ub - Tasks(t).Lb) .* curr_pop + Tasks(t).Lb;
-                            his_pop = (Tasks(tt).Ub - Tasks(tt).Lb) .* his_pop + Tasks(tt).Lb;
+                            curr_pop_rnvec = (Tasks(t).Ub - Tasks(t).Lb) .* curr_pop_rnvec + Tasks(t).Lb;
+                            his_pop_rnvec = (Tasks(tt).Ub - Tasks(tt).Lb) .* his_pop_rnvec + Tasks(tt).Lb;
+                            his_best_rnvec = (Tasks(tt).Ub - Tasks(tt).Lb) .* his_best_rnvec + Tasks(tt).Lb;
 
-                            inject = mDA(curr_pop, his_pop, his_best);
+                            inject = mDA(curr_pop_rnvec, his_pop_rnvec, his_best_rnvec);
 
                             % mat to [0,1]
                             inject = (inject - Tasks(t).Lb) ./ (Tasks(t).Ub - Tasks(t).Lb);
