@@ -396,7 +396,7 @@ classdef MTO < matlab.apps.AppBase
             Tasks = app.TProblemTree.Children(1).NodeData.getTasks();
             no_of_tasks = length(Tasks);
                                    
-            x = 0:1/200:1;
+            x = 0:1/300:1;
             
             legend_cell = {};
             plot_handle = {};
@@ -423,9 +423,9 @@ classdef MTO < matlab.apps.AppBase
                     end
                 end
                 
-                p1 = scatter(app.TUIAxes, x1, x2, 4, 'filled');
-                p1.MarkerFaceAlpha = 0.4;
-                p1.MarkerEdgeAlpha = 0.4;
+                p1 = scatter(app.TUIAxes, x1, x2, 3, 'filled');
+                p1.MarkerFaceAlpha = 0.5;
+                p1.MarkerEdgeAlpha = 0.5;
                 p1.MarkerEdgeColor = color(mod(no-1, size(color, 1))+1, :);
                 % p1.MarkerFaceColor = color(mod(no-1, size(color, 1))+1, :);
                 hold(app.TUIAxes, 'on');
