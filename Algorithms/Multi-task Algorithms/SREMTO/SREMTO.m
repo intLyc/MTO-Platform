@@ -41,7 +41,6 @@ classdef SREMTO < Algorithm
             tic
 
             sub_pop = round(pop_size / length(Tasks));
-            data.convergence_cv = [];
             a1 = (obj.TH - 1) ./ (sub_pop - 1);
             b1 = (sub_pop - obj.TH) ./ (sub_pop - 1);
             a2 = (- obj.TH) ./ (pop_size - sub_pop);
@@ -68,7 +67,6 @@ classdef SREMTO < Algorithm
                 bestCV(t) = population(rank(1)).constraint_violation(t);
                 data.bestX{t} = population(rank(1)).rnvec;
             end
-            data.convergence_cv(:, 1) = bestCV;
             data.convergence(:, 1) = bestobj;
 
             generation = 1;
@@ -132,10 +130,7 @@ classdef SREMTO < Algorithm
                     end
                 end
                 data.convergence(:, generation) = bestobj;
-                data.convergence_cv(:, generation) = bestCV;
             end
-            data.convergence(data.convergence_cv > 0) = NaN;
-            data.convergence_fr = zeros(size(data.convergence));
             data.bestX = bin2real(data.bestX, Tasks);
             data.clock_time = toc;
         end

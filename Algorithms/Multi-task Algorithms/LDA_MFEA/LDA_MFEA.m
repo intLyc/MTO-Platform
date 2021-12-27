@@ -39,9 +39,8 @@ classdef LDA_MFEA < Algorithm
             tic
 
             % initialize
-            [population, fnceval_calls, bestobj, bestCV, data.bestX] = initializeMF(Individual, pop_size, Tasks, length(Tasks));
+            [population, fnceval_calls, bestobj, data.bestX] = initializeMF(Individual, pop_size, Tasks, length(Tasks));
             data.convergence(:, 1) = bestobj;
-            data.convergence_cv(:, 1) = bestCV;
             % initialize lda
             for t = 1:length(Tasks)
                 P{t} = [];
@@ -78,12 +77,9 @@ classdef LDA_MFEA < Algorithm
                 fnceval_calls = fnceval_calls + calls;
 
                 % selection
-                [population, bestobj, bestCV, data.bestX] = selectMF(population, offspring, Tasks, pop_size, bestobj, bestCV, data.bestX);
+                [population, bestobj, data.bestX] = selectMF(population, offspring, Tasks, pop_size, bestobj, data.bestX);
                 data.convergence(:, generation) = bestobj;
-                data.convergence_cv(:, generation) = bestCV;
             end
-            data.convergence(data.convergence_cv > 0) = NaN;
-            data.convergence_fr = zeros(size(data.convergence));
             data.bestX = bin2real(data.bestX, Tasks);
             data.clock_time = toc;
         end

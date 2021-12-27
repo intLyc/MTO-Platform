@@ -447,11 +447,12 @@ classdef MTO < matlab.apps.AppBase
             % draw
             tasks_name = {};
             for task = 1:app.Tdata.tasks_num
-                if ~isempty(strfind(app.TShowTypeDropDown.Value, 'Obj'))
-                    convergence = app.Tdata.convergence(task, :);
-                elseif ~isempty(strfind(app.TShowTypeDropDown.Value, 'FR'))
-                    convergence = app.Tdata.convergence_fr(task, :);
-                end
+%                 if ~isempty(strfind(app.TShowTypeDropDown.Value, 'Obj'))
+%                     convergence = app.Tdata.convergence(task, :);
+%                 elseif ~isempty(strfind(app.TShowTypeDropDown.Value, 'FR'))
+%                     convergence = app.Tdata.convergence_fr(task, :);
+%                 end
+                convergence = app.Tdata.convergence(task, :);
                 x = 1:size(convergence,2);
                 y = convergence;
                 if task > length(app.marker_list)
@@ -828,13 +829,13 @@ classdef MTO < matlab.apps.AppBase
                         x_cell{algo} = 1:size(convergence,2);
                         y_cell{algo} = convergence;
                     end
-                case 'feasible rate'
-                    for algo = 1:length(app.Edata.algo_cell)
-                        convergence_task = app.Edata.result(prob, algo).convergence_fr(task:tasks_num:end, :);
-                        convergence = mean(convergence_task, 1);
-                        x_cell{algo} = 1:size(convergence,2);
-                        y_cell{algo} = convergence;
-                    end
+%                 case 'feasible rate'
+%                     for algo = 1:length(app.Edata.algo_cell)
+%                         convergence_task = app.Edata.result(prob, algo).convergence_fr(task:tasks_num:end, :);
+%                         convergence = mean(convergence_task, 1);
+%                         x_cell{algo} = 1:size(convergence,2);
+%                         y_cell{algo} = convergence;
+%                     end
             end
             max_x = 0;
             for i = 1:length(x_cell)
@@ -1322,7 +1323,7 @@ classdef MTO < matlab.apps.AppBase
                 for prob = 1:prob_num
                     app.Edata.result(prob, algo).clock_time = 0;
                     app.Edata.result(prob, algo).convergence = [];
-                    app.Edata.result(prob, algo).convergence_fr = [];
+%                     app.Edata.result(prob, algo).convergence_fr = [];
                     app.Edata.result(prob, algo).bestX = {};
                 end
             end
@@ -1363,16 +1364,16 @@ classdef MTO < matlab.apps.AppBase
                                 gen_new = size(data.convergence, 2);
                                 if gen_old < gen_new
                                     app.Edata.result(prob, algo).convergence = [app.Edata.result(prob, algo).convergence, repmat(app.Edata.result(prob, algo).convergence(:, gen_old), 1, gen_new-gen_old)];
-                                    app.Edata.result(prob, algo).convergence_fr = [app.Edata.result(prob, algo).convergence_fr, repmat(app.Edata.result(prob, algo).convergence_fr(:, gen_old), 1, gen_new-gen_old)];
+%                                     app.Edata.result(prob, algo).convergence_fr = [app.Edata.result(prob, algo).convergence_fr, repmat(app.Edata.result(prob, algo).convergence_fr(:, gen_old), 1, gen_new-gen_old)];
                                 else
                                     data.convergence = [data.convergence, repmat(data.convergence(:, gen_new), 1, gen_old-gen_new)];
-                                    data.convergence_fr = [data.convergence_fr, repmat(data.convergence_fr(:, gen_new), 1, gen_old-gen_new)];
+%                                     data.convergence_fr = [data.convergence_fr, repmat(data.convergence_fr(:, gen_new), 1, gen_old-gen_new)];
                                 end
                                 app.Edata.result(prob, algo).convergence = [app.Edata.result(prob, algo).convergence; data.convergence];
-                                app.Edata.result(prob, algo).convergence_fr = [app.Edata.result(prob, algo).convergence_fr; data.convergence_fr];
+%                                 app.Edata.result(prob, algo).convergence_fr = [app.Edata.result(prob, algo).convergence_fr; data.convergence_fr];
                             else
                                 app.Edata.result(prob, algo).convergence = data.convergence;
-                                app.Edata.result(prob, algo).convergence_fr = data.convergence_fr;
+%                                 app.Edata.result(prob, algo).convergence_fr = data.convergence_fr;
                             end
                             app.Edata.result(prob, algo).bestX = [app.Edata.result(prob, algo).bestX; data.bestX];
                             app.Etable_reps(prob, algo) = rep;
@@ -1394,29 +1395,29 @@ classdef MTO < matlab.apps.AppBase
                         prob_obj = app.EProblemsTree.Children(prob).NodeData;
                         clock_time = 0;
                         convergence = {};
-                        convergence_fr = {};
+%                         convergence_fr = {};
                         bestX = {};
                         parfor rep = 1:reps
                             data = singleRun(algo_obj, prob_obj);
                             clock_time = clock_time + data.clock_time;
                             convergence = [convergence; {data.convergence}];
-                            convergence_fr = [convergence_fr; {data.convergence_fr}];
+%                             convergence_fr = [convergence_fr; {data.convergence_fr}];
                             bestX = [bestX; data.bestX];
                         end
                         app.Edata.result(prob, algo).convergence = convergence{1};
-                        app.Edata.result(prob, algo).convergence_fr = convergence_fr{1};
+%                         app.Edata.result(prob, algo).convergence_fr = convergence_fr{1};
                         for rep = 2:reps
                             gen_old = size(app.Edata.result(prob, algo).convergence, 2);
                             gen_new = size(convergence{rep}, 2);
                             if gen_old < gen_new
                                 app.Edata.result(prob, algo).convergence = [app.Edata.result(prob, algo).convergence, repmat(app.Edata.result(prob, algo).convergence(:, gen_old), 1, gen_new-gen_old)];
-                                app.Edata.result(prob, algo).convergence_fr = [app.Edata.result(prob, algo).convergence_fr, repmat(app.Edata.result(prob, algo).convergence_fr(:, gen_old), 1, gen_new-gen_old)];
+%                                 app.Edata.result(prob, algo).convergence_fr = [app.Edata.result(prob, algo).convergence_fr, repmat(app.Edata.result(prob, algo).convergence_fr(:, gen_old), 1, gen_new-gen_old)];
                             else
                                 convergence{rep} = [convergence{rep}, repmat(convergence{rep}(:, gen_new), 1, gen_old-gen_new)];
-                                convergence_fr{rep} = [convergence_fr{rep}, repmat(convergence_fr{rep}(:, gen_new), 1, gen_old-gen_new)];
+%                                 convergence_fr{rep} = [convergence_fr{rep}, repmat(convergence_fr{rep}(:, gen_new), 1, gen_old-gen_new)];
                             end
                             app.Edata.result(prob, algo).convergence = [app.Edata.result(prob, algo).convergence; convergence{rep}];
-                            app.Edata.result(prob, algo).convergence_fr = [app.Edata.result(prob, algo).convergence_fr; convergence_fr{rep}];
+%                             app.Edata.result(prob, algo).convergence_fr = [app.Edata.result(prob, algo).convergence_fr; convergence_fr{rep}];
                         end
                         app.Edata.result(prob, algo).clock_time = clock_time;
                         app.Edata.result(prob, algo).bestX = bestX;
@@ -1840,6 +1841,7 @@ classdef MTO < matlab.apps.AppBase
                         for algo = 1:length(data_save.algo_cell)
                             data_save.result(prob, algo).clock_time = data_selected(i).NodeData.result(prob, algo).clock_time / data_selected(i).NodeData.reps;
                             data_save.result(prob, algo).convergence = data_selected(i).NodeData.result(prob, algo).convergence((rep-1)*task_num+1 : rep*task_num, :);
+                            data_save.result(prob, algo).bestX = data_selected(i).NodeData.result(prob, algo).bestX(rep, :);
                         end
                     end
                     app.DputDataNode([data_selected(i).Text, ' (Split Rep: ', num2str(rep), ')'], data_save);
@@ -1946,6 +1948,7 @@ classdef MTO < matlab.apps.AppBase
                     for algo = 1:length(data_save.algo_cell)
                         data_save.result(prob, algo).clock_time = data_save.result(prob, algo).clock_time + data_selected(i).NodeData.result(prob, algo).clock_time;
                         data_save.result(prob, algo).convergence = [data_save.result(prob, algo).convergence; data_selected(i).NodeData.result(prob, algo).convergence];
+                        data_save.result(prob, algo).bestX = [data_save.result(prob, algo).bestX; data_selected(i).NodeData.result(prob, algo).bestX];
                     end
                 end
             end
@@ -2133,7 +2136,7 @@ classdef MTO < matlab.apps.AppBase
             % Create MTOPlatformUIFigure and hide until all components are created
             app.MTOPlatformUIFigure = uifigure('Visible', 'off');
             app.MTOPlatformUIFigure.Color = [1 1 1];
-            app.MTOPlatformUIFigure.Position = [100 100 1224 721];
+            app.MTOPlatformUIFigure.Position = [100 100 1179 721];
             app.MTOPlatformUIFigure.Name = 'MTO Platform';
             app.MTOPlatformUIFigure.WindowStyle = 'modal';
 
@@ -2250,7 +2253,7 @@ classdef MTO < matlab.apps.AppBase
 
             % Create TShowTypeDropDown
             app.TShowTypeDropDown = uidropdown(app.TP21GridLayout);
-            app.TShowTypeDropDown.Items = {'Tasks Figure (1D unified)', 'Tasks Figure (1D real)', 'Feasible Region (2D)', 'Convergence (Obj)', 'Convergence (FR)'};
+            app.TShowTypeDropDown.Items = {'Tasks Figure (1D unified)', 'Tasks Figure (1D real)', 'Feasible Region (2D)', 'Convergence (Obj)'};
             app.TShowTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @TShowTypeDropDownValueChanged, true);
             app.TShowTypeDropDown.Tooltip = {'Show type'};
             app.TShowTypeDropDown.FontWeight = 'bold';
@@ -2480,7 +2483,7 @@ classdef MTO < matlab.apps.AppBase
 
             % Create EYLimTypeDropDown
             app.EYLimTypeDropDown = uidropdown(app.EP3F1GridLayout);
-            app.EYLimTypeDropDown.Items = {'log(fitness)', 'fitness', 'feasible rate'};
+            app.EYLimTypeDropDown.Items = {'log(fitness)', 'fitness'};
             app.EYLimTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EYLimTypeDropDownValueChanged, true);
             app.EYLimTypeDropDown.Tooltip = {'YLim Type'};
             app.EYLimTypeDropDown.BackgroundColor = [1 1 1];

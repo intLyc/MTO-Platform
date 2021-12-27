@@ -1,4 +1,4 @@
-function [population, calls, bestobj, bestCV, bestX] = initializeMF(Individual_class, pop_size, Tasks, tasks_num)
+function [population, calls, bestobj, bestX] = initializeMF(Individual_class, pop_size, Tasks, tasks_num)
     %% Multifactorial - Initialize and evaluate the population
     % Input: Individual_class, pop_size, Tasks, tasks_num
     % Output: population, calls (function calls number), bestobj, bestX
@@ -14,7 +14,6 @@ function [population, calls, bestobj, bestCV, bestX] = initializeMF(Individual_c
             population(rank(i)).factorial_ranks(t) = i;
         end
         bestobj(t) = population(rank(1)).factorial_costs(t);
-        bestCV(t) = population(rank(1)).constraint_violation(t);
         bestX{t} = population(rank(1)).rnvec;
     end
 

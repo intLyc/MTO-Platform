@@ -45,9 +45,8 @@ classdef MFPSO < Algorithm
             tic
 
             % initialize
-            [population, fnceval_calls, bestobj, bestCV, data.bestX] = initializeMF(IndividualPSO, pop_size, Tasks, length(Tasks));
+            [population, fnceval_calls, bestobj, data.bestX] = initializeMF(IndividualPSO, pop_size, Tasks, length(Tasks));
             data.convergence(:, 1) = bestobj;
-            data.convergence_cv(:, 1) = bestCV;
             % initialize pso
             for i = 1:pop_size
                 population(i).pbest = population(i).rnvec;
@@ -78,15 +77,10 @@ classdef MFPSO < Algorithm
                     if bestobj_offspring < bestobj(t)
                         bestobj(t) = bestobj_offspring;
                         data.bestX{t} = population(idx).rnvec;
-                        data.convergence_cv(t, generation) = population(idx).constraint_violation(t);
-                    else
-                        data.convergence_cv(t, generation) = data.convergence_cv(t, generation - 1);
                     end
                     data.convergence(t, generation) = bestobj(t);
                 end
             end
-            data.convergence(data.convergence_cv > 0) = NaN;
-            data.convergence_fr = zeros(size(data.convergence));
             data.bestX = bin2real(data.bestX, Tasks);
             data.clock_time = toc;
         end

@@ -29,7 +29,6 @@ classdef PSO < Algorithm
             eva_num = run_parameter_list(3);
             pop_size = fixPopSize(pop_size, length(Tasks));
             data.convergence = [];
-            data.convergence_cv = [];
             data.bestX = {};
             tic
 
@@ -42,7 +41,6 @@ classdef PSO < Algorithm
                 [bestobj, idx] = min([population.factorial_costs]);
                 bestX = population(idx).rnvec;
                 convergence(1) = bestobj;
-                convergence_cv(1) = population(idx).constraint_violation;
                 % initialize pso
                 for i = 1:sub_pop
                     population(i).pbest = population(i).rnvec;
@@ -69,18 +67,12 @@ classdef PSO < Algorithm
                     if bestobj_offspring < bestobj
                         bestobj = bestobj_offspring;
                         bestX = population(idx).rnvec;
-                        convergence_cv(generation) = population(idx).constraint_violation;
-                    else
-                        convergence_cv(generation) = convergence_cv(generation - 1);
                     end
                     convergence(generation) = bestobj;
                 end
                 data.convergence = [data.convergence; convergence];
-                data.convergence_cv = [data.convergence_cv; convergence_cv];
                 data.bestX = [data.bestX, bestX];
             end
-            data.convergence(data.convergence_cv > 0) = NaN;
-            data.convergence_fr = zeros(size(data.convergence));
             data.bestX = bin2real(data.bestX, Tasks);
             data.clock_time = toc;
         end
