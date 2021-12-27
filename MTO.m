@@ -386,6 +386,7 @@ classdef MTO < matlab.apps.AppBase
                 legend_cell = [legend_cell, ['T', num2str(no)]];
                 plot_handle = [plot_handle, p1];
             end
+            xlim(app.TUIAxes, [0, 1]);
             legend(app.TUIAxes, plot_handle, legend_cell);
             % legend(app.TUIAxes, legend_cell);
         end
@@ -433,6 +434,8 @@ classdef MTO < matlab.apps.AppBase
                 legend_cell = [legend_cell, ['T', num2str(no)]];
                 plot_handle = [plot_handle, p1];
             end
+            xlim(app.TUIAxes, [0, 1]);
+            ylim(app.TUIAxes, [0, 1]);
             legend(app.TUIAxes, plot_handle, legend_cell);
         end
         
