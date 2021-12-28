@@ -510,7 +510,7 @@ classdef MTO < matlab.apps.AppBase
             prob_row_cell = {};
             for prob = 1:length(prob_cell)
                 for task = 1:tasks_num_list(prob)
-                    prob_row_cell = [prob_row_cell, [prob_cell{prob}, '_T', num2str(task)]];
+                    prob_row_cell = [prob_row_cell, [prob_cell{prob}, '-T', num2str(task)]];
                 end
             end
             
@@ -746,14 +746,31 @@ classdef MTO < matlab.apps.AppBase
             for row_i = 1:size(app.Etable_data, 1)
                 % best
                 if ~strcmp(highlight_type, 'None')
-                    [~, index] = min(app.Etable_data(row_i, :));
-                    app.EUITable.addStyle(high_color, 'cell', [row_i, index]);
-                    app.EUITable.addStyle(font_bold, 'cell', [row_i, index]);
+                    if ~(sum(isnan(app.Etable_data(row_i, :))) == size(app.Etable_data, 2))
+                        temp_data = app.Etable_data(row_i, :);
+                        min_data = min(temp_data);
+                        temp_idx = temp_data == min_data;
+                        x = 1:length(temp_idx);
+                        x = x(temp_idx);
+                        for xx = 1:length(x)
+                            app.EUITable.addStyle(high_color, 'cell', [row_i, x(xx)]);
+                            app.EUITable.addStyle(font_bold, 'cell', [row_i, x(xx)]);
+                        end
+                    end
                 end
                 % worst
                 if strcmp(highlight_type, 'Highlight best worst')
-                    [~, index] = max(app.Etable_data(row_i, :));
-                    app.EUITable.addStyle(low_color, 'cell', [row_i, index]);
+                    isnan_temp = isnan(app.Etable_data(row_i, :));
+                    if sum(isnan_temp)
+                        x = 1:length(isnan_temp);
+                        x = x(isnan_temp);
+                        for xx = 1:length(x)
+                            app.EUITable.addStyle(low_color, 'cell', [row_i, x(xx)]);
+                        end
+                    else
+                        [~, index] = max(app.Etable_data(row_i, :));
+                        app.EUITable.addStyle(low_color, 'cell', [row_i, index]);
+                    end
                 end
                 drawnow;
             end
@@ -788,7 +805,7 @@ classdef MTO < matlab.apps.AppBase
             prob_row_index = {};
             for prob = 1:length(app.Edata.prob_cell)
                 for task = 1:app.Edata.tasks_num_list(prob)
-                    prob_row_cell = [prob_row_cell, [app.Edata.prob_cell{prob}, '_T', num2str(task)]];
+                    prob_row_cell = [prob_row_cell, [app.Edata.prob_cell{prob}, '-T', num2str(task)]];
                     prob_row_index = [prob_row_index, [prob, task]];
                 end
             end
@@ -1663,16 +1680,47 @@ classdef MTO < matlab.apps.AppBase
             % save table
             
             % check selected file name
-            filter = {'*.xlsx';'*.csv';'*.txt';'*.*'};
+            filter = {'*.tex'; '*.xlsx';'*.csv';};
             [file_name, dir_name] = uiputfile(filter);
             figure(app.MTOPlatformUIFigure);
             if file_name == 0
                 return;
             end
-            row_name = app.EUITable.RowName(1:size(app.EUITable.Data, 1));
-            column_name = app.EUITable.ColumnName(1:size(app.EUITable.Data, 2))';
-            cell_out = [[{''}; row_name], [column_name; app.EUITable.Data]];
-            writecell(cell_out, [dir_name, file_name]);
+            if contains(file_name, 'tex')
+                hl = zeros(size(app.EUITable.Data));
+                for row_i = 1:size(app.Etable_data, 1)
+                    if ~(sum(isnan(app.Etable_data(row_i, :))) == size(app.Etable_data, 2))
+                        temp_data = app.Etable_data(row_i, :);
+                        min_data = min(temp_data);
+                        temp_idx = temp_data == min_data;
+                        x = 1:length(temp_idx);
+                        x = x(temp_idx);
+                        for xx = 1:length(x)
+                            hl(row_i, x(xx)) = 1;
+                        end
+                    end
+                end
+                input.data = app.EUITable.Data;
+                input.hl = hl;
+                input.tableColLabels = app.EUITable.ColumnName(1:size(input.data, 2));
+                input.tableRowLabels = app.EUITable.RowName(1:size(input.data, 1))';
+                input.tableColumnAlignment = 'c';
+                input.tableBorders = 0;
+                input.dataNanString = '-';
+                input.booktabs = 1;
+                latex = latexTable(input);
+                fid=fopen([dir_name, file_name],'w');
+                [nrows, ncols] = size(latex);
+                for row = 1:nrows
+                    fprintf(fid,'%s\n',latex{row,:});
+                end
+                fclose(fid);
+            else
+                row_name = app.EUITable.RowName(1:size(app.EUITable.Data, 1));
+                column_name = app.EUITable.ColumnName(1:size(app.EUITable.Data, 2))';
+                cell_out = [[{''}; row_name], [column_name; app.EUITable.Data]];
+                writecell(cell_out, [dir_name, file_name]);
+            end
         end
 
         % Button pushed function: ESaveAllFigureButton
@@ -1713,7 +1761,7 @@ classdef MTO < matlab.apps.AppBase
                     draw_obj.setXY(x_cell, y_cell);
                     draw_obj.setXYlabel('Generation', app.EYLimTypeDropDown.Value);
                     draw_obj.setLegend(app.Edata.algo_cell);
-                    draw_obj.setTitle([app.Edata.prob_cell{prob}, '_T', num2str(task)]);
+                    draw_obj.setTitle([app.Edata.prob_cell{prob}, '-T', num2str(task)]);
                     draw_obj.setSaveDir(fig_dir_name);
                     draw_obj.setFigureType(app.EFigureTypeDropDown.Value);
                     draw_obj.save();
