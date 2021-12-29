@@ -26,15 +26,13 @@ classdef SHADE < Algorithm
         end
 
         function data = run(obj, Tasks, run_parameter_list)
-            pop_size = run_parameter_list(1);
+            sub_pop = run_parameter_list(1);
             iter_num = run_parameter_list(2);
             eva_num = run_parameter_list(3);
-            pop_size = fixPopSize(pop_size, length(Tasks));
-            data.convergence = [];
-            data.bestX = {};
             tic
 
-            sub_pop = round(pop_size / length(Tasks));
+            data.convergence = [];
+            data.bestX = {};
             for sub_task = 1:length(Tasks)
                 Task = Tasks(sub_task);
 

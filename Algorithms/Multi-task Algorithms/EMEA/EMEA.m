@@ -43,14 +43,12 @@ classdef EMEA < Algorithm
         end
 
         function data = run(obj, Tasks, run_parameter_list)
-            pop_size = run_parameter_list(1);
+            sub_pop = run_parameter_list(1);
             iter_num = run_parameter_list(2);
             eva_num = run_parameter_list(3);
-            pop_size = fixPopSize(pop_size, length(Tasks));
             tic
 
             op_list = split(obj.Op, '/');
-            sub_pop = round(pop_size / length(Tasks));
             population = {};
             fnceval_calls = 0;
 

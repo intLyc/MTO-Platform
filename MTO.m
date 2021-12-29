@@ -930,14 +930,14 @@ classdef MTO < matlab.apps.AppBase
             
             data_selected = data_selected(app.Ddata_mark == 1);
             % check pop, generation and evaluate
-            pop_size = data_selected(1).NodeData.pop_size;
+            sub_pop = data_selected(1).NodeData.sub_pop;
             iter_num = data_selected(1).NodeData.iter_num;
             eva_num = data_selected(1).NodeData.eva_num;
             for i = 2:data_num
-                if ~isequal(data_selected(i).NodeData.pop_size, pop_size) || ...
+                if ~isequal(data_selected(i).NodeData.sub_pop, sub_pop) || ...
                         ~isequal(data_selected(i).NodeData.iter_num, iter_num) || ...
                         ~isequal(data_selected(i).NodeData.eva_num, eva_num)
-                msg = 'The data''s pop_size or iter_num or eva_num not equal';
+                msg = 'The data''s sub_pop or iter_num or eva_num not equal';
                 uiconfirm(app.MTOPlatformUIFigure, msg, 'error', 'Icon','warning');
                 result = false;
                 return;
@@ -1052,7 +1052,7 @@ classdef MTO < matlab.apps.AppBase
             end
             
             pop_node = uitreenode(data_node);
-            text = num2str(data_node.NodeData.pop_size', '%d, ');
+            text = num2str(data_node.NodeData.sub_pop', '%d, ');
             pop_node.Text = ['Population Size: ', text(1:end-1)];
             pop_node.NodeData = pop_node.Text;
             pop_node.ContextMenu = app.DDataContextMenu;
@@ -1350,11 +1350,11 @@ classdef MTO < matlab.apps.AppBase
             app.Edata.reps = 0;
             for prob = 1:prob_num
                 run_parameter_list = app.EProblemsTree.Children(prob).NodeData.getRunParameterList();
-                app.Edata.pop_size(prob) = run_parameter_list(1);
+                app.Edata.sub_pop(prob) = run_parameter_list(1);
                 app.Edata.iter_num(prob) = run_parameter_list(2);
                 app.Edata.eva_num(prob) = run_parameter_list(3);
             end
-            app.Edata.pop_size = app.Edata.pop_size';
+            app.Edata.sub_pop = app.Edata.sub_pop';
             app.Edata.iter_num = app.Edata.iter_num';
             app.Edata.eva_num = app.Edata.eva_num';
             app.Edata.algo_cell = algo_cell;
@@ -1880,7 +1880,7 @@ classdef MTO < matlab.apps.AppBase
                 for rep = 1:data_selected(i).NodeData.reps
                     data_save.reps = 0;
                     data_save.tasks_num_list = data_selected(i).NodeData.tasks_num_list;
-                    data_save.pop_size = data_selected(i).NodeData.pop_size;
+                    data_save.sub_pop = data_selected(i).NodeData.sub_pop;
                     data_save.iter_num = data_selected(i).NodeData.iter_num;
                     data_save.eva_num = data_selected(i).NodeData.eva_num;
                     data_save.algo_cell = data_selected(i).NodeData.algo_cell;
@@ -1922,7 +1922,7 @@ classdef MTO < matlab.apps.AppBase
                 for algo = 1:length(data_selected(i).NodeData.algo_cell)
                     data_save.reps = data_selected(i).NodeData.reps;
                     data_save.tasks_num_list = data_selected(i).NodeData.tasks_num_list;
-                    data_save.pop_size = data_selected(i).NodeData.pop_size;
+                    data_save.sub_pop = data_selected(i).NodeData.sub_pop;
                     data_save.iter_num = data_selected(i).NodeData.iter_num;
                     data_save.eva_num = data_selected(i).NodeData.eva_num;
                     data_save.prob_cell = data_selected(i).NodeData.prob_cell;
@@ -1955,7 +1955,7 @@ classdef MTO < matlab.apps.AppBase
                 end
                 for prob = 1:length(data_selected(i).NodeData.prob_cell)
                     data_save.reps = data_selected(i).NodeData.reps;
-                    data_save.pop_size = [[], data_selected(i).NodeData.pop_size(prob)];
+                    data_save.sub_pop = [[], data_selected(i).NodeData.sub_pop(prob)];
                     data_save.iter_num = [[], data_selected(i).NodeData.iter_num(prob)];
                     data_save.eva_num = [[], data_selected(i).NodeData.eva_num(prob)];
                     data_save.algo_cell = data_selected(i).NodeData.algo_cell;
@@ -1982,7 +1982,7 @@ classdef MTO < matlab.apps.AppBase
             data_selected = data_selected(app.Ddata_mark == 1);
             data_save.reps = 0;
             data_save.tasks_num_list = data_selected(1).NodeData.tasks_num_list;
-            data_save.pop_size = data_selected(1).NodeData.pop_size;
+            data_save.sub_pop = data_selected(1).NodeData.sub_pop;
             data_save.iter_num = data_selected(1).NodeData.iter_num;
             data_save.eva_num = data_selected(1).NodeData.eva_num;
             data_save.algo_cell = data_selected(1).NodeData.algo_cell;
@@ -2021,7 +2021,7 @@ classdef MTO < matlab.apps.AppBase
             data_selected = data_selected(app.Ddata_mark == 1);
             data_save.reps = data_selected(1).NodeData.reps;
             data_save.tasks_num_list = data_selected(1).NodeData.tasks_num_list;
-            data_save.pop_size = data_selected(1).NodeData.pop_size;
+            data_save.sub_pop = data_selected(1).NodeData.sub_pop;
             data_save.iter_num = data_selected(1).NodeData.iter_num;
             data_save.eva_num = data_selected(1).NodeData.eva_num;
             data_save.prob_cell = data_selected(1).NodeData.prob_cell;
@@ -2072,11 +2072,11 @@ classdef MTO < matlab.apps.AppBase
             data_save.algo_cell = data_selected(1).NodeData.algo_cell;
             data_save.prob_cell = {};
             data_save.tasks_num_list = [];
-            data_save.pop_size = [];
+            data_save.sub_pop = [];
             data_save.iter_num = [];
             data_save.eva_num = [];
             for i = 1:length(data_selected)
-                data_save.pop_size = [data_save.pop_size; data_selected(i).NodeData.pop_size];
+                data_save.sub_pop = [data_save.sub_pop; data_selected(i).NodeData.sub_pop];
                 data_save.iter_num = [data_save.iter_num; data_selected(i).NodeData.iter_num];
                 data_save.eva_num = [data_save.eva_num; data_selected(i).NodeData.eva_num];
                 data_save.tasks_num_list = [data_save.tasks_num_list; data_selected(i).NodeData.tasks_num_list];

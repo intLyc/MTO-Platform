@@ -38,11 +38,12 @@ classdef MFPSO < Algorithm
         end
 
         function data = run(obj, Tasks, run_parameter_list)
-            pop_size = run_parameter_list(1);
+            sub_pop = run_parameter_list(1);
             iter_num = run_parameter_list(2);
             eva_num = run_parameter_list(3);
-            pop_size = fixPopSize(pop_size, length(Tasks));
             tic
+
+            pop_size = sub_pop * length(Tasks);
 
             % initialize
             [population, fnceval_calls, bestobj, data.bestX] = initializeMF(IndividualPSO, pop_size, Tasks, length(Tasks));
