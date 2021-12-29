@@ -53,7 +53,7 @@ classdef GA < Algorithm
                     [bestobj_now, idx] = min([population.factorial_costs]);
                     if bestobj_now < bestobj
                         bestobj = bestobj_now;
-                        bestX = offspring(idx).rnvec;
+                        bestX = population(idx).rnvec;
                     end
                     convergence(generation) = bestobj;
                 end
