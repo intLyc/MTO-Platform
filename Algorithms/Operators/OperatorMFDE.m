@@ -14,6 +14,7 @@ classdef OperatorMFDE < OperatorDE
             for i = 1:length(population)
                 offspring(i) = feval(Individual_class);
                 offspring(i).factorial_costs = inf(1, length(Tasks));
+                offspring(i).constraint_violation = inf(1, length(Tasks));
 
                 other = [];
                 for t = 1:length(group)
