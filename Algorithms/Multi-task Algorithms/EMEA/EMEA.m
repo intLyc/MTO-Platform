@@ -17,7 +17,7 @@ classdef EMEA < Algorithm
         GA_mu = 2; % index of Simulated Binary Crossover (tunable)
         GA_mum = 5; % index of polynomial mutation
         DE_F = 0.5;
-        DE_pCR = 0.9;
+        DE_pCR = 0.6;
     end
 
     methods

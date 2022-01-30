@@ -2,7 +2,7 @@ classdef DE < Algorithm
 
     properties (SetAccess = private)
         F = 0.5
-        pCR = 0.9
+        pCR = 0.6
     end
 
     methods

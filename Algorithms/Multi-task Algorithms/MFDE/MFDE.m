@@ -11,7 +11,7 @@ classdef MFDE < Algorithm
     properties (SetAccess = private)
         rmp = 0.3
         F = 0.5
-        pCR = 0.9
+        pCR = 0.6
     end
 
     methods
