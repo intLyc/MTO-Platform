@@ -1,8 +1,8 @@
 # MTO Platform
 
 [![](https://img.shields.io/badge/Download-Latest-orange)](https://github.com/intLyc/MTO-Platform/archive/refs/heads/master.zip)
-![](https://img.shields.io/badge/License-MIT-green)
-![](https://img.shields.io/badge/Matlab-%3E%3DR2020b-blue)
+[![](https://img.shields.io/badge/License-MIT-green)](#mto-platform)
+[![](https://img.shields.io/badge/Matlab-%3E%3DR2020b-blue)](#mto-platform)
 
 [-> 中文介绍 <-](#中文介绍)
 
