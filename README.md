@@ -1,6 +1,10 @@
 # MTO Platform
 
-[中文介绍](#中文介绍)
+[![](https://img.shields.io/badge/Download-Latest-orange)](https://github.com/intLyc/MTO-Platform/archive/refs/heads/master.zip)
+![](https://img.shields.io/badge/License-MIT-green)
+![](https://img.shields.io/badge/Matlab-%3E%3DR2020b-blue)
+
+[-> 中文介绍 <-](#中文介绍)
 
 **Author: Yanchi Li**
 
@@ -9,8 +13,6 @@
 ## Introduction
 
 The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](https://github.com/BIMK/PlatEMO) and designed to facilitate experiments on multi-task optimization algorithms.
-
-Environment: **Matlab >= R2020b**
 
 ### Related Websites
 [http://www.bdsc.site/websites/MTO/index.html](http://www.bdsc.site/websites/MTO/index.html)
@@ -156,8 +158,6 @@ Environment: **Matlab >= R2020b**
 ## 简介
 
 多任务优化平台(Multi-Task Optimization Platform)是受[PlatEMO](https://github.com/BIMK/PlatEMO)的启发，为方便进行多任务优化算法的实验而设计。
-
-运行环境: **Matlab >= R2020b**
 
 ### 相关网站
 [http://www.bdsc.site/websites/MTO/index.html](http://www.bdsc.site/websites/MTO/index.html)
