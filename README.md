@@ -45,8 +45,8 @@ Environment: **Matlab >= R2020b**
 
 ### I. Test Module
 
-![Test Module Tasks](./Readme_Figure/MTO-Platform%20Test%20Module.png)
-![Test Module Convergence](./Readme_Figure/MTO-Platform%20Test%20Module%202.png)
+![Test Module Tasks](./Doc/Readme_Figure/MTO-Platform%20Test%20Module.png)
+![Test Module Convergence](./DocReadme_Figure/MTO-Platform%20Test%20Module%202.png)
 
 1. Algorithm selection
     - Select an algorithm to be displayed in the Algorithm Tree
@@ -63,8 +63,8 @@ Environment: **Matlab >= R2020b**
 
 ### II. Experiment Module
 
-![Experiment Module Table](./Readme_Figure/MTO-Platform%20Experiment%20Module.png)
-![Experiment Module Figure](./Readme_Figure/MTO-Platform%20Experiment%20Module%202.png)
+![Experiment Module Table](./Doc/Readme_Figure/MTO-Platform%20Experiment%20Module.png)
+![Experiment Module Figure](./Doc/Readme_Figure/MTO-Platform%20Experiment%20Module%202.png)
 
 1. parameter settings
     - Run Times: Number of independent runs
@@ -192,8 +192,8 @@ Environment: **Matlab >= R2020b**
 
 ### 一、测试模块
 
-![Test Module Tasks](./Readme_Figure/MTO-Platform%20Test%20Module.png)
-![Test Module Convergence](./Readme_Figure/MTO-Platform%20Test%20Module%202.png)
+![Test Module Tasks](./Doc/Readme_Figure/MTO-Platform%20Test%20Module.png)
+![Test Module Convergence](./Doc/Readme_Figure/MTO-Platform%20Test%20Module%202.png)
 
 1. 算法选择
     - 选取一个算法，显示在Algorithm Tree中
@@ -210,8 +210,8 @@ Environment: **Matlab >= R2020b**
 
 ### 二、实验模块
 
-![Experiment Module Table](./Readme_Figure/MTO-Platform%20Experiment%20Module.png)
-![Experiment Module Figure](./Readme_Figure/MTO-Platform%20Experiment%20Module%202.png)
+![Experiment Module Table](./Doc/Readme_Figure/MTO-Platform%20Experiment%20Module.png)
+![Experiment Module Figure](./Doc/Readme_Figure/MTO-Platform%20Experiment%20Module%202.png)
 
 1. 参数设置
     - Run Times: 独立运行次数
