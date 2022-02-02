@@ -59,7 +59,7 @@ classdef AT_MFEA < Algorithm
                 % Updates of the progresisonal representation models
                 [mu_tasks, Sigma_tasks] = DistributionUpdate(mu_tasks, Sigma_tasks, population, length(Tasks));
             end
-            data.bestX = bin2real(data.bestX, Tasks);
+            data.bestX = uni2real(data.bestX, Tasks);
             data.clock_time = toc;
         end
     end

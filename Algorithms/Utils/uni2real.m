@@ -1,6 +1,6 @@
-function X = bin2real(X, Tasks)
-    %% Map the [0,1] rnvec to real bound
-    % Input: X ([0,1] rnvec), Tasks
+function X = uni2real(X, Tasks)
+    %% Map the unified [0,1] rnvec to real bound
+    % Input: X (unified [0,1] rnvec), Tasks
     % Output: X (real bound rnvec)
     
     for t = 1:length(Tasks)

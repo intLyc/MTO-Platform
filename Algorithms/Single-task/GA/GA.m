@@ -59,7 +59,7 @@ classdef GA < Algorithm
                 data.convergence = [data.convergence; convergence];
                 data.bestX = [data.bestX, bestX];
             end
-            data.bestX = bin2real(data.bestX, Tasks);
+            data.bestX = uni2real(data.bestX, Tasks);
             data.clock_time = toc;
         end
     end

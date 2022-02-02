@@ -54,7 +54,7 @@ classdef MFEA < Algorithm
                 [population, bestobj, data.bestX] = selectMF(population, offspring, Tasks, pop_size, bestobj, data.bestX);
                 data.convergence(:, generation) = bestobj;
             end
-            data.bestX = bin2real(data.bestX, Tasks);
+            data.bestX = uni2real(data.bestX, Tasks);
             data.clock_time = toc;
         end
     end

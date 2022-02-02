@@ -115,7 +115,7 @@ classdef MTEA_AD < Algorithm
                     data.convergence(t, generation) = bestobj(t);
                 end
             end
-            data.bestX = bin2real(data.bestX, Tasks);
+            data.bestX = uni2real(data.bestX, Tasks);
             data.clock_time = toc;
         end
     end
