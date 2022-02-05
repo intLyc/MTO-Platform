@@ -23,8 +23,8 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 
 ### Run MTO Platform
 
-- GUI: 'mto;'
-- Command line: 'mto(algo_cell, prob_cell, reps, save_name);'
+- GUI界面: 'mto;'
+- 命令行: 'mto(algo_cell, prob_cell, reps, save_name);'
 
 ### Add your own algorithm
 
