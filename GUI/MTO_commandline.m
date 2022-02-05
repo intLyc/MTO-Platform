@@ -1,6 +1,14 @@
-function data_save = MTO_commandline(algo_cell, prob_cell, reps)
-    addpath(genpath('./Algorithms/'));
-    addpath(genpath('./Problems/'));
+function MTO_commandline(algo_cell, prob_cell, reps, save_name)
+    %% MTO Platform run with command line, save data in mat file
+    % Input: algorithms char cell, problems char cell, reps, save fime name
+    % Output: none
+
+    if isa(algo_cell, 'char')
+        algo_cell = {algo_cell};
+    end
+    if isa(prob_cell, 'char')
+        prob_cell = {prob_cell};
+    end
 
     % initialize data
     for algo = 1:length(algo_cell)
@@ -55,7 +63,9 @@ function data_save = MTO_commandline(algo_cell, prob_cell, reps)
     data_save.prob_cell = prob_cell';
     data_save.tasks_num_list = tasks_num_list';
     data_save.result = result;
-    % save('data_save', 'data_save');
+
+    % save mat file
+    save(save_name, 'data_save');
 end
 
 function data = singleRun(algo_obj, prob_obj)
