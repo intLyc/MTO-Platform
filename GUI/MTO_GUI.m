@@ -179,6 +179,10 @@ classdef MTO_GUI < matlab.apps.AppBase
             % read problems
             prob_folders = split(genpath(fullfile(fileparts(mfilename('fullpath')),'../Problems')),pathsep);
             for i = 1:length(prob_folders)
+                % check task type
+                if isempty(strfind(prob_folders{i}, app.ETaskTypeDropDown.Value))
+                    continue;
+                end
                 files = what(prob_folders{i});
                 files = files.m;
                 for j = 1:length(files)
@@ -2689,7 +2693,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create ETaskTypeDropDown
             app.ETaskTypeDropDown = uidropdown(app.EP1GridLayout);
-            app.ETaskTypeDropDown.Items = {'Multi', 'Single'};
+            app.ETaskTypeDropDown.Items = {'Multi', 'Many', 'Single'};
             app.ETaskTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @ETaskTypeDropDownValueChanged, true);
             app.ETaskTypeDropDown.FontWeight = 'bold';
             app.ETaskTypeDropDown.BackgroundColor = [1 1 1];
@@ -3060,8 +3064,8 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.ESelectedAlgoContextMenu.ContextMenuOpeningFcn = createCallbackFcn(app, @ESelectedAlgoContextMenuOpening, true);
             
             % Assign app.ESelectedAlgoContextMenu
-            app.EAlgorithmsTree.ContextMenu = app.ESelectedAlgoContextMenu;
             app.TAlgorithmTree.ContextMenu = app.ESelectedAlgoContextMenu;
+            app.EAlgorithmsTree.ContextMenu = app.ESelectedAlgoContextMenu;
 
             % Create SelectedAlgoSelectAllMenu
             app.SelectedAlgoSelectAllMenu = uimenu(app.ESelectedAlgoContextMenu);
