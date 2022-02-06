@@ -45,14 +45,14 @@ classdef TLTLA < Algorithm
             while generation < iter_num && fnceval_calls < eva_num
                 generation = generation + 1;
 
-                % Inter-Task Knowledge Transfer
+                % Upper-level: Inter-task Knowledge Transfer
                 % generation
                 [offspring, calls] = OperatorMFEA.generate(1, population, Tasks, obj.rmp, obj.mu, obj.mum);
                 fnceval_calls = fnceval_calls + calls;
                 % selection
                 [population, bestobj, data.bestX] = selectMF(population, offspring, Tasks, pop_size, bestobj, data.bestX);
 
-                % Intra-Task Knowledge Transfer
+                % Lower-level: Intra-task Knowledge Transfer
                 parent = randi(length(population));
                 t = population(parent).skill_factor;
                 dimen = mod(generation - 2, max([Tasks.dims])) + 1; % start with 1 Dim
@@ -102,7 +102,6 @@ classdef TLTLA < Algorithm
                 if population(parent).factorial_costs(t) < bestobj(t)
                     bestobj(t) = population(parent).factorial_costs(t);
                     bestX{t} = population(parent).rnvec;
-                    bestCV(t) = population(parent).constraint_violation(t);
                 end
 
                 data.convergence(:, generation) = bestobj;
