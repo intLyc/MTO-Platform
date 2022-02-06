@@ -1,5 +1,5 @@
 classdef IMEA < Algorithm
-    % @InProceedings{Hashimoto2018Analysis,
+    % @InProceedings{Hashimoto2018IMEA,
     %   title     = {Analysis of Evolutionary Multi-Tasking as an Island Model},
     %   author    = {Hashimoto, Ryuichi and Ishibuchi, Hisao and Masuyama, Naoki and Nojima, Yusuke},
     %   booktitle = {Proceedings of the Genetic and Evolutionary Computation Conference Companion},
