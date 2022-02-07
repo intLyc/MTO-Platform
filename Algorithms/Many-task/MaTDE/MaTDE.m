@@ -168,7 +168,7 @@ classdef MaTDE < Algorithm
 
         function archive = putarchive(obj, archive, task_num, individual, sub_pop)
             max_size = obj.archive_multiplier * sub_pop;
-            archive_size = size(archive{task_num}, 1); %当前该任务的成员数
+            archive_size = size(archive{task_num}, 1);
             if archive_size < max_size
                 archive_size = archive_size + 1;
                 archive{task_num}(archive_size, 1) = individual;
@@ -187,7 +187,7 @@ classdef MaTDE < Algorithm
             % Calculate similarity
             for i = 1:no_of_task
                 if task_num ~= i
-                    NVARS = min(Tasks(task_num).dims, Tasks(i).dims); %向维度较低的任务统一维度
+                    NVARS = min(Tasks(task_num).dims, Tasks(i).dims); % Unify dimensions to lower task
                     cov0 = obj.getCov(task_num, archive, NVARS);
                     cov1 = obj.getCov(i, archive, NVARS);
                     cov0_det = det(cov0);
@@ -212,7 +212,7 @@ classdef MaTDE < Algorithm
         end
 
         function COV = getCov(obj, task_num, archive, NVARS)
-            % 生成NVARS*NVARS维的协方差矩阵
+            % generate NVARS*NVARS dims cov matrix
             cur_ar_size = size(archive{task_num}, 1);
             pop_rnvec = zeros(cur_ar_size, NVARS);
             for i = 1:cur_ar_size
@@ -222,19 +222,15 @@ classdef MaTDE < Algorithm
         end
 
         function tr = getTrace(obj, inv_cov1, cov2)
-            % inv_cov1为matrix1的逆，cov2为matrix2
-            % KLD计算的第一项
+            % KLD first step
             fmatrix = inv_cov1 * cov2;
             tr = sum(diag(fmatrix));
         end
 
         function u = getMul(obj, t0, t1, archive, NVARS, invcov)
-            % t0,t1分别为任意两个任务编号
-            % NVARS为任务的维度
-            % invcov为协方差矩阵的逆
-            % KLD计算第二项
-            pop0_archive = archive{t0}; %t1种群的档案
-            pop1_archive = archive{t1}; %t2种群的档案
+            % KLD second step
+            pop0_archive = archive{t0};
+            pop1_archive = archive{t1};
             cur_ar_size0 = size(pop0_archive, 1);
             cur_ar_size1 = size(pop1_archive, 1);
             pop0_rnvec = zeros(cur_ar_size0, NVARS);
