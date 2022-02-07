@@ -50,12 +50,21 @@ classdef OperatorMFEA_AKT < OperatorMFEA
                         offspring(count + 1).parNum = rand_p;
                     end
                 else
-                    % mutate
-                    offspring(count) = OperatorMFEA_AKT.mutate(population(p1), max([Tasks.dims]), mum);
-                    offspring(count + 1) = OperatorMFEA_AKT.mutate(population(p2), max([Tasks.dims]), mum);
-                    % imitate
-                    offspring(count).skill_factor = population(p1).skill_factor;
-                    offspring(count + 1).skill_factor = population(p2).skill_factor;
+                    % Randomly pick another individual from the same task
+                    p = [p1, p2];
+                    for x = 1:2
+                        find_idx = find([population.skill_factor] == population(p(x)).skill_factor);
+                        idx = find_idx(randi(length(find_idx)));
+                        while idx == p(x)
+                            idx = find_idx(randi(length(find_idx)));
+                        end
+                        % crossover
+                        offspring(count + x - 1) = OperatorGA.crossover(offspring(count + x - 1), population(p(x)), population(idx), cf);
+                        % mutate
+                        offspring(count + x - 1) = OperatorGA.mutate(offspring(count + x - 1), max([Tasks.dims]), mum);
+                        % imitate
+                        offspring(count + x - 1).skill_factor = population(p(x)).skill_factor;
+                    end
                 end
                 for x = count:count + 1
                     offspring(x).rnvec(offspring(x).rnvec > 1) = 1;
