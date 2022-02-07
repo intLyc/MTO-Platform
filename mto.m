@@ -16,10 +16,10 @@ function mto(varargin)
         save_name = 'data_save';
         algo_cell = varargin{1};
         prob_cell = varargin{2};
-        if length(varargin) == 3
+        if length(varargin) >= 3
             reps = varargin{3};
         end
-        if length(varargin) == 4
+        if length(varargin) >= 4
             save_name = varargin{4};
         end
         MTO_commandline(algo_cell, prob_cell, reps, save_name);
