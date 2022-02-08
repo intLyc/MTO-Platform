@@ -30,10 +30,16 @@ classdef OperatorMFPSO < OperatorPSO
             % Multifactorial - Velocity update
             len = length(object.velocity);
             if rand < rmp
+                % random select other task
+                other_task = randi(tasks_num);
+                while other_task == object.skill_factor
+                    other_task = randi(tasks_num);
+                end
+
                 object.velocity = w * object.velocity + ...
                     c1 * rand(1, len) .* (object.pbest - object.rnvec) + ...
                     c2 * rand(1, len) .* (gbest{object.skill_factor} - object.rnvec) + ...
-                    c3 * rand(1, len) .* (gbest{randi(tasks_num)} - object.rnvec);
+                    c3 * rand(1, len) .* (gbest{other_task} - object.rnvec);
             else
                 object.velocity = w * object.velocity + ...
                     c1 * rand(1, len) .* (object.pbest - object.rnvec) + ...
