@@ -12,12 +12,12 @@ classdef OperatorMFEA_AKT < OperatorMFEA
                 offspring(count + 1) = feval(Individual_class);
                 offspring(count + 1).factorial_costs = inf(1, length(Tasks));
 
+                u = rand(1, max([Tasks.dims]));
+                cf = zeros(1, max([Tasks.dims]));
+                cf(u <= 0.5) = (2 * u(u <= 0.5)).^(1 / (mu + 1));
+                cf(u > 0.5) = (2 * (1 - u(u > 0.5))).^(-1 / (mu + 1));
                 if (population(p1).skill_factor == population(p2).skill_factor) || rand < rmp
                     % crossover
-                    u = rand(1, max([Tasks.dims]));
-                    cf = zeros(1, max([Tasks.dims]));
-                    cf(u <= 0.5) = (2 * u(u <= 0.5)).^(1 / (mu + 1));
-                    cf(u > 0.5) = (2 * (1 - u(u > 0.5))).^(-1 / (mu + 1));
                     p = [p1, p2];
                     if population(p1).skill_factor == population(p2).skill_factor
                         offspring(count) = OperatorMFEA_AKT.crossover(offspring(count), population(p1), population(p2), cf);
