@@ -876,6 +876,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     prob = value;
                     tasks_num = app.Edata.tasks_num_list(prob);
                     for algo = 1:length(app.Edata.algo_cell)
+                        convergence_rep = [];
                         for rep = 1:app.Edata.reps
                             convergence_rep(rep, :) = min(app.Edata.result(prob, algo).convergence(1+(rep-1)*tasks_num:rep*tasks_num, :), [], 1);
                         end
