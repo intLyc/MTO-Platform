@@ -1,4 +1,4 @@
-classdef MTO_GUI < matlab.apps.AppBase
+quclassdef MTO_GUI < matlab.apps.AppBase
 
     % Properties that correspond to app components
     properties (Access = public)
@@ -50,6 +50,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         ESaveAllFigureButton         matlab.ui.control.Button
         EFigureTypeDropDown          matlab.ui.control.DropDown
         EMarkerIndicesEditField      matlab.ui.control.NumericEditField
+        EConvergenceTypeDropDown     matlab.ui.control.DropDown
         EConvergenceTrendUIAxes      matlab.ui.control.UIAxes
         EPanel1                      matlab.ui.container.Panel
         EP1GridLayout                matlab.ui.container.GridLayout
@@ -58,14 +59,16 @@ classdef MTO_GUI < matlab.apps.AppBase
         ERepsEditField               matlab.ui.control.NumericEditField
         ERunTimesEditFieldLabel      matlab.ui.control.Label
         EAlgorithmsListBox           matlab.ui.control.ListBox
-        AlgorithmsListBox_2Label     matlab.ui.control.Label
+        AlgorithmsLabel              matlab.ui.control.Label
         EProblemsListBox             matlab.ui.control.ListBox
-        ProblemsListBox_2Label       matlab.ui.control.Label
+        ProblemsLabel                matlab.ui.control.Label
         ParallelDropDownLabel        matlab.ui.control.Label
         EParallelDropDown            matlab.ui.control.DropDown
-        TaskTypeLabel                matlab.ui.control.Label
+        TaskLabel                    matlab.ui.control.Label
         ETaskTypeDropDown            matlab.ui.control.DropDown
         ELoadDataButton              matlab.ui.control.Button
+        SpecialLabel                 matlab.ui.control.Label
+        ESpecialTypeDropDown         matlab.ui.control.DropDown
         EPanel2                      matlab.ui.container.Panel
         EP2GridLayout                matlab.ui.container.GridLayout
         EStartButton                 matlab.ui.control.Button
@@ -139,6 +142,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         Edata % data
         Estop_flag % stop button clicked flag
         Efitness % fitness calculated
+        Eminfitness % competitive fitness calculated
         Etime_used % time_used calculated
         Etable_data % table data for calculate
         Etable_view % table data view
@@ -164,6 +168,10 @@ classdef MTO_GUI < matlab.apps.AppBase
                 if isempty(strfind(algo_folders{i}, app.ETaskTypeDropDown.Value))
                     continue;
                 end
+                % check special type
+                if isempty(strfind(algo_folders{i}, app.ESpecialTypeDropDown.Value))
+                    continue;
+                end
                 files = what(algo_folders{i});
                 files = files.m;
                 for j = 1:length(files)
@@ -181,6 +189,10 @@ classdef MTO_GUI < matlab.apps.AppBase
             for i = 1:length(prob_folders)
                 % check task type
                 if isempty(strfind(prob_folders{i}, app.ETaskTypeDropDown.Value))
+                    continue;
+                end
+                % check special type
+                if isempty(strfind(prob_folders{i}, app.ESpecialTypeDropDown.Value))
                     continue;
                 end
                 files = what(prob_folders{i});
@@ -518,12 +530,14 @@ classdef MTO_GUI < matlab.apps.AppBase
                 end
             end
             
-            switch app.EDataTypeDropDown.Value
-                case 'Fitness'
-                    app.EUITable.RowName = prob_row_cell;
-                    app.EUITable.RowName = [app.EUITable.RowName; '+/-/='];
-                otherwise
-                    app.EUITable.RowName = prob_cell;
+            if strcmp(app.EDataTypeDropDown.Value, 'Obj')
+                app.EUITable.RowName = prob_row_cell;
+                app.EUITable.RowName = [app.EUITable.RowName; '+/-/='];
+            elseif strcmp(app.EDataTypeDropDown.Value, 'min(Obj)')
+                app.EUITable.RowName = prob_cell;
+                app.EUITable.RowName = [app.EUITable.RowName; '+/-/='];
+            else
+                app.EUITable.RowName = prob_cell;
             end
             app.EUITable.ColumnName = algo_cell;
         end
@@ -536,17 +550,20 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
             
             app.Efitness = [];
+            app.Eminfitness = [];
             app.Etime_used = [];
             % calculate fitness
             for algo = 1:length(app.Edata.algo_cell)
                 row_i = 1;
                 for prob = 1:length(app.Edata.prob_cell)
                     tasks_num = app.Edata.tasks_num_list(prob);
+                    temp_i = row_i;
                     for task = 1:tasks_num
                         convergence_task = app.Edata.result(prob, algo).convergence(task:tasks_num:end, :);
                         app.Efitness(row_i, algo, :) = convergence_task(:, end);
                         row_i = row_i + 1;
                     end
+                    app.Eminfitness(prob, algo, :) = min(app.Efitness(temp_i:temp_i+tasks_num-1, algo, :), [], 1);
                     app.Etime_used(prob, algo) = app.Edata.result(prob, algo).clock_time;
                 end
             end
@@ -565,8 +582,10 @@ classdef MTO_GUI < matlab.apps.AppBase
         function EupdateTableFitness(app)
             % update table fitness
             
-            if strcmp(app.EDataTypeDropDown.Value, 'Fitness')
+            if strcmp(app.EDataTypeDropDown.Value, 'Obj')
                 data_fitness = app.Efitness;
+            elseif strcmp(app.EDataTypeDropDown.Value, 'min(Obj)')
+                data_fitness = app.Eminfitness;
             else
                 return;
             end
@@ -665,7 +684,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         function EupdateTableTest(app)
             % update table fitness test
             
-            if ~strcmp(app.EDataTypeDropDown.Value, 'Fitness')
+            if ~strfind(app.EDataTypeDropDown.Value, 'Obj')
                 return;
             end
             test_type = app.ETestTypeDropDown.Value;
@@ -763,7 +782,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     end
                 end
                 % worst
-                if strcmp(highlight_type, 'Highlight best worst')
+                if strcmp(highlight_type, 'Best&Worst')
                     isnan_temp = isnan(app.Etable_data(row_i, :));
                     if sum(isnan_temp)
                         x = 1:length(isnan_temp);
@@ -791,11 +810,14 @@ classdef MTO_GUI < matlab.apps.AppBase
             switch app.EDataTypeDropDown.Value
                 case 'Reps'
                     app.EupdateTableReps();
-                case 'Fitness'
+                case 'Obj'
                     app.EupdateTableFitness();
                     app.EupdateTableTest();
                 case 'Score'
                     app.EupdateTableScore();
+                case 'min(Obj)'
+                    app.EupdateTableFitness();
+                    app.EupdateTableTest();
                 case 'Time used'
                     app.EupdateTableTimeUsed();
             end
@@ -805,17 +827,24 @@ classdef MTO_GUI < matlab.apps.AppBase
         function EresetConvergenceProblemsDropDown(app)
             % reset convergence problems drop down in Experiment module
             
-            prob_row_cell = {};
-            prob_row_index = {};
-            for prob = 1:length(app.Edata.prob_cell)
-                for task = 1:app.Edata.tasks_num_list(prob)
-                    prob_row_cell = [prob_row_cell, [app.Edata.prob_cell{prob}, '-T', num2str(task)]];
-                    prob_row_index = [prob_row_index, [prob, task]];
-                end
+            switch app.EConvergenceTypeDropDown.Value
+                case 'Obj'
+                    prob_row_cell = {};
+                    prob_row_index = {};
+                    for prob = 1:length(app.Edata.prob_cell)
+                        for task = 1:app.Edata.tasks_num_list(prob)
+                            prob_row_cell = [prob_row_cell, [app.Edata.prob_cell{prob}, '-T', num2str(task)]];
+                            prob_row_index = [prob_row_index, [prob, task]];
+                        end
+                    end
+                    app.EProblemsDropDown.Items = prob_row_cell;
+                    app.EProblemsDropDown.ItemsData = prob_row_index;
+                    app.EProblemsDropDown.Value = [1 1];
+                case 'min(Obj)'
+                    app.EProblemsDropDown.Items = app.Edata.prob_cell;
+                    app.EProblemsDropDown.ItemsData = 1:length(app.Edata.prob_cell);
+                    app.EProblemsDropDown.Value = 1;
             end
-            app.EProblemsDropDown.Items = prob_row_cell;
-            app.EProblemsDropDown.ItemsData = prob_row_index;
-            app.EProblemsDropDown.Value = [1 1];
         end
         
         function EupdateConvergenceAxes(app)
@@ -831,36 +860,36 @@ classdef MTO_GUI < matlab.apps.AppBase
             
             % draw
             value = app.EProblemsDropDown.Value;
-            prob = value(1);
-            task = value(2);
-            tasks_num = app.Edata.tasks_num_list(prob);
-            
-            switch app.EYLimTypeDropDown.Value
-                case 'log(fitness)'
+            switch app.EConvergenceTypeDropDown.Value
+                case 'Obj'
+                    prob = value(1);
+                    task = value(2);
+                    tasks_num = app.Edata.tasks_num_list(prob);
                     for algo = 1:length(app.Edata.algo_cell)
                         convergence_task = app.Edata.result(prob, algo).convergence(task:tasks_num:end, :);
                         convergence = mean(convergence_task, 1);
                         x_cell{algo} = 1:size(convergence,2);
                         y_cell{algo} = convergence;
                     end
-                    for i = 1:length(y_cell)
-                        y_cell{i} = log(y_cell{i});
-                    end
-                case 'fitness'
+                case 'min(Obj)'
+                    prob = value;
+                    tasks_num = app.Edata.tasks_num_list(prob);
                     for algo = 1:length(app.Edata.algo_cell)
-                        convergence_task = app.Edata.result(prob, algo).convergence(task:tasks_num:end, :);
-                        convergence = mean(convergence_task, 1);
+                        for rep = 1:app.Edata.reps
+                            convergence_rep(rep, :) = min(app.Edata.result(prob, algo).convergence(1+(rep-1)*tasks_num:rep*tasks_num, :), [], 1);
+                        end
+                        convergence = mean(convergence_rep, 1);
                         x_cell{algo} = 1:size(convergence,2);
                         y_cell{algo} = convergence;
                     end
-%                 case 'feasible rate'
-%                     for algo = 1:length(app.Edata.algo_cell)
-%                         convergence_task = app.Edata.result(prob, algo).convergence_fr(task:tasks_num:end, :);
-%                         convergence = mean(convergence_task, 1);
-%                         x_cell{algo} = 1:size(convergence,2);
-%                         y_cell{algo} = convergence;
-%                     end
             end
+                
+            if strcmp(app.EYLimTypeDropDown.Value, 'log(Objective Value)')
+                for i = 1:length(y_cell)
+                    y_cell{i} = log(y_cell{i});
+                end
+            end
+            
             max_x = 0;
             for i = 1:length(x_cell)
                 if x_cell{i}(end) > max_x
@@ -1215,7 +1244,12 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Value changed function: ETaskTypeDropDown
         function ETaskTypeDropDownValueChanged(app, event)
             app.readAlgoProb();
-            app.TloadAlgoProb();
+            app.EloadAlgoProb();
+        end
+
+        % Value changed function: ESpecialTypeDropDown
+        function ESpecialTypeDropDownValueChanged(app, event)
+            app.readAlgoProb();
             app.EloadAlgoProb();
         end
 
@@ -1645,6 +1679,12 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EupdateTableHighlight();
         end
 
+        % Value changed function: EConvergenceTypeDropDown
+        function EConvergenceTypeDropDownValueChanged(app, event)
+            app.EresetConvergenceProblemsDropDown();
+            app.EupdateConvergenceAxes();
+        end
+
         % Value changed function: EYLimTypeDropDown
         function EYLimTypeDropDownValueChanged(app, event)
             app.EupdateConvergenceAxes();
@@ -1757,7 +1797,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                         y_cell{algo} = convergence;
                     end
                     switch app.EYLimTypeDropDown.Value
-                        case 'log(fitness)'
+                        case 'log(objective value)'
                             for i = 1:length(y_cell)
                                 y_cell{i} = log(y_cell{i});
                             end
@@ -2191,7 +2231,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create MTOPlatformUIFigure and hide until all components are created
             app.MTOPlatformUIFigure = uifigure('Visible', 'off');
             app.MTOPlatformUIFigure.Color = [1 1 1];
-            app.MTOPlatformUIFigure.Position = [100 100 1055 688];
+            app.MTOPlatformUIFigure.Position = [100 100 1054 673];
             app.MTOPlatformUIFigure.Name = 'MTO Platform';
             app.MTOPlatformUIFigure.WindowStyle = 'modal';
 
@@ -2431,7 +2471,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.ETestTypeDropDown = uidropdown(app.EP3T1GridLayout);
             app.ETestTypeDropDown.Items = {'None', 'Rank sum test', 'Signed rank test'};
             app.ETestTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @ETestTypeDropDownValueChanged, true);
-            app.ETestTypeDropDown.Tooltip = {'Statistical Analysis (Only for Fitness)'};
+            app.ETestTypeDropDown.Tooltip = {'Statistical Analysis (Only for Objective value)'};
             app.ETestTypeDropDown.BackgroundColor = [1 1 1];
             app.ETestTypeDropDown.Layout.Row = 1;
             app.ETestTypeDropDown.Layout.Column = 6;
@@ -2441,7 +2481,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EAlgorithmDropDown = uidropdown(app.EP3T1GridLayout);
             app.EAlgorithmDropDown.Items = {'Algorithm'};
             app.EAlgorithmDropDown.ValueChangedFcn = createCallbackFcn(app, @EAlgorithmDropDownValueChanged, true);
-            app.EAlgorithmDropDown.Tooltip = {'Statistical Analysis main Algorithm (Only for Fitness)'};
+            app.EAlgorithmDropDown.Tooltip = {'Statistical Analysis main Algorithm (Only for Objective value)'};
             app.EAlgorithmDropDown.BackgroundColor = [1 1 1];
             app.EAlgorithmDropDown.Layout.Row = 1;
             app.EAlgorithmDropDown.Layout.Column = 7;
@@ -2451,7 +2491,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EShowTypeDropDown = uidropdown(app.EP3T1GridLayout);
             app.EShowTypeDropDown.Items = {'Mean', 'Mean (Std)', 'Median', 'Median (Std)'};
             app.EShowTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EShowTypeDropDownValueChanged, true);
-            app.EShowTypeDropDown.Tooltip = {'Data type (Only for Fitness)'};
+            app.EShowTypeDropDown.Tooltip = {'Data type (Only for Objective value)'};
             app.EShowTypeDropDown.BackgroundColor = [1 1 1];
             app.EShowTypeDropDown.Layout.Row = 1;
             app.EShowTypeDropDown.Layout.Column = 4;
@@ -2459,7 +2499,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create EDataTypeDropDown
             app.EDataTypeDropDown = uidropdown(app.EP3T1GridLayout);
-            app.EDataTypeDropDown.Items = {'Reps', 'Fitness', 'Score', 'Time used'};
+            app.EDataTypeDropDown.Items = {'Reps', 'Obj', 'Score', 'min(Obj)', 'Time used'};
             app.EDataTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EDataTypeDropDownValueChanged, true);
             app.EDataTypeDropDown.Tooltip = {'Show Type'};
             app.EDataTypeDropDown.BackgroundColor = [1 1 1];
@@ -2469,7 +2509,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create EHighlightTypeDropDown
             app.EHighlightTypeDropDown = uidropdown(app.EP3T1GridLayout);
-            app.EHighlightTypeDropDown.Items = {'None', 'Highlight best', 'Highlight best worst'};
+            app.EHighlightTypeDropDown.Items = {'None', 'Best', 'Best&Worst'};
             app.EHighlightTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EHighlightTypeDropDownValueChanged, true);
             app.EHighlightTypeDropDown.Tooltip = {'Highlight type'};
             app.EHighlightTypeDropDown.BackgroundColor = [1 1 1];
@@ -2518,7 +2558,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create EP3F1GridLayout
             app.EP3F1GridLayout = uigridlayout(app.EP3FGridLayout);
-            app.EP3F1GridLayout.ColumnWidth = {'fit', 'fit', '1x', 'fit', 'fit', 'fit'};
+            app.EP3F1GridLayout.ColumnWidth = {'fit', 'fit', '1x', 'fit', 'fit', 'fit', 'fit'};
             app.EP3F1GridLayout.RowHeight = {'fit'};
             app.EP3F1GridLayout.ColumnSpacing = 5;
             app.EP3F1GridLayout.Padding = [0 0 0 0];
@@ -2533,18 +2573,18 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EProblemsDropDown.Tooltip = {'Task'};
             app.EProblemsDropDown.BackgroundColor = [1 1 1];
             app.EProblemsDropDown.Layout.Row = 1;
-            app.EProblemsDropDown.Layout.Column = 6;
+            app.EProblemsDropDown.Layout.Column = 7;
             app.EProblemsDropDown.Value = 'Problem ';
 
             % Create EYLimTypeDropDown
             app.EYLimTypeDropDown = uidropdown(app.EP3F1GridLayout);
-            app.EYLimTypeDropDown.Items = {'log(fitness)', 'fitness'};
+            app.EYLimTypeDropDown.Items = {'log(Objective Value)', 'Objective Value'};
             app.EYLimTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EYLimTypeDropDownValueChanged, true);
             app.EYLimTypeDropDown.Tooltip = {'YLim Type'};
             app.EYLimTypeDropDown.BackgroundColor = [1 1 1];
             app.EYLimTypeDropDown.Layout.Row = 1;
-            app.EYLimTypeDropDown.Layout.Column = 5;
-            app.EYLimTypeDropDown.Value = 'log(fitness)';
+            app.EYLimTypeDropDown.Layout.Column = 6;
+            app.EYLimTypeDropDown.Value = 'log(Objective Value)';
 
             % Create ESaveAllFigureButton
             app.ESaveAllFigureButton = uibutton(app.EP3F1GridLayout, 'push');
@@ -2575,10 +2615,20 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EMarkerIndicesEditField.Layout.Column = 4;
             app.EMarkerIndicesEditField.Value = 50;
 
+            % Create EConvergenceTypeDropDown
+            app.EConvergenceTypeDropDown = uidropdown(app.EP3F1GridLayout);
+            app.EConvergenceTypeDropDown.Items = {'Obj', 'min(Obj)'};
+            app.EConvergenceTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EConvergenceTypeDropDownValueChanged, true);
+            app.EConvergenceTypeDropDown.Tooltip = {'YLim Type'};
+            app.EConvergenceTypeDropDown.BackgroundColor = [1 1 1];
+            app.EConvergenceTypeDropDown.Layout.Row = 1;
+            app.EConvergenceTypeDropDown.Layout.Column = 5;
+            app.EConvergenceTypeDropDown.Value = 'Obj';
+
             % Create EConvergenceTrendUIAxes
             app.EConvergenceTrendUIAxes = uiaxes(app.EP3FGridLayout);
             xlabel(app.EConvergenceTrendUIAxes, 'Generation')
-            ylabel(app.EConvergenceTrendUIAxes, 'fitness')
+            ylabel(app.EConvergenceTrendUIAxes, 'Objective value')
             app.EConvergenceTrendUIAxes.PlotBoxAspectRatio = [1.37847866419295 1 1];
             app.EConvergenceTrendUIAxes.Layout.Row = 2;
             app.EConvergenceTrendUIAxes.Layout.Column = 1;
@@ -2592,7 +2642,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create EP1GridLayout
             app.EP1GridLayout = uigridlayout(app.EPanel1);
             app.EP1GridLayout.ColumnWidth = {'fit', '1x', 55};
-            app.EP1GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x', 'fit'};
+            app.EP1GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x', 'fit'};
             app.EP1GridLayout.ColumnSpacing = 5;
             app.EP1GridLayout.Padding = [5 5 5 5];
             app.EP1GridLayout.BackgroundColor = [1 1 1];
@@ -2604,7 +2654,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EProblemsAddButton.BackgroundColor = [0.702 1 0.702];
             app.EProblemsAddButton.FontWeight = 'bold';
             app.EProblemsAddButton.Tooltip = {'Add selected problems'};
-            app.EProblemsAddButton.Layout.Row = 6;
+            app.EProblemsAddButton.Layout.Row = 7;
             app.EProblemsAddButton.Layout.Column = 3;
             app.EProblemsAddButton.Text = 'Add';
 
@@ -2615,7 +2665,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EAlgorithmsAddButton.BackgroundColor = [0.702 1 0.702];
             app.EAlgorithmsAddButton.FontWeight = 'bold';
             app.EAlgorithmsAddButton.Tooltip = {'Add selected algorithms'};
-            app.EAlgorithmsAddButton.Layout.Row = 4;
+            app.EAlgorithmsAddButton.Layout.Row = 5;
             app.EAlgorithmsAddButton.Layout.Column = 3;
             app.EAlgorithmsAddButton.Text = 'Add';
 
@@ -2634,37 +2684,37 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.ERunTimesEditFieldLabel.FontWeight = 'bold';
             app.ERunTimesEditFieldLabel.Layout.Row = 1;
             app.ERunTimesEditFieldLabel.Layout.Column = 1;
-            app.ERunTimesEditFieldLabel.Text = 'Run Times';
+            app.ERunTimesEditFieldLabel.Text = 'Reps';
 
             % Create EAlgorithmsListBox
             app.EAlgorithmsListBox = uilistbox(app.EP1GridLayout);
             app.EAlgorithmsListBox.Items = {};
             app.EAlgorithmsListBox.Multiselect = 'on';
-            app.EAlgorithmsListBox.Layout.Row = 5;
+            app.EAlgorithmsListBox.Layout.Row = 6;
             app.EAlgorithmsListBox.Layout.Column = [1 3];
             app.EAlgorithmsListBox.Value = {};
 
-            % Create AlgorithmsListBox_2Label
-            app.AlgorithmsListBox_2Label = uilabel(app.EP1GridLayout);
-            app.AlgorithmsListBox_2Label.FontWeight = 'bold';
-            app.AlgorithmsListBox_2Label.Layout.Row = 4;
-            app.AlgorithmsListBox_2Label.Layout.Column = 1;
-            app.AlgorithmsListBox_2Label.Text = 'Algorithms';
+            % Create AlgorithmsLabel
+            app.AlgorithmsLabel = uilabel(app.EP1GridLayout);
+            app.AlgorithmsLabel.FontWeight = 'bold';
+            app.AlgorithmsLabel.Layout.Row = 5;
+            app.AlgorithmsLabel.Layout.Column = [1 2];
+            app.AlgorithmsLabel.Text = 'Algorithms';
 
             % Create EProblemsListBox
             app.EProblemsListBox = uilistbox(app.EP1GridLayout);
             app.EProblemsListBox.Items = {};
             app.EProblemsListBox.Multiselect = 'on';
-            app.EProblemsListBox.Layout.Row = 7;
+            app.EProblemsListBox.Layout.Row = 8;
             app.EProblemsListBox.Layout.Column = [1 3];
             app.EProblemsListBox.Value = {};
 
-            % Create ProblemsListBox_2Label
-            app.ProblemsListBox_2Label = uilabel(app.EP1GridLayout);
-            app.ProblemsListBox_2Label.FontWeight = 'bold';
-            app.ProblemsListBox_2Label.Layout.Row = 6;
-            app.ProblemsListBox_2Label.Layout.Column = 1;
-            app.ProblemsListBox_2Label.Text = 'Problems';
+            % Create ProblemsLabel
+            app.ProblemsLabel = uilabel(app.EP1GridLayout);
+            app.ProblemsLabel.FontWeight = 'bold';
+            app.ProblemsLabel.Layout.Row = 7;
+            app.ProblemsLabel.Layout.Column = [1 2];
+            app.ProblemsLabel.Text = 'Problems';
 
             % Create ParallelDropDownLabel
             app.ParallelDropDownLabel = uilabel(app.EP1GridLayout);
@@ -2683,23 +2733,23 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EParallelDropDown.Layout.Column = [2 3];
             app.EParallelDropDown.Value = 1;
 
-            % Create TaskTypeLabel
-            app.TaskTypeLabel = uilabel(app.EP1GridLayout);
-            app.TaskTypeLabel.FontWeight = 'bold';
-            app.TaskTypeLabel.Tooltip = {'Single-task EA Option'};
-            app.TaskTypeLabel.Layout.Row = 3;
-            app.TaskTypeLabel.Layout.Column = 1;
-            app.TaskTypeLabel.Text = 'Task Type';
+            % Create TaskLabel
+            app.TaskLabel = uilabel(app.EP1GridLayout);
+            app.TaskLabel.FontWeight = 'bold';
+            app.TaskLabel.Tooltip = {'Single-task EA Option'};
+            app.TaskLabel.Layout.Row = 3;
+            app.TaskLabel.Layout.Column = 1;
+            app.TaskLabel.Text = 'Task';
 
             % Create ETaskTypeDropDown
             app.ETaskTypeDropDown = uidropdown(app.EP1GridLayout);
-            app.ETaskTypeDropDown.Items = {'Multi', 'Many', 'Single'};
+            app.ETaskTypeDropDown.Items = {'-', 'Multi', 'Many', 'Single'};
             app.ETaskTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @ETaskTypeDropDownValueChanged, true);
             app.ETaskTypeDropDown.FontWeight = 'bold';
             app.ETaskTypeDropDown.BackgroundColor = [1 1 1];
             app.ETaskTypeDropDown.Layout.Row = 3;
             app.ETaskTypeDropDown.Layout.Column = [2 3];
-            app.ETaskTypeDropDown.Value = 'Multi';
+            app.ETaskTypeDropDown.Value = '-';
 
             % Create ELoadDataButton
             app.ELoadDataButton = uibutton(app.EP1GridLayout, 'push');
@@ -2707,9 +2757,27 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.ELoadDataButton.BackgroundColor = [0.502 0.702 1];
             app.ELoadDataButton.FontWeight = 'bold';
             app.ELoadDataButton.Tooltip = {'Load data_save.mat to show detials'};
-            app.ELoadDataButton.Layout.Row = 8;
+            app.ELoadDataButton.Layout.Row = 9;
             app.ELoadDataButton.Layout.Column = [1 3];
             app.ELoadDataButton.Text = 'Load Data';
+
+            % Create SpecialLabel
+            app.SpecialLabel = uilabel(app.EP1GridLayout);
+            app.SpecialLabel.FontWeight = 'bold';
+            app.SpecialLabel.Tooltip = {'Single-task EA Option'};
+            app.SpecialLabel.Layout.Row = 4;
+            app.SpecialLabel.Layout.Column = 1;
+            app.SpecialLabel.Text = 'Special';
+
+            % Create ESpecialTypeDropDown
+            app.ESpecialTypeDropDown = uidropdown(app.EP1GridLayout);
+            app.ESpecialTypeDropDown.Items = {'-', 'Competitive', 'Constrained'};
+            app.ESpecialTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @ESpecialTypeDropDownValueChanged, true);
+            app.ESpecialTypeDropDown.FontWeight = 'bold';
+            app.ESpecialTypeDropDown.BackgroundColor = [1 1 1];
+            app.ESpecialTypeDropDown.Layout.Row = 4;
+            app.ESpecialTypeDropDown.Layout.Column = [2 3];
+            app.ESpecialTypeDropDown.Value = '-';
 
             % Create EPanel2
             app.EPanel2 = uipanel(app.ExperimentsGridLayout);
@@ -3064,8 +3132,8 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.ESelectedAlgoContextMenu.ContextMenuOpeningFcn = createCallbackFcn(app, @ESelectedAlgoContextMenuOpening, true);
             
             % Assign app.ESelectedAlgoContextMenu
-            app.TAlgorithmTree.ContextMenu = app.ESelectedAlgoContextMenu;
             app.EAlgorithmsTree.ContextMenu = app.ESelectedAlgoContextMenu;
+            app.TAlgorithmTree.ContextMenu = app.ESelectedAlgoContextMenu;
 
             % Create SelectedAlgoSelectAllMenu
             app.SelectedAlgoSelectAllMenu = uimenu(app.ESelectedAlgoContextMenu);
