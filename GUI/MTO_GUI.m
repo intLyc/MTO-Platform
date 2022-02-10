@@ -1,4 +1,4 @@
-quclassdef MTO_GUI < matlab.apps.AppBase
+classdef MTO_GUI < matlab.apps.AppBase
 
     % Properties that correspond to app components
     properties (Access = public)
