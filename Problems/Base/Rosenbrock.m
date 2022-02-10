@@ -1,6 +1,9 @@
-function [obj, con] = Rosenbrock(x, M, opt)
+function [obj, con] = Rosenbrock(x, M, opt, g)
     % ROSENBROCK function
     %   - var: design variable vector
+    %   - M: rotation matrix
+    %   - opt: shift vector
+    %   - g: objective value move
     con = 0;
     var = x;
     dim = length(var);
@@ -16,4 +19,5 @@ function [obj, con] = Rosenbrock(x, M, opt)
         sum = 100 * (var(1) - var(1)^2)^2 + (var(1) - 1)^2;
     end
     obj = sum;
+    obj = obj + g;
 end

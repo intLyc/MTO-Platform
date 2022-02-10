@@ -1,8 +1,9 @@
-function [obj, con] = Griewank(var, M, opt)
+function [obj, con] = Griewank(var, M, opt, g)
     % GRIEWANK function
     %   - var: design variable vector
     %   - M: rotation matrix
     %   - opt: shift vector
+    %   - g: objective value move
     con = 0;
     dim = length(var);
     var = (M * (var - opt)')'; %
@@ -14,4 +15,5 @@ function [obj, con] = Griewank(var, M, opt)
     end
 
     obj = 1 + 1/4000 * sum1 - sum2;
+    obj = obj + g;
 end

@@ -5,8 +5,8 @@ classdef Problem < handle
     properties
         name % problem's name
         sub_pop = 50 % each task population size
-        iter_num = 1000 % num of max generation
-        eva_num = inf % num of max evaluation
+        iter_num = inf % num of max generation
+        eva_num = 100 * 1000 % num of max evaluation
     end
 
     methods

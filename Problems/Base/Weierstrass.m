@@ -1,8 +1,9 @@
-function [obj, con] = Weierstrass(var, M, opt)
+function [obj, con] = Weierstrass(var, M, opt, g)
     % WEIERSTASS function
     %   - var: design variable vector
     %   - M: rotation matrix
     %   - opt: shift vector
+    %   - g: objective value move
     con = 0;
     D = length(var);
     var = (M * (var - opt)')';
@@ -22,5 +23,5 @@ function [obj, con] = Weierstrass(var, M, opt)
     for k = 0:kmax
         obj = obj - D * a^k * cos(2 * pi * b^k * 0.5);
     end
-
+    obj = obj + g;
 end

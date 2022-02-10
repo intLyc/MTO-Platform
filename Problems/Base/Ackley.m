@@ -1,8 +1,9 @@
-function [obj, con] = Ackley(var, M, opt)
+function [obj, con] = Ackley(var, M, opt, g)
     % Ackley function
     %   - var: design variable vector
     %   - M: rotation matrix
     %   - opt: shift vector
+    %   - g: objective value move
     con = 0;
     dim = length(var);
     var = (M * (var - opt)')';
@@ -17,4 +18,5 @@ function [obj, con] = Ackley(var, M, opt)
     avgsum2 = sum2 / dim;
 
     obj = -20 * exp(-0.2 * sqrt(avgsum1)) - exp(avgsum2) + 20 + exp(1);
+    obj = obj + g;
 end

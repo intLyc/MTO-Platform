@@ -1,8 +1,9 @@
-function [obj, con] = Sphere(x, M, opt)
+function [obj, con] = Sphere(x, M, opt, g)
     % Sphere function
     %   - var: design variable vector
     %   - M: rotation matrix
     %   - opt: shift vector
+    %   - g: objective value move
     con = 0;
     var = x;
     dim = length(var);
@@ -12,4 +13,5 @@ function [obj, con] = Sphere(x, M, opt)
         sum = sum + var(i) * var(i);
     end
     obj = sum;
+    obj = obj + g;
 end
