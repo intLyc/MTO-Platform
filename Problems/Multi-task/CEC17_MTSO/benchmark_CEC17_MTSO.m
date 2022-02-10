@@ -1,4 +1,11 @@
 function Tasks = benchmark_CEC17_MTSO(index)
+    % @Article{Da2017CEC2017-MTSO,
+    %   author     = {Da, Bingshui and Ong, Yew-Soon and Feng, Liang and Qin, A Kai and Gupta, Abhishek and Zhu, Zexuan and Ting, Chuan-Kang and Tang, Ke and Yao, Xin},
+    %   journal    = {arXiv preprint arXiv:1706.03470},
+    %   title      = {Evolutionary Multitasking for Single-objective Continuous Optimization: Benchmark Problems, Performance Metric, and Baseline Results},
+    %   year       = {2017},
+    % }
+
     %BENCHMARK function
     %   Input
     %   - index: the index number of problem set
