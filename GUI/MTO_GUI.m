@@ -250,6 +250,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.ERepsEditField.Enable = value;
             app.EParallelDropDown.Enable = value;
             app.ETaskTypeDropDown.Enable = value;
+            app.ESpecialTypeDropDown.Enable = value;
             app.EAlgorithmsAddButton.Enable = value;
             app.EProblemsAddButton.Enable = value;
             app.EAlgorithmsListBox.Enable = value;
@@ -3132,8 +3133,8 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.ESelectedAlgoContextMenu.ContextMenuOpeningFcn = createCallbackFcn(app, @ESelectedAlgoContextMenuOpening, true);
             
             % Assign app.ESelectedAlgoContextMenu
-            app.EAlgorithmsTree.ContextMenu = app.ESelectedAlgoContextMenu;
             app.TAlgorithmTree.ContextMenu = app.ESelectedAlgoContextMenu;
+            app.EAlgorithmsTree.ContextMenu = app.ESelectedAlgoContextMenu;
 
             % Create SelectedAlgoSelectAllMenu
             app.SelectedAlgoSelectAllMenu = uimenu(app.ESelectedAlgoContextMenu);
