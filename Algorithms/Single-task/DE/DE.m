@@ -20,7 +20,7 @@ classdef DE < Algorithm
         function data = run(obj, Tasks, run_parameter_list)
             sub_pop = run_parameter_list(1);
             iter_num = run_parameter_list(2);
-            eva_num = run_parameter_list(3);
+            eva_num = run_parameter_list(3) * length(tasks);
             tic
 
             data.convergence = [];

@@ -26,15 +26,15 @@ classdef AT_MFEA < Algorithm
         function obj = setParameter(obj, parameter_cell)
             count = 1;
             obj.rmp = str2double(parameter_cell{count}); count = count + 1;
-            obj.mu = str2num(parameter_cell{count}); count = count + 1;
-            obj.mum = str2num(parameter_cell{count}); count = count + 1;
+            obj.mu = str2double(parameter_cell{count}); count = count + 1;
+            obj.mum = str2double(parameter_cell{count}); count = count + 1;
             obj.probswap = str2double(parameter_cell{count}); count = count + 1;
         end
 
         function data = run(obj, Tasks, run_parameter_list)
             sub_pop = run_parameter_list(1);
             iter_num = run_parameter_list(2);
-            eva_num = run_parameter_list(3);
+            eva_num = run_parameter_list(3) * length(tasks);
             tic
 
             pop_size = sub_pop * length(Tasks);
