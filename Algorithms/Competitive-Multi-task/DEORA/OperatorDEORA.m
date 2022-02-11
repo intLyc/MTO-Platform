@@ -13,6 +13,8 @@ classdef OperatorDEORA < OperatorDE
                 offspring(i) = feval(Individual_class);
 
                 rnd = randperm(length(population{k}), 3);
+                x1 = rnd(1); x2 = rnd(2); x3 = rnd(3);
+                
                 r = rand();
                 for t = 1:length(Tasks)
                     if r <= sum(rmp(k, 1:t))
@@ -20,7 +22,6 @@ classdef OperatorDEORA < OperatorDE
                         break;
                     end
                 end
-                x1 = rnd(1); x2 = rnd(2); x3 = rnd(3);
 
                 offspring(i) = OperatorDE.mutate_rand_1(offspring(i), population{r1_task(i)}(x1), population{k}(x2), population{k}(x3), F);
                 offspring(i) = OperatorDE.crossover(offspring(i), population{k}(i), pCR);

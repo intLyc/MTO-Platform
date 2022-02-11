@@ -51,8 +51,9 @@ classdef DEORA < Algorithm
             fnceval_calls = 0;
             HR = []; % HR is used to store the historical rewards
             if iter_num == inf
-                T = obj.beta * eva_num / pop_size;
-                delta_rmp = pop_size / eva_num;
+                gen = (eva_num - (pop_size * length(Tasks) - 1)) / pop_size;
+                T = obj.beta * gen;
+                delta_rmp = 1 / gen;
             else
                 T = obj.beta * iter_num;
                 delta_rmp = 1 / iter_num;
@@ -60,7 +61,7 @@ classdef DEORA < Algorithm
             rmp = obj.rmp0 * ones(length(Tasks), length(Tasks)) / (length(Tasks) - 1);
             rmp(logical(eye(size(rmp)))) = (1 - obj.rmp0);
 
-            for t = 1:length(Tasks)
+            for t = 1:length(Tasks);
                 for i = 1:pop_size
                     population{t}(i) = Individual();
                     population{t}(i).rnvec = rand(1, max([Tasks.dims]));
@@ -83,22 +84,20 @@ classdef DEORA < Algorithm
                 else
                     weights = obj.gama.^(generation - 3:-1:0);
                     sum_weights = sum(weights);
-                    for i = 1:length(Tasks)
-                        mean_R(i) = sum(weights .* HR(i, :)) / sum_weights;
+                    for t = 1:length(Tasks)
+                        mean_R(t) = sum(weights .* HR(t, :)) / sum_weights;
                     end
                     % The selection probability
-                    pro(generation, :) = obj.prob_min / length(Tasks) + (1 - obj.prob_min) * mean_R ./ (sum(mean_R));
+                    prob(generation, :) = obj.prob_min / length(Tasks) + (1 - obj.prob_min) * mean_R ./ (sum(mean_R));
                     % Determine the a task based on the selection probability using roulette wheel method
                     r = rand;
                     for t = 1:length(Tasks)
-                        if r <= sum(pro(generation, 1:t))
+                        if r <= sum(prob(generation, :))
                             k = t;
                             break;
                         end
                     end
                 end
-                % Record the selected task
-                selected_task(generation) = k;
 
                 % generate for the selected task
                 [offspring, r1_task, calls] = OperatorDEORA.generate(1, population, Tasks, k, rmp, obj.F, obj.CR);
@@ -131,14 +130,15 @@ classdef DEORA < Algorithm
 
                 % update rmp
                 for t = 1:length(Tasks)
-                    if t ~= k
-                        if R(t) >= R(k)
-                            rmp(k, t) = min(rmp(k, t) + delta_rmp, 1);
-                            rmp(k, k) = max(rmp(k, k) - delta_rmp, 0);
-                        else
-                            rmp(k, t) = max(rmp(k, t) - delta_rmp, 0);
-                            rmp(k, k) = min(rmp(k, k) + delta_rmp, 1);
-                        end
+                    if t == k
+                        continue;
+                    end
+                    if R(t) >= R(k)
+                        rmp(k, t) = min(rmp(k, t) + delta_rmp, 1);
+                        rmp(k, k) = max(rmp(k, k) - delta_rmp, 0);
+                    else
+                        rmp(k, t) = max(rmp(k, t) - delta_rmp, 0);
+                        rmp(k, k) = min(rmp(k, k) + delta_rmp, 1);
                     end
                 end
 
@@ -150,6 +150,7 @@ classdef DEORA < Algorithm
                 data.convergence(:, generation) = data.convergence(:, generation - 1);
                 data.convergence(k, generation) = bestobj(k);
             end
+
             data.bestX = uni2real(data.bestX, Tasks);
             data.clock_time = toc;
         end
