@@ -1,6 +1,6 @@
 classdef MFEA < Algorithm
     % <Multi> <None>
-    
+
     % @Article{Gupta2016MFEA,
     %   author     = {Gupta, Abhishek and Ong, Yew-Soon and Feng, Liang},
     %   journal    = {IEEE Transactions on Evolutionary Computation},
@@ -49,7 +49,7 @@ classdef MFEA < Algorithm
                 generation = generation + 1;
 
                 % generation
-                [offspring, calls] = OperatorMFEA.generate(1, population, Tasks, obj.rmp, obj.mu, obj.mum);
+                [offspring, calls] = OperatorMFEAalpha.generate(1, population, Tasks, obj.rmp, obj.mu, obj.mum);
                 fnceval_calls = fnceval_calls + calls;
 
                 % selection
