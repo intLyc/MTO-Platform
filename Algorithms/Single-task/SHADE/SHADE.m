@@ -1,4 +1,6 @@
 classdef SHADE < Algorithm
+    % <Single> <None>
+    
     % @InProceedings{Tanabe2013SHADE,
     %   author     = {Tanabe, Ryoji and Fukunaga, Alex},
     %   booktitle  = {2013 IEEE Congress on Evolutionary Computation},

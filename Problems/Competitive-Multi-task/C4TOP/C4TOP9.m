@@ -1,4 +1,5 @@
 classdef C4TOP9 < Problem
+    % <Multi> <Competitive>
 
     properties
     end

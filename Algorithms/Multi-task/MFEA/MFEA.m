@@ -1,4 +1,6 @@
 classdef MFEA < Algorithm
+    % <Multi> <None>
+    
     % @Article{Gupta2016MFEA,
     %   author     = {Gupta, Abhishek and Ong, Yew-Soon and Feng, Liang},
     %   journal    = {IEEE Transactions on Evolutionary Computation},

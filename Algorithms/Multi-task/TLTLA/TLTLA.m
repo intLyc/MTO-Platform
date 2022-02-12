@@ -1,4 +1,6 @@
 classdef TLTLA < Algorithm
+    % <Multi> <None>
+    
     % @Article{Ma2020TLTLA,
     %   author    = {Ma, Xiaoliang and Chen, Qunjian and Yu, Yanan and Sun, Yiwen and Ma, Lijia and Zhu, Zexuan},
     %   journal   = {Frontiers in neuroscience},

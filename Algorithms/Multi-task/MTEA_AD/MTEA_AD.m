@@ -1,4 +1,6 @@
 classdef MTEA_AD < Algorithm
+    % <Multi/Many> <None>
+
     % @Article{Wang2021MTEA-AD,
     %   author     = {Wang, Chao and Liu, Jing and Wu, Kai and Wu, Zhaoyang},
     %   journal    = {IEEE Transactions on Evolutionary Computation},

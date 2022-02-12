@@ -1,4 +1,6 @@
 classdef DEORA < Algorithm
+    % <Multi> <Competitive>
+
     % @Article{Li2022CompetitiveMTO,
     %   author     = {Li, Genghui and Zhang, Qingfu and Wang, Zhenkun},
     %   journal    = {IEEE Transactions on Evolutionary Computation},

@@ -1,4 +1,6 @@
 classdef MFPSO < Algorithm
+    % <Multi> <None>
+    
     % @InProceedings{Feng2017MFDE-MFPSO,
     %   author     = {Feng, L. and Zhou, W. and Zhou, L. and Jiang, S. W. and Zhong, J. H. and Da, B. S. and Zhu, Z. X. and Wang, Y.},
     %   booktitle  = {2017 IEEE Congress on Evolutionary Computation (CEC)},

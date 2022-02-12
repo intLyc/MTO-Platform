@@ -1,4 +1,5 @@
 classdef DE < Algorithm
+    % <Single> <None>
 
     properties (SetAccess = private)
         F = 0.5

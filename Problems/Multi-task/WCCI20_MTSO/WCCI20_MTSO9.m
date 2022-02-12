@@ -1,4 +1,5 @@
 classdef WCCI20_MTSO9 < Problem
+    % <Multi> <None>
 
     properties
     end

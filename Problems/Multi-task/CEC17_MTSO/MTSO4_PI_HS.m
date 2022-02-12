@@ -1,4 +1,5 @@
 classdef MTSO4_PI_HS < Problem
+    % <Multi> <None>
 
     properties
     end

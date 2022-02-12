@@ -1,4 +1,6 @@
 classdef JADE < Algorithm
+    % <Single> <None>
+
     % @InProceedings{Zhang2007JADE,
     %   author     = {Jingqiao Zhang and Sanderson, Arthur C.},
     %   booktitle  = {2007 IEEE Congress on Evolutionary Computation},
@@ -30,7 +32,7 @@ classdef JADE < Algorithm
             iter_num = run_parameter_list(2);
             eva_num = run_parameter_list(3) * length(Tasks);
             tic
-            
+
             data.convergence = [];
             data.bestX = {};
 

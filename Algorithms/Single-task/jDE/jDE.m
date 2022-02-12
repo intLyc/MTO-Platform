@@ -1,4 +1,6 @@
 classdef jDE < Algorithm
+    % <Single> <None>
+
     % @Article{Brest2006jDE,
     %   author  = {Brest, Janez and Greiner, Sao and Boskovic, Borko and Mernik, Marjan and Zumer, Viljem},
     %   journal = {IEEE Transactions on Evolutionary Computation},

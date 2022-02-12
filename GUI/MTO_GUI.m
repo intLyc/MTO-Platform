@@ -15,6 +15,10 @@ classdef MTO_GUI < matlab.apps.AppBase
         TProblemTree                 matlab.ui.container.Tree
         TProblemDropDown             matlab.ui.control.DropDown
         ProblemDropDownLabel         matlab.ui.control.Label
+        TTaskTypeDropDown            matlab.ui.control.DropDown
+        TaskLabel_2                  matlab.ui.control.Label
+        SpecialLabel_2               matlab.ui.control.Label
+        TSpecialTypeDropDown         matlab.ui.control.DropDown
         TPanel2                      matlab.ui.container.Panel
         TP2GridLayout                matlab.ui.container.GridLayout
         TP21GridLayout               matlab.ui.container.GridLayout
@@ -155,63 +159,47 @@ classdef MTO_GUI < matlab.apps.AppBase
     
     methods (Access = public)
         
-        function readAlgoProb(app)
+        function readAlgoProb(app, label_str)
             % load the algorithms and problems list
             
-            app.algo_load = {};
-            app.prob_load = {};
+            app.algo_load = app.readList('../Algorithms', label_str);
+            app.prob_load = app.readList('../Problems', label_str);
             
-            % read algorithms
-            algo_folders = split(genpath(fullfile(fileparts(mfilename('fullpath')),'../Algorithms')),pathsep);
-            for i = 1:length(algo_folders)
-                % check task type
-                if isempty(strfind(algo_folders{i}, app.ETaskTypeDropDown.Value))
-                    continue;
-                end
-                % check special type
-                if isempty(strfind(algo_folders{i}, app.ESpecialTypeDropDown.Value))
-                    continue;
-                end
-                files = what(algo_folders{i});
-                files = files.m;
-                for j = 1:length(files)
-                    f = fopen(files{j});
-                    str = regexp(fgetl(f),'<\s{0,}.*','match');
-                    if contains(str, 'Algorithm')
-                        app.algo_load = [app.algo_load, files{j}(1:end-2)];
-                    end
-                end
-            end
             app.algo_load = sort_nat(app.algo_load);
+            app.prob_load = sort_nat(app.prob_load);    
+        end
+        
+        function read_list = readList(app, folder_name, label_str)
+            % read file name list with labels
             
-            % read problems
-            prob_folders = split(genpath(fullfile(fileparts(mfilename('fullpath')),'../Problems')),pathsep);
-            for i = 1:length(prob_folders)
-                % check task type
-                if isempty(strfind(prob_folders{i}, app.ETaskTypeDropDown.Value))
-                    continue;
-                end
-                % check special type
-                if isempty(strfind(prob_folders{i}, app.ESpecialTypeDropDown.Value))
-                    continue;
-                end
-                files = what(prob_folders{i});
+            read_list = {};
+            folders = split(genpath(fullfile(fileparts(mfilename('fullpath')), folder_name)),pathsep);
+            for i = 1:length(folders)
+                files = what(folders{i});
                 files = files.m;
                 for j = 1:length(files)
-                    f = fopen(files{j});
-                    str = regexp(fgetl(f),'<\s{0,}.*','match');
-                    if contains(str, 'Problem')
-                        app.prob_load = [app.prob_load, files{j}(1:end-2)];
+                    fid = fopen(files{j});
+                    fgetl(fid);
+                    str = regexprep(fgetl(fid),'^\s*%\s*','','once');
+                    fclose(fid);
+                    label_find = regexp(str,'(?<=<).*?(?=>)','match');
+                    label_all = {};
+                    for k = 1:length(label_find)
+                        label_all = [label_all, split(label_find{k}, '/')'];
+                    end
+                    if sum(ismember(label_str, label_all)) == length(label_str)
+                        
+                        read_list = [read_list, files{j}(1:end-2)];
                     end
                 end
             end
-            app.prob_load = sort_nat(app.prob_load);
-            
         end
         
         function TloadAlgoProb(app)
             % load the algorithms and problems in Test module
             
+            label_str = {app.TTaskTypeDropDown.Value, app.TSpecialTypeDropDown.Value};
+            app.readAlgoProb(label_str);
             app.TAlgorithmDropDown.Items = {};
             app.TProblemDropDown.Items = {};
             app.TAlgorithmDropDown.Items = strrep(app.algo_load, '_', '-');
@@ -223,6 +211,8 @@ classdef MTO_GUI < matlab.apps.AppBase
         function EloadAlgoProb(app)
             % load the algorithms and problems in Experiment module
             
+            label_str = {app.ETaskTypeDropDown.Value, app.ESpecialTypeDropDown.Value};
+            app.readAlgoProb(label_str);
             app.EAlgorithmsListBox.Items(:) = [];
             app.EProblemsListBox.Items(:) = [];
             app.EAlgorithmsListBox.Items = strrep(app.algo_load, '_', '-');
@@ -1128,21 +1118,32 @@ classdef MTO_GUI < matlab.apps.AppBase
         function startupFcn(app)
             % App startup function
             
-            % add path
-            % addpath(genpath('../Algorithms/'));
-            % addpath(genpath('../Problems/'));
-            % addpath(genpath('../GUI/'));
-            
-            app.readAlgoProb();
-            app.EloadAlgoProb();
             app.TloadAlgoProb();
             app.TupdateAlgorithm();
             app.TupdateProblem();
             app.TupdateUIAxes();
+            app.EloadAlgoProb();
+        end
+
+        % Value changed function: TTaskTypeDropDown
+        function TTaskTypeDropDownValueChanged(app, event)
+            app.TloadAlgoProb();
+        end
+
+        % Value changed function: TSpecialTypeDropDown
+        function TSpecialTypeDropDownValueChanged(app, event)
+            app.TloadAlgoProb();
         end
 
         % Value changed function: TAlgorithmDropDown
         function TAlgorithmDropDownValueChanged(app, event)
+            app.TupdateAlgorithm();
+            app.Tdata = [];
+            app.TupdateUIAxes();
+        end
+
+        % Drop down opening function: TAlgorithmDropDown
+        function TAlgorithmDropDownOpening(app, event)
             app.TupdateAlgorithm();
             app.Tdata = [];
             app.TupdateUIAxes();
@@ -1175,6 +1176,13 @@ classdef MTO_GUI < matlab.apps.AppBase
 
         % Value changed function: TProblemDropDown
         function TProblemDropDownValueChanged(app, event)
+            app.TupdateProblem();
+            app.Tdata = [];
+            app.TupdateUIAxes();
+        end
+
+        % Drop down opening function: TProblemDropDown
+        function TProblemDropDownOpening(app, event)
             app.TupdateProblem();
             app.Tdata = [];
             app.TupdateUIAxes();
@@ -1245,13 +1253,11 @@ classdef MTO_GUI < matlab.apps.AppBase
 
         % Value changed function: ETaskTypeDropDown
         function ETaskTypeDropDownValueChanged(app, event)
-            app.readAlgoProb();
             app.EloadAlgoProb();
         end
 
         % Value changed function: ESpecialTypeDropDown
         function ESpecialTypeDropDownValueChanged(app, event)
-            app.readAlgoProb();
             app.EloadAlgoProb();
         end
 
@@ -2233,7 +2239,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create MTOPlatformUIFigure and hide until all components are created
             app.MTOPlatformUIFigure = uifigure('Visible', 'off');
             app.MTOPlatformUIFigure.Color = [1 1 1];
-            app.MTOPlatformUIFigure.Position = [100 100 1054 673];
+            app.MTOPlatformUIFigure.Position = [100 100 1066 673];
             app.MTOPlatformUIFigure.Name = 'MTO Platform';
             app.MTOPlatformUIFigure.WindowStyle = 'modal';
 
@@ -2256,7 +2262,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create TestGridLayout
             app.TestGridLayout = uigridlayout(app.TestTab);
-            app.TestGridLayout.ColumnWidth = {'fit', '2.5x', 'fit'};
+            app.TestGridLayout.ColumnWidth = {160, '2.5x', 'fit'};
             app.TestGridLayout.RowHeight = {'1x'};
             app.TestGridLayout.ColumnSpacing = 5;
             app.TestGridLayout.BackgroundColor = [1 1 1];
@@ -2270,7 +2276,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create TP1GridLayout
             app.TP1GridLayout = uigridlayout(app.TPanel1);
             app.TP1GridLayout.ColumnWidth = {'fit', '1x'};
-            app.TP1GridLayout.RowHeight = {'fit', '1x', 'fit', '1x'};
+            app.TP1GridLayout.RowHeight = {'fit', 'fit', 'fit', '1x', 'fit', '1x'};
             app.TP1GridLayout.ColumnSpacing = 5;
             app.TP1GridLayout.Padding = [5 5 5 5];
             app.TP1GridLayout.BackgroundColor = [1 1 1];
@@ -2278,17 +2284,19 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create AlgorithmDropDownLabel
             app.AlgorithmDropDownLabel = uilabel(app.TP1GridLayout);
             app.AlgorithmDropDownLabel.FontWeight = 'bold';
-            app.AlgorithmDropDownLabel.Layout.Row = 1;
+            app.AlgorithmDropDownLabel.Layout.Row = 3;
             app.AlgorithmDropDownLabel.Layout.Column = 1;
             app.AlgorithmDropDownLabel.Text = 'Algorithm';
 
             % Create TAlgorithmDropDown
             app.TAlgorithmDropDown = uidropdown(app.TP1GridLayout);
             app.TAlgorithmDropDown.Items = {};
+            app.TAlgorithmDropDown.DropDownOpeningFcn = createCallbackFcn(app, @TAlgorithmDropDownOpening, true);
             app.TAlgorithmDropDown.ValueChangedFcn = createCallbackFcn(app, @TAlgorithmDropDownValueChanged, true);
             app.TAlgorithmDropDown.Tooltip = {'Select algorithm'};
+            app.TAlgorithmDropDown.FontWeight = 'bold';
             app.TAlgorithmDropDown.BackgroundColor = [1 1 1];
-            app.TAlgorithmDropDown.Layout.Row = 1;
+            app.TAlgorithmDropDown.Layout.Row = 3;
             app.TAlgorithmDropDown.Layout.Column = 2;
             app.TAlgorithmDropDown.Value = {};
 
@@ -2297,7 +2305,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TAlgorithmTree.Multiselect = 'on';
             app.TAlgorithmTree.NodeTextChangedFcn = createCallbackFcn(app, @TAlgorithmTreeNodeTextChanged, true);
             app.TAlgorithmTree.Editable = 'on';
-            app.TAlgorithmTree.Layout.Row = 2;
+            app.TAlgorithmTree.Layout.Row = 4;
             app.TAlgorithmTree.Layout.Column = [1 2];
 
             % Create TProblemTree
@@ -2305,25 +2313,63 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TProblemTree.Multiselect = 'on';
             app.TProblemTree.NodeTextChangedFcn = createCallbackFcn(app, @TProblemTreeNodeTextChanged, true);
             app.TProblemTree.Editable = 'on';
-            app.TProblemTree.Layout.Row = 4;
+            app.TProblemTree.Layout.Row = 6;
             app.TProblemTree.Layout.Column = [1 2];
 
             % Create TProblemDropDown
             app.TProblemDropDown = uidropdown(app.TP1GridLayout);
             app.TProblemDropDown.Items = {};
+            app.TProblemDropDown.DropDownOpeningFcn = createCallbackFcn(app, @TProblemDropDownOpening, true);
             app.TProblemDropDown.ValueChangedFcn = createCallbackFcn(app, @TProblemDropDownValueChanged, true);
             app.TProblemDropDown.Tooltip = {'Select problem'};
+            app.TProblemDropDown.FontWeight = 'bold';
             app.TProblemDropDown.BackgroundColor = [1 1 1];
-            app.TProblemDropDown.Layout.Row = 3;
+            app.TProblemDropDown.Layout.Row = 5;
             app.TProblemDropDown.Layout.Column = 2;
             app.TProblemDropDown.Value = {};
 
             % Create ProblemDropDownLabel
             app.ProblemDropDownLabel = uilabel(app.TP1GridLayout);
             app.ProblemDropDownLabel.FontWeight = 'bold';
-            app.ProblemDropDownLabel.Layout.Row = 3;
+            app.ProblemDropDownLabel.Layout.Row = 5;
             app.ProblemDropDownLabel.Layout.Column = 1;
             app.ProblemDropDownLabel.Text = 'Problem';
+
+            % Create TTaskTypeDropDown
+            app.TTaskTypeDropDown = uidropdown(app.TP1GridLayout);
+            app.TTaskTypeDropDown.Items = {'Multi', 'Many', 'Single'};
+            app.TTaskTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @TTaskTypeDropDownValueChanged, true);
+            app.TTaskTypeDropDown.FontWeight = 'bold';
+            app.TTaskTypeDropDown.BackgroundColor = [1 1 1];
+            app.TTaskTypeDropDown.Layout.Row = 1;
+            app.TTaskTypeDropDown.Layout.Column = 2;
+            app.TTaskTypeDropDown.Value = 'Multi';
+
+            % Create TaskLabel_2
+            app.TaskLabel_2 = uilabel(app.TP1GridLayout);
+            app.TaskLabel_2.FontWeight = 'bold';
+            app.TaskLabel_2.Tooltip = {'Single-task EA Option'};
+            app.TaskLabel_2.Layout.Row = 1;
+            app.TaskLabel_2.Layout.Column = 1;
+            app.TaskLabel_2.Text = 'Task';
+
+            % Create SpecialLabel_2
+            app.SpecialLabel_2 = uilabel(app.TP1GridLayout);
+            app.SpecialLabel_2.FontWeight = 'bold';
+            app.SpecialLabel_2.Tooltip = {'Single-task EA Option'};
+            app.SpecialLabel_2.Layout.Row = 2;
+            app.SpecialLabel_2.Layout.Column = 1;
+            app.SpecialLabel_2.Text = 'Special';
+
+            % Create TSpecialTypeDropDown
+            app.TSpecialTypeDropDown = uidropdown(app.TP1GridLayout);
+            app.TSpecialTypeDropDown.Items = {'None', 'Competitive', 'Constrained'};
+            app.TSpecialTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @TSpecialTypeDropDownValueChanged, true);
+            app.TSpecialTypeDropDown.FontWeight = 'bold';
+            app.TSpecialTypeDropDown.BackgroundColor = [1 1 1];
+            app.TSpecialTypeDropDown.Layout.Row = 2;
+            app.TSpecialTypeDropDown.Layout.Column = 2;
+            app.TSpecialTypeDropDown.Value = 'None';
 
             % Create TPanel2
             app.TPanel2 = uipanel(app.TestGridLayout);
@@ -2474,6 +2520,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.ETestTypeDropDown.Items = {'None', 'Rank sum test', 'Signed rank test'};
             app.ETestTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @ETestTypeDropDownValueChanged, true);
             app.ETestTypeDropDown.Tooltip = {'Statistical Analysis (Only for Objective value)'};
+            app.ETestTypeDropDown.FontWeight = 'bold';
             app.ETestTypeDropDown.BackgroundColor = [1 1 1];
             app.ETestTypeDropDown.Layout.Row = 1;
             app.ETestTypeDropDown.Layout.Column = 6;
@@ -2484,6 +2531,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EAlgorithmDropDown.Items = {'Algorithm'};
             app.EAlgorithmDropDown.ValueChangedFcn = createCallbackFcn(app, @EAlgorithmDropDownValueChanged, true);
             app.EAlgorithmDropDown.Tooltip = {'Statistical Analysis main Algorithm (Only for Objective value)'};
+            app.EAlgorithmDropDown.FontWeight = 'bold';
             app.EAlgorithmDropDown.BackgroundColor = [1 1 1];
             app.EAlgorithmDropDown.Layout.Row = 1;
             app.EAlgorithmDropDown.Layout.Column = 7;
@@ -2494,6 +2542,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EShowTypeDropDown.Items = {'Mean', 'Mean (Std)', 'Median', 'Median (Std)'};
             app.EShowTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EShowTypeDropDownValueChanged, true);
             app.EShowTypeDropDown.Tooltip = {'Data type (Only for Objective value)'};
+            app.EShowTypeDropDown.FontWeight = 'bold';
             app.EShowTypeDropDown.BackgroundColor = [1 1 1];
             app.EShowTypeDropDown.Layout.Row = 1;
             app.EShowTypeDropDown.Layout.Column = 4;
@@ -2504,6 +2553,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EDataTypeDropDown.Items = {'Reps', 'Obj', 'Score', 'min(Obj)', 'Time used'};
             app.EDataTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EDataTypeDropDownValueChanged, true);
             app.EDataTypeDropDown.Tooltip = {'Show Type'};
+            app.EDataTypeDropDown.FontWeight = 'bold';
             app.EDataTypeDropDown.BackgroundColor = [1 1 1];
             app.EDataTypeDropDown.Layout.Row = 1;
             app.EDataTypeDropDown.Layout.Column = 3;
@@ -2514,6 +2564,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EHighlightTypeDropDown.Items = {'None', 'Best', 'Best&Worst'};
             app.EHighlightTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EHighlightTypeDropDownValueChanged, true);
             app.EHighlightTypeDropDown.Tooltip = {'Highlight type'};
+            app.EHighlightTypeDropDown.FontWeight = 'bold';
             app.EHighlightTypeDropDown.BackgroundColor = [1 1 1];
             app.EHighlightTypeDropDown.Layout.Row = 1;
             app.EHighlightTypeDropDown.Layout.Column = 8;
@@ -2534,6 +2585,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EDataFormatDropDown.Items = {'%.2d', '%.3d', '%.4d', '%.5d'};
             app.EDataFormatDropDown.ValueChangedFcn = createCallbackFcn(app, @EDataFormatDropDownValueChanged, true);
             app.EDataFormatDropDown.Tooltip = {'Show Type'};
+            app.EDataFormatDropDown.FontWeight = 'bold';
             app.EDataFormatDropDown.BackgroundColor = [1 1 1];
             app.EDataFormatDropDown.Layout.Row = 1;
             app.EDataFormatDropDown.Layout.Column = 5;
@@ -2573,6 +2625,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EProblemsDropDown.Items = {'Problem '};
             app.EProblemsDropDown.ValueChangedFcn = createCallbackFcn(app, @EProblemsDropDownValueChanged, true);
             app.EProblemsDropDown.Tooltip = {'Task'};
+            app.EProblemsDropDown.FontWeight = 'bold';
             app.EProblemsDropDown.BackgroundColor = [1 1 1];
             app.EProblemsDropDown.Layout.Row = 1;
             app.EProblemsDropDown.Layout.Column = 7;
@@ -2583,6 +2636,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EYLimTypeDropDown.Items = {'log(Objective Value)', 'Objective Value'};
             app.EYLimTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EYLimTypeDropDownValueChanged, true);
             app.EYLimTypeDropDown.Tooltip = {'YLim Type'};
+            app.EYLimTypeDropDown.FontWeight = 'bold';
             app.EYLimTypeDropDown.BackgroundColor = [1 1 1];
             app.EYLimTypeDropDown.Layout.Row = 1;
             app.EYLimTypeDropDown.Layout.Column = 6;
@@ -2602,6 +2656,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EFigureTypeDropDown = uidropdown(app.EP3F1GridLayout);
             app.EFigureTypeDropDown.Items = {'eps', 'png', 'pdf'};
             app.EFigureTypeDropDown.Tooltip = {'Save figure type'};
+            app.EFigureTypeDropDown.FontWeight = 'bold';
             app.EFigureTypeDropDown.BackgroundColor = [1 1 1];
             app.EFigureTypeDropDown.Layout.Row = 1;
             app.EFigureTypeDropDown.Layout.Column = 2;
@@ -2612,6 +2667,8 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EMarkerIndicesEditField.Limits = [0 Inf];
             app.EMarkerIndicesEditField.RoundFractionalValues = 'on';
             app.EMarkerIndicesEditField.ValueChangedFcn = createCallbackFcn(app, @EMarkerIndicesEditFieldValueChanged, true);
+            app.EMarkerIndicesEditField.HorizontalAlignment = 'center';
+            app.EMarkerIndicesEditField.FontWeight = 'bold';
             app.EMarkerIndicesEditField.Tooltip = {'Marker Indices'};
             app.EMarkerIndicesEditField.Layout.Row = 1;
             app.EMarkerIndicesEditField.Layout.Column = 4;
@@ -2622,6 +2679,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EConvergenceTypeDropDown.Items = {'Obj', 'min(Obj)'};
             app.EConvergenceTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EConvergenceTypeDropDownValueChanged, true);
             app.EConvergenceTypeDropDown.Tooltip = {'YLim Type'};
+            app.EConvergenceTypeDropDown.FontWeight = 'bold';
             app.EConvergenceTypeDropDown.BackgroundColor = [1 1 1];
             app.EConvergenceTypeDropDown.Layout.Row = 1;
             app.EConvergenceTypeDropDown.Layout.Column = 5;
@@ -2677,6 +2735,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.ERepsEditField.RoundFractionalValues = 'on';
             app.ERepsEditField.ValueDisplayFormat = '%d';
             app.ERepsEditField.HorizontalAlignment = 'center';
+            app.ERepsEditField.FontWeight = 'bold';
             app.ERepsEditField.Layout.Row = 1;
             app.ERepsEditField.Layout.Column = [2 3];
             app.ERepsEditField.Value = 30;
@@ -2745,13 +2804,13 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create ETaskTypeDropDown
             app.ETaskTypeDropDown = uidropdown(app.EP1GridLayout);
-            app.ETaskTypeDropDown.Items = {'-', 'Multi', 'Many', 'Single'};
+            app.ETaskTypeDropDown.Items = {'Multi', 'Many', 'Single'};
             app.ETaskTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @ETaskTypeDropDownValueChanged, true);
             app.ETaskTypeDropDown.FontWeight = 'bold';
             app.ETaskTypeDropDown.BackgroundColor = [1 1 1];
             app.ETaskTypeDropDown.Layout.Row = 3;
             app.ETaskTypeDropDown.Layout.Column = [2 3];
-            app.ETaskTypeDropDown.Value = '-';
+            app.ETaskTypeDropDown.Value = 'Multi';
 
             % Create ELoadDataButton
             app.ELoadDataButton = uibutton(app.EP1GridLayout, 'push');
@@ -2773,13 +2832,13 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create ESpecialTypeDropDown
             app.ESpecialTypeDropDown = uidropdown(app.EP1GridLayout);
-            app.ESpecialTypeDropDown.Items = {'-', 'Competitive', 'Constrained'};
+            app.ESpecialTypeDropDown.Items = {'None', 'Competitive', 'Constrained'};
             app.ESpecialTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @ESpecialTypeDropDownValueChanged, true);
             app.ESpecialTypeDropDown.FontWeight = 'bold';
             app.ESpecialTypeDropDown.BackgroundColor = [1 1 1];
             app.ESpecialTypeDropDown.Layout.Row = 4;
             app.ESpecialTypeDropDown.Layout.Column = [2 3];
-            app.ESpecialTypeDropDown.Value = '-';
+            app.ESpecialTypeDropDown.Value = 'None';
 
             % Create EPanel2
             app.EPanel2 = uipanel(app.ExperimentsGridLayout);

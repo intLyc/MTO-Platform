@@ -1,4 +1,5 @@
 classdef MTSO2_CI_MS < Problem
+    % <Multi> <None>
 
     properties
     end

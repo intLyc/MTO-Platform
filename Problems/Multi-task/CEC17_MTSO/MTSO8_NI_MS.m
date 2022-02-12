@@ -1,4 +1,5 @@
 classdef MTSO8_NI_MS < Problem
+    % <Multi> <None>
 
     properties
     end

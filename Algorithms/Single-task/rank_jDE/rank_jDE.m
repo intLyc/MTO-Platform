@@ -1,4 +1,6 @@
 classdef rank_jDE < Algorithm
+    % <Single> <None>
+
     % @Article{Gong2013rank-DE,
     %   author     = {Gong, Wenyin and Cai, Zhihua},
     %   journal    = {IEEE Transactions on Cybernetics},
@@ -35,7 +37,7 @@ classdef rank_jDE < Algorithm
 
             data.convergence = [];
             data.bestX = {};
-            
+
             for sub_task = 1:length(Tasks)
                 Task = Tasks(sub_task);
 

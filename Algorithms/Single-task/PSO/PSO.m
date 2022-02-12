@@ -1,4 +1,5 @@
 classdef PSO < Algorithm
+    % <Single> <None>
 
     properties (SetAccess = private)
         wmax = 0.9; % inertia weight
@@ -31,7 +32,7 @@ classdef PSO < Algorithm
 
             data.convergence = [];
             data.bestX = {};
-            
+
             for sub_task = 1:length(Tasks)
                 Task = Tasks(sub_task);
 

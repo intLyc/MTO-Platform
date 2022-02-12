@@ -1,4 +1,5 @@
 classdef MTSO6_PI_LS < Problem
+    % <Multi> <None>
 
     properties
     end

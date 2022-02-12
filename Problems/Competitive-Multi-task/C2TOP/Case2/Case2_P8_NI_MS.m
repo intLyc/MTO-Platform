@@ -1,4 +1,5 @@
 classdef Case2_P8_NI_MS < Problem
+    % <Multi> <Competitive>
 
     properties
     end

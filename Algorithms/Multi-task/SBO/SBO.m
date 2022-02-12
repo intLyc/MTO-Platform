@@ -1,4 +1,6 @@
 classdef SBO < Algorithm
+    % <Many> <None>
+
     % @Article{Liaw2019SBO,
     %   author     = {Liaw, Rung-Tzuo and Ting, Chuan-Kang},
     %   journal    = {Proceedings of the AAAI Conference on Artificial Intelligence},

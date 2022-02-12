@@ -1,4 +1,6 @@
 classdef EMEA < Algorithm
+    % <Multi> <None>
+    
     % @Article{Feng2019EMEA,
     %   author     = {Feng, Liang and Zhou, Lei and Zhong, Jinghui and Gupta, Abhishek and Ong, Yew-Soon and Tan, Kay-Chen and Qin, A. K.},
     %   journal    = {IEEE Transactions on Cybernetics},

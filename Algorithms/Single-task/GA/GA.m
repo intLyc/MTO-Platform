@@ -1,4 +1,5 @@
 classdef GA < Algorithm
+    % <Single> <None>
 
     properties (SetAccess = private)
         mu = 2; % index of Simulated Binary Crossover (tunable)
@@ -22,7 +23,7 @@ classdef GA < Algorithm
             iter_num = run_parameter_list(2);
             eva_num = run_parameter_list(3) * length(Tasks);
             tic
-            
+
             data.convergence = [];
             data.bestX = {};
 

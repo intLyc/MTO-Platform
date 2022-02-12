@@ -1,4 +1,6 @@
 classdef LDA_MFEA < Algorithm
+    % <Multi> <None>
+    
     % @inproceedings{Bali2017LDA-MFEA,
     %   author    = {Bali, Kavitesh Kumar and Gupta, Abhishek and Feng, Liang and Ong, Yew Soon and Tan Puay Siew},
     %   booktitle = {2017 IEEE Congress on Evolutionary Computation (CEC)},

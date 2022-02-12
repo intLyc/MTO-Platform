@@ -1,4 +1,5 @@
 classdef WCCI20_MaTSO4 < Problem
+    % <Many> <None>
 
     properties
         task_size = 10;
