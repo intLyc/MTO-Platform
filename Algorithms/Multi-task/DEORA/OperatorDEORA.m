@@ -14,7 +14,7 @@ classdef OperatorDEORA < OperatorDE
 
                 rnd = randperm(length(population{k}), 3);
                 x1 = rnd(1); x2 = rnd(2); x3 = rnd(3);
-                
+
                 r = rand();
                 for t = 1:length(Tasks)
                     if r <= sum(rmp(k, 1:t))
@@ -26,8 +26,10 @@ classdef OperatorDEORA < OperatorDE
                 offspring(i) = OperatorDE.mutate_rand_1(offspring(i), population{r1_task(i)}(x1), population{k}(x2), population{k}(x3), F);
                 offspring(i) = OperatorDE.crossover(offspring(i), population{k}(i), pCR);
 
-                offspring(i).rnvec(offspring(i).rnvec > 1) = 1;
-                offspring(i).rnvec(offspring(i).rnvec < 0) = 0;
+                vio_low = find(offspring(i).rnvec < 0);
+                offspring(i).rnvec(vio_low) = (population{k}(i).rnvec(vio_low) + 0) / 2;
+                vio_up = find(offspring(i).rnvec > 1);
+                offspring(i).rnvec(vio_up) = (population{k}.rnvec(vio_up) + 1) / 2;
             end
             if callfun
                 [offspring, calls] = evaluate(offspring, Tasks(k), 1);
