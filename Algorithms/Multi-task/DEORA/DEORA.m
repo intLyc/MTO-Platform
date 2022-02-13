@@ -94,7 +94,7 @@ classdef DEORA < Algorithm
                     % Determine the a task based on the selection probability using roulette wheel method
                     r = rand;
                     for t = 1:length(Tasks)
-                        if r <= sum(prob(generation, :))
+                        if r <= sum(prob(generation, 1:t))
                             k = t;
                             break;
                         end
