@@ -64,7 +64,7 @@ classdef DEORA < Algorithm
             rmp(logical(eye(size(rmp)))) = (1 - obj.rmp0);
 
             for t = 1:length(Tasks)
-                for i = 1:pop_size
+                for i = 1:sub_pop
                     population{t}(i) = Individual();
                     population{t}(i).rnvec = rand(1, max([Tasks.dims]));
                 end
