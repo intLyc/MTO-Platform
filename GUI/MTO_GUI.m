@@ -643,8 +643,8 @@ classdef MTO_GUI < matlab.apps.AppBase
             for prob = 1:length(app.Edata.prob_cell)
                 tasks_num = app.Edata.tasks_num_list(prob);
                 for task = 1:tasks_num
-                    mean_task = nanmean(app.Efitness(row_i, :, :), "all");
-                    std_task = std(app.Efitness(row_i, :, :), 0, "all");
+                    mean_task = nanmean(app.Efitness(row_i, :, :), 'all');
+                    std_task = std(app.Efitness(row_i, :, :), 0, 'all');
                     for algo = 1:length(app.Edata.algo_cell)
                         score(prob, algo) = score(prob, algo) + nanmean((app.Efitness(row_i, algo, :) - mean_task)./std_task);
                     end
