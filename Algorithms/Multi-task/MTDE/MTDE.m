@@ -1,6 +1,15 @@
 classdef MTDE < Algorithm
     % <Multi> <None/Competitive>
 
+    % @Article{Li2022CompetitiveMTO,
+    %   author     = {Li, Genghui and Zhang, Qingfu and Wang, Zhenkun},
+    %   journal    = {IEEE Transactions on Evolutionary Computation},
+    %   title      = {Evolutionary Competitive Multitasking Optimization},
+    %   year       = {2022},
+    %   pages      = {1-1},
+    %   doi        = {10.1109/TEVC.2022.3141819},
+    % }
+
     properties (SetAccess = private)
         F = 0.5
         CR = 0.9
