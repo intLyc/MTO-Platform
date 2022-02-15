@@ -12,12 +12,12 @@ classdef OperatorjDE < Operator
 
                 % parameter self-adaptation
                 offspring(i).F = population(i).F;
-                offspring(i).pCR = population(i).pCR;
+                offspring(i).CR = population(i).CR;
                 if rand < t1
                     offspring(i).F = rand * 0.9 + 0.1;
                 end
                 if rand < t2
-                    offspring(i).pCR = rand;
+                    offspring(i).CR = rand;
                 end
 
                 A = randperm(length(population));
@@ -45,7 +45,7 @@ classdef OperatorjDE < Operator
 
         function object = crossover(object, x)
             for j = 1:length(object.rnvec)
-                if rand > object.pCR
+                if rand > object.CR
                     object.rnvec(j) = x.rnvec(j);
                 end
             end

@@ -1,6 +1,6 @@
 classdef IndividualJADE < Individual
     properties
         F;
-        pCR;
+        CR;
     end
 end

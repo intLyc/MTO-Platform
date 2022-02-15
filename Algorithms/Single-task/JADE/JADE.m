@@ -54,7 +54,7 @@ classdef JADE < Algorithm
                 while generation < iter_num && fnceval_calls < round(eva_num / length(Tasks))
                     generation = generation + 1;
 
-                    % calculate individual F and pCR
+                    % calculate individual F and CR
                     for i = 1:length(population)
                         population(i).F = cauchyrnd(uF, 0.1);
                         while (population(i).F <= 0)
@@ -62,9 +62,9 @@ classdef JADE < Algorithm
                         end
                         population(i).F(population(i).F > 1) = 1;
 
-                        population(i).pCR = normrnd(uCR, 0.1);
-                        population(i).pCR(population(i).pCR > 1) = 1;
-                        population(i).pCR(population(i).pCR < 0) = 0;
+                        population(i).CR = normrnd(uCR, 0.1);
+                        population(i).CR(population(i).CR > 1) = 1;
+                        population(i).CR(population(i).CR < 0) = 0;
                     end
 
                     % generation
@@ -76,7 +76,7 @@ classdef JADE < Algorithm
 
                     % calculate SF SCR
                     SF = [population(replace).F];
-                    SCR = [population(replace).pCR];
+                    SCR = [population(replace).CR];
 
                     % update uF uCR
                     for i = 1:length(SF)

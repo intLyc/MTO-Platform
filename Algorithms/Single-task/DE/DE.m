@@ -3,19 +3,19 @@ classdef DE < Algorithm
 
     properties (SetAccess = private)
         F = 0.5
-        pCR = 0.6
+        CR = 0.6
     end
 
     methods
         function parameter = getParameter(obj)
             parameter = {'F: Mutation Factor', num2str(obj.F), ...
-                        'pCR: Crossover Probability', num2str(obj.pCR)};
+                        'CR: Crossover Probability', num2str(obj.CR)};
         end
 
         function obj = setParameter(obj, parameter_cell)
             count = 1;
             obj.F = str2double(parameter_cell{count}); count = count + 1;
-            obj.pCR = str2double(parameter_cell{count}); count = count + 1;
+            obj.CR = str2double(parameter_cell{count}); count = count + 1;
         end
 
         function data = run(obj, Tasks, run_parameter_list)
@@ -43,7 +43,7 @@ classdef DE < Algorithm
                     generation = generation + 1;
 
                     % generation
-                    [offspring, calls] = OperatorDE.generate(1, population, Task, obj.F, obj.pCR);
+                    [offspring, calls] = OperatorDE.generate(1, population, Task, obj.F, obj.CR);
                     fnceval_calls = fnceval_calls + calls;
 
                     % selection

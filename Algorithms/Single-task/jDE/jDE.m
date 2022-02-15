@@ -43,10 +43,10 @@ classdef jDE < Algorithm
 
                 % initialize
                 [population, fnceval_calls] = initialize(IndividualjDE, sub_pop, Task, 1);
-                % initialize F and pCR
+                % initialize F and CR
                 for i = 1:length(population)
                     population(i).F = rand * 0.9 + 0.1;
-                    population(i).pCR = rand;
+                    population(i).CR = rand;
                 end
 
                 [bestobj, idx] = min([population.factorial_costs]);

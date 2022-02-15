@@ -1,6 +1,6 @@
 classdef OperatorMFDE < OperatorDE
     methods (Static)
-        function [offspring, calls] = generate(callfun, population, Tasks, rmp, F, pCR)
+        function [offspring, calls] = generate(callfun, population, Tasks, rmp, F, CR)
             if isempty(population)
                 offspring = population;
                 calls = 0;
@@ -39,7 +39,7 @@ classdef OperatorMFDE < OperatorDE
                 end
 
                 offspring(i) = OperatorDE.mutate_rand_1(offspring(i), population(x1), population(x2), population(x3), F);
-                offspring(i) = OperatorDE.crossover(offspring(i), population(i), pCR);
+                offspring(i) = OperatorDE.crossover(offspring(i), population(i), CR);
 
                 offspring(i).rnvec(offspring(i).rnvec > 1) = 1;
                 offspring(i).rnvec(offspring(i).rnvec < 0) = 0;

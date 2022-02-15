@@ -19,7 +19,7 @@ classdef EMEA < Algorithm
         GA_mu = 2; % index of Simulated Binary Crossover (tunable)
         GA_mum = 5; % index of polynomial mutation
         DE_F = 0.5;
-        DE_pCR = 0.6;
+        DE_CR = 0.6;
     end
 
     methods
@@ -30,7 +30,7 @@ classdef EMEA < Algorithm
                         'mu: index of Simulated Binary Crossover (tunable)', num2str(obj.GA_mu), ...
                         'mum: index of polynomial mutation', num2str(obj.GA_mum), ...
                         'F: DE Mutation Factor', num2str(obj.DE_F), ...
-                        'pCR: DE Crossover Probability', num2str(obj.DE_pCR)};
+                        'CR: DE Crossover Probability', num2str(obj.DE_CR)};
         end
 
         function obj = setParameter(obj, parameter_cell)
@@ -41,7 +41,7 @@ classdef EMEA < Algorithm
             obj.GA_mu = str2num(parameter_cell{count}); count = count + 1;
             obj.GA_mum = str2double(parameter_cell{count}); count = count + 1;
             obj.DE_F = str2double(parameter_cell{count}); count = count + 1;
-            obj.DE_pCR = str2double(parameter_cell{count}); count = count + 1;
+            obj.DE_CR = str2double(parameter_cell{count}); count = count + 1;
         end
 
         function data = run(obj, Tasks, run_parameter_list)
@@ -77,7 +77,7 @@ classdef EMEA < Algorithm
                         case 'GA'
                             offspring = OperatorGA.generate(0, parent, Tasks(t), obj.GA_mu, obj.GA_mum);
                         case 'DE'
-                            offspring = OperatorDE.generate(0, parent, Tasks(t), obj.DE_F, obj.DE_pCR);
+                            offspring = OperatorDE.generate(0, parent, Tasks(t), obj.DE_F, obj.DE_CR);
                     end
 
                     % Transfer

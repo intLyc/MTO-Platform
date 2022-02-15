@@ -44,7 +44,7 @@ classdef OperatorJADE < Operator
 
         function object = crossover(object, current)
             for j = 1:length(object.rnvec)
-                if rand > current.pCR
+                if rand > current.CR
                     object.rnvec(j) = current.rnvec(j);
                 end
             end

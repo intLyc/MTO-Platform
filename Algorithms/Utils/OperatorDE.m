@@ -1,6 +1,6 @@
 classdef OperatorDE < Operator
     methods (Static)
-        function [offspring, calls] = generate(callfun, population, Task, F, pCR)
+        function [offspring, calls] = generate(callfun, population, Task, F, CR)
             if length(population) <= 3
                 offspring = population;
                 calls = 0;
@@ -17,7 +17,7 @@ classdef OperatorDE < Operator
                 x3 = A(mod(3 - 1, length(A)) + 1);
 
                 offspring(i) = OperatorDE.mutate_rand_1(offspring(i), population(x1), population(x2), population(x3), F);
-                offspring(i) = OperatorDE.crossover(offspring(i), population(i), pCR);
+                offspring(i) = OperatorDE.crossover(offspring(i), population(i), CR);
 
                 offspring(i).rnvec(offspring(i).rnvec > 1) = 1;
                 offspring(i).rnvec(offspring(i).rnvec < 0) = 0;
@@ -33,9 +33,9 @@ classdef OperatorDE < Operator
             object.rnvec = x1.rnvec + F * (x2.rnvec - x3.rnvec);
         end
 
-        function object = crossover(object, x, pCR)
+        function object = crossover(object, x, CR)
             for j = 1:length(object.rnvec)
-                if rand > pCR
+                if rand > CR
                     object.rnvec(j) = x.rnvec(j);
                 end
             end

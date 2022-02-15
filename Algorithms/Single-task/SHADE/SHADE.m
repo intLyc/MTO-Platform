@@ -54,7 +54,7 @@ classdef SHADE < Algorithm
                 while generation < iter_num && fnceval_calls < round(eva_num / length(Tasks))
                     generation = generation + 1;
 
-                    % calculate individual F and pCR
+                    % calculate individual F and CR
                     for i = 1:length(population)
                         idx = randi(obj.H);
                         uF = MF(idx);
@@ -65,9 +65,9 @@ classdef SHADE < Algorithm
                         population(i).F(population(i).F > 1) = 1;
 
                         uCR = MCR(idx);
-                        population(i).pCR = normrnd(uCR, 0.1);
-                        population(i).pCR(population(i).pCR > 1) = 1;
-                        population(i).pCR(population(i).pCR < 0) = 0;
+                        population(i).CR = normrnd(uCR, 0.1);
+                        population(i).CR(population(i).CR > 1) = 1;
+                        population(i).CR(population(i).CR < 0) = 0;
                     end
 
                     % generation
@@ -79,7 +79,7 @@ classdef SHADE < Algorithm
 
                     % calculate SF SCR
                     SF = [population(replace).F];
-                    SCR = [population(replace).pCR];
+                    SCR = [population(replace).CR];
                     dif = abs([population(replace).factorial_costs] - [offspring(replace).factorial_costs]);
                     dif = dif ./ sum(dif);
 

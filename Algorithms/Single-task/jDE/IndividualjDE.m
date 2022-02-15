@@ -1,6 +1,6 @@
 classdef IndividualjDE < Individual
     properties
         F;
-        pCR;
+        CR;
     end
 end
