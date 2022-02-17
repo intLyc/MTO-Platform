@@ -39,9 +39,9 @@ classdef Problem < handle
 
         function obj = setRunParameter(obj, run_parameter)
             % set run_parameter, cannot be changed
-            obj.sub_pop = str2num(run_parameter{1});
-            obj.sub_iter = str2num(run_parameter{2});
-            obj.sub_eva = str2num(run_parameter{3});
+            obj.sub_pop = str2double(run_parameter{1});
+            obj.sub_iter = str2double(run_parameter{2});
+            obj.sub_eva = str2double(run_parameter{3});
         end
     end
 

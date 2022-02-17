@@ -36,9 +36,9 @@ classdef EMEA < Algorithm
         function obj = setParameter(obj, parameter_cell)
             count = 1;
             obj.Op = parameter_cell{count}; count = count + 1;
-            obj.Snum = str2num(parameter_cell{count}); count = count + 1;
-            obj.Gap = str2num(parameter_cell{count}); count = count + 1;
-            obj.GA_mu = str2num(parameter_cell{count}); count = count + 1;
+            obj.Snum = str2double(parameter_cell{count}); count = count + 1;
+            obj.Gap = str2double(parameter_cell{count}); count = count + 1;
+            obj.GA_mu = str2double(parameter_cell{count}); count = count + 1;
             obj.GA_mum = str2double(parameter_cell{count}); count = count + 1;
             obj.DE_F = str2double(parameter_cell{count}); count = count + 1;
             obj.DE_CR = str2double(parameter_cell{count}); count = count + 1;

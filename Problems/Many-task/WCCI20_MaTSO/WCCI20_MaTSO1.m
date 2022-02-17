@@ -17,8 +17,8 @@ classdef WCCI20_MaTSO1 < Problem
         function obj = setParameter(obj, parameter_cell)
             obj.setRunParameter(parameter_cell(1:3));
             count = 4;
-            obj.task_size = str2num(parameter_cell{count}); count = count + 1;
-            obj.dims = str2num(parameter_cell{count}); count = count + 1;
+            obj.task_size = str2double(parameter_cell{count}); count = count + 1;
+            obj.dims = str2double(parameter_cell{count}); count = count + 1;
         end
 
         function Tasks = getTasks(obj)
