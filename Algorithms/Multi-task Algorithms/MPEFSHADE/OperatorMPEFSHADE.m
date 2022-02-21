@@ -37,7 +37,7 @@ classdef OperatorMPEFSHADE < OperatorSHADE
                 if rand < rmp
                     x2 = other(mod(2 - 1, length(other)) + 1);
                     x3 = other(mod(3 - 1, length(other)) + 1);
-                    offspring(i)=offspring(i).rnvec + F* (pbest.rnvec - offspring(i).rnvec) + F* (x2.rnvec - x3.rnvec);
+                    offspring(i)=OperatorJADE.mutate_current_pbest_1(offspring(i), population(i), population(pbest), population(x2), population(x3))
                     Flag(i)=1; % the ith  individual use information communication
                 else
                     x2 = A(mod(2 - 1, length(A)) + 1);
