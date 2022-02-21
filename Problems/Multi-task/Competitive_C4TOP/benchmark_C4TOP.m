@@ -15,7 +15,7 @@ function Tasks = benchmark_C4TOP(index)
     %   Output:
     %   - Tasks: benchmark problem set
 
-    file_dir = './Problems/Competitive-Multi-task/C4TOP/';
+    file_dir = './Problems/Multi-task/Competitive_C4TOP/';
     load([file_dir, 'M_matrix.mat']);
     load([file_dir, 'O_matrix.mat']);
 
