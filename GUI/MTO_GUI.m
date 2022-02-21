@@ -226,6 +226,8 @@ classdef MTO_GUI < matlab.apps.AppBase
             % in Test module
             
             app.TStartButton.Enable = value;
+            app.TTaskTypeDropDown.Enable = value;
+            app.TSpecialTypeDropDown.Enable = value;
             app.TAlgorithmDropDown.Enable = value;
             app.TAlgorithmTree.Enable = value;
             app.TProblemDropDown.Enable = value;
