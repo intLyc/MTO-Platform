@@ -237,107 +237,112 @@ function Tasks = benchmark_C4TOP(index)
             Tasks(4).Ub = Xmax(6) * ones(1, Tasks(4).dims); % Lower bound of Task 3
 
         case 11 % The combination of f3 and f4
+            shift = -25;
             Tasks(1).dims = D(2); % dimensionality of Task 1
-            Tasks(1).fnc = @(x)Griewank(x, M_matrix{2}, O_matrix{2}, fbias(2));
+            Tasks(1).fnc = @(x)Griewank(x, M_matrix{2}, O_matrix{2}, fbias(2) + shift);
             Tasks(1).Lb = Xmin(2) * ones(1, Tasks(1).dims); % Upper bound of Task 1
             Tasks(1).Ub = Xmax(2) * ones(1, Tasks(1).dims); % Lower bound of Task 1
 
             Tasks(2).dims = D(3); % dimensionality of Task 2
-            Tasks(2).fnc = @(x)Sphere(x, M_matrix{3}, O_matrix{3}, fbias(3));
+            Tasks(2).fnc = @(x)Sphere(x, M_matrix{3}, O_matrix{3}, fbias(3) + shift);
             Tasks(2).Lb = Xmin(3) * ones(1, Tasks(2).dims); % Upper bound of Task 2
             Tasks(2).Ub = Xmax(3) * ones(1, Tasks(2).dims); % Lower bound of Task 2
 
             Tasks(3).dims = D(4); % dimensionality of Task 4
-            Tasks(3).fnc = @(x)Rosenbrock(x, M_matrix{4}, O_matrix{4}, fbias(4));
+            Tasks(3).fnc = @(x)Rosenbrock(x, M_matrix{4}, O_matrix{4}, fbias(4) + shift);
             Tasks(3).Lb = Xmin(4) * ones(1, Tasks(3).dims); % Upper bound of Task 4
             Tasks(3).Ub = Xmax(4) * ones(1, Tasks(3).dims); % Lower bound of Task 4
 
             Tasks(4).dims = D(5); % dimensionality of Task 3
-            Tasks(4).fnc = @(x)Ackley(x, M_matrix{5}, O_matrix{5}, fbias(5));
+            Tasks(4).fnc = @(x)Ackley(x, M_matrix{5}, O_matrix{5}, fbias(5) + shift);
             Tasks(4).Lb = Xmin(5) * ones(1, Tasks(4).dims); % Upper bound of Task 3
             Tasks(4).Ub = Xmax(5) * ones(1, Tasks(4).dims); % Lower bound of Task 3
 
         case 12 % The combination of f3 and f5
+            shift = -10;
             Tasks(1).dims = D(2); % dimensionality of Task 1
-            Tasks(1).fnc = @(x)Griewank(x, M_matrix{2}, O_matrix{2}, fbias(2));
+            Tasks(1).fnc = @(x)Griewank(x, M_matrix{2}, O_matrix{2}, fbias(2) + shift);
             Tasks(1).Lb = Xmin(2) * ones(1, Tasks(1).dims); % Upper bound of Task 1
             Tasks(1).Ub = Xmax(2) * ones(1, Tasks(1).dims); % Lower bound of Task 1
 
             Tasks(2).dims = D(3); % dimensionality of Task 2
-            Tasks(2).fnc = @(x)Sphere(x, M_matrix{3}, O_matrix{3}, fbias(3));
+            Tasks(2).fnc = @(x)Sphere(x, M_matrix{3}, O_matrix{3}, fbias(3) + shift);
             Tasks(2).Lb = Xmin(3) * ones(1, Tasks(2).dims); % Upper bound of Task 2
             Tasks(2).Ub = Xmax(3) * ones(1, Tasks(2).dims); % Lower bound of Task 2
 
             Tasks(3).dims = D(4); % dimensionality of Task 4
-            Tasks(3).fnc = @(x)Rosenbrock(x, M_matrix{4}, O_matrix{4}, fbias(4));
+            Tasks(3).fnc = @(x)Rosenbrock(x, M_matrix{4}, O_matrix{4}, fbias(4) + shift);
             Tasks(3).Lb = Xmin(4) * ones(1, Tasks(3).dims); % Upper bound of Task 4
             Tasks(3).Ub = Xmax(4) * ones(1, Tasks(3).dims); % Lower bound of Task 4
 
             Tasks(4).dims = D(6); % dimensionality of Task 3
-            Tasks(4).fnc = @(x)Weierstrass(x, M_matrix{6}, O_matrix{6}, fbias(6));
+            Tasks(4).fnc = @(x)Weierstrass(x, M_matrix{6}, O_matrix{6}, fbias(6) + shift);
             Tasks(4).Lb = Xmin(6) * ones(1, Tasks(4).dims); % Upper bound of Task 3
             Tasks(4).Ub = Xmax(6) * ones(1, Tasks(4).dims); % Lower bound of Task 3
 
         case 13 % The combination of f3 and f6
+            shift = -10;
             Tasks(1).dims = D(2); % dimensionality of Task 1
-            Tasks(1).fnc = @(x)Griewank(x, M_matrix{2}, O_matrix{2}, fbias(2));
+            Tasks(1).fnc = @(x)Griewank(x, M_matrix{2}, O_matrix{2}, fbias(2) + shift);
             Tasks(1).Lb = Xmin(2) * ones(1, Tasks(1).dims); % Upper bound of Task 1
             Tasks(1).Ub = Xmax(2) * ones(1, Tasks(1).dims); % Lower bound of Task 1
 
             Tasks(2).dims = D(3); % dimensionality of Task 2
-            Tasks(2).fnc = @(x)Sphere(x, M_matrix{3}, O_matrix{3}, fbias(3));
+            Tasks(2).fnc = @(x)Sphere(x, M_matrix{3}, O_matrix{3}, fbias(3) + shift);
             Tasks(2).Lb = Xmin(3) * ones(1, Tasks(2).dims); % Upper bound of Task 2
             Tasks(2).Ub = Xmax(3) * ones(1, Tasks(2).dims); % Lower bound of Task 2
 
             Tasks(3).dims = D(5); % dimensionality of Task 4
-            Tasks(3).fnc = @(x)Ackley(x, M_matrix{5}, O_matrix{5}, fbias(5));
+            Tasks(3).fnc = @(x)Ackley(x, M_matrix{5}, O_matrix{5}, fbias(5) + shift);
             Tasks(3).Lb = Xmin(5) * ones(1, Tasks(3).dims); % Upper bound of Task 4
             Tasks(3).Ub = Xmax(5) * ones(1, Tasks(3).dims); % Lower bound of Task 4
 
             Tasks(4).dims = D(6); % dimensionality of Task 3
-            Tasks(4).fnc = @(x)Weierstrass(x, M_matrix{6}, O_matrix{6}, fbias(6));
+            Tasks(4).fnc = @(x)Weierstrass(x, M_matrix{6}, O_matrix{6}, fbias(6) + shift);
             Tasks(4).Lb = Xmin(6) * ones(1, Tasks(4).dims); % Upper bound of Task 3
             Tasks(4).Ub = Xmax(6) * ones(1, Tasks(4).dims); % Lower bound of Task 3
 
         case 14 % The combination of f4 and f5
+            shift = -10;
             Tasks(1).dims = D(2); % dimensionality of Task 1
-            Tasks(1).fnc = @(x)Griewank(x, M_matrix{2}, O_matrix{2}, fbias(2));
+            Tasks(1).fnc = @(x)Griewank(x, M_matrix{2}, O_matrix{2}, fbias(2) + shift);
             Tasks(1).Lb = Xmin(2) * ones(1, Tasks(1).dims); % Upper bound of Task 1
             Tasks(1).Ub = Xmax(2) * ones(1, Tasks(1).dims); % Lower bound of Task 1
 
             Tasks(2).dims = D(4); % dimensionality of Task 2
-            Tasks(2).fnc = @(x)Rosenbrock(x, M_matrix{4}, O_matrix{4}, fbias(4));
+            Tasks(2).fnc = @(x)Rosenbrock(x, M_matrix{4}, O_matrix{4}, fbias(4) + shift);
             Tasks(2).Lb = Xmin(4) * ones(1, Tasks(2).dims); % Upper bound of Task 2
             Tasks(2).Ub = Xmax(4) * ones(1, Tasks(2).dims); % Lower bound of Task 2
 
             Tasks(3).dims = D(5); % dimensionality of Task 4
-            Tasks(3).fnc = @(x)Ackley(x, M_matrix{5}, O_matrix{5}, fbias(5));
+            Tasks(3).fnc = @(x)Ackley(x, M_matrix{5}, O_matrix{5}, fbias(5) + shift);
             Tasks(3).Lb = Xmin(5) * ones(1, Tasks(3).dims); % Upper bound of Task 4
             Tasks(3).Ub = Xmax(5) * ones(1, Tasks(3).dims); % Lower bound of Task 4
 
             Tasks(4).dims = D(6); % dimensionality of Task 3
-            Tasks(4).fnc = @(x)Weierstrass(x, M_matrix{6}, O_matrix{6}, fbias(6));
+            Tasks(4).fnc = @(x)Weierstrass(x, M_matrix{6}, O_matrix{6}, fbias(6) + shift);
             Tasks(4).Lb = Xmin(6) * ones(1, Tasks(4).dims); % Upper bound of Task 3
             Tasks(4).Ub = Xmax(6) * ones(1, Tasks(4).dims); % Lower bound of Task 3
 
         case 15 % The combination of f4 and f6
+            shift = -10;
             Tasks(1).dims = D(3); % dimensionality of Task 1
-            Tasks(1).fnc = @(x)Griewank(x, M_matrix{2}, O_matrix{2}, fbias(2));
+            Tasks(1).fnc = @(x)Sphere(x, M_matrix{3}, O_matrix{3}, fbias(3) + shift);
             Tasks(1).Lb = Xmin(3) * ones(1, Tasks(1).dims); % Upper bound of Task 1
             Tasks(1).Ub = Xmax(3) * ones(1, Tasks(1).dims); % Lower bound of Task 1
 
             Tasks(2).dims = D(4); % dimensionality of Task 2
-            Tasks(2).fnc = @(x)Rosenbrock(x, M_matrix{4}, O_matrix{4}, fbias(4));
+            Tasks(2).fnc = @(x)Rosenbrock(x, M_matrix{4}, O_matrix{4}, fbias(4) + shift);
             Tasks(2).Lb = Xmin(4) * ones(1, Tasks(2).dims); % Upper bound of Task 2
             Tasks(2).Ub = Xmax(4) * ones(1, Tasks(2).dims); % Lower bound of Task 2
 
             Tasks(3).dims = D(5); % dimensionality of Task 4
-            Tasks(3).fnc = @(x)Ackley(x, M_matrix{5}, O_matrix{5}, fbias(5));
+            Tasks(3).fnc = @(x)Ackley(x, M_matrix{5}, O_matrix{5}, fbias(5) + shift);
             Tasks(3).Lb = Xmin(5) * ones(1, Tasks(3).dims); % Upper bound of Task 4
             Tasks(3).Ub = Xmax(5) * ones(1, Tasks(3).dims); % Lower bound of Task 4
 
             Tasks(4).dims = D(6); % dimensionality of Task 3
-            Tasks(4).fnc = @(x)Weierstrass(x, M_matrix{6}, O_matrix{6}, fbias(6));
+            Tasks(4).fnc = @(x)Weierstrass(x, M_matrix{6}, O_matrix{6}, fbias(6) + shift);
             Tasks(4).Lb = Xmin(6) * ones(1, Tasks(4).dims); % Upper bound of Task 3
             Tasks(4).Ub = Xmax(6) * ones(1, Tasks(4).dims); % Lower bound of Task 3
     end
