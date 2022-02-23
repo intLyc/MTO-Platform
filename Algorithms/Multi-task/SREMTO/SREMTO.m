@@ -38,10 +38,11 @@ classdef SREMTO < Algorithm
         function data = run(obj, Tasks, run_parameter_list)
             sub_pop = run_parameter_list(1);
             iter_num = run_parameter_list(2);
-            eva_num = run_parameter_list(3) * length(Tasks);
+            sub_eva = run_parameter_list(3);
+            pop_size = sub_pop * length(Tasks);
+            eva_num = sub_eva * length(Tasks);
             tic
 
-            pop_size = sub_pop * length(Tasks);
             a1 = (obj.TH - 1) ./ (sub_pop - 1);
             b1 = (sub_pop - obj.TH) ./ (sub_pop - 1);
             a2 = (- obj.TH) ./ (pop_size - sub_pop);

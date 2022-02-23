@@ -1,6 +1,6 @@
 classdef LDA_MFEA < Algorithm
     % <Multi> <None>
-    
+
     % @inproceedings{Bali2017LDA-MFEA,
     %   author    = {Bali, Kavitesh Kumar and Gupta, Abhishek and Feng, Liang and Ong, Yew Soon and Tan Puay Siew},
     %   booktitle = {2017 IEEE Congress on Evolutionary Computation (CEC)},
@@ -36,10 +36,11 @@ classdef LDA_MFEA < Algorithm
         function data = run(obj, Tasks, run_parameter_list)
             sub_pop = run_parameter_list(1);
             iter_num = run_parameter_list(2);
-            eva_num = run_parameter_list(3) * length(Tasks);
-            tic
-            
+            sub_eva = run_parameter_list(3);
             pop_size = sub_pop * length(Tasks);
+            eva_num = sub_eva * length(Tasks);
+            tic
+
             % initialize
             [population, fnceval_calls, bestobj, data.bestX] = initializeMF(Individual, pop_size, Tasks, length(Tasks));
             data.convergence(:, 1) = bestobj;

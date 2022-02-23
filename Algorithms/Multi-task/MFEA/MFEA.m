@@ -35,10 +35,10 @@ classdef MFEA < Algorithm
         function data = run(obj, Tasks, run_parameter_list)
             sub_pop = run_parameter_list(1);
             iter_num = run_parameter_list(2);
-            eva_num = run_parameter_list(3) * length(Tasks);
-            tic
-
+            sub_eva = run_parameter_list(3);
             pop_size = sub_pop * length(Tasks);
+            eva_num = sub_eva * length(Tasks);
+            tic
 
             % initialize
             [population, fnceval_calls, bestobj, data.bestX] = initializeMF(Individual, pop_size, Tasks, length(Tasks));
