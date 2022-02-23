@@ -2570,7 +2570,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EHighlightTypeDropDown.BackgroundColor = [1 1 1];
             app.EHighlightTypeDropDown.Layout.Row = 1;
             app.EHighlightTypeDropDown.Layout.Column = 8;
-            app.EHighlightTypeDropDown.Value = 'None';
+            app.EHighlightTypeDropDown.Value = 'Best';
 
             % Create ESaveTableButton
             app.ESaveTableButton = uibutton(app.EP3T1GridLayout, 'push');
