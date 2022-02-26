@@ -1797,29 +1797,61 @@ classdef MTO_GUI < matlab.apps.AppBase
             fig_dir_name = [dir_name, '/Figure/'];
             mkdir(fig_dir_name);
             draw_obj = drawFigure;
-            for prob = 1:length(app.Edata.prob_cell)
-                tasks_num = app.Edata.tasks_num_list(prob);
-                for task = 1:tasks_num
-                    for algo = 1:length(app.Edata.algo_cell)
-                        convergence_task = app.Edata.result(prob, algo).convergence(task:tasks_num:end, :);
-                        convergence = mean(convergence_task, 1);
-                        x_cell{algo} = 1:size(convergence,2);
-                        y_cell{algo} = convergence;
-                    end
-                    switch app.EYLimTypeDropDown.Value
-                        case 'log(objective value)'
-                            for i = 1:length(y_cell)
-                                y_cell{i} = log(y_cell{i});
+            switch app.EConvergenceTypeDropDown.Value
+                case 'Obj'
+                    for prob = 1:length(app.Edata.prob_cell)
+                        tasks_num = app.Edata.tasks_num_list(prob);
+                        for task = 1:tasks_num
+                            for algo = 1:length(app.Edata.algo_cell)
+                                convergence_task = app.Edata.result(prob, algo).convergence(task:tasks_num:end, :);
+                                convergence = mean(convergence_task, 1);
+                                x_cell{algo} = 1:size(convergence,2);
+                                y_cell{algo} = convergence;
                             end
+                            switch app.EYLimTypeDropDown.Value
+                                case 'log(Objective Value)'
+                                    for i = 1:length(y_cell)
+                                        y_cell{i} = log(y_cell{i});
+                                    end
+                            end
+                            draw_obj.setXY(x_cell, y_cell);
+                            draw_obj.setXYlabel('Generation', app.EYLimTypeDropDown.Value);
+                            draw_obj.setLegend(app.Edata.algo_cell);
+                            draw_obj.setTitle([app.Edata.prob_cell{prob}, '-T', num2str(task)]);
+                            draw_obj.setSaveDir(fig_dir_name);
+                            draw_obj.setFigureType(app.EFigureTypeDropDown.Value);
+                            draw_obj.setMarkerIndices(app.EMarkerIndicesEditField.Value);
+                            draw_obj.save();
+                        end
                     end
-                    draw_obj.setXY(x_cell, y_cell);
-                    draw_obj.setXYlabel('Generation', app.EYLimTypeDropDown.Value);
-                    draw_obj.setLegend(app.Edata.algo_cell);
-                    draw_obj.setTitle([app.Edata.prob_cell{prob}, '-T', num2str(task)]);
-                    draw_obj.setSaveDir(fig_dir_name);
-                    draw_obj.setFigureType(app.EFigureTypeDropDown.Value);
-                    draw_obj.save();
-                end
+                    
+                case 'min(Obj)'
+                    for prob = 1:length(app.Edata.prob_cell)
+                        tasks_num = app.Edata.tasks_num_list(prob);
+                        for algo = 1:length(app.Edata.algo_cell)
+                            convergence_rep = [];
+                            for rep = 1:app.Edata.reps
+                                convergence_rep(rep, :) = min(app.Edata.result(prob, algo).convergence(1+(rep-1)*tasks_num:rep*tasks_num, :), [], 1);
+                            end
+                            convergence = mean(convergence_rep, 1);
+                            x_cell{algo} = 1:size(convergence,2);
+                            y_cell{algo} = convergence;
+                        end
+                        switch app.EYLimTypeDropDown.Value
+                            case 'log(Objective Value)'
+                                for i = 1:length(y_cell)
+                                    y_cell{i} = log(y_cell{i});
+                                end
+                        end
+                        draw_obj.setXY(x_cell, y_cell);
+                        draw_obj.setXYlabel('Generation', app.EYLimTypeDropDown.Value);
+                        draw_obj.setLegend(app.Edata.algo_cell);
+                        draw_obj.setTitle(app.Edata.prob_cell{prob});
+                        draw_obj.setSaveDir(fig_dir_name);
+                        draw_obj.setFigureType(app.EFigureTypeDropDown.Value);
+                        draw_obj.setMarkerIndices(app.EMarkerIndicesEditField.Value);
+                        draw_obj.save();
+                    end
             end
         end
 
@@ -2241,7 +2273,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create MTOPlatformUIFigure and hide until all components are created
             app.MTOPlatformUIFigure = uifigure('Visible', 'off');
             app.MTOPlatformUIFigure.Color = [1 1 1];
-            app.MTOPlatformUIFigure.Position = [100 100 1066 673];
+            app.MTOPlatformUIFigure.Position = [100 100 1066 674];
             app.MTOPlatformUIFigure.Name = 'MTO Platform';
             app.MTOPlatformUIFigure.WindowStyle = 'modal';
 
@@ -2264,7 +2296,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create TestGridLayout
             app.TestGridLayout = uigridlayout(app.TestTab);
-            app.TestGridLayout.ColumnWidth = {160, '2.5x', 'fit'};
+            app.TestGridLayout.ColumnWidth = {170, '1x', 200};
             app.TestGridLayout.RowHeight = {'1x'};
             app.TestGridLayout.ColumnSpacing = 5;
             app.TestGridLayout.BackgroundColor = [1 1 1];
@@ -2690,7 +2722,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create EConvergenceTrendUIAxes
             app.EConvergenceTrendUIAxes = uiaxes(app.EP3FGridLayout);
             xlabel(app.EConvergenceTrendUIAxes, 'Generation')
-            ylabel(app.EConvergenceTrendUIAxes, 'Objective value')
+            ylabel(app.EConvergenceTrendUIAxes, 'Objective Value')
             app.EConvergenceTrendUIAxes.PlotBoxAspectRatio = [1.37847866419295 1 1];
             app.EConvergenceTrendUIAxes.Layout.Row = 2;
             app.EConvergenceTrendUIAxes.Layout.Column = 1;

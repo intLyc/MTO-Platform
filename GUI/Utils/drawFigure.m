@@ -9,6 +9,7 @@ classdef drawFigure < handle
         legend_cell % contains {legend1, legend2}
         save_dir = './'
         figure_type = 'png'
+        marker_indices = 50
     end
 
     methods
@@ -46,6 +47,10 @@ classdef drawFigure < handle
             obj.figure_type = figure_type;
         end
 
+        function obj = setMarkerIndices(obj, marker_indices)
+            obj.marker_indices = marker_indices;
+        end
+
         function obj = save(obj)
             fig = figure('Visible', 'off');
 
@@ -67,7 +72,7 @@ classdef drawFigure < handle
                 end
                 p = plot(obj.x_cell{i}, obj.y_cell{i}, ['-', marker]);
                 p.LineWidth = 1;
-                p.MarkerIndices = 1:50:max_x;
+                p.MarkerIndices = 1:obj.marker_indices:max_x;
                 p.MarkerSize = 5;
                 hold on;
             end
