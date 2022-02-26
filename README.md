@@ -28,20 +28,22 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 
 ### Add your own algorithm
 
-- Inherit the **Base/Algorithm** class from the Algorithms folder to implement a new algorithm class and put it in the Algorithms folder or its subfolders
+- Inherit the **Algorithms/Algorithm.m** class from the Algorithms folder to implement a new algorithm class and put it in the Algorithms folder or its subfolders
 - Implement the inherited virtual functions according to the annotations of each virtual function in the Algorithm class.
+- Add label to the second line. <Single/Multi/Many> <None/Competitive/Constrained>
 - *Refer to the MFEA algorithm implementation*
 
 ### Add your own problem
 
-- Inherit the **Base/Problem** class from the Problem folder to implement a new problem class and put it in the Problem folder or its subfolders
+- Inherit the **Problems/Problem.m** class from the Problem folder to implement a new problem class and put it in the Problem folder or its subfolders
 - Implement the inherited virtual functions according to the annotations of each virtual function in the Problem class.
-- *Refer to the CEC2017_MTSO problem implementation*
+- Add label to the second line. <Single/Multi/Many> <None/Competitive/Constrained>
+- *Refer to the CEC17_MTSO problem implementation*
 
 ### Use App Designer to modify the GUI interface
 
 - Open the **GUI/MTO_Platform.mlapp** project file with App Designer in matlab and modify the GUI interface.
-- Export to MTO.m file after modification
+- Export to MTO_GUI.m file after modification
 
 
 ## Module
@@ -57,8 +59,8 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 2. Problem selection
     - Select a problem and display it in the Problem Tree
     - Open the Problem Node to display the problem parameter settings. *double click to modify it*
-3. 1-dimensional image of the problem
-    - Select Tasks Figure (1D) in the upper right corner of the Axes area on the Test Module right.
+3. The figure of the problem
+    - Select Tasks Figure in the upper right corner of the Axes area on the Test Module right.
     - For each selected problem, draw the image of all the tasks of the problem independent variable in 1D. *To facilitate the observation of inter-task characteristics, the adaptation value of each task is normalized to show*
 4. Convergence graph
     - Select Convergence in the upper right corner of the Axes area on the right
@@ -90,8 +92,9 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
     - Select Table on the right side to display the experimental data
     - Display data
       - Reps
-      - Fitness
+      - Obj
       - Score
+      - min(Obj) (for Competitive-MTO)
       - Time Used
     - Data type
       - Mean
@@ -113,9 +116,12 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 
 6. Convergence graph
     - Select Figure on the right side to display the experimental convergence graph
+    - Problem type
+      - Obj
+      - min(Obj) (for Competitive-MTO)
     - Y-axis type
-      - log(fitness)
-      - fitness
+      - log(Obj)
+      - Obj
     - Problem selection, select a task of a problem, display the convergence graph of each algorithm of the task
     - Save all data, select the save file type, click Save All Firuge button to save the convergence graphs of all tasks. *You can modify **drawFigure.m** in the GUI/Utils folder to adjust the drawing details*.
 
@@ -174,20 +180,22 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 
 ### 加入自己的算法
 
-- 继承Algorithms文件夹下的**Base/Algorithm**类实现新的算法类，并放入Algorithms文件夹或其子文件夹内
-- 按照Algorithm类中的各虚函数的注释实现继承的虚函数。
+- 继承Algorithms文件夹下的**Algorithms/Algorithm.m**类实现新的算法类，并放入Algorithms文件夹或其子文件夹内
+- 按照Algorithm类中的各虚函数的注释实现继承的虚函数
+- 在文件的第2行添加标签 <Single/Multi/Many> <None/Competitive/Constrained>
 - *可参考MFEA算法的实现*
 
 ### 加入自己的问题
 
 - 继承Problem文件夹下的**Base/Problem**类实现新的问题类，并放入Problem文件夹或其子文件夹内
-- 按照Problem类中的各虚函数的注释实现继承的虚函数。
-- *可参考CEC2017_MTSO问题的实现*
+- 按照Problem类中的各虚函数的注释实现继承的虚函数
+- 在文件的第2行添加标签 <Single/Multi/Many> <None/Competitive/Constrained>
+- *可参考CEC17_MTSO问题的实现*
 
 ### 使用App Designer修改GUI界面
 
 - 使用matlab的App Designer打开**GUI/MTO_Platform.mlapp**工程文件，进行GUI界面的修改
-- 修改完后导出为MTO.m文件
+- 修改完后导出为**MTO_GUI.m**文件
 
 
 ## 功能
@@ -203,8 +211,8 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 2. 问题选择
     - 选取一个问题，显示在Problem Tree中
     - 打开Problem Node会显示问题参数设置。*双击修改*
-3. 问题1维图像
-    - 在右侧Axes区域右上角选择Tasks Figure (1D)
+3. 问题图像
+    - 在右侧Axes区域右上角选择Tasks Figure
     - 每选取一个问题，就绘制该问题自变量在1维上所有任务的图像。*为方便观察任务间特征，将每个任务的适应值归一化展示*
 4. 收敛图
     - 在右侧Axes区域右上角选择Convergence
@@ -236,8 +244,9 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
     - 右侧选取Table，显示实验数据
     - 显示数据
       - Reps 独立运行次数
-      - Fitness 目标值/适应值
+      - Obj 目标值
       - Score 多任务分数
+      - min(Obj) 任务组中的最小目标值 (Competitive-MTO 问题)
       - Time Used 运行时间
     - 数据类型
       - Mean 平均
@@ -259,9 +268,12 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 
 6. 收敛图
     - 右侧选取Figure，显示实验收敛图
+    - 问题类型
+      - Obj
+      - min(Obj) (Competitive-MTO 问题)
     - Y轴类型
-      - log(fitness)
-      - fitness
+      - log(Obj)
+      - Obj
     - 问题选择，选择某一问题的某个任务，显示该任务各算法的收敛图
     - 保存所有数据，选取保存文件类型，点击Save All Firuge按钮保存所有任务的收敛图。*可修改GUI/Utils文件夹下的**drawFigure.m**调整绘制细节*
 
