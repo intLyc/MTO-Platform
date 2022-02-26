@@ -12,7 +12,7 @@ classdef SHADE < Algorithm
 
     properties (SetAccess = private)
         p = 0.1;
-        H = 50;
+        H = 100;
     end
 
     methods
