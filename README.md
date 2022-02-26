@@ -51,7 +51,7 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 ### I. Test Module
 
 ![Test Module Tasks](./Doc/Readme_Figure/MTO-Platform%20Test%20Module.png)
-![Test Module Convergence](./DocReadme_Figure/MTO-Platform%20Test%20Module%202.png)
+![Test Module Convergence](./Doc/Readme_Figure/MTO-Platform%20Test%20Module%202.png)
 
 1. Algorithm selection
     - Select an algorithm to be displayed in the Algorithm Tree
