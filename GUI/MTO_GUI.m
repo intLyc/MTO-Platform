@@ -30,6 +30,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         TP3GridLayout                matlab.ui.container.GridLayout
         OutputTextAreaLabel          matlab.ui.control.Label
         TOutputTextArea              matlab.ui.control.TextArea
+        Emailint_lyccugeducnLabel    matlab.ui.control.Label
         ExperimentTab                matlab.ui.container.Tab
         ExperimentsGridLayout        matlab.ui.container.GridLayout
         EPanel3                      matlab.ui.container.Panel
@@ -2273,7 +2274,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create MTOPlatformUIFigure and hide until all components are created
             app.MTOPlatformUIFigure = uifigure('Visible', 'off');
             app.MTOPlatformUIFigure.Color = [1 1 1];
-            app.MTOPlatformUIFigure.Position = [100 100 1066 674];
+            app.MTOPlatformUIFigure.Position = [100 100 1034 650];
             app.MTOPlatformUIFigure.Name = 'MTO Platform';
             app.MTOPlatformUIFigure.WindowStyle = 'modal';
 
@@ -2474,7 +2475,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create TP3GridLayout
             app.TP3GridLayout = uigridlayout(app.TPanel3);
             app.TP3GridLayout.ColumnWidth = {'1x'};
-            app.TP3GridLayout.RowHeight = {'fit', '1x'};
+            app.TP3GridLayout.RowHeight = {'fit', '1x', 'fit'};
             app.TP3GridLayout.ColumnSpacing = 5;
             app.TP3GridLayout.RowSpacing = 5;
             app.TP3GridLayout.Padding = [5 5 5 5];
@@ -2494,6 +2495,14 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TOutputTextArea.FontWeight = 'bold';
             app.TOutputTextArea.Layout.Row = 2;
             app.TOutputTextArea.Layout.Column = 1;
+
+            % Create Emailint_lyccugeducnLabel
+            app.Emailint_lyccugeducnLabel = uilabel(app.TP3GridLayout);
+            app.Emailint_lyccugeducnLabel.HorizontalAlignment = 'center';
+            app.Emailint_lyccugeducnLabel.FontWeight = 'bold';
+            app.Emailint_lyccugeducnLabel.Layout.Row = 3;
+            app.Emailint_lyccugeducnLabel.Layout.Column = 1;
+            app.Emailint_lyccugeducnLabel.Text = 'Email: int_lyc@cug.edu.cn';
 
             % Create ExperimentTab
             app.ExperimentTab = uitab(app.MTOPlatformTabGroup);
