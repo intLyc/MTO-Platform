@@ -1,6 +1,6 @@
 classdef SHADE < Algorithm
     % <Single> <None>
-    
+
     % @InProceedings{Tanabe2013SHADE,
     %   author     = {Tanabe, Ryoji and Fukunaga, Alex},
     %   booktitle  = {2013 IEEE Congress on Evolutionary Computation},
@@ -47,6 +47,7 @@ classdef SHADE < Algorithm
                 H_idx = 1;
                 MF = 0.5 .* ones(obj.H, 1);
                 MCR = 0.5 .* ones(obj.H, 1);
+                arc = IndividualJADE.empty();
 
                 [bestobj, idx] = min([population.factorial_costs]);
                 bestX = population(idx).rnvec;
@@ -73,11 +74,19 @@ classdef SHADE < Algorithm
                     end
 
                     % generation
-                    [offspring, calls] = OperatorJADE.generate(1, population, Task, obj.p);
+                    union = [population, arc];
+                    [offspring, calls] = OperatorSHADE.generate(1, Task, population, union, obj.p);
                     fnceval_calls = fnceval_calls + calls;
 
                     % selection
                     replace = [population.factorial_costs] > [offspring.factorial_costs];
+
+                    % update archive
+                    arc = [arc, population(replace)];
+                    if length(arc) > length(population)
+                        rnd = randperm(length(arc));
+                        arc = arc(rnd(1:length(population)));
+                    end
 
                     % calculate SF SCR
                     SF = [population(replace).F];
