@@ -2,14 +2,14 @@ classdef MFMP < Algorithm
     % <Multi> <None>
 
     % @Article{Li2020MFMP,
-    %   title    = {Multifactorial Optimization Via Explicit Multipopulation Evolutionary Framework},
-    %   author   = {Genghui Li and Qiuzhen Lin and Weifeng Gao},
-    %   journal  = {Inform Sciences},
-    %   year     = {2020},
-    %   issn     = {0020-0255},
-    %   pages    = {1555-1570},
-    %   volume   = {512},
-    %   doi      = {https://doi.org/10.1016/j.ins.2019.10.066},
+    %   title      = {Multifactorial Optimization Via Explicit Multipopulation Evolutionary Framework},
+    %   author     = {Genghui Li and Qiuzhen Lin and Weifeng Gao},
+    %   journal    = {Information Sciences},
+    %   year       = {2020},
+    %   issn       = {0020-0255},
+    %   pages      = {1555-1570},
+    %   volume     = {512},
+    %   doi        = {https://doi.org/10.1016/j.ins.2019.10.066},
     % }
 
     properties (SetAccess = private)
