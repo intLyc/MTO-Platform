@@ -2,12 +2,11 @@ classdef WCCI20_MaTSO1 < Problem
     % <Many> <None>
 
     properties
-        task_size = 10;
+        task_size = 50;
         dims = 50;
     end
 
     methods
-
         function parameter = getParameter(obj)
             parameter = {'Task Num', num2str(obj.task_size), ...
                         'Dims', num2str(obj.dims)};
@@ -15,8 +14,8 @@ classdef WCCI20_MaTSO1 < Problem
         end
 
         function obj = setParameter(obj, parameter_cell)
-            obj.setRunParameter(parameter_cell(1:3));
-            count = 4;
+            obj.setRunParameter(parameter_cell(1:2));
+            count = 3;
             obj.task_size = str2double(parameter_cell{count}); count = count + 1;
             obj.dims = str2double(parameter_cell{count}); count = count + 1;
         end

@@ -44,8 +44,7 @@ classdef DEORA < Algorithm
 
         function data = run(obj, Tasks, run_parameter_list)
             sub_pop = run_parameter_list(1);
-            iter_num = run_parameter_list(2);
-            sub_eva = run_parameter_list(3);
+            sub_eva = run_parameter_list(2);
             pop_size = sub_pop * length(Tasks);
             eva_num = sub_eva * length(Tasks);
             tic
@@ -53,14 +52,9 @@ classdef DEORA < Algorithm
             population = {};
             fnceval_calls = 0;
             HR = []; % HR is used to store the historical rewards
-            if iter_num == inf
-                gen = (eva_num - (pop_size * length(Tasks) - 1)) / pop_size;
-                T = obj.beta * gen;
-                delta_rmp = 1 / gen;
-            else
-                T = obj.beta * iter_num;
-                delta_rmp = 1 / iter_num;
-            end
+            gen = (eva_num - (pop_size * length(Tasks) - 1)) / pop_size;
+            T = obj.beta * gen;
+            delta_rmp = 1 / gen;
             rmp = obj.rmp0 * ones(length(Tasks), length(Tasks)) / (length(Tasks) - 1);
             rmp(logical(eye(size(rmp)))) = (1 - obj.rmp0);
 
@@ -78,7 +72,7 @@ classdef DEORA < Algorithm
             end
 
             generation = 1;
-            while generation < iter_num && fnceval_calls < eva_num
+            while fnceval_calls < eva_num
                 generation = generation + 1;
 
                 % Select the k-th task to optimize

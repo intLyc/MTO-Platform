@@ -1,6 +1,6 @@
 classdef MFPSO < Algorithm
     % <Multi> <None>
-    
+
     % @InProceedings{Feng2017MFDE-MFPSO,
     %   author     = {Feng, L. and Zhou, W. and Zhou, L. and Jiang, S. W. and Zhong, J. H. and Da, B. S. and Zhu, Z. X. and Wang, Y.},
     %   booktitle  = {2017 IEEE Congress on Evolutionary Computation (CEC)},
@@ -41,8 +41,7 @@ classdef MFPSO < Algorithm
 
         function data = run(obj, Tasks, run_parameter_list)
             sub_pop = run_parameter_list(1);
-            iter_num = run_parameter_list(2);
-            sub_eva = run_parameter_list(3);
+            sub_eva = run_parameter_list(2);
             pop_size = sub_pop * length(Tasks);
             eva_num = sub_eva * length(Tasks);
             tic
@@ -58,14 +57,10 @@ classdef MFPSO < Algorithm
             end
 
             generation = 1;
-            while generation < iter_num && fnceval_calls < eva_num
+            while fnceval_calls < eva_num
                 generation = generation + 1;
 
-                if iter_num == inf
-                    w = obj.wmax - (obj.wmax - obj.wmin) * fnceval_calls / eva_num;
-                else
-                    w = obj.wmax - (obj.wmax - obj.wmin) * generation / iter_num;
-                end
+                w = obj.wmax - (obj.wmax - obj.wmin) * fnceval_calls / eva_num;
 
                 % generation
                 [population, calls] = OperatorMFPSO.generate(1, population, Tasks, obj.rmp, w, obj.c1, obj.c2, obj.c3, data.bestX);

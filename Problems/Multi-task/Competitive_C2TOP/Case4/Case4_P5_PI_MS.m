@@ -10,7 +10,7 @@ classdef Case4_P5_PI_MS < Problem
         end
 
         function obj = setParameter(obj, parameter_cell)
-            obj.setRunParameter(parameter_cell(1:3));
+            obj.setRunParameter(parameter_cell);
         end
 
         function Tasks = getTasks(obj)

@@ -5,7 +5,6 @@ classdef Problem < handle
     properties
         name % problem's name
         sub_pop = 50 % each task population size
-        sub_iter = inf % num of max generation
         sub_eva = 50 * 1000 % num of max evaluation for each task
     end
 
@@ -28,20 +27,18 @@ classdef Problem < handle
         function run_parameter = getRunParameter(obj)
             % get run_parameter, cannot be changed
             run_parameter = {'N: Each Task Population Size', num2str(obj.sub_pop), ...
-                        'G: Each Task Generation Max', num2str(obj.sub_iter), ...
-                            'E: Each Task Evaluation Max', num2str(obj.sub_eva)};
+                        'E: Each Task Evaluation Max', num2str(obj.sub_eva)};
         end
 
         function run_parameter_list = getRunParameterList(obj)
             % get run_parameter_list, cannot be changed
-            run_parameter_list = [obj.sub_pop, obj.sub_iter, obj.sub_eva];
+            run_parameter_list = [obj.sub_pop, obj.sub_eva];
         end
 
         function obj = setRunParameter(obj, run_parameter)
             % set run_parameter, cannot be changed
             obj.sub_pop = str2double(run_parameter{1});
-            obj.sub_iter = str2double(run_parameter{2});
-            obj.sub_eva = str2double(run_parameter{3});
+            obj.sub_eva = str2double(run_parameter{2});
         end
     end
 

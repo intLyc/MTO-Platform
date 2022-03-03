@@ -46,8 +46,7 @@ classdef EMEA < Algorithm
 
         function data = run(obj, Tasks, run_parameter_list)
             sub_pop = run_parameter_list(1);
-            iter_num = run_parameter_list(2);
-            sub_eva = run_parameter_list(3);
+            sub_eva = run_parameter_list(2);
             pop_size = sub_pop * length(Tasks);
             eva_num = sub_eva * length(Tasks);
             tic
@@ -66,7 +65,7 @@ classdef EMEA < Algorithm
             end
 
             generation = 1;
-            while generation < iter_num && fnceval_calls < eva_num
+            while fnceval_calls < eva_num
                 generation = generation + 1;
 
                 for t = 1:length(Tasks)

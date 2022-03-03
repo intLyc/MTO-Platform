@@ -52,13 +52,11 @@ function MTO_commandline(algo_cell, prob_cell, reps, save_name)
     for prob = 1:length(prob_cell)
         run_parameter_list = prob_obj_cell{prob}.getRunParameterList();
         data_save.sub_pop(prob) = run_parameter_list(1);
-        data_save.iter_num(prob) = run_parameter_list(2);
-        data_save.eva_num(prob) = run_parameter_list(3);
+        data_save.sub_eva(prob) = run_parameter_list(2);
         tasks_num_list(prob) = length(prob_obj_cell{prob}.getTasks());
     end
     data_save.sub_pop = data_save.sub_pop';
-    data_save.iter_num = data_save.iter_num';
-    data_save.eva_num = data_save.eva_num';
+    data_save.sub_eva = data_save.sub_eva';
     data_save.algo_cell = algo_cell;
     data_save.prob_cell = prob_cell';
     data_save.tasks_num_list = tasks_num_list';

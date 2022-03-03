@@ -167,7 +167,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.prob_load = app.readList('../Problems', label_str);
             
             app.algo_load = sort_nat(app.algo_load);
-            app.prob_load = sort_nat(app.prob_load);    
+            app.prob_load = sort_nat(app.prob_load);
         end
         
         function read_list = readList(app, folder_name, label_str)
@@ -406,7 +406,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             
             Tasks = app.TProblemTree.Children(1).NodeData.getTasks();
             no_of_tasks = length(Tasks);
-                                   
+            
             x = 0:1/150:1;
             
             legend_cell = {};
@@ -440,7 +440,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                 p1.MarkerEdgeColor = color(mod(no-1, size(color, 1))+1, :);
                 % p1.MarkerFaceColor = color(mod(no-1, size(color, 1))+1, :);
                 hold(app.TUIAxes, 'on');
-                                
+                
                 legend_cell = [legend_cell, ['T', num2str(no)]];
                 plot_handle = [plot_handle, p1];
             end
@@ -460,11 +460,11 @@ classdef MTO_GUI < matlab.apps.AppBase
             % draw
             tasks_name = {};
             for task = 1:app.Tdata.tasks_num
-%                 if ~isempty(strfind(app.TShowTypeDropDown.Value, 'Obj'))
-%                     convergence = app.Tdata.convergence(task, :);
-%                 elseif ~isempty(strfind(app.TShowTypeDropDown.Value, 'FR'))
-%                     convergence = app.Tdata.convergence_fr(task, :);
-%                 end
+                %                 if ~isempty(strfind(app.TShowTypeDropDown.Value, 'Obj'))
+                %                     convergence = app.Tdata.convergence(task, :);
+                %                 elseif ~isempty(strfind(app.TShowTypeDropDown.Value, 'FR'))
+                %                     convergence = app.Tdata.convergence_fr(task, :);
+                %                 end
                 convergence = app.Tdata.convergence(task, :);
                 x = 1:size(convergence,2);
                 y = convergence;
@@ -633,7 +633,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
             drawnow;
         end
-       
+        
         function EupdateTableScore(app)
             % update table score
             
@@ -654,7 +654,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     row_i = row_i + 1;
                 end
             end
-
+            
             app.Etable_data = score;
             app.EUITable.Data = app.Etable_data;
             drawnow;
@@ -878,7 +878,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                         y_cell{algo} = convergence;
                     end
             end
-                
+            
             if strcmp(app.EYLimTypeDropDown.Value, 'log(Objective Value)')
                 for i = 1:length(y_cell)
                     y_cell{i} = log(y_cell{i});
@@ -959,13 +959,11 @@ classdef MTO_GUI < matlab.apps.AppBase
             data_selected = data_selected(app.Ddata_mark == 1);
             % check pop, generation and evaluate
             sub_pop = data_selected(1).NodeData.sub_pop;
-            iter_num = data_selected(1).NodeData.iter_num;
-            eva_num = data_selected(1).NodeData.eva_num;
+            sub_eva = data_selected(1).NodeData.sub_eva;
             for i = 2:data_num
                 if ~isequal(data_selected(i).NodeData.sub_pop, sub_pop) || ...
-                        ~isequal(data_selected(i).NodeData.iter_num, iter_num) || ...
-                        ~isequal(data_selected(i).NodeData.eva_num, eva_num)
-                msg = 'The data''s sub_pop or iter_num or eva_num not equal';
+                        ~isequal(data_selected(i).NodeData.sub_eva, sub_eva)
+                msg = 'The data''s sub_pop or sub_eva not equal';
                 uiconfirm(app.MTOPlatformUIFigure, msg, 'error', 'Icon','warning');
                 result = false;
                 return;
@@ -1085,14 +1083,8 @@ classdef MTO_GUI < matlab.apps.AppBase
             pop_node.NodeData = pop_node.Text;
             pop_node.ContextMenu = app.DDataContextMenu;
             
-            iter_node = uitreenode(data_node);
-            text = num2str(data_node.NodeData.iter_num', '%d, ');
-            iter_node.Text = ['Generation Max: ', text(1:end-1)];
-            iter_node.NodeData = iter_node.Text;
-            iter_node.ContextMenu = app.DDataContextMenu;
-            
             eva_node = uitreenode(data_node);
-            text = num2str(data_node.NodeData.eva_num', '%d, ');
+            text = num2str(data_node.NodeData.sub_eva', '%d, ');
             eva_node.Text = ['Evaluation Max: ', text(1:end-1)];
             eva_node.NodeData = eva_node.Text;
             eva_node.ContextMenu = app.DDataContextMenu;
@@ -1392,7 +1384,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                 for prob = 1:prob_num
                     app.Edata.result(prob, algo).clock_time = 0;
                     app.Edata.result(prob, algo).convergence = [];
-%                     app.Edata.result(prob, algo).convergence_fr = [];
+                    %                     app.Edata.result(prob, algo).convergence_fr = [];
                     app.Edata.result(prob, algo).bestX = {};
                 end
             end
@@ -1400,12 +1392,10 @@ classdef MTO_GUI < matlab.apps.AppBase
             for prob = 1:prob_num
                 run_parameter_list = app.EProblemsTree.Children(prob).NodeData.getRunParameterList();
                 app.Edata.sub_pop(prob) = run_parameter_list(1);
-                app.Edata.iter_num(prob) = run_parameter_list(2);
-                app.Edata.eva_num(prob) = run_parameter_list(3);
+                app.Edata.sub_eva(prob) = run_parameter_list(2);
             end
             app.Edata.sub_pop = app.Edata.sub_pop';
-            app.Edata.iter_num = app.Edata.iter_num';
-            app.Edata.eva_num = app.Edata.eva_num';
+            app.Edata.sub_eva = app.Edata.sub_eva';
             app.Edata.algo_cell = algo_cell;
             app.Edata.prob_cell = prob_cell';
             app.Edata.tasks_num_list = tasks_num_list';
@@ -1433,16 +1423,16 @@ classdef MTO_GUI < matlab.apps.AppBase
                                 gen_new = size(data.convergence, 2);
                                 if gen_old < gen_new
                                     app.Edata.result(prob, algo).convergence = [app.Edata.result(prob, algo).convergence, repmat(app.Edata.result(prob, algo).convergence(:, gen_old), 1, gen_new-gen_old)];
-%                                     app.Edata.result(prob, algo).convergence_fr = [app.Edata.result(prob, algo).convergence_fr, repmat(app.Edata.result(prob, algo).convergence_fr(:, gen_old), 1, gen_new-gen_old)];
+                                    %                                     app.Edata.result(prob, algo).convergence_fr = [app.Edata.result(prob, algo).convergence_fr, repmat(app.Edata.result(prob, algo).convergence_fr(:, gen_old), 1, gen_new-gen_old)];
                                 else
                                     data.convergence = [data.convergence, repmat(data.convergence(:, gen_new), 1, gen_old-gen_new)];
-%                                     data.convergence_fr = [data.convergence_fr, repmat(data.convergence_fr(:, gen_new), 1, gen_old-gen_new)];
+                                    %                                     data.convergence_fr = [data.convergence_fr, repmat(data.convergence_fr(:, gen_new), 1, gen_old-gen_new)];
                                 end
                                 app.Edata.result(prob, algo).convergence = [app.Edata.result(prob, algo).convergence; data.convergence];
-%                                 app.Edata.result(prob, algo).convergence_fr = [app.Edata.result(prob, algo).convergence_fr; data.convergence_fr];
+                                %                                 app.Edata.result(prob, algo).convergence_fr = [app.Edata.result(prob, algo).convergence_fr; data.convergence_fr];
                             else
                                 app.Edata.result(prob, algo).convergence = data.convergence;
-%                                 app.Edata.result(prob, algo).convergence_fr = data.convergence_fr;
+                                %                                 app.Edata.result(prob, algo).convergence_fr = data.convergence_fr;
                             end
                             app.Edata.result(prob, algo).bestX = [app.Edata.result(prob, algo).bestX; data.bestX];
                             app.Etable_reps(prob, algo) = rep;
@@ -1464,29 +1454,29 @@ classdef MTO_GUI < matlab.apps.AppBase
                         prob_obj = app.EProblemsTree.Children(prob).NodeData;
                         clock_time = 0;
                         convergence = {};
-%                         convergence_fr = {};
+                        %                         convergence_fr = {};
                         bestX = {};
                         parfor rep = 1:reps
                             data = singleRun(algo_obj, prob_obj);
                             clock_time = clock_time + data.clock_time;
                             convergence = [convergence; {data.convergence}];
-%                             convergence_fr = [convergence_fr; {data.convergence_fr}];
+                            %                             convergence_fr = [convergence_fr; {data.convergence_fr}];
                             bestX = [bestX; data.bestX];
                         end
                         app.Edata.result(prob, algo).convergence = convergence{1};
-%                         app.Edata.result(prob, algo).convergence_fr = convergence_fr{1};
+                        %                         app.Edata.result(prob, algo).convergence_fr = convergence_fr{1};
                         for rep = 2:reps
                             gen_old = size(app.Edata.result(prob, algo).convergence, 2);
                             gen_new = size(convergence{rep}, 2);
                             if gen_old < gen_new
                                 app.Edata.result(prob, algo).convergence = [app.Edata.result(prob, algo).convergence, repmat(app.Edata.result(prob, algo).convergence(:, gen_old), 1, gen_new-gen_old)];
-%                                 app.Edata.result(prob, algo).convergence_fr = [app.Edata.result(prob, algo).convergence_fr, repmat(app.Edata.result(prob, algo).convergence_fr(:, gen_old), 1, gen_new-gen_old)];
+                                %                                 app.Edata.result(prob, algo).convergence_fr = [app.Edata.result(prob, algo).convergence_fr, repmat(app.Edata.result(prob, algo).convergence_fr(:, gen_old), 1, gen_new-gen_old)];
                             else
                                 convergence{rep} = [convergence{rep}, repmat(convergence{rep}(:, gen_new), 1, gen_old-gen_new)];
-%                                 convergence_fr{rep} = [convergence_fr{rep}, repmat(convergence_fr{rep}(:, gen_new), 1, gen_old-gen_new)];
+                                %                                 convergence_fr{rep} = [convergence_fr{rep}, repmat(convergence_fr{rep}(:, gen_new), 1, gen_old-gen_new)];
                             end
                             app.Edata.result(prob, algo).convergence = [app.Edata.result(prob, algo).convergence; convergence{rep}];
-%                             app.Edata.result(prob, algo).convergence_fr = [app.Edata.result(prob, algo).convergence_fr; convergence_fr{rep}];
+                            %                             app.Edata.result(prob, algo).convergence_fr = [app.Edata.result(prob, algo).convergence_fr; convergence_fr{rep}];
                         end
                         app.Edata.result(prob, algo).clock_time = clock_time;
                         app.Edata.result(prob, algo).bestX = bestX;
@@ -1968,8 +1958,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     data_save.reps = 0;
                     data_save.tasks_num_list = data_selected(i).NodeData.tasks_num_list;
                     data_save.sub_pop = data_selected(i).NodeData.sub_pop;
-                    data_save.iter_num = data_selected(i).NodeData.iter_num;
-                    data_save.eva_num = data_selected(i).NodeData.eva_num;
+                    data_save.sub_eva = data_selected(i).NodeData.sub_eva;
                     data_save.algo_cell = data_selected(i).NodeData.algo_cell;
                     data_save.prob_cell = data_selected(i).NodeData.prob_cell;
                     data_save.reps = 1;
@@ -2010,8 +1999,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     data_save.reps = data_selected(i).NodeData.reps;
                     data_save.tasks_num_list = data_selected(i).NodeData.tasks_num_list;
                     data_save.sub_pop = data_selected(i).NodeData.sub_pop;
-                    data_save.iter_num = data_selected(i).NodeData.iter_num;
-                    data_save.eva_num = data_selected(i).NodeData.eva_num;
+                    data_save.sub_eva = data_selected(i).NodeData.sub_eva;
                     data_save.prob_cell = data_selected(i).NodeData.prob_cell;
                     data_save.algo_cell = data_selected(i).NodeData.algo_cell(algo);
                     data_save.result = data_selected(i).NodeData.result(:, algo);
@@ -2043,8 +2031,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                 for prob = 1:length(data_selected(i).NodeData.prob_cell)
                     data_save.reps = data_selected(i).NodeData.reps;
                     data_save.sub_pop = [[], data_selected(i).NodeData.sub_pop(prob)];
-                    data_save.iter_num = [[], data_selected(i).NodeData.iter_num(prob)];
-                    data_save.eva_num = [[], data_selected(i).NodeData.eva_num(prob)];
+                    data_save.sub_eva = [[], data_selected(i).NodeData.sub_eva(prob)];
                     data_save.algo_cell = data_selected(i).NodeData.algo_cell;
                     data_save.prob_cell = data_selected(i).NodeData.prob_cell(prob);
                     data_save.tasks_num_list = [[], data_selected(i).NodeData.tasks_num_list(prob)];
@@ -2070,14 +2057,14 @@ classdef MTO_GUI < matlab.apps.AppBase
             data_save.reps = 0;
             data_save.tasks_num_list = data_selected(1).NodeData.tasks_num_list;
             data_save.sub_pop = data_selected(1).NodeData.sub_pop;
-            data_save.iter_num = data_selected(1).NodeData.iter_num;
-            data_save.eva_num = data_selected(1).NodeData.eva_num;
+            data_save.sub_eva = data_selected(1).NodeData.sub_eva;
             data_save.algo_cell = data_selected(1).NodeData.algo_cell;
             data_save.prob_cell = data_selected(1).NodeData.prob_cell;
             for prob = 1:length(data_save.prob_cell)
                 for algo = 1:length(data_save.algo_cell)
                     data_save.result(prob, algo).clock_time = 0;
                     data_save.result(prob, algo).convergence = [];
+                    data_save.result(prob, algo).bestX = {};
                 end
             end
             for i = 1:length(data_selected)
@@ -2086,7 +2073,9 @@ classdef MTO_GUI < matlab.apps.AppBase
                     for algo = 1:length(data_save.algo_cell)
                         data_save.result(prob, algo).clock_time = data_save.result(prob, algo).clock_time + data_selected(i).NodeData.result(prob, algo).clock_time;
                         data_save.result(prob, algo).convergence = [data_save.result(prob, algo).convergence; data_selected(i).NodeData.result(prob, algo).convergence];
-                        data_save.result(prob, algo).bestX = [data_save.result(prob, algo).bestX; data_selected(i).NodeData.result(prob, algo).bestX];
+                        if isfield(data_selected(i).NodeData.result(prob, algo), 'bestX')
+                            data_save.result(prob, algo).bestX = [data_save.result(prob, algo).bestX; data_selected(i).NodeData.result(prob, algo).bestX];
+                        end
                     end
                 end
             end
@@ -2109,8 +2098,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             data_save.reps = data_selected(1).NodeData.reps;
             data_save.tasks_num_list = data_selected(1).NodeData.tasks_num_list;
             data_save.sub_pop = data_selected(1).NodeData.sub_pop;
-            data_save.iter_num = data_selected(1).NodeData.iter_num;
-            data_save.eva_num = data_selected(1).NodeData.eva_num;
+            data_save.sub_eva = data_selected(1).NodeData.sub_eva;
             data_save.prob_cell = data_selected(1).NodeData.prob_cell;
             data_save.algo_cell = {};
             for i = 1:length(data_selected)
@@ -2160,12 +2148,10 @@ classdef MTO_GUI < matlab.apps.AppBase
             data_save.prob_cell = {};
             data_save.tasks_num_list = [];
             data_save.sub_pop = [];
-            data_save.iter_num = [];
-            data_save.eva_num = [];
+            data_save.sub_eva = [];
             for i = 1:length(data_selected)
                 data_save.sub_pop = [data_save.sub_pop; data_selected(i).NodeData.sub_pop];
-                data_save.iter_num = [data_save.iter_num; data_selected(i).NodeData.iter_num];
-                data_save.eva_num = [data_save.eva_num; data_selected(i).NodeData.eva_num];
+                data_save.sub_eva = [data_save.sub_eva; data_selected(i).NodeData.sub_eva];
                 data_save.tasks_num_list = [data_save.tasks_num_list; data_selected(i).NodeData.tasks_num_list];
                 prob_start = length(data_save.prob_cell) + 1;
                 data_save.prob_cell = [data_save.prob_cell; data_selected(i).NodeData.prob_cell];
