@@ -187,7 +187,7 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 
 ### 加入自己的问题
 
-- 继承Problem文件夹下的**Base/Problem**类实现新的问题类，并放入Problem文件夹或其子文件夹内
+- 继承Problem文件夹下的**Problems/Problem.m**类实现新的问题类，并放入Problem文件夹或其子文件夹内
 - 按照Problem类中的各虚函数的注释实现继承的虚函数
 - 在文件的第2行添加标签 <Single/Multi/Many> <None/Competitive/Constrained>
 - *可参考CEC17_MTSO问题的实现*
