@@ -138,7 +138,6 @@ classdef MTO_GUI < matlab.apps.AppBase
         line_width = 1.5
         marker_list = {'o', '*', 'x', '^', '+', 'p', 'v', 's', 'd', '<', '>', 'h'}
         marker_size = 7
-        marker_indices = 50
         
         % Test Module
         Tdata % data
@@ -398,7 +397,6 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
             xlim(app.TUIAxes, [0, 1]);
             legend(app.TUIAxes, plot_handle, legend_cell);
-            % legend(app.TUIAxes, legend_cell);
         end
         
         function TupdateFeasibleRegion(app)
@@ -460,13 +458,9 @@ classdef MTO_GUI < matlab.apps.AppBase
             % draw
             tasks_name = {};
             for task = 1:app.Tdata.tasks_num
-                %                 if ~isempty(strfind(app.TShowTypeDropDown.Value, 'Obj'))
-                %                     convergence = app.Tdata.convergence(task, :);
-                %                 elseif ~isempty(strfind(app.TShowTypeDropDown.Value, 'FR'))
-                %                     convergence = app.Tdata.convergence_fr(task, :);
-                %                 end
                 convergence = app.Tdata.convergence(task, :);
                 x = 1:size(convergence,2);
+                x = x / length(x) * app.Tdata.sub_eva;
                 y = convergence;
                 if task > length(app.marker_list)
                     marker = '';
@@ -476,11 +470,12 @@ classdef MTO_GUI < matlab.apps.AppBase
                 
                 p = plot(app.TUIAxes, x, y, ['-', marker]);
                 p.LineWidth = app.line_width;
-                p.MarkerIndices = 1:app.marker_indices:x(end);
+                indices = round(length(y)/app.EMarkerIndicesEditField.Value);
+                p.MarkerIndices = indices:indices:length(y)-round(indices/2);
                 p.MarkerSize = app.marker_size;
                 hold(app.TUIAxes, 'on');
                 
-                xlabel(app.TUIAxes, 'Generation');
+                xlabel(app.TUIAxes, 'Evaluation');
                 ylabel(app.TUIAxes, app.TShowTypeDropDown.Value);
                 grid(app.TUIAxes, 'on');
                 tasks_name = [tasks_name, ['T', num2str(task)]];
@@ -863,6 +858,8 @@ classdef MTO_GUI < matlab.apps.AppBase
                         convergence_task = app.Edata.result(prob, algo).convergence(task:tasks_num:end, :);
                         convergence = mean(convergence_task, 1);
                         x_cell{algo} = 1:size(convergence,2);
+                        % xlabel evaluation
+                        x_cell{algo} = x_cell{algo} / length(x_cell{algo}) * app.Edata.sub_eva(prob);
                         y_cell{algo} = convergence;
                     end
                 case 'min(Obj)'
@@ -875,6 +872,8 @@ classdef MTO_GUI < matlab.apps.AppBase
                         end
                         convergence = mean(convergence_rep, 1);
                         x_cell{algo} = 1:size(convergence,2);
+                        % xlabel evaluation
+                        x_cell{algo} = x_cell{algo} / length(x_cell{algo}) * app.Edata.sub_eva(prob) * tasks_num;
                         y_cell{algo} = convergence;
                     end
             end
@@ -885,12 +884,6 @@ classdef MTO_GUI < matlab.apps.AppBase
                 end
             end
             
-            max_x = 0;
-            for i = 1:length(x_cell)
-                if x_cell{i}(end) > max_x
-                    max_x = x_cell{i}(end);
-                end
-            end
             for i = 1:length(x_cell)
                 if i > length(app.marker_list)
                     marker = '';
@@ -899,14 +892,14 @@ classdef MTO_GUI < matlab.apps.AppBase
                 end
                 p = plot(app.EConvergenceTrendUIAxes, x_cell{i}, y_cell{i}, ['-', marker]);
                 p.LineWidth = app.line_width;
-                p.MarkerIndices = 1:app.EMarkerIndicesEditField.Value:max_x;
+                indices = round(length(y_cell{i})/app.EMarkerIndicesEditField.Value);
+                p.MarkerIndices = indices:indices:length(y_cell{i})-round(indices/2);
                 p.MarkerSize = app.marker_size;
                 hold(app.EConvergenceTrendUIAxes, 'on');
             end
             legend(app.EConvergenceTrendUIAxes, strrep(app.Edata.algo_cell, '_', '\_'));
-            xlabel(app.EConvergenceTrendUIAxes, 'Generation');
+            xlabel(app.EConvergenceTrendUIAxes, 'Evaluation');
             ylabel(app.EConvergenceTrendUIAxes, app.EYLimTypeDropDown.Value);
-            xlim(app.EConvergenceTrendUIAxes, [1, max_x]);
             grid(app.EConvergenceTrendUIAxes, 'on');
         end
         
@@ -957,7 +950,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
             
             data_selected = data_selected(app.Ddata_mark == 1);
-            % check pop, generation and evaluate
+            % check pop and evaluate
             sub_pop = data_selected(1).NodeData.sub_pop;
             sub_eva = data_selected(1).NodeData.sub_eva;
             for i = 2:data_num
@@ -1236,6 +1229,8 @@ classdef MTO_GUI < matlab.apps.AppBase
             
             % run
             app.Tdata = singleRun(app.TAlgorithmTree.Children(1).NodeData, app.TProblemTree.Children(1).NodeData);
+            para = app.TProblemTree.Children(1).NodeData.getRunParameterList();
+            app.Tdata.sub_eva = para(2);
             app.Tdata.algo_name = algo_name;
             app.Tdata.prob_name = prob_name;
             app.Tdata.tasks_num = tasks_num;
@@ -1797,6 +1792,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                                 convergence_task = app.Edata.result(prob, algo).convergence(task:tasks_num:end, :);
                                 convergence = mean(convergence_task, 1);
                                 x_cell{algo} = 1:size(convergence,2);
+                                x_cell{algo} = x_cell{algo} / length(x_cell{algo}) * app.Edata.sub_eva(prob);
                                 y_cell{algo} = convergence;
                             end
                             switch app.EYLimTypeDropDown.Value
@@ -1806,9 +1802,9 @@ classdef MTO_GUI < matlab.apps.AppBase
                                     end
                             end
                             draw_obj.setXY(x_cell, y_cell);
-                            draw_obj.setXYlabel('Generation', app.EYLimTypeDropDown.Value);
+                            draw_obj.setXYlabel('Evaluation', app.EYLimTypeDropDown.Value);
                             draw_obj.setLegend(app.Edata.algo_cell);
-                            draw_obj.setTitle([app.Edata.prob_cell{prob}, '-T', num2str(task)]);
+                            draw_obj.setTitle([app.Edata.prob_cell{prob}, ' T', num2str(task)]);
                             draw_obj.setSaveDir(fig_dir_name);
                             draw_obj.setFigureType(app.EFigureTypeDropDown.Value);
                             draw_obj.setMarkerIndices(app.EMarkerIndicesEditField.Value);
@@ -1826,6 +1822,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                             end
                             convergence = mean(convergence_rep, 1);
                             x_cell{algo} = 1:size(convergence,2);
+                            x_cell{algo} = x_cell{algo} / length(x_cell{algo}) * app.Edata.sub_eva(prob) * tasks_num;
                             y_cell{algo} = convergence;
                         end
                         switch app.EYLimTypeDropDown.Value
@@ -1835,7 +1832,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                                 end
                         end
                         draw_obj.setXY(x_cell, y_cell);
-                        draw_obj.setXYlabel('Generation', app.EYLimTypeDropDown.Value);
+                        draw_obj.setXYlabel('Evaluation', app.EYLimTypeDropDown.Value);
                         draw_obj.setLegend(app.Edata.algo_cell);
                         draw_obj.setTitle(app.Edata.prob_cell{prob});
                         draw_obj.setSaveDir(fig_dir_name);
@@ -2047,7 +2044,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
         % Button pushed function: DRepsMergeButton
         function DRepsMergeButtonPushed(app, event)
-            % merge reps, with same pop, generation, evaluate, algorithms and problems
+            % merge reps, with same pop, evaluate, algorithms and problems
             
             if ~app.DcheckMergeData() || ~app.DcheckMergeAlgorithms() || ~app.DcheckMergeProblems()
                 return;
@@ -2088,7 +2085,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
         % Button pushed function: DAlgorithmsMergeButton
         function DAlgorithmsMergeButtonPushed(app, event)
-            % merge algorithms, with same pop, generation, evaluate, reps and problems
+            % merge algorithms, with same pop, evaluate, reps and problems
             
             if ~app.DcheckMergeData() || ~app.DcheckMergeReps() || ~app.DcheckMergeProblems()
                 return;
@@ -2116,7 +2113,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
         % Button pushed function: DProblemsMergeButton
         function DProblemsMergeButtonPushed(app, event)
-            % merge problems, with same pop, generation, evaluate, reps and algorithms
+            % merge problems, with same pop, evaluate, reps and algorithms
             
             data_selected = app.DDataTree.SelectedNodes;
             app.Ddata_mark = [];
@@ -2262,7 +2259,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create MTOPlatformUIFigure and hide until all components are created
             app.MTOPlatformUIFigure = uifigure('Visible', 'off');
             app.MTOPlatformUIFigure.Color = [1 1 1];
-            app.MTOPlatformUIFigure.Position = [100 100 1034 650];
+            app.MTOPlatformUIFigure.Position = [100 100 1037 653];
             app.MTOPlatformUIFigure.Name = 'MTO Platform';
             app.MTOPlatformUIFigure.WindowStyle = 'modal';
 
@@ -2700,10 +2697,10 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EMarkerIndicesEditField.ValueChangedFcn = createCallbackFcn(app, @EMarkerIndicesEditFieldValueChanged, true);
             app.EMarkerIndicesEditField.HorizontalAlignment = 'center';
             app.EMarkerIndicesEditField.FontWeight = 'bold';
-            app.EMarkerIndicesEditField.Tooltip = {'Marker Indices'};
+            app.EMarkerIndicesEditField.Tooltip = {'Marker num'};
             app.EMarkerIndicesEditField.Layout.Row = 1;
             app.EMarkerIndicesEditField.Layout.Column = 4;
-            app.EMarkerIndicesEditField.Value = 50;
+            app.EMarkerIndicesEditField.Value = 10;
 
             % Create EConvergenceTypeDropDown
             app.EConvergenceTypeDropDown = uidropdown(app.EP3F1GridLayout);
@@ -2718,7 +2715,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create EConvergenceTrendUIAxes
             app.EConvergenceTrendUIAxes = uiaxes(app.EP3FGridLayout);
-            xlabel(app.EConvergenceTrendUIAxes, 'Generation')
+            xlabel(app.EConvergenceTrendUIAxes, 'Evaluation')
             ylabel(app.EConvergenceTrendUIAxes, 'Objective Value')
             app.EConvergenceTrendUIAxes.PlotBoxAspectRatio = [1.37847866419295 1 1];
             app.EConvergenceTrendUIAxes.Layout.Row = 2;

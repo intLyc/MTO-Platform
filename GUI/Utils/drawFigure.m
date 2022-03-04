@@ -9,7 +9,7 @@ classdef drawFigure < handle
         legend_cell % contains {legend1, legend2}
         save_dir = './'
         figure_type = 'png'
-        marker_indices = 50
+        marker_indices = 10
     end
 
     methods
@@ -54,14 +54,6 @@ classdef drawFigure < handle
         function obj = save(obj)
             fig = figure('Visible', 'off');
 
-            max_x = 0;
-
-            for i = 1:length(obj.x_cell)
-                if obj.x_cell{i}(end) > max_x
-                    max_x = obj.x_cell{i}(end);
-                end
-            end
-
             marker_list = {'o', '*', 'x', '^', '+', 'p', 'v', 's', 'd', '<', '>', 'h'};
 
             for i = 1:length(obj.x_cell)
@@ -72,12 +64,11 @@ classdef drawFigure < handle
                 end
                 p = plot(obj.x_cell{i}, obj.y_cell{i}, ['-', marker]);
                 p.LineWidth = 1;
-                p.MarkerIndices = 1:obj.marker_indices:max_x;
+                indices = round(length(obj.y_cell{i}) / obj.marker_indices);
+                p.MarkerIndices = indices:indices:length(obj.y_cell{i}) - round(indices / 2);
                 p.MarkerSize = 5;
                 hold on;
             end
-
-            xlim([1, max_x]);
 
             if ~isempty(obj.title_str)
                 title(strrep(obj.title_str, '_', '-'));
