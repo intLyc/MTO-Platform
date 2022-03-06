@@ -41,7 +41,7 @@ classdef LDA_MFEA < Algorithm
             tic
 
             % initialize
-            [population, fnceval_calls, bestobj, data.bestX] = initializeMF(Individual, pop_size, Tasks, length(Tasks));
+            [population, fnceval_calls, bestobj, data.bestX] = initializeMFone(Individual, pop_size, Tasks, length(Tasks));
             data.convergence(:, 1) = bestobj;
             % initialize lda
             for t = 1:length(Tasks)
