@@ -13,7 +13,7 @@ function [population, calls, bestobj, bestX] = initializeMFone(Individual_class,
         population(i).constraint_violation = inf(1, tasks_num);
     end
 
-    temp = feval(Individual_class).empty();
+    temp = Individual_class.empty();
     calls = 0;
     for t = 1:length(Tasks)
         temp_t = population([population.skill_factor] == t);
