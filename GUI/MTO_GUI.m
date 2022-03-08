@@ -691,26 +691,23 @@ classdef MTO_GUI < matlab.apps.AppBase
                 end
                 sign_p = [0 0 0];
                 for row_i = 1:size(app.Etable_data, 1)
-                    x1 = reshape(app.Efitness(row_i, algo, :), 1, length(app.Efitness(row_i, algo, :)));
-                    x2 = reshape(app.Efitness(row_i, algo_selected, :), 1, length(app.Efitness(row_i, algo_selected, :)));
+                    switch app.EDataTypeDropDown.Value
+                        case 'Obj'
+                            x1 = reshape(app.Efitness(row_i, algo, :), 1, length(app.Efitness(row_i, algo, :)));
+                            x2 = reshape(app.Efitness(row_i, algo_selected, :), 1, length(app.Efitness(row_i, algo_selected, :)));
+                        case 'min(Obj)'
+                            x1 = reshape(app.Eminfitness(row_i, algo, :), 1, length(app.Eminfitness(row_i, algo, :)));
+                            x2 = reshape(app.Eminfitness(row_i, algo_selected, :), 1, length(app.Eminfitness(row_i, algo_selected, :)));
+                    end
+                    
                     p = 0;
                     if ~(sum(isnan(x1)) == length(x1) || sum(isnan(x2)) == length(x2))
+                        % without NaN
                         if strcmp(test_type, 'Rank sum test')
-                            p = ranksum(x1, x2);
+                            p = ranksum(x1(~isnan(x1)), x2(~isnan(x2)));
                         elseif strcmp(test_type, 'Signed rank test')
-                            p = signrank(x1, x2);
+                            p = signrank(x1(~isnan(x1)), x2(~isnan(x2)));
                         end
-                    end
-                    if isnan(app.Etable_data(row_i, algo)) && isnan(app.Etable_data(row_i, algo_selected))
-                        app.Etable_view_test{row_i, algo} = '=';
-                        sign_p(3) = sign_p(3) + 1;
-                    elseif isnan(app.Etable_data(row_i, algo)) && ~isnan(app.Etable_data(row_i, algo_selected))
-                        app.Etable_view_test{row_i, algo} = '-';
-                        sign_p(2) = sign_p(2) + 1;
-                    elseif ~isnan(app.Etable_data(row_i, algo)) && isnan(app.Etable_data(row_i, algo_selected))
-                        app.Etable_view_test{row_i, algo} = '+';
-                        sign_p(1) = sign_p(1) + 1;
-                    else
                         if p < 0.05
                             if app.Etable_data(row_i, algo) < app.Etable_data(row_i, algo_selected)
                                 app.Etable_view_test{row_i, algo} = '+';
@@ -722,6 +719,18 @@ classdef MTO_GUI < matlab.apps.AppBase
                         else
                             app.Etable_view_test{row_i, algo} = '=';
                             sign_p(3) = sign_p(3) + 1;
+                        end
+                    else
+                        % Contains NaN
+                        if isnan(app.Etable_data(row_i, algo)) && isnan(app.Etable_data(row_i, algo_selected))
+                            app.Etable_view_test{row_i, algo} = '=';
+                            sign_p(3) = sign_p(3) + 1;
+                        elseif isnan(app.Etable_data(row_i, algo)) && ~isnan(app.Etable_data(row_i, algo_selected))
+                            app.Etable_view_test{row_i, algo} = '-';
+                            sign_p(2) = sign_p(2) + 1;
+                        elseif ~isnan(app.Etable_data(row_i, algo)) && isnan(app.Etable_data(row_i, algo_selected))
+                            app.Etable_view_test{row_i, algo} = '+';
+                            sign_p(1) = sign_p(1) + 1;
                         end
                     end
                 end
@@ -2259,7 +2268,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create MTOPlatformUIFigure and hide until all components are created
             app.MTOPlatformUIFigure = uifigure('Visible', 'off');
             app.MTOPlatformUIFigure.Color = [1 1 1];
-            app.MTOPlatformUIFigure.Position = [100 100 1037 653];
+            app.MTOPlatformUIFigure.Position = [100 100 1039 654];
             app.MTOPlatformUIFigure.Name = 'MTO Platform';
             app.MTOPlatformUIFigure.WindowStyle = 'modal';
 
