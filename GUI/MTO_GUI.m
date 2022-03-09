@@ -831,7 +831,8 @@ classdef MTO_GUI < matlab.apps.AppBase
             format_str = app.EDataFormatEditField.Value;
             switch app.EDataTypeDropDown.Value
                 case 'Obj'
-                    if contains(app.EShowTypeDropDown.Value, 'Std')
+                    type = app.EShowTypeDropDown.Value;
+                    if  type == 2 || type == 4 % with Std
                         format_str = '%.2e (%.2e)';
                     else
                         format_str = '%.2e';
@@ -839,7 +840,8 @@ classdef MTO_GUI < matlab.apps.AppBase
                 case 'Score'
                     format_str = '%.4f';
                 case 'min(Obj)'
-                    if contains(app.EShowTypeDropDown.Value, 'Std')
+                    type = app.EShowTypeDropDown.Value;
+                    if  type == 2 || type == 4 % with Std
                         format_str = '%.2e (%.2e)';
                     else
                         format_str = '%.2e';
