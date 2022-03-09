@@ -25,6 +25,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         TShowTypeDropDown            matlab.ui.control.DropDown
         TP24GridLayout               matlab.ui.container.GridLayout
         TStartButton                 matlab.ui.control.Button
+        TResetButton                 matlab.ui.control.Button
         TUIAxes                      matlab.ui.control.UIAxes
         TPanel3                      matlab.ui.container.Panel
         TP3GridLayout                matlab.ui.container.GridLayout
@@ -45,7 +46,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         EDataTypeDropDown            matlab.ui.control.DropDown
         EHighlightTypeDropDown       matlab.ui.control.DropDown
         ESaveTableButton             matlab.ui.control.Button
-        EDataFormatDropDown          matlab.ui.control.DropDown
+        EDataFormatEditField         matlab.ui.control.EditField
         EUITable                     matlab.ui.control.Table
         EFigureTab                   matlab.ui.container.Tab
         EP3FGridLayout               matlab.ui.container.GridLayout
@@ -333,15 +334,13 @@ classdef MTO_GUI < matlab.apps.AppBase
             cla(app.TUIAxes, 'reset');
             type = app.TShowTypeDropDown.Value;
             switch type
-                case 'Tasks Figure (1D unified)'
+                case 1 % Tasks Figure (1D unified)
                     app.TupdateTasksFigure();
-                case 'Tasks Figure (1D real)'
+                case 2 % Tasks Figure (1D real)
                     app.TupdateTasksFigure();
-                case 'Feasible Region (2D)'
+                case 3 % Feasible Region (2D)
                     app.TupdateFeasibleRegion();
-                case 'Convergence (Obj)'
-                    app.TupdateConvergence();
-                case 'Convergence (FR)'
+                case 4 % Convergence (Obj)
                     app.TupdateConvergence();
             end
         end
@@ -375,7 +374,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                 
                 fmin = min(f);
                 fmax = max(f);
-                if ~isempty(strfind(app.TShowTypeDropDown.Value, 'unified'))
+                if app.TShowTypeDropDown.Value == 1 % unified
                     f = (f - fmin) / (fmax - fmin);
                 end
                 
@@ -401,6 +400,10 @@ classdef MTO_GUI < matlab.apps.AppBase
         
         function TupdateFeasibleRegion(app)
             % update selected problem tasks feasible region
+            
+            if ~strcmp(app.TSpecialTypeDropDown.Value, 'Constrained')
+                return;
+            end
             
             Tasks = app.TProblemTree.Children(1).NodeData.getTasks();
             no_of_tasks = length(Tasks);
@@ -568,7 +571,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             drawnow;
         end
         
-        function EupdateTableFitness(app)
+        function EupdateTableObjective(app)
             % update table fitness
             
             if strcmp(app.EDataTypeDropDown.Value, 'Obj')
@@ -579,32 +582,33 @@ classdef MTO_GUI < matlab.apps.AppBase
                 return;
             end
             show_type = app.EShowTypeDropDown.Value;
-            format_str = app.EDataFormatDropDown.Value;
+            format_str = app.EDataFormatEditField.Value;
             
-            if strcmp(show_type, 'Mean')
-                fitness_mean = nanmean(data_fitness, 3);
-                app.Etable_data = fitness_mean;
-                app.Etable_view = sprintfc(format_str, fitness_mean);
-            elseif strcmp(show_type, 'Mean (Std)')
-                fitness_mean = nanmean(data_fitness, 3);
-                fitness_std = std(data_fitness, 0, 3);
-                app.Etable_data = fitness_mean;
-                x = zeros([size(fitness_mean, 1), 2*size(fitness_mean, 2)]);
-                x(:, 1:2:end) = fitness_mean;
-                x(:, 2:2:end) = fitness_std;
-                app.Etable_view = sprintfc([format_str,' (%.2d)'], x);
-            elseif strcmp(show_type, 'Median')
-                fitness_median = nanmedian(data_fitness, 3);
-                app.Etable_data = fitness_median;
-                app.Etable_view = sprintfc(format_str, fitness_median);
-            elseif strcmp(show_type, 'Median (Std)')
-                fitness_median = nanmedian(data_fitness, 3);
-                fitness_std = std(data_fitness, 0, 3);
-                app.Etable_data = fitness_median;
-                x = zeros([size(fitness_median, 1), 2*size(fitness_median, 2)]);
-                x(:, 1:2:end) = fitness_median;
-                x(:, 2:2:end) = fitness_std;
-                app.Etable_view = sprintfc([format_str, '(%.2d)'], x);
+            switch show_type
+                case 1 % Mean
+                    fitness_mean = nanmean(data_fitness, 3);
+                    app.Etable_data = fitness_mean;
+                    app.Etable_view = sprintfc(format_str, fitness_mean);
+                case 2 % Mean&Std
+                    fitness_mean = nanmean(data_fitness, 3);
+                    fitness_std = std(data_fitness, 0, 3);
+                    app.Etable_data = fitness_mean;
+                    x = zeros([size(fitness_mean, 1), 2*size(fitness_mean, 2)]);
+                    x(:, 1:2:end) = fitness_mean;
+                    x(:, 2:2:end) = fitness_std;
+                    app.Etable_view = sprintfc(format_str, x);
+                case 3 % Median
+                    fitness_median = nanmedian(data_fitness, 3);
+                    app.Etable_data = fitness_median;
+                    app.Etable_view = sprintfc(format_str, fitness_median);
+                case 4 % Median&Std
+                    fitness_median = nanmedian(data_fitness, 3);
+                    fitness_std = std(data_fitness, 0, 3);
+                    app.Etable_data = fitness_median;
+                    x = zeros([size(fitness_median, 1), 2*size(fitness_median, 2)]);
+                    x(:, 1:2:end) = fitness_median;
+                    x(:, 2:2:end) = fitness_std;
+                    app.Etable_view = sprintfc(format_str, x);
             end
             
             if ~isempty(app.Etable_view_test)
@@ -651,7 +655,8 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
             
             app.Etable_data = score;
-            app.EUITable.Data = app.Etable_data;
+            app.Etable_view = sprintfc(app.EDataFormatEditField.Value, app.Etable_data);
+            app.EUITable.Data = app.Etable_view;
             drawnow;
         end
         
@@ -809,17 +814,38 @@ classdef MTO_GUI < matlab.apps.AppBase
                 case 'Reps'
                     app.EupdateTableReps();
                 case 'Obj'
-                    app.EupdateTableFitness();
+                    app.EupdateTableObjective();
                     app.EupdateTableTest();
                 case 'Score'
                     app.EupdateTableScore();
                 case 'min(Obj)'
-                    app.EupdateTableFitness();
+                    app.EupdateTableObjective();
                     app.EupdateTableTest();
                 case 'Time used'
                     app.EupdateTableTimeUsed();
             end
             app.EupdateTableHighlight();
+        end
+        
+        function EresetFormat(app)
+            format_str = app.EDataFormatEditField.Value;
+            switch app.EDataTypeDropDown.Value
+                case 'Obj'
+                    if contains(app.EShowTypeDropDown.Value, 'Std')
+                        format_str = '%.2e (%.2e)';
+                    else
+                        format_str = '%.2e';
+                    end
+                case 'Score'
+                    format_str = '%.4f';
+                case 'min(Obj)'
+                    if contains(app.EShowTypeDropDown.Value, 'Std')
+                        format_str = '%.2e (%.2e)';
+                    else
+                        format_str = '%.2e';
+                    end
+            end
+            app.EDataFormatEditField.Value = format_str;
         end
         
         function EresetConvergenceProblemsDropDown(app)
@@ -1216,17 +1242,13 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TupdateUIAxes();
         end
 
-        % Callback function
-        function TValueDropDownValueChanged(app, event)
-            app.TupdateValueUIAxes();
-        end
-
         % Button pushed function: TStartButton
         function TStartButtonPushed(app, event)
             % start this test
             
             % off the start button
             app.TstartEnable(false);
+            drawnow;
             
             % clear the temporary data
             app.Tdata = [];
@@ -1247,6 +1269,13 @@ classdef MTO_GUI < matlab.apps.AppBase
             best_obj = num2str(app.Tdata.convergence(:, end)','%.2e, ');
             app.Toutput([best_obj(1:end-1), ' (', prob_name, '-', algo_name, ')']);
             
+            app.TstartEnable(true);
+        end
+
+        % Button pushed function: TResetButton
+        function TResetButtonPushed(app, event)
+            app.Tdata = [];
+            app.TupdateUIAxes();
             app.TstartEnable(true);
         end
 
@@ -1654,19 +1683,21 @@ classdef MTO_GUI < matlab.apps.AppBase
             save([dir_name, file_name], 'data_save');
         end
 
+        % Value changed function: EDataFormatEditField
+        function EDataFormatEditFieldValueChanged(app, event)
+            app.EupdateTable();
+        end
+
         % Value changed function: EDataTypeDropDown
         function EDataTypeDropDownValueChanged(app, event)
+            app.EresetFormat();
             app.EupdateTable();
         end
 
         % Value changed function: EShowTypeDropDown
         function EShowTypeDropDownValueChanged(app, event)
-            app.EupdateTableFitness();
-        end
-
-        % Value changed function: EDataFormatDropDown
-        function EDataFormatDropDownValueChanged(app, event)
-            app.EupdateTableFitness();
+            app.EresetFormat();
+            app.EupdateTableObjective();
         end
 
         % Value changed function: ETestTypeDropDown
@@ -2268,7 +2299,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create MTOPlatformUIFigure and hide until all components are created
             app.MTOPlatformUIFigure = uifigure('Visible', 'off');
             app.MTOPlatformUIFigure.Color = [1 1 1];
-            app.MTOPlatformUIFigure.Position = [100 100 1039 654];
+            app.MTOPlatformUIFigure.Position = [100 100 1029 663];
             app.MTOPlatformUIFigure.Name = 'MTO Platform';
             app.MTOPlatformUIFigure.WindowStyle = 'modal';
 
@@ -2291,7 +2322,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create TestGridLayout
             app.TestGridLayout = uigridlayout(app.TestTab);
-            app.TestGridLayout.ColumnWidth = {170, '1x', 200};
+            app.TestGridLayout.ColumnWidth = {170, '3x', '1x'};
             app.TestGridLayout.RowHeight = {'1x'};
             app.TestGridLayout.ColumnSpacing = 5;
             app.TestGridLayout.BackgroundColor = [1 1 1];
@@ -2426,17 +2457,18 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create TShowTypeDropDown
             app.TShowTypeDropDown = uidropdown(app.TP21GridLayout);
             app.TShowTypeDropDown.Items = {'Tasks Figure (1D unified)', 'Tasks Figure (1D real)', 'Feasible Region (2D)', 'Convergence (Obj)'};
+            app.TShowTypeDropDown.ItemsData = [1 2 3 4];
             app.TShowTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @TShowTypeDropDownValueChanged, true);
             app.TShowTypeDropDown.Tooltip = {'Show type'};
             app.TShowTypeDropDown.FontWeight = 'bold';
             app.TShowTypeDropDown.BackgroundColor = [1 1 1];
             app.TShowTypeDropDown.Layout.Row = 1;
             app.TShowTypeDropDown.Layout.Column = 2;
-            app.TShowTypeDropDown.Value = 'Tasks Figure (1D unified)';
+            app.TShowTypeDropDown.Value = 1;
 
             % Create TP24GridLayout
             app.TP24GridLayout = uigridlayout(app.TP2GridLayout);
-            app.TP24GridLayout.ColumnWidth = {'1x', 70, '1x'};
+            app.TP24GridLayout.ColumnWidth = {'1x', 70, 70, '1x'};
             app.TP24GridLayout.RowHeight = {'1x'};
             app.TP24GridLayout.Padding = [0 0 0 0];
             app.TP24GridLayout.Layout.Row = 3;
@@ -2453,6 +2485,17 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TStartButton.Layout.Row = 1;
             app.TStartButton.Layout.Column = 2;
             app.TStartButton.Text = 'Start';
+
+            % Create TResetButton
+            app.TResetButton = uibutton(app.TP24GridLayout, 'push');
+            app.TResetButton.ButtonPushedFcn = createCallbackFcn(app, @TResetButtonPushed, true);
+            app.TResetButton.BusyAction = 'cancel';
+            app.TResetButton.BackgroundColor = [1 1 0.702];
+            app.TResetButton.FontWeight = 'bold';
+            app.TResetButton.Tooltip = {''};
+            app.TResetButton.Layout.Row = 1;
+            app.TResetButton.Layout.Column = 3;
+            app.TResetButton.Text = 'Reset';
 
             % Create TUIAxes
             app.TUIAxes = uiaxes(app.TP2GridLayout);
@@ -2544,7 +2587,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create EP3T1GridLayout
             app.EP3T1GridLayout = uigridlayout(app.EP3TGridLayout);
-            app.EP3T1GridLayout.ColumnWidth = {'fit', '1x', 'fit', 'fit', 'fit', 'fit', 'fit', 'fit'};
+            app.EP3T1GridLayout.ColumnWidth = {90, '1x', 90, 90, 90, 90, 90, 90};
             app.EP3T1GridLayout.RowHeight = {'fit'};
             app.EP3T1GridLayout.ColumnSpacing = 5;
             app.EP3T1GridLayout.Padding = [0 5 0 0];
@@ -2576,14 +2619,15 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create EShowTypeDropDown
             app.EShowTypeDropDown = uidropdown(app.EP3T1GridLayout);
-            app.EShowTypeDropDown.Items = {'Mean', 'Mean (Std)', 'Median', 'Median (Std)'};
+            app.EShowTypeDropDown.Items = {'Mean', 'Mean&Std', 'Median', 'Median&Std'};
+            app.EShowTypeDropDown.ItemsData = [1 2 3 4];
             app.EShowTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EShowTypeDropDownValueChanged, true);
-            app.EShowTypeDropDown.Tooltip = {'Data type (Only for Objective value)'};
+            app.EShowTypeDropDown.Tooltip = {'Data Type (Only for Objective value)'};
             app.EShowTypeDropDown.FontWeight = 'bold';
             app.EShowTypeDropDown.BackgroundColor = [1 1 1];
             app.EShowTypeDropDown.Layout.Row = 1;
-            app.EShowTypeDropDown.Layout.Column = 4;
-            app.EShowTypeDropDown.Value = 'Mean';
+            app.EShowTypeDropDown.Layout.Column = 5;
+            app.EShowTypeDropDown.Value = 1;
 
             % Create EDataTypeDropDown
             app.EDataTypeDropDown = uidropdown(app.EP3T1GridLayout);
@@ -2593,8 +2637,8 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EDataTypeDropDown.FontWeight = 'bold';
             app.EDataTypeDropDown.BackgroundColor = [1 1 1];
             app.EDataTypeDropDown.Layout.Row = 1;
-            app.EDataTypeDropDown.Layout.Column = 3;
-            app.EDataTypeDropDown.Value = 'Reps';
+            app.EDataTypeDropDown.Layout.Column = 4;
+            app.EDataTypeDropDown.Value = 'min(Obj)';
 
             % Create EHighlightTypeDropDown
             app.EHighlightTypeDropDown = uidropdown(app.EP3T1GridLayout);
@@ -2605,28 +2649,26 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EHighlightTypeDropDown.BackgroundColor = [1 1 1];
             app.EHighlightTypeDropDown.Layout.Row = 1;
             app.EHighlightTypeDropDown.Layout.Column = 8;
-            app.EHighlightTypeDropDown.Value = 'Best';
+            app.EHighlightTypeDropDown.Value = 'Best&Worst';
 
             % Create ESaveTableButton
             app.ESaveTableButton = uibutton(app.EP3T1GridLayout, 'push');
             app.ESaveTableButton.ButtonPushedFcn = createCallbackFcn(app, @ESaveTableButtonPushed, true);
             app.ESaveTableButton.BackgroundColor = [0.702 1 0.702];
             app.ESaveTableButton.FontWeight = 'bold';
-            app.ESaveTableButton.Tooltip = {'Save current table view to file'};
+            app.ESaveTableButton.Tooltip = {'Save current table to file'};
             app.ESaveTableButton.Layout.Row = 1;
             app.ESaveTableButton.Layout.Column = 1;
             app.ESaveTableButton.Text = 'Save';
 
-            % Create EDataFormatDropDown
-            app.EDataFormatDropDown = uidropdown(app.EP3T1GridLayout);
-            app.EDataFormatDropDown.Items = {'%.2d', '%.3d', '%.4d', '%.5d'};
-            app.EDataFormatDropDown.ValueChangedFcn = createCallbackFcn(app, @EDataFormatDropDownValueChanged, true);
-            app.EDataFormatDropDown.Tooltip = {'Show Type'};
-            app.EDataFormatDropDown.FontWeight = 'bold';
-            app.EDataFormatDropDown.BackgroundColor = [1 1 1];
-            app.EDataFormatDropDown.Layout.Row = 1;
-            app.EDataFormatDropDown.Layout.Column = 5;
-            app.EDataFormatDropDown.Value = '%.2d';
+            % Create EDataFormatEditField
+            app.EDataFormatEditField = uieditfield(app.EP3T1GridLayout, 'text');
+            app.EDataFormatEditField.ValueChangedFcn = createCallbackFcn(app, @EDataFormatEditFieldValueChanged, true);
+            app.EDataFormatEditField.HorizontalAlignment = 'center';
+            app.EDataFormatEditField.Tooltip = {'Data Format Str'};
+            app.EDataFormatEditField.Layout.Row = 1;
+            app.EDataFormatEditField.Layout.Column = 3;
+            app.EDataFormatEditField.Value = '%d';
 
             % Create EUITable
             app.EUITable = uitable(app.EP3TGridLayout);
@@ -2649,7 +2691,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create EP3F1GridLayout
             app.EP3F1GridLayout = uigridlayout(app.EP3FGridLayout);
-            app.EP3F1GridLayout.ColumnWidth = {'fit', 'fit', '1x', 'fit', 'fit', 'fit', 'fit'};
+            app.EP3F1GridLayout.ColumnWidth = {97, 55, '1x', 90, 90, 90, 90};
             app.EP3F1GridLayout.RowHeight = {'fit'};
             app.EP3F1GridLayout.ColumnSpacing = 5;
             app.EP3F1GridLayout.Padding = [0 0 0 0];
@@ -2661,7 +2703,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EProblemsDropDown = uidropdown(app.EP3F1GridLayout);
             app.EProblemsDropDown.Items = {'Problem '};
             app.EProblemsDropDown.ValueChangedFcn = createCallbackFcn(app, @EProblemsDropDownValueChanged, true);
-            app.EProblemsDropDown.Tooltip = {'Task'};
+            app.EProblemsDropDown.Tooltip = {'Problem or Task'};
             app.EProblemsDropDown.FontWeight = 'bold';
             app.EProblemsDropDown.BackgroundColor = [1 1 1];
             app.EProblemsDropDown.Layout.Row = 1;
@@ -2684,7 +2726,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.ESaveAllFigureButton.ButtonPushedFcn = createCallbackFcn(app, @ESaveAllFigureButtonPushed, true);
             app.ESaveAllFigureButton.BackgroundColor = [0.702 1 0.702];
             app.ESaveAllFigureButton.FontWeight = 'bold';
-            app.ESaveAllFigureButton.Tooltip = {'Select save dir and it will save all figure to ''dir/Figure/'''};
+            app.ESaveAllFigureButton.Tooltip = {'Select save dir and it will save all figures to ''dir/Figure/'''};
             app.ESaveAllFigureButton.Layout.Row = 1;
             app.ESaveAllFigureButton.Layout.Column = 1;
             app.ESaveAllFigureButton.Text = 'Save All Figure';
@@ -2692,7 +2734,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create EFigureTypeDropDown
             app.EFigureTypeDropDown = uidropdown(app.EP3F1GridLayout);
             app.EFigureTypeDropDown.Items = {'eps', 'png', 'pdf'};
-            app.EFigureTypeDropDown.Tooltip = {'Save figure type'};
+            app.EFigureTypeDropDown.Tooltip = {'Save Figure Type'};
             app.EFigureTypeDropDown.FontWeight = 'bold';
             app.EFigureTypeDropDown.BackgroundColor = [1 1 1];
             app.EFigureTypeDropDown.Layout.Row = 1;
@@ -2706,7 +2748,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EMarkerIndicesEditField.ValueChangedFcn = createCallbackFcn(app, @EMarkerIndicesEditFieldValueChanged, true);
             app.EMarkerIndicesEditField.HorizontalAlignment = 'center';
             app.EMarkerIndicesEditField.FontWeight = 'bold';
-            app.EMarkerIndicesEditField.Tooltip = {'Marker num'};
+            app.EMarkerIndicesEditField.Tooltip = {'Marker Num'};
             app.EMarkerIndicesEditField.Layout.Row = 1;
             app.EMarkerIndicesEditField.Layout.Column = 4;
             app.EMarkerIndicesEditField.Value = 10;
@@ -2715,7 +2757,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EConvergenceTypeDropDown = uidropdown(app.EP3F1GridLayout);
             app.EConvergenceTypeDropDown.Items = {'Obj', 'min(Obj)'};
             app.EConvergenceTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EConvergenceTypeDropDownValueChanged, true);
-            app.EConvergenceTypeDropDown.Tooltip = {'YLim Type'};
+            app.EConvergenceTypeDropDown.Tooltip = {'Data Type'};
             app.EConvergenceTypeDropDown.FontWeight = 'bold';
             app.EConvergenceTypeDropDown.BackgroundColor = [1 1 1];
             app.EConvergenceTypeDropDown.Layout.Row = 1;
