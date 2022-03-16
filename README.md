@@ -6,6 +6,8 @@
 
 [-> 中文介绍 <-](#中文介绍)
 
+**QQ讨论群: 862974231**
+
 **Author: Yanchi Li**
 
 **Email: int_lyc@cug.edu.cn**
