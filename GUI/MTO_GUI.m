@@ -2663,7 +2663,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EDataTypeDropDown.BackgroundColor = [1 1 1];
             app.EDataTypeDropDown.Layout.Row = 1;
             app.EDataTypeDropDown.Layout.Column = 4;
-            app.EDataTypeDropDown.Value = 'min(Obj)';
+            app.EDataTypeDropDown.Value = 'Reps';
 
             % Create EHighlightTypeDropDown
             app.EHighlightTypeDropDown = uidropdown(app.EP3T1GridLayout);
