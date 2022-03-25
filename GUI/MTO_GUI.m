@@ -23,6 +23,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         TP2GridLayout                matlab.ui.container.GridLayout
         TP21GridLayout               matlab.ui.container.GridLayout
         TShowTypeDropDown            matlab.ui.control.DropDown
+        TSaveButton                  matlab.ui.control.Button
         TP24GridLayout               matlab.ui.container.GridLayout
         TStartButton                 matlab.ui.control.Button
         TResetButton                 matlab.ui.control.Button
@@ -1281,6 +1282,17 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TstartEnable(true);
         end
 
+        % Button pushed function: TSaveButton
+        function TSaveButtonPushed(app, event)
+            % check selected file name
+            filter = {'*.eps'; '*.pdf';'*.png';};
+            [file_name, dir_name] = uiputfile(filter);
+            if file_name == 0
+                return;
+            end
+            exportgraphics(app.TUIAxes, [dir_name, file_name]);
+        end
+
         % Value changed function: ETaskTypeDropDown
         function ETaskTypeDropDownValueChanged(app, event)
             app.EloadAlgoProb();
@@ -1764,7 +1776,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % check selected file name
             filter = {'*.tex'; '*.xlsx';'*.csv';};
             [file_name, dir_name] = uiputfile(filter);
-            figure(app.MTOPlatformUIFigure);
+            % figure(app.MTOPlatformUIFigure);
             if file_name == 0
                 return;
             end
@@ -2448,7 +2460,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create TP21GridLayout
             app.TP21GridLayout = uigridlayout(app.TP2GridLayout);
-            app.TP21GridLayout.ColumnWidth = {'1x', 'fit'};
+            app.TP21GridLayout.ColumnWidth = {'1x', 'fit', 'fit'};
             app.TP21GridLayout.RowHeight = {'1x'};
             app.TP21GridLayout.ColumnSpacing = 5;
             app.TP21GridLayout.Padding = [0 0 0 0];
@@ -2465,8 +2477,19 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TShowTypeDropDown.FontWeight = 'bold';
             app.TShowTypeDropDown.BackgroundColor = [1 1 1];
             app.TShowTypeDropDown.Layout.Row = 1;
-            app.TShowTypeDropDown.Layout.Column = 2;
+            app.TShowTypeDropDown.Layout.Column = 3;
             app.TShowTypeDropDown.Value = 1;
+
+            % Create TSaveButton
+            app.TSaveButton = uibutton(app.TP21GridLayout, 'push');
+            app.TSaveButton.ButtonPushedFcn = createCallbackFcn(app, @TSaveButtonPushed, true);
+            app.TSaveButton.BusyAction = 'cancel';
+            app.TSaveButton.BackgroundColor = [0.6706 0.949 0.6706];
+            app.TSaveButton.FontWeight = 'bold';
+            app.TSaveButton.Tooltip = {''};
+            app.TSaveButton.Layout.Row = 1;
+            app.TSaveButton.Layout.Column = 2;
+            app.TSaveButton.Text = 'Save';
 
             % Create TP24GridLayout
             app.TP24GridLayout = uigridlayout(app.TP2GridLayout);
