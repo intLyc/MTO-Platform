@@ -392,10 +392,12 @@ classdef MTO_GUI < matlab.apps.AppBase
                 p2.MarkerEdgeColor = color(mod(no-1, size(color, 1))+1, :);
                 hold(app.TUIAxes, 'on');
                 
-                legend_cell = [legend_cell, ['T', num2str(no)]];
+                legend_cell = [legend_cell, ['Task', num2str(no)]];
                 plot_handle = [plot_handle, p1];
             end
             xlim(app.TUIAxes, [0, 1]);
+            xlabel(app.TUIAxes, 'Variable Value');
+            ylabel(app.TUIAxes, 'Objective Value');
             legend(app.TUIAxes, plot_handle, legend_cell);
         end
         
