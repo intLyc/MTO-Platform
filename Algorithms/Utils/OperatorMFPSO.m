@@ -1,4 +1,4 @@
-classdef OperatorMFPSO < OperatorPSO
+classdef OperatorMFPSO < Operator
     methods (Static)
         function [population, calls] = generate(callfun, population, Tasks, rmp, w, c1, c2, c3, gbest)
             if isempty(population)

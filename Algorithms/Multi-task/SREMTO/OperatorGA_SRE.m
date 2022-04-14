@@ -1,4 +1,4 @@
-classdef OperatorGA_SRE < OperatorGA
+classdef OperatorGA_SRE < Operator
     methods (Static)
         function [offspring, calls] = generate(callfun, population, Tasks, taski, mu, mum)
             if length(population) <= 2
@@ -19,11 +19,11 @@ classdef OperatorGA_SRE < OperatorGA
                 cf(u <= 0.5) = (2 * u(u <= 0.5)).^(1 / (mu + 1));
                 cf(u > 0.5) = (2 * (1 - u(u > 0.5))).^(-1 / (mu + 1));
 
-                offspring(count) = OperatorGA_SRE.crossover(offspring(count), population(p1), population(p2), cf);
-                offspring(count + 1) = OperatorGA_SRE.crossover(offspring(count + 1), population(p2), population(p1), cf);
+                offspring(count) = OperatorGA.crossover(offspring(count), population(p1), population(p2), cf);
+                offspring(count + 1) = OperatorGA.crossover(offspring(count + 1), population(p2), population(p1), cf);
 
-                offspring(count) = OperatorGA_SRE.mutate(offspring(count), length(population(1).rnvec), mum);
-                offspring(count + 1) = OperatorGA_SRE.mutate(offspring(count + 1), length(population(1).rnvec), mum);
+                offspring(count) = OperatorGA.mutate(offspring(count), length(population(1).rnvec), mum);
+                offspring(count + 1) = OperatorGA.mutate(offspring(count + 1), length(population(1).rnvec), mum);
 
                 % inherit ability vector
                 rp = randperm(2);

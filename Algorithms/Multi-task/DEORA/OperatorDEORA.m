@@ -1,4 +1,4 @@
-classdef OperatorDEORA < OperatorDE
+classdef OperatorDEORA < Operator
     methods (Static)
         function [offspring, r1_task, calls] = generate(callfun, population, Tasks, k, rmp, F, pCR)
             if isempty(population{k})

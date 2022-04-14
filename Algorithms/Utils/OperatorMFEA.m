@@ -1,4 +1,4 @@
-classdef OperatorMFEA < OperatorGA
+classdef OperatorMFEA < Operator
     methods (Static)
         function [offspring, calls] = generate(callfun, population, Tasks, rmp, mu, mum)
             if isempty(population)

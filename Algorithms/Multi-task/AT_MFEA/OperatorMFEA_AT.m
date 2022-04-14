@@ -1,4 +1,4 @@
-classdef OperatorMFEA_AT < OperatorMFEA
+classdef OperatorMFEA_AT < Operator
     methods (Static)
         function [offspring, calls] = generate(callfun, population, Tasks, rmp, mu, mum, probswap, mu_tasks, Sigma_tasks)
             Individual_class = class(population(1));

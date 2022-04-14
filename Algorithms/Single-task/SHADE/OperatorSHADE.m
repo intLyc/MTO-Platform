@@ -1,4 +1,4 @@
-classdef OperatorSHADE < OperatorJADE
+classdef OperatorSHADE < Operator
     methods (Static)
         function [offspring, calls] = generate(callfun, Task, population, union, p)
             if length(population) <= 3

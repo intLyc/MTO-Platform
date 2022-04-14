@@ -1,4 +1,4 @@
-classdef OperatorMFMP < OperatorJADE
+classdef OperatorMFMP < Operator
     methods (Static)
         function [offspring, calls, flag] = generate(callfun, Task, population, union, c_pop, c_union, rmp, p)
             if isempty(population)

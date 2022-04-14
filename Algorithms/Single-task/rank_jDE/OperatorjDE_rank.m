@@ -1,4 +1,4 @@
-classdef OperatorjDE_rank < OperatorjDE
+classdef OperatorjDE_rank < Operator
     methods (Static)
         function [offspring, calls] = generate(callfun, population, Task, t1, t2)
             if length(population) <= 3
