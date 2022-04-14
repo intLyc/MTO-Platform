@@ -28,8 +28,8 @@ classdef OperatorMFEA < OperatorGA
                     % crossover
                     offspring(count) = OperatorGA.crossover(offspring(count), population(p1), population(p2), cf);
                     offspring(count + 1) = OperatorGA.crossover(offspring(count + 1), population(p2), population(p1), cf);
-                    offspring(count) = OperatorGA.mutate(offspring(count), max([Tasks.dims]), mum);
-                    offspring(count + 1) = OperatorGA.mutate(offspring(count + 1), max([Tasks.dims]), mum);
+                    % offspring(count) = OperatorGA.mutate(offspring(count), max([Tasks.dims]), mum);
+                    % offspring(count + 1) = OperatorGA.mutate(offspring(count + 1), max([Tasks.dims]), mum);
                     % imitate
                     p = [p1, p2];
                     offspring(count).skill_factor = population(p(randi(2))).skill_factor;
