@@ -131,7 +131,7 @@ classdef G_MFEA < Algorithm
                     alpha = (fnceval_calls / eva_num)^2;
                     for t = 1:length(Tasks)
                         [~, y] = sort(-pop_fit{t});
-                        meanT{t} = mean(pop_rnvec{t}(y(1:round(obj.top * pop_size)), :));
+                        meanT{t} = mean(pop_rnvec{t}(y(1:round(obj.top * pop_size / length(Tasks))), :));
                     end
                 end
 
