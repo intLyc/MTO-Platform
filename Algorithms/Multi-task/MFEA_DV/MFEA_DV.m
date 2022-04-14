@@ -12,15 +12,15 @@ classdef MFEA_DV < Algorithm
 
     properties (SetAccess = private)
         rmp = 0.3
-        mu = 2; % index of Simulated Binary Crossover (tunable)
-        mum = 5; % index of polynomial mutation
-        p = 0.1; % the number of elite individual
+        mu = 2;
+        mum = 5;
+        p = 0.1;
     end
 
     methods
         function parameter = getParameter(obj)
             parameter = {'rmp: Random Mating Probability', num2str(obj.rmp), ...
-                        'mu: index of Simulated Binary Crossover (tunable)', num2str(obj.mu), ...
+                        'mu: index of Simulated Binary Crossover', num2str(obj.mu), ...
                         'mum: index of polynomial mutation', num2str(obj.mum), ...
                         'p: 100p% top as pbest', num2str(obj.p)};
         end

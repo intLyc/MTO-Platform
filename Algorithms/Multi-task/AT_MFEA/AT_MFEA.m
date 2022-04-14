@@ -12,15 +12,15 @@ classdef AT_MFEA < Algorithm
 
     properties (SetAccess = private)
         rmp = 0.3
-        mu = 2; % index of Simulated Binary Crossover (tunable)
-        mum = 5; % index of polynomial mutation
-        probswap = 0; % probability of variable swap
+        mu = 2;
+        mum = 5;
+        probswap = 0;
     end
 
     methods
         function parameter = getParameter(obj)
             parameter = {'rmp: Random Mating Probability', num2str(obj.rmp), ...
-                        'mu: index of Simulated Binary Crossover (tunable)', num2str(obj.mu), ...
+                        'mu: index of Simulated Binary Crossover', num2str(obj.mu), ...
                         'mum: index of polynomial mutation', num2str(obj.mum), ...
                         'probSwap: Variable Swap Probability', num2str(obj.probswap)};
         end

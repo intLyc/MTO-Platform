@@ -5,14 +5,14 @@ classdef FP_MFEA < Algorithm
 
     properties (SetAccess = private)
         rmp = 0.3
-        mu = 2; % index of Simulated Binary Crossover (tunable)
-        mum = 5; % index of polynomial mutation
+        mu = 2;
+        mum = 5;
     end
 
     methods
         function parameter = getParameter(obj)
             parameter = {'rmp: Random Mating Probability', num2str(obj.rmp), ...
-                        'mu: index of Simulated Binary Crossover (tunable)', num2str(obj.mu), ...
+                        'mu: index of Simulated Binary Crossover', num2str(obj.mu), ...
                         'mum: index of polynomial mutation', num2str(obj.mum)};
         end
 
@@ -40,7 +40,7 @@ classdef FP_MFEA < Algorithm
                 generation = generation + 1;
 
                 % generation
-                [offspring, calls] = OperatorMFEAalpha.generate(1, population, Tasks, obj.rmp, obj.mu, obj.mum);
+                [offspring, calls] = OperatorMFEA.generate(1, population, Tasks, obj.rmp, obj.mu, obj.mum);
                 fnceval_calls = fnceval_calls + calls;
 
                 % selection

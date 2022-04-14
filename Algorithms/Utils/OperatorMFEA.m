@@ -28,7 +28,6 @@ classdef OperatorMFEA < OperatorGA
                     % crossover
                     offspring(count) = OperatorGA.crossover(offspring(count), population(p1), population(p2), cf);
                     offspring(count + 1) = OperatorGA.crossover(offspring(count + 1), population(p2), population(p1), cf);
-                    % mutate
                     offspring(count) = OperatorGA.mutate(offspring(count), max([Tasks.dims]), mum);
                     offspring(count + 1) = OperatorGA.mutate(offspring(count + 1), max([Tasks.dims]), mum);
                     % imitate
@@ -36,18 +35,10 @@ classdef OperatorMFEA < OperatorGA
                     offspring(count).skill_factor = population(p(randi(2))).skill_factor;
                     offspring(count + 1).skill_factor = population(p(randi(2))).skill_factor;
                 else
-                    % Randomly pick another individual from the same task
                     p = [p1, p2];
                     for x = 1:2
-                        find_idx = find([population.skill_factor] == population(p(x)).skill_factor);
-                        idx = find_idx(randi(length(find_idx)));
-                        while idx == p(x)
-                            idx = find_idx(randi(length(find_idx)));
-                        end
-                        % crossover
-                        offspring(count + x - 1) = OperatorGA.crossover(offspring(count + x - 1), population(p(x)), population(idx), cf);
                         % mutate
-                        offspring(count + x - 1) = OperatorGA.mutate(offspring(count + x - 1), max([Tasks.dims]), mum);
+                        offspring(count + x - 1) = OperatorGA.mutate(population(p(x)), max([Tasks.dims]), mum);
                         % imitate
                         offspring(count + x - 1).skill_factor = population(p(x)).skill_factor;
                     end

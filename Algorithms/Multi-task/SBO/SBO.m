@@ -16,15 +16,15 @@ classdef SBO < Algorithm
     properties (SetAccess = private)
         benefit = 0.25;
         harm = 0.5;
-        mu = 2; % index of Simulated Binary Crossover (tunable)
-        mum = 5; % index of polynomial mutation
+        mu = 2;
+        mum = 5;
     end
 
     methods
         function parameter = getParameter(obj)
             parameter = {'benefit: Beneficial factor', num2str(obj.benefit), ...
                         'harm: Harmful factor', num2str(obj.harm), ...
-                        'mu: index of Simulated Binary Crossover (tunable)', num2str(obj.mu), ...
+                        'mu: index of Simulated Binary Crossover', num2str(obj.mu), ...
                         'mum: index of polynomial mutation', num2str(obj.mum)};
         end
 

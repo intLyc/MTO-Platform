@@ -2,13 +2,13 @@ classdef GA < Algorithm
     % <Single> <None>
 
     properties (SetAccess = private)
-        mu = 2; % index of Simulated Binary Crossover (tunable)
-        mum = 5; % index of polynomial mutation
+        mu = 2;
+        mum = 5;
     end
 
     methods
         function parameter = getParameter(obj)
-            parameter = {'mu: index of Simulated Binary Crossover (tunable)', num2str(obj.mu), ...
+            parameter = {'mu: index of Simulated Binary Crossover', num2str(obj.mu), ...
                         'mum: index of polynomial mutation', num2str(obj.mum)};
         end
 

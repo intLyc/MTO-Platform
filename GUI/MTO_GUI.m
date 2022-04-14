@@ -2439,7 +2439,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create TSpecialTypeDropDown
             app.TSpecialTypeDropDown = uidropdown(app.TP1GridLayout);
-            app.TSpecialTypeDropDown.Items = {'None', 'Competitive', 'Constrained'};
+            app.TSpecialTypeDropDown.Items = {'None', 'Competitive', 'Constrained', 'Expensive'};
             app.TSpecialTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @TSpecialTypeDropDownValueChanged, true);
             app.TSpecialTypeDropDown.FontWeight = 'bold';
             app.TSpecialTypeDropDown.BackgroundColor = [1 1 1];
@@ -2938,7 +2938,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create ESpecialTypeDropDown
             app.ESpecialTypeDropDown = uidropdown(app.EP1GridLayout);
-            app.ESpecialTypeDropDown.Items = {'None', 'Competitive', 'Constrained'};
+            app.ESpecialTypeDropDown.Items = {'None', 'Competitive', 'Constrained', 'Expensive'};
             app.ESpecialTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @ESpecialTypeDropDownValueChanged, true);
             app.ESpecialTypeDropDown.FontWeight = 'bold';
             app.ESpecialTypeDropDown.BackgroundColor = [1 1 1];

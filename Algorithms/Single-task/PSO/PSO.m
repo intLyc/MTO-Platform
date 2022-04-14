@@ -2,8 +2,8 @@ classdef PSO < Algorithm
     % <Single> <None>
 
     properties (SetAccess = private)
-        wmax = 0.9; % inertia weight
-        wmin = 0.4; % inertia weight
+        wmax = 0.9;
+        wmin = 0.4;
         c1 = 0.2;
         c2 = 0.2;
     end

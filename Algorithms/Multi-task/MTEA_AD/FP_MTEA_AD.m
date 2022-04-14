@@ -4,15 +4,15 @@ classdef FP_MTEA_AD < Algorithm
     % MTEA-AD with Feasibility Priority for Constrained MTOPs
 
     properties (SetAccess = private)
-        TRP = 0.1 % probability of the knowledge transfer
-        mu = 2; % index of Simulated Binary Crossover (tunable)
-        mum = 5; % index of polynomial mutation
+        TRP = 0.1;
+        mu = 2;
+        mum = 5;
     end
 
     methods
         function parameter = getParameter(obj)
             parameter = {'TRP: probability of the knowledge transfer', num2str(obj.TRP), ...
-                        'mu: index of Simulated Binary Crossover (tunable)', num2str(obj.mu), ...
+                        'mu: index of Simulated Binary Crossover', num2str(obj.mu), ...
                         'mum: index of polynomial mutation', num2str(obj.mum)};
         end
 
