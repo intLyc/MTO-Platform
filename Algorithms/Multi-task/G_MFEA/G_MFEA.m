@@ -98,6 +98,7 @@ classdef G_MFEA < Algorithm
 
                 for t = 1:length(Tasks) - 1
                     for k = (t + 1):length(Tasks)
+                        % p2.dim <= p1.dim
                         if Tasks(t).dims > Tasks(k).dims
                             p1 = t; p2 = k;
                         else
@@ -105,13 +106,13 @@ classdef G_MFEA < Algorithm
                         end
                         for i = 1:length(population)
                             if population(i).skill_factor == p2
-                                population(i).rnvec(1:Tasks(t).dims) = population(i).rnvec(inorder{t, k}(1:Tasks(t).dims));
+                                population(i).rnvec(1:Tasks(p2).dims) = population(i).rnvec(inorder{t, k}(1:Tasks(p2).dims));
                             end
                             if offspring(i).skill_factor == p2
-                                offspring(i).rnvec(1:Tasks(t).dims) = population(i).rnvec(inorder{t, k}(1:Tasks(t).dims));
+                                offspring(i).rnvec(1:Tasks(p2).dims) = population(i).rnvec(inorder{t, k}(1:Tasks(p2).dims));
                             end
                         end
-                        meanT{t}(1:Tasks(t).dims) = meanT{t}(inorder{t, k}(1:Tasks(t).dims));
+                        meanT{p2}(1:Tasks(p2).dims) = meanT{p2}(inorder{t, k}(1:Tasks(p2).dims));
                     end
                 end
 
@@ -139,6 +140,7 @@ classdef G_MFEA < Algorithm
                     for k = (t + 1):length(Tasks)
                         inorder{t, k} = randperm(max([Tasks.dims]));
                         if Tasks(t).dims > Tasks(k).dims
+                            % p2.dim <= p1.dim
                             p1 = t; p2 = k;
                         else
                             p1 = k; p2 = t;
