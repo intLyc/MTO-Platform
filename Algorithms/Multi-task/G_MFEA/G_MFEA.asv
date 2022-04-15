@@ -77,9 +77,11 @@ classdef G_MFEA < Algorithm
                     intpop = pop_rnvec{p1}(index, :);
                     intpop(:, inorder{t, k}(1:Tasks(p2).dims)) = pop_rnvec{p2}(:, 1:Tasks(p2).dims);
                     idx = 1;
-                    for i = find([population.skill_factor] == p2)
-                        population(i).rnvec = intpop(idx, :);
-                        idx = idx + 1;
+                    for i = 1:length(population)
+                        if population(i).skill_factor == p2
+                            population(i).rnvec = intpop(idx, :);
+                            idx = idx + 1;
+                        end
                     end
                     transfer{t, k} = alpha * meanT{p1};
                     transfer{k, t} = alpha * meanT{p2};
@@ -107,7 +109,7 @@ classdef G_MFEA < Algorithm
                                 population(i).rnvec(1:Tasks(p2).dims) = population(i).rnvec(inorder{t, k}(1:Tasks(p2).dims));
                             end
                             if offspring(i).skill_factor == p2
-                                offspring(i).rnvec(1:Tasks(p2).dims) = offspring(i).rnvec(inorder{t, k}(1:Tasks(p2).dims));
+                                offspring(i).rnvec(1:Tasks(p2).dims) = population(i).rnvec(inorder{t, k}(1:Tasks(p2).dims));
                             end
                         end
                         meanT{p2}(1:Tasks(p2).dims) = meanT{p2}(inorder{t, k}(1:Tasks(p2).dims));
@@ -147,9 +149,11 @@ classdef G_MFEA < Algorithm
                         intpop = pop_rnvec{p1}(index, :);
                         intpop(:, inorder{t, k}(1:Tasks(p2).dims)) = pop_rnvec{p2}(:, 1:Tasks(p2).dims);
                         idx = 1;
-                        for i = find([population.skill_factor] == p2)
-                            population(i).rnvec = intpop(idx, :);
-                            idx = idx + 1;
+                        for i = 1:length(population)
+                            if population(i).skill_factor == p2
+                                population(i).rnvec = intpop(idx, :);
+                                idx = idx + 1;
+                            end
                         end
                         intmean = meanT{p1};
                         intmean(inorder{t, k}(1:Tasks(p2).dims)) = meanT{p2}(1:Tasks(p2).dims);

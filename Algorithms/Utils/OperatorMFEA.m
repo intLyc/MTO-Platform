@@ -54,7 +54,7 @@ classdef OperatorMFEA < Operator
                 calls = 0;
                 for t = 1:length(Tasks)
                     offspring_t = offspring([offspring.skill_factor] == t);
-                    [offspring_t, cal] = evaluate(offspring_t, Tasks(t), t);
+                    [offspring_t, cal] = evaluate_opt(offspring_t, Tasks(t), t, 0);
                     offspring_temp = [offspring_temp, offspring_t];
                     calls = calls + cal;
                 end

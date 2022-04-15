@@ -19,11 +19,11 @@ function [population, calls] = evaluate_opt(population, Task, task_idx, pil)
             if ~isempty(rnvec ~= temp)
                 x = (Task.Ub - Task.Lb) .* temp + Task.Lb;
                 [obj, con] = Task.fnc(x);
-                calls = calls + 1;
             end
             population(i).factorial_costs(task_idx) = obj;
             population(i).constraint_violation(task_idx) = con;
-            calls = calls + out.funcCount;
+            % calls = calls + out.funcCount;
+            calls = calls + 1;
         else
             [obj, con] = Task.fnc(x);
             population(i).factorial_costs(task_idx) = obj;
