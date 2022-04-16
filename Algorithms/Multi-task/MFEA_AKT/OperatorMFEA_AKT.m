@@ -20,8 +20,8 @@ classdef OperatorMFEA_AKT < Operator
                     % crossover
                     p = [p1, p2];
                     if population(p1).skill_factor == population(p2).skill_factor
-                        offspring(count) = OperatorMFEA_AKT.crossover(offspring(count), population(p1), population(p2), cf);
-                        offspring(count + 1) = OperatorMFEA_AKT.crossover(offspring(count + 1), population(p2), population(p1), cf);
+                        offspring(count) = OperatorGA.crossover(offspring(count), population(p1), population(p2), cf);
+                        offspring(count + 1) = OperatorGA.crossover(offspring(count + 1), population(p2), population(p1), cf);
                         offspring(count).cx_factor = population(p1).cx_factor;
                         offspring(count + 1).cx_factor = population(p2).cx_factor;
                         offspring(count).isTran = 0;
@@ -36,8 +36,8 @@ classdef OperatorMFEA_AKT < Operator
                         offspring(count + 1).isTran = 1;
                     end
                     % mutate
-                    offspring(count) = OperatorMFEA_AKT.mutate(offspring(count), max([Tasks.dims]), mum);
-                    offspring(count + 1) = OperatorMFEA_AKT.mutate(offspring(count + 1), max([Tasks.dims]), mum);
+                    offspring(count) = OperatorGA.mutate(offspring(count), max([Tasks.dims]), mum);
+                    offspring(count + 1) = OperatorGA.mutate(offspring(count + 1), max([Tasks.dims]), mum);
                     % imitate
                     rand_p = p(randi(2));
                     offspring(count).skill_factor = population(rand_p).skill_factor;
@@ -93,7 +93,7 @@ classdef OperatorMFEA_AKT < Operator
                     a = 0.3;
                     object = OperatorMFEA_AKT.blxacrossover(object, p1, p2, a);
                 case 6
-                    object = OperatorMFEA_AKT.crossover(object, p1, p2, cf);
+                    object = OperatorGA.crossover(object, p1, p2, cf);
             end
         end
 

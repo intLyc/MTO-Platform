@@ -41,8 +41,9 @@ classdef AT_MFEA < Algorithm
             tic
 
             % initialize
-            [population, fnceval_calls, bestobj, data.bestX] = initializeMF(Individual, pop_size, Tasks, length(Tasks));
+            [population, fnceval_calls, bestobj, data.bestX] = initializeMF(Individual, pop_size, Tasks, max([Tasks.dims]));
             data.convergence(:, 1) = bestobj;
+            
             % initialize affine transformation
             [mu_tasks, Sigma_tasks] = InitialDistribution(population, length(Tasks));
 

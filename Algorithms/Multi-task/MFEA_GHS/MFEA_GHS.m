@@ -37,7 +37,7 @@ classdef MFEA_GHS < Algorithm
             tic
 
             % initialize
-            [population, fnceval_calls, bestobj, data.bestX] = initializeMFone(Individual, pop_size, Tasks, length(Tasks));
+            [population, fnceval_calls, bestobj, data.bestX] = initializeMFone(Individual, pop_size, Tasks, max([Tasks.dims]));
             data.convergence(:, 1) = bestobj;
             [max_T, min_T] = cal_max_min(population, Tasks);
             M = {};

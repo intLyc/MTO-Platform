@@ -47,7 +47,7 @@ classdef MFPSO < Algorithm
             tic
 
             % initialize
-            [population, fnceval_calls, bestobj, data.bestX] = initializeMF(IndividualPSO, pop_size, Tasks, length(Tasks));
+            [population, fnceval_calls, bestobj, data.bestX] = initializeMF(IndividualPSO, pop_size, Tasks, max([Tasks.dims]));
             data.convergence(:, 1) = bestobj;
             % initialize pso
             for i = 1:pop_size

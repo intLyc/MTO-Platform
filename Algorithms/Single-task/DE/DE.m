@@ -31,10 +31,7 @@ classdef DE < Algorithm
                 Task = Tasks(sub_task);
 
                 % initialize
-                [population, fnceval_calls] = initialize(Individual, sub_pop, Task, 1);
-
-                [bestobj, idx] = min([population.factorial_costs]);
-                bestX = population(idx).rnvec;
+                [population, fnceval_calls, bestobj, bestX] = initialize(Individual, sub_pop, Task, Task.dims);
                 convergence(1) = bestobj;
 
                 generation = 1;

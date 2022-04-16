@@ -39,15 +39,12 @@ classdef JADE < Algorithm
                 Task = Tasks(sub_task);
 
                 % initialize
-                [population, fnceval_calls] = initialize(IndividualJADE, sub_pop, Task, 1);
-
+                [population, fnceval_calls, bestobj, bestX] = initialize(IndividualJADE, sub_pop, Task, Task.dims);
+                convergence(1) = bestobj;
+                
                 % initialize uF uCR
                 uF = 0.5;
                 uCR = 0.5;
-
-                [bestobj, idx] = min([population.factorial_costs]);
-                bestX = population(idx).rnvec;
-                convergence(1) = bestobj;
 
                 generation = 1;
                 while fnceval_calls < sub_eva

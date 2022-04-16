@@ -49,7 +49,7 @@ classdef G_MFEA < Algorithm
             tic
 
             % initialize
-            [population, fnceval_calls, bestobj, data.bestX] = initializeMF(IndividualG, pop_size, Tasks, length(Tasks));
+            [population, fnceval_calls, bestobj, data.bestX] = initializeMF(IndividualG, pop_size, Tasks, max([Tasks.dims]));
             data.convergence(:, 1) = bestobj;
 
             midnum = 0.5 * ones(1, max([Tasks.dims]));

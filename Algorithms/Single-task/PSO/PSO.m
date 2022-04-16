@@ -36,9 +36,7 @@ classdef PSO < Algorithm
                 Task = Tasks(sub_task);
 
                 % initialize
-                [population, fnceval_calls] = initialize(IndividualPSO, sub_pop, Task, 1);
-                [bestobj, idx] = min([population.factorial_costs]);
-                bestX = population(idx).rnvec;
+                [population, fnceval_calls, bestobj, bestX] = initialize(IndividualPSO, sub_pop, Task, Task.dims);
                 convergence(1) = bestobj;
                 % initialize pso
                 for i = 1:sub_pop

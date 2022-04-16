@@ -28,13 +28,8 @@ classdef GA < Algorithm
 
             for sub_task = 1:length(Tasks)
                 Task = Tasks(sub_task);
-                fnceval_calls = 0;
 
-                [population, calls] = initialize(Individual, sub_pop, Task, 1);
-                fnceval_calls = fnceval_calls + calls;
-
-                [bestobj, idx] = min([population.factorial_costs]);
-                bestX = population(idx).rnvec;
+                [population, fnceval_calls, bestobj, bestX] = initialize(Individual, sub_pop, Task, Task.dims);
                 convergence(1) = bestobj;
 
                 generation = 1;

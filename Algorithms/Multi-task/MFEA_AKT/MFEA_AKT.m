@@ -43,7 +43,7 @@ classdef MFEA_AKT < Algorithm
             tic
 
             % initialize
-            [population, fnceval_calls, bestobj, data.bestX] = initializeMF(IndividualAKT, pop_size, Tasks, length(Tasks));
+            [population, fnceval_calls, bestobj, data.bestX] = initializeMF(IndividualAKT, pop_size, Tasks, max(Tasks.dims));
             data.convergence(:, 1) = bestobj;
             % initialize akt
             cfb_record = [];

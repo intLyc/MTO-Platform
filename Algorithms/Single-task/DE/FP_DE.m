@@ -34,7 +34,7 @@ classdef FP_DE < Algorithm
                 Task = Tasks(sub_task);
 
                 % initialize
-                [population, fnceval_calls] = initialize(Individual, sub_pop, Task, 1);
+                [population, fnceval_calls, bestobj, bestX] = initialize(Individual, sub_pop, Task, Task.dims);
 
                 bestCV = min([population.constraint_violation]);
                 pop_temp = population([population.constraint_violation] == bestCV);
@@ -42,10 +42,6 @@ classdef FP_DE < Algorithm
                 bestX = pop_temp(idx).rnvec;
                 convergence(1) = bestobj;
                 convergence_cv(1) = pop_temp(idx).constraint_violation;
-
-                % [bestobj, idx] = min([population.factorial_costs]);
-                % bestX = population(idx).rnvec;
-                % convergence(1) = bestobj;
 
                 generation = 1;
                 while fnceval_calls < sub_eva

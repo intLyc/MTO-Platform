@@ -30,14 +30,11 @@ classdef FP_MTEA_AD < Algorithm
             eva_num = sub_eva * length(Tasks);
             tic
 
-            population = {};
-            fnceval_calls = 0;
             epsilon = zeros(1, length(Tasks)); % Parameter of the anomaly detection model
 
+            % initialize
+            [population, fnceval_calls, bestobj, data.bestX] = initializeMT(Individual, sub_pop, Tasks, [Tasks.dims]);
             for t = 1:length(Tasks)
-                [population{t}, calls] = initialize(Individual, sub_pop, Tasks(t), 1);
-                fnceval_calls = fnceval_calls + calls;
-
                 bestCV(t) = min([population{t}.constraint_violation]);
                 pop_temp = population{t}([population{t}.constraint_violation] == bestCV(t));
                 [bestobj(t), idx] = min([pop_temp.factorial_costs]);

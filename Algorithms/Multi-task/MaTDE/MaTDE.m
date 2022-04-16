@@ -59,25 +59,14 @@ classdef MaTDE < Algorithm
             archive = cell(1, length(Tasks));
             possibility = zeros(length(Tasks), length(Tasks));
             reward = ones(length(Tasks), length(Tasks));
-            population = {};
-            fnceval_calls = 0;
 
+            % initialize
+            [population, fnceval_calls, bestobj, data.bestX] = initializeMT(Individual, sub_pop, Tasks, max([Tasks.dims]) * ones(1, length(Tasks)));
+            data.convergence(:, 1) = bestobj;
             for t = 1:length(Tasks)
-                [population{t}, calls] = initialize(Individual, sub_pop, Tasks(t), 1);
-                fnceval_calls = fnceval_calls + calls;
-
                 for i = 1:length(population{t})
-                    % max dims rnvec
-                    if Tasks(t).dims < max([Tasks.dims])
-                        population{t}(i).rnvec = [population{t}(i).rnvec, rand(1, max([Tasks.dims]) - Tasks(t).dims)];
-                    end
-                    % update archive
                     archive = obj.putarchive(archive, t, population{t}(i), sub_pop);
                 end
-
-                [bestobj(t), idx] = min([population{t}.factorial_costs]);
-                data.bestX{t} = population{t}(idx).rnvec;
-                data.convergence(t, 1) = bestobj(t);
             end
 
             generation = 1;

@@ -1,16 +1,16 @@
-function [population, calls, bestobj, bestX] = initializeMFone(Individual_class, pop_size, Tasks, tasks_num)
+function [population, calls, bestobj, bestX] = initializeMFone(Individual_class, pop_size, Tasks, dim)
     %% Multifactorial only evaluate one times - Initialize and evaluate the population
-    % Input: Individual_class, pop_size, Tasks, tasks_num
+    % Input: Individual_class, pop_size, Tasks, dim
     % Output: population, calls (function calls number), bestobj, bestX
 
     sf = 1;
     for i = 1:pop_size
         population(i) = Individual_class();
-        population(i).rnvec = rand(1, max([Tasks.dims]));
+        population(i).rnvec = rand(1, dim);
         population(i).skill_factor = sf;
         sf = mod(sf, length(Tasks)) + 1;
-        population(i).factorial_costs = inf(1, tasks_num);
-        population(i).constraint_violation = inf(1, tasks_num);
+        population(i).factorial_costs = inf(1, length(Tasks));
+        population(i).constraint_violation = inf(1, length(Tasks));
     end
 
     temp = Individual_class.empty();

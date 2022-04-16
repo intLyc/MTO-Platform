@@ -1,6 +1,6 @@
 classdef IMEA < Algorithm
     % <Multi> <None>
-    
+
     % @InProceedings{Hashimoto2018IMEA,
     %   title     = {Analysis of Evolutionary Multi-Tasking as an Island Model},
     %   author    = {Hashimoto, Ryuichi and Ishibuchi, Hisao and Masuyama, Naoki and Nojima, Yusuke},
@@ -46,21 +46,9 @@ classdef IMEA < Algorithm
             eva_num = sub_eva * length(Tasks);
             tic
 
-            population = {};
-            fnceval_calls = 0;
-
-            for t = 1:length(Tasks)
-                for i = 1:sub_pop
-                    population{t}(i) = Individual();
-                    population{t}(i).rnvec = rand(1, max([Tasks.dims]));
-                end
-                [population{t}, calls] = evaluate(population{t}, Tasks(t), 1);
-                fnceval_calls = fnceval_calls + calls;
-
-                [bestobj(t), idx] = min([population{t}.factorial_costs]);
-                data.bestX{t} = population{t}(idx).rnvec;
-                data.convergence(t, 1) = bestobj(t);
-            end
+            % initialize
+            [population, fnceval_calls, bestobj, data.bestX] = initializeMT(Individual, sub_pop, Tasks, max([Tasks.dims]) * ones(1, length(Tasks)));
+            data.convergence(:, 1) = bestobj;
 
             generation = 1;
             while fnceval_calls < eva_num

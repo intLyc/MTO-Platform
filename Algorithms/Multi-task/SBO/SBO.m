@@ -43,7 +43,6 @@ classdef SBO < Algorithm
             eva_num = sub_eva * length(Tasks);
             tic
 
-            population = IndividualSBO.empty();
             RIJ = 0.5 * ones(length(Tasks), length(Tasks)); % transfer rates
             MIJ = ones(length(Tasks), length(Tasks)); % benefit and benefit
             NIJ = ones(length(Tasks), length(Tasks)); % neutral and neutral
@@ -51,29 +50,19 @@ classdef SBO < Algorithm
             OIJ = ones(length(Tasks), length(Tasks)); % neutral and benefit
             PIJ = ones(length(Tasks), length(Tasks)); % benefit and harm
             AIJ = ones(length(Tasks), length(Tasks)); % harm and neutral
-            fnceval_calls = 0;
 
+            % initialize
+            [population_temp, fnceval_calls, bestobj, data.bestX] = initializeMT(IndividualSBO, sub_pop, Tasks, max([Tasks.dims]) * ones(1, length(Tasks)));
+            data.convergence(:, 1) = bestobj;
+            population = IndividualSBO.empty();
             for t = 1:length(Tasks)
-                [population_t, calls] = initialize(IndividualSBO, sub_pop, Tasks(t), 1);
-                fnceval_calls = fnceval_calls + calls;
-
-                [~, rank] = sort([population_t.factorial_costs]);
-                for i = 1:length(population_t)
-                    population_t(rank(i)).rank_o = i;
-
-                    % max dims rnvec
-                    if Tasks(t).dims < max([Tasks.dims])
-                        population_t(i).rnvec = [population_t(i).rnvec, rand(1, max([Tasks.dims]) - Tasks(t).dims)];
-                    end
-                    population_t(i).skill_factor = t;
-                    population_t(i).belonging_task = t;
+                [~, rank] = sort([population_temp{t}.factorial_costs]);
+                for i = 1:length(population_temp{t})
+                    population_temp{t}(rank(i)).rank_o = i;
+                    population_temp{t}(rank(i)).skill_factor = t;
+                    population_temp{t}(rank(i)).belonging_task = t;
                 end
-
-                [bestobj(t), idx] = min([population_t.factorial_costs]);
-                data.bestX{t} = population_t(idx).rnvec;
-                data.convergence(t, 1) = bestobj(t);
-
-                population = [population, population_t];
+                population = [population, population_temp{t}];
             end
 
             generation = 1;

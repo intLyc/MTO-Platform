@@ -47,20 +47,8 @@ classdef EMaTOMKT < Algorithm
             tic
 
             % initialize
-            fnceval_calls = 0;
-            population = {};
-            for t = 1:length(Tasks)
-                for i = 1:sub_pop
-                    population{t}(i) = IndividualMKT();
-                    population{t}(i).rnvec = rand(1, max([Tasks.dims]));
-                end
-                [population{t}, calls] = evaluate(population{t}, Tasks(t), 1);
-                fnceval_calls = fnceval_calls + calls;
-
-                [bestobj(t), idx] = min([population{t}.factorial_costs]);
-                data.bestX{t} = population{t}(idx).rnvec;
-                data.convergence(t, 1) = bestobj(t);
-            end
+            [population, fnceval_calls, bestobj, data.bestX] = initializeMT(IndividualMKT, sub_pop, Tasks, max([Tasks.dims]) * ones(1, length(Tasks)));
+            data.convergence(:, 1) = bestobj;
 
             generation = 1;
             while fnceval_calls < eva_num

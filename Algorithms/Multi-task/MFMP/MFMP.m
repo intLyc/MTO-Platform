@@ -42,28 +42,18 @@ classdef MFMP < Algorithm
             eva_num = sub_eva * length(Tasks);
             tic
 
-            population = {};
-            fnceval_calls = 0;
-
+            SR(:, 1) = ones(length(Tasks), 1);
+            rmp(:, 1) = 0.5 * ones(length(Tasks), 1);
+            H_idx = ones(length(Tasks), 1);
             for t = 1:length(Tasks)
-                SR(t, 1) = 1;
-                rmp(t, 1) = 0.5;
                 MF{t} = 0.5 .* ones(1, obj.H);
                 MCR{t} = 0.5 * ones(1, obj.H);
                 arc{t} = IndividualJADE.empty();
-                H_idx(t) = 1;
-
-                for i = 1:sub_pop
-                    population{t}(i) = IndividualJADE();
-                    population{t}(i).rnvec = rand(1, max([Tasks.dims]));
-                end
-                [population{t}, calls] = evaluate(population{t}, Tasks(t), 1);
-                fnceval_calls = fnceval_calls + calls;
-
-                [bestobj(t), idx] = min([population{t}.factorial_costs]);
-                data.bestX{t} = population{t}(idx).rnvec;
-                data.convergence(t, 1) = bestobj(t);
             end
+
+            % initialize
+            [population, fnceval_calls, bestobj, data.bestX] = initializeMT(IndividualJADE, sub_pop, Tasks, max([Tasks.dims]) * ones(1, length(Tasks)));
+            data.convergence(:, 1) = bestobj;
 
             generation = 1;
             while fnceval_calls < eva_num
@@ -149,9 +139,6 @@ classdef MFMP < Algorithm
                     end
                     data.convergence(t, generation) = bestobj(t);
                 end
-            end
-            for t = 1:length(Tasks)
-                plot(rmp(t, :)); hold on;
             end
             data.bestX = uni2real(data.bestX, Tasks);
             data.clock_time = toc;

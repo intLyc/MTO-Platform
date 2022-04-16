@@ -31,10 +31,8 @@ classdef FP_GA < Algorithm
 
             for sub_task = 1:length(Tasks)
                 Task = Tasks(sub_task);
-                fnceval_calls = 0;
 
-                [population, calls] = initialize(Individual, sub_pop, Task, 1);
-                fnceval_calls = fnceval_calls + calls;
+                [population, fnceval_calls, bestobj, bestX] = initialize(Individual, sub_pop, Task, Task.dims);
 
                 bestCV = min([population.constraint_violation]);
                 pop_temp = population([population.constraint_violation] == bestCV);

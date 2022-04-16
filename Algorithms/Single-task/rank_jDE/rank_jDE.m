@@ -41,16 +41,14 @@ classdef rank_jDE < Algorithm
                 Task = Tasks(sub_task);
 
                 % initialize
-                [population, fnceval_calls] = initialize(IndividualjDE, sub_pop, Task, 1);
+                [population, fnceval_calls, bestobj, bestX] = initialize(IndividualjDE, sub_pop, Task, Task.dims);
+                convergence(1) = bestobj;
+
                 % initialize F and CR
                 for i = 1:length(population)
                     population(i).F = rand * 0.9 + 0.1;
                     population(i).CR = rand;
                 end
-
-                [bestobj, idx] = min([population.factorial_costs]);
-                bestX = population(idx).rnvec;
-                convergence(1) = bestobj;
 
                 generation = 1;
                 while fnceval_calls < sub_eva

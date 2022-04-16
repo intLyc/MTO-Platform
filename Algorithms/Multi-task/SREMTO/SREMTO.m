@@ -48,7 +48,16 @@ classdef SREMTO < Algorithm
             b2 = (pop_size .* obj.TH) ./ (pop_size - sub_pop);
 
             % initialize
-            [population, fnceval_calls] = initialize(IndividualSRE, pop_size, Tasks, length(Tasks));
+            fnceval_calls = 0;
+            for i = 1:pop_size
+                population(i) = IndividualSRE();
+                population(i).rnvec = rand(1, max([Tasks.dims]));
+                population(i).factorial_costs = inf(1, length(Tasks));
+            end
+            for t = 1:length(Tasks)
+                [population, cal] = evaluate(population, Tasks(t), t);
+                fnceval_calls = fnceval_calls + cal;
+            end
 
             for t = 1:length(Tasks)
                 for i = 1:pop_size
@@ -65,7 +74,6 @@ classdef SREMTO < Algorithm
                     end
                 end
                 bestobj(t) = population(rank(1)).factorial_costs(t);
-                bestCV(t) = population(rank(1)).constraint_violation(t);
                 data.bestX{t} = population(rank(1)).rnvec;
             end
             data.convergence(:, 1) = bestobj;
@@ -99,7 +107,6 @@ classdef SREMTO < Algorithm
                     [bestobj_offspring, idx] = min(factorial_costs);
                     if bestobj_offspring < bestobj(t)
                         bestobj(t) = bestobj_offspring;
-                        bestCV(t) = int_population(idx).constraint_violation(t);
                         data.bestX{t} = int_population(idx).rnvec;
                     end
 

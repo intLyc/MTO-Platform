@@ -1,16 +1,24 @@
-function [population, calls, bestobj, bestCV, bestX, feasible_rate] = initializeMF_FP(Individual_class, pop_size, Tasks, tasks_num)
+function [population, calls, bestobj, bestCV, bestX] = initializeMF_FP(Individual_class, pop_size, Tasks, dim)
     %% Multifactorial - Initialize and evaluate the population
-    % Input: Individual_class, pop_size, Tasks, tasks_num
+    % Input: Individual_class, pop_size, Tasks, dim
     % Output: population, calls (function calls number), bestobj, bestX
 
-    [population, calls] = initialize(Individual_class, pop_size, Tasks, tasks_num);
-    feasible_rate = [];
+    for i = 1:pop_size
+        population(i) = Individual_class();
+        population(i).rnvec = rand(1, dim);
+        population(i).factorial_costs = inf(1, length(Tasks));
+        population(i).constraint_violation = inf(1, length(Tasks));
+    end
+    calls = 0;
+    for t = 1:length(Tasks)
+        [population, cal] = evaluate(population, Tasks(t), t);
+        calls = calls + cal;
+    end
+
     for t = 1:length(Tasks)
         for i = 1:pop_size
             constraint_violation(i) = population(i).constraint_violation(t);
         end
-        idx = ([population.skill_factor] == t);
-        feasible_rate(t) = sum(constraint_violation(idx) <= 0) / sum(idx);
         bestCV(t) = min(constraint_violation);
         [~, rank_cv] = sort(constraint_violation);
         for i = 1:pop_size
@@ -19,9 +27,7 @@ function [population, calls, bestobj, bestCV, bestX, feasible_rate] = initialize
         bestobj(t) = population(rank_cv(1)).factorial_costs(t);
         bestX{t} = population(rank_cv(1)).rnvec;
         if bestCV(t) <= 0
-            x = (constraint_violation == bestCV(t));
-            idx = 1:length(x);
-            idx = idx(x);
+            idx = find(constraint_violation == bestCV(t));
             factorial_costs = [];
             for i = 1:length(idx)
                 factorial_costs(i) = population(idx(i)).factorial_costs(t);

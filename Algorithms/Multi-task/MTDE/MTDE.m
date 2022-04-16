@@ -40,25 +40,14 @@ classdef MTDE < Algorithm
             eva_num = sub_eva * length(Tasks);
             tic
 
-            population = {};
-            fnceval_calls = 0;
             gen = (eva_num - (pop_size * length(Tasks) - 1)) / pop_size;
             delta_rmp = 1 / gen;
             rmp = obj.rmp0 * ones(length(Tasks), length(Tasks)) / (length(Tasks) - 1);
             rmp(logical(eye(size(rmp)))) = (1 - obj.rmp0);
 
-            for t = 1:length(Tasks)
-                for i = 1:sub_pop
-                    population{t}(i) = Individual();
-                    population{t}(i).rnvec = rand(1, max([Tasks.dims]));
-                end
-                [population{t}, calls] = evaluate(population{t}, Tasks(t), 1);
-                fnceval_calls = fnceval_calls + calls;
-
-                [bestobj(t), idx] = min([population{t}.factorial_costs]);
-                data.bestX{t} = population{t}(idx).rnvec;
-                data.convergence(t, 1) = bestobj(t);
-            end
+            % initialize
+            [population, fnceval_calls, bestobj, data.bestX] = initializeMT(Individual, sub_pop, Tasks, max([Tasks.dims]) * ones(1, length(Tasks)));
+            data.convergence(:, 1) = bestobj;
 
             generation = 1;
             while fnceval_calls < eva_num
