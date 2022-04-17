@@ -1,5 +1,5 @@
 classdef FP_SHADE < Algorithm
-    % <Multi> <Constrained>
+    % <Single> <Constrained>
 
     % SHADE with Feasibility Priority for Constrained MTOPs
 

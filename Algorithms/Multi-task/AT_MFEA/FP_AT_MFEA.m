@@ -4,10 +4,10 @@ classdef FP_AT_MFEA < Algorithm
     % AT-MFEA with Feasibility Priority for Constrained MTOPs
 
     properties (SetAccess = private)
-        rmp = 0.3
+        rmp = 0.2
         mu = 2;
         mum = 5;
-        probswap = 0;
+        probswap = 0.5;
     end
 
     methods
