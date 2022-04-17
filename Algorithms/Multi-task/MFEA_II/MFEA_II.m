@@ -15,7 +15,7 @@ classdef MFEA_II < Algorithm
     properties (SetAccess = private)
         mu = 2;
         mum = 5;
-        probswap = 0;
+        probswap = 0.5;
     end
 
     methods

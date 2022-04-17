@@ -14,7 +14,7 @@ classdef AT_MFEA < Algorithm
         rmp = 0.3
         mu = 2;
         mum = 5;
-        probswap = 0;
+        probswap = 0.5;
     end
 
     methods
