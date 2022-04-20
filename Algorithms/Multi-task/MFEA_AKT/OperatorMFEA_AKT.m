@@ -37,9 +37,9 @@ classdef OperatorMFEA_AKT < Operator
                         offspring(count).isTran = 1;
                         offspring(count + 1).isTran = 1;
                     end
-                    % mutate
-                    offspring(count) = OperatorGA.mutate(offspring(count), max([Tasks.dims]), mum);
-                    offspring(count + 1) = OperatorGA.mutate(offspring(count + 1), max([Tasks.dims]), mum);
+                    % % mutate
+                    % offspring(count) = OperatorGA.mutate(offspring(count), max([Tasks.dims]), mum);
+                    % offspring(count + 1) = OperatorGA.mutate(offspring(count + 1), max([Tasks.dims]), mum);
                     % imitate
                     rand_p = p(randi(2));
                     offspring(count).skill_factor = population(rand_p).skill_factor;
