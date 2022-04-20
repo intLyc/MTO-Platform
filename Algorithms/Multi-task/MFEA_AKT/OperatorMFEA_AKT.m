@@ -9,8 +9,10 @@ classdef OperatorMFEA_AKT < Operator
                 p2 = indorder(i + fix(length(population) / 2));
                 offspring(count) = feval(Individual_class);
                 offspring(count).factorial_costs = inf(1, length(Tasks));
+                offspring(count).constraint_violation = inf(1, length(Tasks));
                 offspring(count + 1) = feval(Individual_class);
                 offspring(count + 1).factorial_costs = inf(1, length(Tasks));
+                offspring(count + 1).constraint_violation = inf(1, length(Tasks));
 
                 u = rand(1, max([Tasks.dims]));
                 cf = zeros(1, max([Tasks.dims]));
