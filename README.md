@@ -17,10 +17,6 @@
 
 **Email: int_lyc@cug.edu.cn**
 
-## Copyright
-
-> Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for research purposes. All publications which use this platform or any code in the platform should acknowledge the use of "MTO-Platform" and cite or footnote "https://github.com/intLyc/MTO-Platform"
-
 ## Introduction
 
 The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](https://github.com/BIMK/PlatEMO) and designed to facilitate experiments on multi-task optimization algorithms.
@@ -29,6 +25,10 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 [http://www.bdsc.site/websites/MTO/index.html](http://www.bdsc.site/websites/MTO/index.html)
 
 [http://www.bdsc.site/websites/ETO/ETO.html](http://www.bdsc.site/websites/ETO/ETO.html)
+
+## Copyright
+
+> Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for research purposes. All publications which use this platform or any code in the platform should acknowledge the use of "MTO-Platform" and cite or footnote "https://github.com/intLyc/MTO-Platform"
 
 ## Guide
 
@@ -181,6 +181,10 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 [http://www.bdsc.site/websites/MTO/index.html](http://www.bdsc.site/websites/MTO/index.html)
 
 [http://www.bdsc.site/websites/ETO/ETO.html](http://www.bdsc.site/websites/ETO/ETO.html)
+
+## 版权
+
+> Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for research purposes. All publications which use this platform or any code in the platform should acknowledge the use of "MTO-Platform" and cite or footnote "https://github.com/intLyc/MTO-Platform"
 
 ## 使用方法
 
