@@ -1,8 +1,13 @@
 # MTO Platform
 
-[![](https://img.shields.io/badge/Download-Latest-orange)](https://github.com/intLyc/MTO-Platform/archive/refs/heads/master.zip)
-[![](https://img.shields.io/badge/License-MIT-green)](#mto-platform)
+[![](https://img.shields.io/badge/Download-Latest-green)](https://github.com/intLyc/MTO-Platform/archive/refs/heads/master.zip)
+[![](https://img.shields.io/badge/Release-Pre_Release-orange)](#mto-platform)
 [![](https://img.shields.io/badge/Matlab-%3E%3DR2020b-blue)](#mto-platform)
+
+
+![GitHub Repo stars](https://img.shields.io/github/stars/intLyc/MTO-Platform?style=social)
+![GitHub forks](https://img.shields.io/github/forks/intLyc/MTO-Platform?style=social)
+![GitHub watchers](https://img.shields.io/github/watchers/intLyc/MTO-Platform?style=social)
 
 [-> 中文介绍 <-](#中文介绍)
 
@@ -11,6 +16,10 @@
 **Author: Yanchi Li**
 
 **Email: int_lyc@cug.edu.cn**
+
+## Copyright
+
+> Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for research purposes. All publications which use this platform or any code in the platform should acknowledge the use of "MTO-Platform" and cite or footnote "https://github.com/intLyc/MTO-Platform"
 
 ## Introduction
 
