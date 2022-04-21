@@ -1,6 +1,7 @@
 classdef LDA_MFEA < Algorithm
     % <Multi> <None>
 
+    %------------------------------- Reference --------------------------------
     % @inproceedings{Bali2017LDA-MFEA,
     %   author    = {Bali, Kavitesh Kumar and Gupta, Abhishek and Feng, Liang and Ong, Yew Soon and Tan Puay Siew},
     %   booktitle = {2017 IEEE Congress on Evolutionary Computation (CEC)},
@@ -9,6 +10,14 @@ classdef LDA_MFEA < Algorithm
     %   pages     = {1295-1302},
     %   doi       = {10.1109/CEC.2017.7969454},
     % }
+    %--------------------------------------------------------------------------
+
+    %------------------------------- Copyright --------------------------------
+    % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
+    % research purposes. All publications which use this platform or any code
+    % in the platform should acknowledge the use of "MTO-Platform" and cite
+    % or footnote "https://github.com/intLyc/MTO-Platform"
+    %--------------------------------------------------------------------------
 
     properties (SetAccess = private)
         rmp = 0.3
@@ -43,7 +52,7 @@ classdef LDA_MFEA < Algorithm
             % initialize
             [population, fnceval_calls, bestobj, data.bestX] = initializeMFone(Individual, pop_size, Tasks, max([Tasks.dims]));
             data.convergence(:, 1) = bestobj;
-            
+
             % initialize lda
             for t = 1:length(Tasks)
                 P{t} = [];

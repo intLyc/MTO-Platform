@@ -1,6 +1,7 @@
 classdef MTDE < Algorithm
     % <Multi> <None/Competitive>
 
+    %------------------------------- Reference --------------------------------
     % @Article{Li2022CompetitiveMTO,
     %   author     = {Li, Genghui and Zhang, Qingfu and Wang, Zhenkun},
     %   journal    = {IEEE Transactions on Evolutionary Computation},
@@ -9,6 +10,14 @@ classdef MTDE < Algorithm
     %   pages      = {1-1},
     %   doi        = {10.1109/TEVC.2022.3141819},
     % }
+    %--------------------------------------------------------------------------
+
+    %------------------------------- Copyright --------------------------------
+    % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
+    % research purposes. All publications which use this platform or any code
+    % in the platform should acknowledge the use of "MTO-Platform" and cite
+    % or footnote "https://github.com/intLyc/MTO-Platform"
+    %--------------------------------------------------------------------------
 
     properties (SetAccess = private)
         F = 0.5

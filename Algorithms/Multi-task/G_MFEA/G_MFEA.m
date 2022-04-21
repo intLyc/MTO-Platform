@@ -1,6 +1,7 @@
 classdef G_MFEA < Algorithm
     % <Multi> <None/Expensive>
 
+    %------------------------------- Reference --------------------------------
     % @Article{Ding2019G-MFEA,
     %   author   = {Ding, Jinliang and Yang, Cuie and Jin, Yaochu and Chai, Tianyou},
     %   journal  = {IEEE Transactions on Evolutionary Computation},
@@ -11,6 +12,14 @@ classdef G_MFEA < Algorithm
     %   volume   = {23},
     %   doi      = {10.1109/TEVC.2017.2785351},
     % }
+    %--------------------------------------------------------------------------
+
+    %------------------------------- Copyright --------------------------------
+    % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
+    % research purposes. All publications which use this platform or any code
+    % in the platform should acknowledge the use of "MTO-Platform" and cite
+    % or footnote "https://github.com/intLyc/MTO-Platform"
+    %--------------------------------------------------------------------------
 
     properties (SetAccess = private)
         rmp = 0.3

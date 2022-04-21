@@ -3,6 +3,13 @@ function [population, calls, bestobj, bestX] = initializeMFone(Individual_class,
     % Input: Individual_class, pop_size, Tasks, dim
     % Output: population, calls (function calls number), bestobj, bestX
 
+    %------------------------------- Copyright --------------------------------
+    % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
+    % research purposes. All publications which use this platform or any code
+    % in the platform should acknowledge the use of "MTO-Platform" and cite
+    % or footnote "https://github.com/intLyc/MTO-Platform"
+    %--------------------------------------------------------------------------
+
     sf = 1;
     for i = 1:pop_size
         population(i) = Individual_class();

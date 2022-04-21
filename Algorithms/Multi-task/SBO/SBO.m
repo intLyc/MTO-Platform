@@ -1,6 +1,7 @@
 classdef SBO < Algorithm
     % <Many> <None>
 
+    %------------------------------- Reference --------------------------------
     % @Article{Liaw2019SBO,
     %   author     = {Liaw, Rung-Tzuo and Ting, Chuan-Kang},
     %   journal    = {Proceedings of the AAAI Conference on Artificial Intelligence},
@@ -12,6 +13,14 @@ classdef SBO < Algorithm
     %   volume     = {33},
     %   doi        = {10.1609/aaai.v33i01.33014295},
     % }
+    %--------------------------------------------------------------------------
+
+    %------------------------------- Copyright --------------------------------
+    % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
+    % research purposes. All publications which use this platform or any code
+    % in the platform should acknowledge the use of "MTO-Platform" and cite
+    % or footnote "https://github.com/intLyc/MTO-Platform"
+    %--------------------------------------------------------------------------
 
     properties (SetAccess = private)
         benefit = 0.25;

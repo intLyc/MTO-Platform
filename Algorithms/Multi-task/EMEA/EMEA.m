@@ -1,6 +1,7 @@
 classdef EMEA < Algorithm
     % <Multi> <None>
 
+    %------------------------------- Reference --------------------------------
     % @Article{Feng2019EMEA,
     %   author     = {Feng, Liang and Zhou, Lei and Zhong, Jinghui and Gupta, Abhishek and Ong, Yew-Soon and Tan, Kay-Chen and Qin, A. K.},
     %   journal    = {IEEE Transactions on Cybernetics},
@@ -11,6 +12,14 @@ classdef EMEA < Algorithm
     %   volume     = {49},
     %   doi        = {10.1109/TCYB.2018.2845361},
     % }
+    %--------------------------------------------------------------------------
+
+    %------------------------------- Copyright --------------------------------
+    % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
+    % research purposes. All publications which use this platform or any code
+    % in the platform should acknowledge the use of "MTO-Platform" and cite
+    % or footnote "https://github.com/intLyc/MTO-Platform"
+    %--------------------------------------------------------------------------
 
     properties (SetAccess = private)
         Op = 'GA/DE';

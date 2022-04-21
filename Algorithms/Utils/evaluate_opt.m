@@ -3,6 +3,13 @@ function [population, calls] = evaluate_opt(population, Task, task_idx, pil)
     % Input: population, Task (single task), task_idx (factorial_costs idx)
     % Output: population (evaluated), calls (function calls number)
 
+    %------------------------------- Copyright --------------------------------
+    % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
+    % research purposes. All publications which use this platform or any code
+    % in the platform should acknowledge the use of "MTO-Platform" and cite
+    % or footnote "https://github.com/intLyc/MTO-Platform"
+    %--------------------------------------------------------------------------
+
     options = optimoptions(@fminunc, 'Display', 'off', 'Algorithm', 'quasi-newton', 'MaxIter', 2); % settings for individual learning
 
     calls = 0;

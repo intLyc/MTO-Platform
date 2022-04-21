@@ -1,6 +1,7 @@
 classdef MFMP < Algorithm
     % <Multi> <None>
 
+    %------------------------------- Reference --------------------------------
     % @Article{Li2020MFMP,
     %   title      = {Multifactorial Optimization Via Explicit Multipopulation Evolutionary Framework},
     %   author     = {Genghui Li and Qiuzhen Lin and Weifeng Gao},
@@ -11,6 +12,14 @@ classdef MFMP < Algorithm
     %   volume     = {512},
     %   doi        = {https://doi.org/10.1016/j.ins.2019.10.066},
     % }
+    %--------------------------------------------------------------------------
+
+    %------------------------------- Copyright --------------------------------
+    % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
+    % research purposes. All publications which use this platform or any code
+    % in the platform should acknowledge the use of "MTO-Platform" and cite
+    % or footnote "https://github.com/intLyc/MTO-Platform"
+    %--------------------------------------------------------------------------
 
     properties (SetAccess = private)
         theta = 0.2

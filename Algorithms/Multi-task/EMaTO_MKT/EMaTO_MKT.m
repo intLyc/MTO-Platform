@@ -1,6 +1,7 @@
-classdef EMaTOMKT < Algorithm
+classdef EMaTO_MKT < Algorithm
     % <Many> <None>
 
+    %------------------------------- Reference --------------------------------
     % @Article{Liang2021EMaTO-MKT,
     %   author   = {Liang, Zhengping and Xu, Xiuju and Liu, Ling and Tu, Yaofeng and Zhu, Zexuan},
     %   journal  = {IEEE Transactions on Evolutionary Computation},
@@ -9,6 +10,14 @@ classdef EMaTOMKT < Algorithm
     %   pages    = {1-1},
     %   doi      = {10.1109/TEVC.2021.3101697},
     % }
+    %--------------------------------------------------------------------------
+
+    %------------------------------- Copyright --------------------------------
+    % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
+    % research purposes. All publications which use this platform or any code
+    % in the platform should acknowledge the use of "MTO-Platform" and cite
+    % or footnote "https://github.com/intLyc/MTO-Platform"
+    %--------------------------------------------------------------------------
 
     properties (SetAccess = private)
         mu = 2;

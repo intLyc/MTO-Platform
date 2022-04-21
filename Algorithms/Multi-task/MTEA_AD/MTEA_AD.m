@@ -1,6 +1,7 @@
 classdef MTEA_AD < Algorithm
     % <Multi/Many> <None>
 
+    %------------------------------- Reference --------------------------------
     % @Article{Wang2021MTEA-AD,
     %   author     = {Wang, Chao and Liu, Jing and Wu, Kai and Wu, Zhaoyang},
     %   journal    = {IEEE Transactions on Evolutionary Computation},
@@ -9,6 +10,14 @@ classdef MTEA_AD < Algorithm
     %   pages      = {1-1},
     %   doi        = {10.1109/TEVC.2021.3068157},
     % }
+    %--------------------------------------------------------------------------
+
+    %------------------------------- Copyright --------------------------------
+    % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
+    % research purposes. All publications which use this platform or any code
+    % in the platform should acknowledge the use of "MTO-Platform" and cite
+    % or footnote "https://github.com/intLyc/MTO-Platform"
+    %--------------------------------------------------------------------------
 
     properties (SetAccess = private)
         TRP = 0.1;

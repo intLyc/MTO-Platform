@@ -3,6 +3,13 @@ function [population, bestobj, bestX] = tour_selectMF(population, offspring, Tas
     % Input: population (old), offspring, Tasks, pop_size, bestobj, bestX
     % Output: population (new), bestobj, bestX
 
+    %------------------------------- Copyright --------------------------------
+    % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
+    % research purposes. All publications which use this platform or any code
+    % in the platform should acknowledge the use of "MTO-Platform" and cite
+    % or footnote "https://github.com/intLyc/MTO-Platform"
+    %--------------------------------------------------------------------------
+
     ostart = length(population) + 1;
     population = [population, offspring];
 

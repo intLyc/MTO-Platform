@@ -1,4 +1,4 @@
-function data = singleRun(algo_obj, prob_obj)
+classdef IndividualMKT < Individual
 
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
@@ -6,6 +6,8 @@ function data = singleRun(algo_obj, prob_obj)
     % in the platform should acknowledge the use of "MTO-Platform" and cite
     % or footnote "https://github.com/intLyc/MTO-Platform"
     %--------------------------------------------------------------------------
-
-    data = algo_obj.run(prob_obj.getTasks(), prob_obj.getRunParameterList);
+    
+    properties
+        cluster_num;
+    end
 end

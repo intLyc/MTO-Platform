@@ -1,6 +1,7 @@
 classdef MFEA_AKT < Algorithm
     % <Multi> <None>
-    
+
+    %------------------------------- Reference --------------------------------
     % @Article{Zhou2021MFEA-AKT,
     %   author     = {Zhou, Lei and Feng, Liang and Tan, Kay Chen and Zhong, Jinghui and Zhu, Zexuan and Liu, Kai and Chen, Chao},
     %   journal    = {IEEE Transactions on Cybernetics},
@@ -11,6 +12,14 @@ classdef MFEA_AKT < Algorithm
     %   volume     = {51},
     %   doi        = {10.1109/TCYB.2020.2974100},
     % }
+    %--------------------------------------------------------------------------
+
+    %------------------------------- Copyright --------------------------------
+    % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
+    % research purposes. All publications which use this platform or any code
+    % in the platform should acknowledge the use of "MTO-Platform" and cite
+    % or footnote "https://github.com/intLyc/MTO-Platform"
+    %--------------------------------------------------------------------------
 
     properties (SetAccess = private)
         rmp = 0.3

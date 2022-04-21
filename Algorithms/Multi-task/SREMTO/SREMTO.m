@@ -1,6 +1,7 @@
 classdef SREMTO < Algorithm
     % <Multi> <None>
 
+    %------------------------------- Reference --------------------------------
     % @Article{Zheng2020SREMTO,
     %   author     = {Zheng, Xiaolong and Qin, A. K. and Gong, Maoguo and Zhou, Deyun},
     %   journal    = {IEEE Transactions on Evolutionary Computation},
@@ -14,6 +15,14 @@ classdef SREMTO < Algorithm
     %   groups     = {MT, SO, Algorithm},
     %   readstatus = {read},
     % }
+    %--------------------------------------------------------------------------
+
+    %------------------------------- Copyright --------------------------------
+    % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
+    % research purposes. All publications which use this platform or any code
+    % in the platform should acknowledge the use of "MTO-Platform" and cite
+    % or footnote "https://github.com/intLyc/MTO-Platform"
+    %--------------------------------------------------------------------------
 
     properties (SetAccess = private)
         TH = 0.3;

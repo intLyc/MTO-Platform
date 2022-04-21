@@ -1,6 +1,7 @@
 classdef AT_MFEA < Algorithm
     % <Multi> <None>
 
+    %------------------------------- Reference --------------------------------
     % @Article{Xue2020AT-MFEA,
     %   author     = {Xue, Xiaoming and Zhang, Kai and Tan, Kay Chen and Feng, Liang and Wang, Jian and Chen, Guodong and Zhao, Xinggang and Zhang, Liming and Yao, Jun},
     %   journal    = {IEEE Transactions on Cybernetics},
@@ -9,6 +10,14 @@ classdef AT_MFEA < Algorithm
     %   pages      = {1-15},
     %   doi        = {10.1109/TCYB.2020.3036393},
     % }
+    %--------------------------------------------------------------------------
+
+    %------------------------------- Copyright --------------------------------
+    % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
+    % research purposes. All publications which use this platform or any code
+    % in the platform should acknowledge the use of "MTO-Platform" and cite
+    % or footnote "https://github.com/intLyc/MTO-Platform"
+    %--------------------------------------------------------------------------
 
     properties (SetAccess = private)
         rmp = 0.3
@@ -43,7 +52,7 @@ classdef AT_MFEA < Algorithm
             % initialize
             [population, fnceval_calls, bestobj, data.bestX] = initializeMF(Individual, pop_size, Tasks, max([Tasks.dims]));
             data.convergence(:, 1) = bestobj;
-            
+
             % initialize affine transformation
             [mu_tasks, Sigma_tasks] = InitialDistribution(population, length(Tasks));
 

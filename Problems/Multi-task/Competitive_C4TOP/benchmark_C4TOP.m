@@ -1,4 +1,12 @@
 function Tasks = benchmark_C4TOP(index)
+    %BENCHMARK function
+    %   Input
+    %   - index: the index number of problem set
+    %
+    %   Output:
+    %   - Tasks: benchmark problem set
+
+    %------------------------------- Reference --------------------------------
     % @Article{Li2022CompetitiveMTO,
     %   author     = {Li, Genghui and Zhang, Qingfu and Wang, Zhenkun},
     %   journal    = {IEEE Transactions on Evolutionary Computation},
@@ -7,13 +15,14 @@ function Tasks = benchmark_C4TOP(index)
     %   pages      = {1-1},
     %   doi        = {10.1109/TEVC.2022.3141819},
     % }
+    %--------------------------------------------------------------------------
 
-    %BENCHMARK function
-    %   Input
-    %   - index: the index number of problem set
-    %
-    %   Output:
-    %   - Tasks: benchmark problem set
+    %------------------------------- Copyright --------------------------------
+    % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
+    % research purposes. All publications which use this platform or any code
+    % in the platform should acknowledge the use of "MTO-Platform" and cite
+    % or footnote "https://github.com/intLyc/MTO-Platform"
+    %--------------------------------------------------------------------------
 
     file_dir = './Problems/Multi-task/Competitive_C4TOP/';
     load([file_dir, 'M_matrix.mat']);

@@ -2,6 +2,13 @@ classdef Problem < handle
     %% Problem Base Class
     % Inherit the Problem class and implement the abstract functions
 
+    %------------------------------- Copyright --------------------------------
+    % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
+    % research purposes. All publications which use this platform or any code
+    % in the platform should acknowledge the use of "MTO-Platform" and cite
+    % or footnote "https://github.com/intLyc/MTO-Platform"
+    %--------------------------------------------------------------------------
+
     properties
         name % problem's name
         sub_pop = 50 % each task population size

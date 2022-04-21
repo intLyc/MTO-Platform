@@ -1,6 +1,24 @@
 classdef CMT2 < Problem
     % <Multi> <Constrained>
 
+    %------------------------------- Reference --------------------------------
+    % @InProceedings{Li2022CMT,
+    %   title     = {Evolutionary Constrained Multi-task Optimization: Benchmark Problems and Preliminary Results},
+    %   author    = {Yanchi, Li and Wenyin, Gong and Shuijia, Li},
+    %   booktitle = {Proceedings of the Genetic and Evolutionary Computation Conference Companion},
+    %   year      = {2022},
+    %   series    = {GECCO '22},
+    %   numpages  = {4},
+    % }
+    %--------------------------------------------------------------------------
+
+    %------------------------------- Copyright --------------------------------
+    % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
+    % research purposes. All publications which use this platform or any code
+    % in the platform should acknowledge the use of "MTO-Platform" and cite
+    % or footnote "https://github.com/intLyc/MTO-Platform"
+    %--------------------------------------------------------------------------
+
     properties
         dims = 50;
     end

@@ -1,6 +1,7 @@
 classdef MFEA < Algorithm
     % <Multi> <None>
 
+    %------------------------------- Reference --------------------------------
     % @Article{Gupta2016MFEA,
     %   author     = {Gupta, Abhishek and Ong, Yew-Soon and Feng, Liang},
     %   journal    = {IEEE Transactions on Evolutionary Computation},
@@ -11,6 +12,14 @@ classdef MFEA < Algorithm
     %   volume     = {20},
     %   doi        = {10.1109/TEVC.2015.2458037},
     % }
+    %--------------------------------------------------------------------------
+
+    %------------------------------- Copyright --------------------------------
+    % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
+    % research purposes. All publications which use this platform or any code
+    % in the platform should acknowledge the use of "MTO-Platform" and cite
+    % or footnote "https://github.com/intLyc/MTO-Platform"
+    %--------------------------------------------------------------------------
 
     properties (SetAccess = private)
         rmp = 0.3

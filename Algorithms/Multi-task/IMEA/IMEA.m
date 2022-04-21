@@ -1,6 +1,7 @@
 classdef IMEA < Algorithm
     % <Multi> <None>
 
+    %------------------------------- Reference --------------------------------
     % @InProceedings{Hashimoto2018IMEA,
     %   title     = {Analysis of Evolutionary Multi-Tasking as an Island Model},
     %   author    = {Hashimoto, Ryuichi and Ishibuchi, Hisao and Masuyama, Naoki and Nojima, Yusuke},
@@ -15,6 +16,14 @@ classdef IMEA < Algorithm
     %   location  = {Kyoto, Japan},
     %   numpages  = {4},
     % }
+    %--------------------------------------------------------------------------
+
+    %------------------------------- Copyright --------------------------------
+    % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
+    % research purposes. All publications which use this platform or any code
+    % in the platform should acknowledge the use of "MTO-Platform" and cite
+    % or footnote "https://github.com/intLyc/MTO-Platform"
+    %--------------------------------------------------------------------------
 
     properties (SetAccess = private)
         T = 10;

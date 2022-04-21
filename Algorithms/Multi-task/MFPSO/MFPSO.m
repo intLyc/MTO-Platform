@@ -1,6 +1,7 @@
 classdef MFPSO < Algorithm
     % <Multi> <None>
 
+    %------------------------------- Reference --------------------------------
     % @InProceedings{Feng2017MFDE-MFPSO,
     %   author     = {Feng, L. and Zhou, W. and Zhou, L. and Jiang, S. W. and Zhong, J. H. and Da, B. S. and Zhu, Z. X. and Wang, Y.},
     %   booktitle  = {2017 IEEE Congress on Evolutionary Computation (CEC)},
@@ -9,6 +10,14 @@ classdef MFPSO < Algorithm
     %   pages      = {921-928},
     %   doi        = {10.1109/CEC.2017.7969407},
     % }
+    %--------------------------------------------------------------------------
+
+    %------------------------------- Copyright --------------------------------
+    % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
+    % research purposes. All publications which use this platform or any code
+    % in the platform should acknowledge the use of "MTO-Platform" and cite
+    % or footnote "https://github.com/intLyc/MTO-Platform"
+    %--------------------------------------------------------------------------
 
     properties (SetAccess = private)
         rmp = 0.3

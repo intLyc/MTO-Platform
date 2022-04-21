@@ -1,6 +1,7 @@
 classdef MFEA_DV < Algorithm
     % <Multi> <None>
 
+    %------------------------------- Reference --------------------------------
     % @Article{Yin2019MFEA-DV,
     %   author     = {Yin,Jian and Zhu, Anmin and Zhu, Zexuan and Yu, Yanan and Ma, Xiaoling},
     %   journal    = {IEEE Congress on Evolutionary Computation },
@@ -9,6 +10,14 @@ classdef MFEA_DV < Algorithm
     %   pages      = {2244-2251},
     %   doi        = {10.1109/CEC.2019.8789959},
     % }
+    %--------------------------------------------------------------------------
+
+    %------------------------------- Copyright --------------------------------
+    % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
+    % research purposes. All publications which use this platform or any code
+    % in the platform should acknowledge the use of "MTO-Platform" and cite
+    % or footnote "https://github.com/intLyc/MTO-Platform"
+    %--------------------------------------------------------------------------
 
     properties (SetAccess = private)
         rmp = 0.3

@@ -3,6 +3,13 @@ classdef FP_SHADE < Algorithm
 
     % SHADE with Feasibility Priority for Constrained MTOPs
 
+    %------------------------------- Copyright --------------------------------
+    % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
+    % research purposes. All publications which use this platform or any code
+    % in the platform should acknowledge the use of "MTO-Platform" and cite
+    % or footnote "https://github.com/intLyc/MTO-Platform"
+    %--------------------------------------------------------------------------
+
     properties (SetAccess = private)
         p = 0.1;
         H = 100;

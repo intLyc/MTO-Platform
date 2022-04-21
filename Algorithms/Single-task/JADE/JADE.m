@@ -1,6 +1,7 @@
 classdef JADE < Algorithm
     % <Single> <None>
 
+    %------------------------------- Reference --------------------------------
     % @InProceedings{Zhang2007JADE,
     %   author     = {Jingqiao Zhang and Sanderson, Arthur C.},
     %   booktitle  = {2007 IEEE Congress on Evolutionary Computation},
@@ -9,6 +10,14 @@ classdef JADE < Algorithm
     %   pages      = {2251-2258},
     %   doi        = {10.1109/CEC.2007.4424751},
     % }
+    %--------------------------------------------------------------------------
+
+    %------------------------------- Copyright --------------------------------
+    % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
+    % research purposes. All publications which use this platform or any code
+    % in the platform should acknowledge the use of "MTO-Platform" and cite
+    % or footnote "https://github.com/intLyc/MTO-Platform"
+    %--------------------------------------------------------------------------
 
     properties (SetAccess = private)
         p = 0.1;
@@ -41,7 +50,7 @@ classdef JADE < Algorithm
                 % initialize
                 [population, fnceval_calls, bestobj, bestX] = initialize(IndividualJADE, sub_pop, Task, Task.dims);
                 convergence(1) = bestobj;
-                
+
                 % initialize uF uCR
                 uF = 0.5;
                 uCR = 0.5;
