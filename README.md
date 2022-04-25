@@ -5,9 +5,9 @@
 [![](https://img.shields.io/badge/Matlab-%3E%3DR2020b-blue)](#mto-platform)
 
 
-![GitHub Repo stars](https://img.shields.io/github/stars/intLyc/MTO-Platform?style=social)
-![GitHub forks](https://img.shields.io/github/forks/intLyc/MTO-Platform?style=social)
-![GitHub watchers](https://img.shields.io/github/watchers/intLyc/MTO-Platform?style=social)
+[![GitHub Repo stars](https://img.shields.io/github/stars/intLyc/MTO-Platform?style=social)](#mto-platform)
+[![GitHub forks](https://img.shields.io/github/forks/intLyc/MTO-Platform?style=social)](#mto-platform)
+[![GitHub watchers](https://img.shields.io/github/watchers/intLyc/MTO-Platform?style=social)](#mto-platform)
 
 [-> 中文介绍 <-](#中文介绍)
 
