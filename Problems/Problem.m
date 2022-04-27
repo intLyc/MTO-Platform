@@ -11,8 +11,14 @@ classdef Problem < handle
 
     properties
         name % problem's name
+
+        % run parameter
         sub_pop = 50 % each task population size
-        sub_eva = 50 * 1000 % num of max evaluation for each task
+        sub_eva % num of max evaluation for each task
+
+        % special parameter
+        dims = 50 % for CMT
+        task_num = 50 % for WCCI20_MaTSO
     end
 
     methods
@@ -47,15 +53,21 @@ classdef Problem < handle
             obj.sub_pop = str2double(run_parameter{1});
             obj.sub_eva = str2double(run_parameter{2});
         end
+
+        function parameter = getParameter(obj)
+            % get problem's parameter
+            % return parameter, contains {para1, value1, para2, value2, ...} (string)
+            parameter = obj.getRunParameter();
+        end
+
+        function obj = setParameter(obj, parameter_cell)
+            % set problem's parameter
+            % arg parameter_cell, contains {value1, value2, ...} (string)
+            obj.setRunParameter(parameter_cell);
+        end
     end
 
     methods (Abstract)
-        getParameter(obj) % get problem's parameter
-        % return parameter, contains {para1, value1, para2, value2, ...} (string)
-
-        setParameter(obj, parameter_cell) % set problem's parameter
-        % arg parameter_cell, contains {value1, value2, ...} (string)
-
         getTasks(obj) % get problem's tasks
         % return tasks, contains [task1, task2, ...]
         % taski in tasks, contains task.dims, task.fnc, task.Lb, task.Ub

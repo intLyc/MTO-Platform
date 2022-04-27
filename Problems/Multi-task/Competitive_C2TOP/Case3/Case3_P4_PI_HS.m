@@ -1,16 +1,10 @@
 classdef Case3_P4_PI_HS < Problem
     % <Multi> <Competitive>
 
-    properties
-    end
-
     methods
-        function parameter = getParameter(obj)
-            parameter = obj.getRunParameter();
-        end
-
-        function obj = setParameter(obj, parameter_cell)
-            obj.setRunParameter(parameter_cell);
+        function obj = Case3_P4_PI_HS(name)
+            obj = obj@Problem(name);
+            obj.sub_eva = 1000 * 100;
         end
 
         function Tasks = getTasks(obj)

@@ -8,11 +8,12 @@ classdef CMT4 < Problem
     % or footnote "https://github.com/intLyc/MTO-Platform"
     %--------------------------------------------------------------------------
 
-    properties
-        dims = 50;
-    end
-
     methods
+        function obj = CMT4(name)
+            obj = obj@Problem(name);
+            obj.sub_eva = 1000 * obj.dims;
+        end
+
         function parameter = getParameter(obj)
             parameter = {'Dims', num2str(obj.dims)};
             parameter = [obj.getRunParameter(), parameter];
@@ -20,8 +21,7 @@ classdef CMT4 < Problem
 
         function obj = setParameter(obj, parameter_cell)
             obj.setRunParameter(parameter_cell(1:2));
-            count = 3;
-            obj.dims = str2double(parameter_cell{count}); count = count + 1;
+            obj.dims = str2double(parameter_cell{3});
         end
 
         function Tasks = getTasks(obj)

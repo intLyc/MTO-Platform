@@ -1,22 +1,21 @@
 classdef WCCI20_MTSO10 < Problem
     % <Multi> <None>
 
-    properties
-    end
+    %------------------------------- Copyright --------------------------------
+    % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
+    % research purposes. All publications which use this platform or any code
+    % in the platform should acknowledge the use of "MTO-Platform" and cite
+    % or footnote "https://github.com/intLyc/MTO-Platform"
+    %--------------------------------------------------------------------------
 
     methods
-        function parameter = getParameter(obj)
-            parameter = obj.getRunParameter();
-        end
-
-        function obj = setParameter(obj, parameter_cell)
-            obj.setRunParameter(parameter_cell);
+        function obj = WCCI20_MTSO10(name)
+            obj = obj@Problem(name);
+            obj.sub_eva = 1000 * 50;
         end
 
         function Tasks = getTasks(obj)
             Tasks = benchmark_WCCI20_MTSO(10);
         end
-
     end
-
 end

@@ -8,16 +8,10 @@ classdef MTSO8_NI_MS < Problem
     % or footnote "https://github.com/intLyc/MTO-Platform"
     %--------------------------------------------------------------------------
 
-    properties
-    end
-
     methods
-        function parameter = getParameter(obj)
-            parameter = obj.getRunParameter();
-        end
-
-        function obj = setParameter(obj, parameter_cell)
-            obj.setRunParameter(parameter_cell);
+        function obj = MTSO8_NI_MS(name)
+            obj = obj@Problem(name);
+            obj.sub_eva = 1000 * 50;
         end
 
         function Tasks = getTasks(obj)
