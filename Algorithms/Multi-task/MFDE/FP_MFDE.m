@@ -13,7 +13,7 @@ classdef FP_MFDE < Algorithm
     properties (SetAccess = private)
         rmp = 0.3
         F = 0.5
-        CR = 0.6
+        CR = 0.9
     end
 
     methods

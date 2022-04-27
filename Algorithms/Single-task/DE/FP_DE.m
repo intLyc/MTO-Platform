@@ -12,7 +12,7 @@ classdef FP_DE < Algorithm
 
     properties (SetAccess = private)
         F = 0.5
-        CR = 0.6
+        CR = 0.9
     end
 
     methods
