@@ -45,7 +45,7 @@ classdef FP_AT_MFEA < Algorithm
             data.convergence(:, 1) = bestobj;
             data.convergence_cv(:, 1) = bestCV;
             % initialize affine transformation
-            [mu_tasks, Sigma_tasks] = InitialDistribution_FP(population, length(Tasks));
+            [mu_tasks, Sigma_tasks] = InitialDistribution(population, length(Tasks));
 
             generation = 1;
             while fnceval_calls < eva_num
@@ -61,7 +61,7 @@ classdef FP_AT_MFEA < Algorithm
                 data.convergence_cv(:, generation) = bestCV;
 
                 % Updates of the progresisonal representation models
-                [mu_tasks, Sigma_tasks] = DistributionUpdate_FP(mu_tasks, Sigma_tasks, population, length(Tasks));
+                [mu_tasks, Sigma_tasks] = DistributionUpdate(mu_tasks, Sigma_tasks, population, length(Tasks));
             end
             data.convergence(data.convergence_cv > 0) = NaN;
             data.bestX = uni2real(data.bestX, Tasks);
