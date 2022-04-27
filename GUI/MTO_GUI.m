@@ -1,12 +1,5 @@
 classdef MTO_GUI < matlab.apps.AppBase
 
-    %------------------------------- Copyright --------------------------------
-    % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
-    % research purposes. All publications which use this platform or any code
-    % in the platform should acknowledge the use of "MTO-Platform" and cite
-    % or footnote "https://github.com/intLyc/MTO-Platform"
-    %--------------------------------------------------------------------------
-
     % Properties that correspond to app components
     properties (Access = public)
         MTOPlatformUIFigure          matlab.ui.Figure
@@ -391,13 +384,15 @@ classdef MTO_GUI < matlab.apps.AppBase
                 p1.LineWidth = 1;
                 hold(app.TUIAxes, 'on');
                 
-                xmin = x(f == min(f));
-                fmin = min(f) * ones(size(xmin));
-                p2 = plot(app.TUIAxes, xmin, fmin, '^');
-                p2.MarkerSize = 8;
-                p2.MarkerFaceColor = color(mod(no-1, size(color, 1))+1, :);
-                p2.MarkerEdgeColor = color(mod(no-1, size(color, 1))+1, :);
-                hold(app.TUIAxes, 'on');
+                if ~isnan(f)
+                    xmin = x(f == min(f));
+                    fmin = min(f) * ones(size(xmin));
+                    p2 = plot(app.TUIAxes, xmin, fmin, '^');
+                    p2.MarkerSize = 8;
+                    p2.MarkerFaceColor = color(mod(no-1, size(color, 1))+1, :);
+                    p2.MarkerEdgeColor = color(mod(no-1, size(color, 1))+1, :);
+                    hold(app.TUIAxes, 'on');
+                end
                 
                 legend_cell = [legend_cell, ['Task', num2str(no)]];
                 plot_handle = [plot_handle, p1];
