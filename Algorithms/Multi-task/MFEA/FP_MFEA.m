@@ -51,7 +51,7 @@ classdef FP_MFEA < Algorithm
                 fnceval_calls = fnceval_calls + calls;
 
                 % selection
-                [population, bestobj, bestCV, data.bestX, ~] = selectMF_FP(population, offspring, Tasks, pop_size, bestobj, bestCV, data.bestX);
+                [population, bestobj, bestCV, data.bestX] = selectMF_FP(population, offspring, Tasks, pop_size, bestobj, bestCV, data.bestX);
                 data.convergence(:, generation) = bestobj;
                 data.convergence_cv(:, generation) = bestCV;
             end

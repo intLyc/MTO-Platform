@@ -1,4 +1,4 @@
-function [population, bestobj, bestCV, bestX, feasible_rate] = selectMF_FP(population, offspring, Tasks, pop_size, bestobj, bestCV, bestX)
+function [population, bestobj, bestCV, bestX] = selectMF_FP(population, offspring, Tasks, pop_size, bestobj, bestCV, bestX)
     %% Multifactorial - Elite selection based on scalar fitness
     % Input: population (old), offspring, Tasks, pop_size, bestobj, bestX
     % Output: population (new), bestobj, bestX
@@ -17,7 +17,6 @@ function [population, bestobj, bestCV, bestX, feasible_rate] = selectMF_FP(popul
             constraint_violation(i) = population(i).constraint_violation(t);
         end
         idx = ([population.skill_factor] == t);
-        feasible_rate(t) = sum(constraint_violation(idx) <= 0) / sum(idx);
         [~, rank_cv] = sort(constraint_violation);
         for i = 1:length(population)
             population(rank_cv(i)).factorial_ranks(t) = i;

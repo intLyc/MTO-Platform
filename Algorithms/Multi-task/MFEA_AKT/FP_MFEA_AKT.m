@@ -100,7 +100,7 @@ classdef FP_MFEA_AKT < Algorithm
                 end
 
                 % selection
-                [population, bestobj, bestCV, data.bestX, ~] = selectMF_FP(population, offspring, Tasks, pop_size, bestobj, bestCV, data.bestX);
+                [population, bestobj, bestCV, data.bestX] = selectMF_FP(population, offspring, Tasks, pop_size, bestobj, bestCV, data.bestX);
                 data.convergence(:, generation) = bestobj;
                 data.convergence_cv(:, generation) = bestCV;
             end
