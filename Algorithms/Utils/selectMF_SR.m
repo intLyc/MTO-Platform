@@ -1,7 +1,7 @@
-function [population, bestobj, bestCV, bestX] = selectMF_FP(population, offspring, Tasks, pop_size, bestobj, bestCV, bestX)
-    %% Constrained - Feasible Priority
+function [population, bestobj, bestCV, bestX] = selectMF_SR(population, offspring, Tasks, pop_size, bestobj, bestCV, bestX, sr)
+    %% Constrained - Stochastic Ranking
     %% Multifactorial - Elite selection based on scalar fitness
-    % Input: population (old), offspring, Tasks, pop_size, bestobj, bestX
+    % Input: population (old), offspring, Tasks, pop_size, bestobj, bestX, sr
     % Output: population (new), bestobj, bestX
 
     %------------------------------- Copyright --------------------------------
@@ -15,36 +15,23 @@ function [population, bestobj, bestCV, bestX] = selectMF_FP(population, offsprin
 
     for t = 1:length(Tasks)
         for i = 1:length(population)
+            factorial_costs(i) = population(i).factorial_costs(t);
             constraint_violation(i) = population(i).constraint_violation(t);
         end
         [~, rank_cv] = sort(constraint_violation);
-        for i = 1:length(population)
-            population(rank_cv(i)).factorial_ranks(t) = i;
-        end
-        bestobj_now = population(rank_cv(1)).factorial_costs(t);
         bestCV_now = constraint_violation(rank_cv(1));
-        best_idx = rank_cv(1);
-        if bestCV_now <= 0
-            x = (constraint_violation <= 0);
-            idx = 1:length(x);
-            idx = idx(x);
-            factorial_costs = [];
-            for i = 1:length(idx)
-                factorial_costs(i) = population(idx(i)).factorial_costs(t);
-            end
-            [~, rank] = sort(factorial_costs);
-            idx = idx(rank);
-            for i = 1:length(idx)
-                population(idx(i)).factorial_ranks(t) = i;
-            end
-            bestobj_now = population(idx(1)).factorial_costs(t);
-            best_idx = idx(1);
-        end
+        idx = find(constraint_violation == bestCV_now);
+        [bestobj_now, best_idx] = min(factorial_costs(idx));
 
         if bestCV_now < bestCV(t) || (bestCV_now == bestCV(t) && bestobj_now < bestobj(t))
             bestobj(t) = bestobj_now;
             bestCV(t) = bestCV_now;
-            bestX{t} = population(best_idx).rnvec;
+            bestX{t} = population(idx(best_idx)).rnvec;
+        end
+
+        rank = sort_sr(factorial_costs, constraint_violation, sr);
+        for i = 1:length(population)
+            population(rank(i)).factorial_ranks(t) = i;
         end
     end
     for i = 1:length(population)
