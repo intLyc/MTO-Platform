@@ -590,11 +590,11 @@ classdef MTO_GUI < matlab.apps.AppBase
             format_str = app.EDataFormatEditField.Value;
             
             switch show_type
-                case 1 % Mean
+                case 'Mean' % Mean
                     fitness_mean = nanmean(data_fitness, 3);
                     app.Etable_data = fitness_mean;
                     app.Etable_view = sprintfc(format_str, fitness_mean);
-                case 2 % Mean&Std
+                case 'Mean&Std' % Mean&Std
                     fitness_mean = nanmean(data_fitness, 3);
                     fitness_std = std(data_fitness, 0, 3);
                     app.Etable_data = fitness_mean;
@@ -602,11 +602,19 @@ classdef MTO_GUI < matlab.apps.AppBase
                     x(:, 1:2:end) = fitness_mean;
                     x(:, 2:2:end) = fitness_std;
                     app.Etable_view = sprintfc(format_str, x);
-                case 3 % Median
+                case 'Mean&Suc' % Mean&Suc
+                    fitness_mean = nanmean(data_fitness, 3);
+                    fitness_suc = sum(~isnan(data_fitness), 3) ./ size(data_fitness, 3) * 100;
+                    app.Etable_data = fitness_mean;
+                    x = zeros([size(fitness_mean, 1), 2*size(fitness_mean, 2)]);
+                    x(:, 1:2:end) = fitness_mean;
+                    x(:, 2:2:end) = fitness_suc;
+                    app.Etable_view = sprintfc(format_str, x);
+                case 'Median' % Median
                     fitness_median = nanmedian(data_fitness, 3);
                     app.Etable_data = fitness_median;
                     app.Etable_view = sprintfc(format_str, fitness_median);
-                case 4 % Median&Std
+                case 'Median&Std' % Median&Std
                     fitness_median = nanmedian(data_fitness, 3);
                     fitness_std = std(data_fitness, 0, 3);
                     app.Etable_data = fitness_median;
@@ -837,8 +845,10 @@ classdef MTO_GUI < matlab.apps.AppBase
             switch app.EDataTypeDropDown.Value
                 case 'Obj'
                     type = app.EShowTypeDropDown.Value;
-                    if  type == 2 || type == 4 % with Std
+                    if contains(type, 'Std')
                         format_str = '%.2e (%.2e)';
+                    elseif contains(type, 'Suc')
+                        format_str = '%.2e (%2.2f%%)';
                     else
                         format_str = '%.2e';
                     end
@@ -846,8 +856,10 @@ classdef MTO_GUI < matlab.apps.AppBase
                     format_str = '%.4f';
                 case 'min(Obj)'
                     type = app.EShowTypeDropDown.Value;
-                    if  type == 2 || type == 4 % with Std
+                    if contains(type, 'Std')
                         format_str = '%.2e (%.2e)';
+                    elseif contains(type, 'Suc')
+                        format_str = '%.2e (%2.2f%%)';
                     else
                         format_str = '%.2e';
                     end
@@ -2648,15 +2660,14 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create EShowTypeDropDown
             app.EShowTypeDropDown = uidropdown(app.EP3T1GridLayout);
-            app.EShowTypeDropDown.Items = {'Mean', 'Mean&Std', 'Median', 'Median&Std'};
-            app.EShowTypeDropDown.ItemsData = [1 2 3 4];
+            app.EShowTypeDropDown.Items = {'Mean', 'Mean&Std', 'Mean&Suc', 'Median', 'Median&Std'};
             app.EShowTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EShowTypeDropDownValueChanged, true);
             app.EShowTypeDropDown.Tooltip = {'Data Type (Only for Objective value)'};
             app.EShowTypeDropDown.FontWeight = 'bold';
             app.EShowTypeDropDown.BackgroundColor = [1 1 1];
             app.EShowTypeDropDown.Layout.Row = 1;
             app.EShowTypeDropDown.Layout.Column = 5;
-            app.EShowTypeDropDown.Value = 1;
+            app.EShowTypeDropDown.Value = 'Mean';
 
             % Create EDataTypeDropDown
             app.EDataTypeDropDown = uidropdown(app.EP3T1GridLayout);
