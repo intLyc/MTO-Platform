@@ -12,8 +12,8 @@ classdef SR_MFEA < Algorithm
 
     properties (SetAccess = private)
         rmp = 0.3
-        mu = 2;
-        mum = 5;
+        mu = 2
+        mum = 5
         sr = 0.45
     end
 
