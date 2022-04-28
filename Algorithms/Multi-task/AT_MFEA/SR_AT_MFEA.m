@@ -33,6 +33,7 @@ classdef SR_AT_MFEA < Algorithm
             obj.mu = str2double(parameter_cell{count}); count = count + 1;
             obj.mum = str2double(parameter_cell{count}); count = count + 1;
             obj.probswap = str2double(parameter_cell{count}); count = count + 1;
+            obj.sr = str2double(parameter_cell{count}); count = count + 1;
         end
 
         function data = run(obj, Tasks, run_parameter_list)
@@ -58,7 +59,7 @@ classdef SR_AT_MFEA < Algorithm
                 fnceval_calls = fnceval_calls + calls;
 
                 % selection
-                [population, bestobj, bestCV, data.bestX] = selectMF_SR(population, offspring, Tasks, pop_size, bestobj, bestCV, data.bestX, obj.SR);
+                [population, bestobj, bestCV, data.bestX] = selectMF_SR(population, offspring, Tasks, pop_size, bestobj, bestCV, data.bestX, obj.sr);
                 data.convergence(:, generation) = bestobj;
                 data.convergence_cv(:, generation) = bestCV;
 
