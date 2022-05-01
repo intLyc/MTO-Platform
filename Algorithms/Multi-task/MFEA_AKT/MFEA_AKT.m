@@ -87,9 +87,13 @@ classdef MFEA_AKT < Algorithm
                     [max_num, max_idx] = max(imp_num);
                 else % have not better cx_factor
                     if generation <= obj.ginterval + 1 % former generation
-                        prcfb_count(cfb_record(2:generation - 1)) = prcfb_count(cfb_record(2:generation - 1)) + 1;
+                        temp = cfb_record(2:generation - 1);
+                        unique_temp = unique(temp);
+                        prcfb_count(unique_temp) = prcfb_count(unique_temp) + hist(temp, unique_temp);
                     else
-                        prcfb_count(cfb_record(generation - obj.ginterval:generation - 1)) = prcfb_count(cfb_record(generation - obj.ginterval:generation - 1)) + 1;
+                        temp = cfb_record(generation - obj.ginterval:generation - 1);
+                        unique_temp = unique(temp);
+                        prcfb_count(unique_temp) = prcfb_count(unique_temp) + hist(temp, unique_temp);
                     end
                     [max_num, max_idx] = max(prcfb_count);
                 end
