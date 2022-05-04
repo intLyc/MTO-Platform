@@ -28,14 +28,11 @@ classdef OperatorjDE < Operator
                     offspring(i).CR = rand;
                 end
 
-                A = randperm(length(population));
-                A(A == i) = [];
-                x1 = A(1);
-                x2 = A(mod(2 - 1, length(A)) + 1);
-                x3 = A(mod(3 - 1, length(A)) + 1);
+                A = randperm(length(population), 4);
+                A(A == i) = []; x1 = A(1); x2 = A(2); x3 = A(3);
 
-                offspring(i) = OperatorjDE.mutate(offspring(i), population(x1), population(x2), population(x3));
-                offspring(i) = OperatorjDE.crossover(offspring(i), population(i));
+                offspring(i) = OperatorDE.mutate(offspring(i), population(x1), population(x2), population(x3), offspring.F);
+                offspring(i) = OperatorDE.crossover(offspring(i), population(i), offspring.CR);
 
                 offspring(i).rnvec(offspring(i).rnvec > 1) = 1;
                 offspring(i).rnvec(offspring(i).rnvec < 0) = 0;
@@ -45,16 +42,6 @@ classdef OperatorjDE < Operator
             else
                 calls = 0;
             end
-        end
-
-        function object = mutate(object, x1, x2, x3)
-            object.rnvec = x1.rnvec + object.F * (x2.rnvec - x3.rnvec);
-        end
-
-        function object = crossover(object, x)
-            replace = rand(1, length(object.rnvec)) > object.CR;
-            replace(randi(length(object.rnvec))) = true;
-            object.rnvec(replace) = x.rnvec(replace);
         end
     end
 end

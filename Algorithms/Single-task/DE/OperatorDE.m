@@ -18,7 +18,15 @@ classdef OperatorDE < Operator
             object.rnvec(replace) = x.rnvec(replace);
         end
 
-        function [offspring, calls] = generate(callfun, population, Task, F, CR)
+        function [offspring, calls] = generate(callfun, population, Task, F, CR, varargin)
+            % DE mutate type
+            n = numel(varargin);
+            if n == 0
+                mutate_type = 'rand_1'; % unified [0, 1]
+            elseif n == 1
+                mutate_type = varargin{1};
+            end
+
             if length(population) <= 3
                 offspring = population;
                 calls = 0;
@@ -28,41 +36,19 @@ classdef OperatorDE < Operator
             for i = 1:length(population)
                 offspring(i) = feval(Individual_class);
 
-                A = randperm(length(population));
-                A(A == i) = [];
-                x1 = A(1);
-                x2 = A(mod(2 - 1, length(A)) + 1);
-                x3 = A(mod(3 - 1, length(A)) + 1);
-
-                offspring(i) = OperatorDE.mutate(offspring(i), population(x1), population(x2), population(x3), F);
-                offspring(i) = OperatorDE.crossover(offspring(i), population(i), CR);
-
-                offspring(i).rnvec(offspring(i).rnvec > 1) = 1;
-                offspring(i).rnvec(offspring(i).rnvec < 0) = 0;
-            end
-            if callfun
-                [offspring, calls] = evaluate(offspring, Task, 1);
-            else
-                calls = 0;
-            end
-        end
-
-        function [offspring, calls] = generate_current2rand(callfun, population, Task, F, CR)
-            if length(population) <= 3
-                offspring = population;
-                calls = 0;
-                return;
-            end
-            Individual_class = class(population(1));
-            for i = 1:length(population)
-                offspring(i) = feval(Individual_class);
-
-                r = randi(length(population));
-                while r == i
-                    r = randi(length(population));
+                switch mutate_type
+                    case 'rand_1'
+                        A = randperm(length(population), 4);
+                        A(A == i) = []; x1 = A(1); x2 = A(2); x3 = A(3);
+                    case 'current_rand'
+                        r = randi(length(population));
+                        while r == i
+                            r = randi(length(population));
+                        end
+                        x1 = i; x2 = r; x3 = i;
                 end
 
-                offspring(i) = OperatorDE.mutate(offspring(i), population(i), population(r), population(i), F);
+                offspring(i) = OperatorDE.mutate(offspring(i), population(x1), population(x2), population(x3), F);
                 offspring(i) = OperatorDE.crossover(offspring(i), population(i), CR);
 
                 offspring(i).rnvec(offspring(i).rnvec > 1) = 1;

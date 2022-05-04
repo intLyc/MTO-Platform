@@ -89,7 +89,7 @@ classdef MaTDE < Algorithm
                         CR = obj.LCR + (obj.UCR - obj.LCR) * rand;
 
                         % generation
-                        [offspring, calls] = OperatorDE.generate_current2rand(1, population{t}, Tasks(t), F, CR);
+                        [offspring, calls] = OperatorDE.generate(1, population{t}, Tasks(t), F, CR, 'current_rand');
                         fnceval_calls = fnceval_calls + calls;
 
                         % selection
