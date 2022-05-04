@@ -41,7 +41,7 @@ classdef FP_AT_MFEA < Algorithm
             tic
 
             % initialize
-            [population, fnceval_calls, bestobj, bestCV, data.bestX] = initializeMF_FP(Individual, pop_size, Tasks, max([Tasks.dims]));
+            [population, fnceval_calls, bestobj, bestCV, data.bestX] = initializeCMF(Individual, pop_size, Tasks, max([Tasks.dims]));
             data.convergence(:, 1) = bestobj;
             data.convergence_cv(:, 1) = bestCV;
             % initialize affine transformation
@@ -56,7 +56,7 @@ classdef FP_AT_MFEA < Algorithm
                 fnceval_calls = fnceval_calls + calls;
 
                 % selection
-                [population, bestobj, bestCV, data.bestX] = selectMF_FP(population, offspring, Tasks, pop_size, bestobj, bestCV, data.bestX);
+                [population, bestobj, bestCV, data.bestX] = selectCMF(population, offspring, Tasks, pop_size, bestobj, bestCV, data.bestX);
                 data.convergence(:, generation) = bestobj;
                 data.convergence_cv(:, generation) = bestCV;
 

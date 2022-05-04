@@ -1,7 +1,7 @@
-function [population, calls, bestobj, bestCV, bestX] = initializeMF_FP(Individual_class, pop_size, Tasks, dim)
-    %% Multifactorial - Initialize and evaluate the population
+function [population, calls, bestobj, bestCV, bestX] = initializeCMF(Individual_class, pop_size, Tasks, dim, varargin)
+    %% Constrained Multifactorial - Initialize and evaluate the population
     % Input: Individual_class, pop_size, Tasks, dim
-    % Output: population, calls (function calls number), bestobj, bestX
+    % Output: population, calls (function calls number), bestobj, bestCV, bestX, type
 
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
@@ -9,6 +9,14 @@ function [population, calls, bestobj, bestCV, bestX] = initializeMF_FP(Individua
     % in the platform should acknowledge the use of "MTO-Platform" and cite
     % or footnote "https://github.com/intLyc/MTO-Platform"
     %--------------------------------------------------------------------------
+
+    n = numel(varargin);
+    if n == 0
+        type = 'Feasible_Priority'; % unified [0, 1]
+    elseif n == 2
+        type = varargin{1};
+        sr = varargin{2};
+    end
 
     for i = 1:pop_size
         population(i) = Individual_class();
@@ -23,29 +31,24 @@ function [population, calls, bestobj, bestCV, bestX] = initializeMF_FP(Individua
     end
 
     for t = 1:length(Tasks)
-        for i = 1:pop_size
+        for i = 1:length(population)
+            factorial_costs(i) = population(i).factorial_costs(t);
             constraint_violation(i) = population(i).constraint_violation(t);
         end
-        bestCV(t) = min(constraint_violation);
         [~, rank_cv] = sort(constraint_violation);
-        for i = 1:pop_size
-            population(rank_cv(i)).factorial_ranks(t) = i;
+        bestCV(t) = constraint_violation(rank_cv(1));
+        idx = find(constraint_violation == bestCV(t));
+        [bestobj(t), best_idx] = min(factorial_costs(idx));
+        bestX{t} = population(idx(best_idx)).rnvec;
+
+        switch type
+            case 'Feasible_Priority'
+                rank = sort_FP(factorial_costs, constraint_violation);
+            case 'Stochastic_Ranking'
+                rank = sort_SR(factorial_costs, constraint_violation, sr);
         end
-        bestobj(t) = population(rank_cv(1)).factorial_costs(t);
-        bestX{t} = population(rank_cv(1)).rnvec;
-        if bestCV(t) <= 0
-            idx = find(constraint_violation == bestCV(t));
-            factorial_costs = [];
-            for i = 1:length(idx)
-                factorial_costs(i) = population(idx(i)).factorial_costs(t);
-            end
-            [~, rank] = sort(factorial_costs);
-            idx = idx(rank);
-            for i = 1:length(idx)
-                population(idx(i)).factorial_ranks(t) = i;
-            end
-            bestobj(t) = population(idx(1)).factorial_costs(t);
-            bestX{t} = population(idx(1)).rnvec;
+        for i = 1:length(population)
+            population(rank(i)).factorial_ranks(t) = i;
         end
     end
 

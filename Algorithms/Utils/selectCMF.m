@@ -1,8 +1,7 @@
-function [population, bestobj, bestCV, bestX] = selectMF_SR(population, offspring, Tasks, pop_size, bestobj, bestCV, bestX, sr)
-    %% Constrained - Stochastic Ranking
-    %% Multifactorial - Elite selection based on scalar fitness
-    % Input: population (old), offspring, Tasks, pop_size, bestobj, bestX, sr
-    % Output: population (new), bestobj, bestX
+function [population, bestobj, bestCV, bestX] = selectCMF(population, offspring, Tasks, pop_size, bestobj, bestCV, bestX, varargin)
+    %% Constrained Multifactorial - Elite selection based on scalar fitness
+    % Input: population (old), offspring, Tasks, pop_size, bestobj, bestCV, bestX, type
+    % Output: population (new), bestobj, bestCV, bestX
 
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
@@ -10,6 +9,14 @@ function [population, bestobj, bestCV, bestX] = selectMF_SR(population, offsprin
     % in the platform should acknowledge the use of "MTO-Platform" and cite
     % or footnote "https://github.com/intLyc/MTO-Platform"
     %--------------------------------------------------------------------------
+
+    n = numel(varargin);
+    if n == 0
+        type = 'Feasible_Priority'; % unified [0, 1]
+    elseif n == 2
+        type = varargin{1};
+        sr = varargin{2};
+    end
 
     population = [population, offspring];
 
@@ -29,7 +36,12 @@ function [population, bestobj, bestCV, bestX] = selectMF_SR(population, offsprin
             bestX{t} = population(idx(best_idx)).rnvec;
         end
 
-        rank = sort_SR(factorial_costs, constraint_violation, sr);
+        switch type
+            case 'Feasible_Priority'
+                rank = sort_FP(factorial_costs, constraint_violation);
+            case 'Stochastic_Ranking'
+                rank = sort_SR(factorial_costs, constraint_violation, sr);
+        end
         for i = 1:length(population)
             population(rank(i)).factorial_ranks(t) = i;
         end

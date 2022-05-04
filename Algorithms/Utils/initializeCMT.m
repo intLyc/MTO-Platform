@@ -1,7 +1,7 @@
-function [population, calls, bestobj, bestCV, bestX] = initializeMT_FP(Individual_class, sub_pop, Tasks, dims)
-    %% Multi-task - Initialize and evaluate the population
+function [population, calls, bestobj, bestCV, bestX] = initializeCMT(Individual_class, sub_pop, Tasks, dims)
+    %% Constrained Multi-task - Initialize and evaluate the population
     % Input: Individual_class, sub_pop, Tasks, dims
-    % Output: population, calls (function calls number), bestobj, bestX
+    % Output: population, calls (function calls number), bestobj, bestCV, bestX
 
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
@@ -21,8 +21,8 @@ function [population, calls, bestobj, bestCV, bestX] = initializeMT_FP(Individua
         calls = calls + cal;
 
         bestCV(t) = min([population{t}.constraint_violation]);
-        bestcv_idx = find([population{t}.constraint_violation] == bestCV(t));
-        [bestobj(t), idx] = min([population{t}(bestcv_idx).factorial_costs]);
-        bestX{t} = population{t}(bestcv_idx(idx)).rnvec;
+        idx = find([population{t}.constraint_violation] == bestCV(t));
+        [bestobj(t), best_idx] = min([population{t}(idx).factorial_costs]);
+        bestX{t} = population{t}(idx(best_idx)).rnvec;
     end
 end
