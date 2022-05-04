@@ -46,7 +46,7 @@ classdef OperatorMFDE < OperatorDE
                     offspring(i).skill_factor = population(x1).skill_factor;
                 end
 
-                offspring(i) = OperatorDE.mutate_rand_1(offspring(i), population(x1), population(x2), population(x3), F);
+                offspring(i) = OperatorDE.mutate(offspring(i), population(x1), population(x2), population(x3), F);
                 offspring(i) = OperatorDE.crossover(offspring(i), population(i), CR);
 
                 offspring(i).rnvec(offspring(i).rnvec > 1) = 1;

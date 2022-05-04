@@ -6,7 +6,7 @@ classdef OperatorjDE < Operator
     % in the platform should acknowledge the use of "MTO-Platform" and cite
     % or footnote "https://github.com/intLyc/MTO-Platform"
     %--------------------------------------------------------------------------
-    
+
     methods (Static)
         function [offspring, calls] = generate(callfun, population, Task, t1, t2)
             if length(population) <= 3
@@ -34,7 +34,7 @@ classdef OperatorjDE < Operator
                 x2 = A(mod(2 - 1, length(A)) + 1);
                 x3 = A(mod(3 - 1, length(A)) + 1);
 
-                offspring(i) = OperatorjDE.mutate_rand_1(offspring(i), population(x1), population(x2), population(x3));
+                offspring(i) = OperatorjDE.mutate(offspring(i), population(x1), population(x2), population(x3));
                 offspring(i) = OperatorjDE.crossover(offspring(i), population(i));
 
                 offspring(i).rnvec(offspring(i).rnvec > 1) = 1;
@@ -47,16 +47,14 @@ classdef OperatorjDE < Operator
             end
         end
 
-        function object = mutate_rand_1(object, x1, x2, x3)
+        function object = mutate(object, x1, x2, x3)
             object.rnvec = x1.rnvec + object.F * (x2.rnvec - x3.rnvec);
         end
 
         function object = crossover(object, x)
-            for j = 1:length(object.rnvec)
-                if rand > object.CR
-                    object.rnvec(j) = x.rnvec(j);
-                end
-            end
+            replace = rand(1, length(object.rnvec)) > object.CR;
+            replace(randi(length(object.rnvec))) = true;
+            object.rnvec(replace) = x.rnvec(replace);
         end
     end
 end

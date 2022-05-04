@@ -31,7 +31,7 @@ classdef OperatorDEORA < Operator
                     end
                 end
 
-                offspring(i) = OperatorDE.mutate_rand_1(offspring(i), population{r1_task(i)}(x1), population{k}(x2), population{k}(x3), F);
+                offspring(i) = OperatorDE.mutate(offspring(i), population{r1_task(i)}(x1), population{k}(x2), population{k}(x3), F);
                 offspring(i) = OperatorDE.crossover(offspring(i), population{k}(i), pCR);
 
                 vio_low = find(offspring(i).rnvec < 0);

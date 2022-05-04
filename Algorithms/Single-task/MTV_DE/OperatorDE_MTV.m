@@ -25,7 +25,7 @@ classdef OperatorDE_MTV < Operator
                     A = randperm(length(population), 4);
                     A(A == i) = []; x1 = A(1); x2 = A(2); x3 = A(3);
 
-                    offspring_temp = OperatorDE.mutate_rand_1(offspring_temp, population(x1), population(x2), population(x3), F);
+                    offspring_temp = OperatorDE.mutate(offspring_temp, population(x1), population(x2), population(x3), F);
                     offspring_temp = OperatorDE.crossover(offspring_temp, population(i), CR);
 
                     offspring_temp.rnvec(offspring_temp.rnvec > 1) = 1;

@@ -56,7 +56,7 @@ classdef OperatorjDE_rank < Operator
                     offspring(i).CR = rand;
                 end
 
-                offspring(i) = OperatorjDE.mutate_rand_1(offspring(i), population(x1), population(x2), population(x3));
+                offspring(i) = OperatorjDE.mutate(offspring(i), population(x1), population(x2), population(x3));
                 offspring(i) = OperatorjDE.crossover(offspring(i), population(i));
 
                 offspring(i).rnvec(offspring(i).rnvec > 1) = 1;
