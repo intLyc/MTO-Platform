@@ -32,8 +32,11 @@ classdef OperatorSHADE < Operator
                     x1 = randi(length(population));
                 end
                 x2 = randi(length(union));
+                while x2 == i || x2 == x1
+                    x2 = randi(length(union));
+                end
 
-                offspring(i) = OperatorJADE.mutate_current_pbest_1(offspring(i), population(i), population(pbest), population(x1), union(x2));
+                offspring(i) = OperatorJADE.mutate(offspring(i), population(i), population(pbest), population(x1), union(x2));
                 offspring(i) = OperatorJADE.crossover(offspring(i), population(i));
 
                 offspring(i).rnvec(offspring(i).rnvec > 1) = 1;
