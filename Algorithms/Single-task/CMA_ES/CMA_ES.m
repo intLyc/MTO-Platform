@@ -71,10 +71,10 @@ classdef CMA_ES < Algorithm
                     for i = 1:sub_pop
                         Pstep(i, :) = mvnrnd(zeros(1, Task.dims), C);
                         population(i).rnvec = Mdec + sigma .* Pstep(i, :);
-                        population(i).rnvec(population(i).rnvec > 1) = 1;
-                        population(i).rnvec(population(i).rnvec < 0) = 0;
+                        population(i).rnvec(population(i).rnvec > Task.Ub) = Task.Ub(population(i).rnvec > Task.Ub);
+                        population(i).rnvec(population(i).rnvec < Task.Lb) = Task.Lb(population(i).rnvec < Task.Lb);
                     end
-                    [population, calls] = evaluate(population, Task, 1);
+                    [population, calls] = evaluate(population, Task, 1, 'real');
                     fnceval_calls = fnceval_calls + calls;
 
                     [~, rank] = sort([population.factorial_costs]);
@@ -112,7 +112,7 @@ classdef CMA_ES < Algorithm
                 data.convergence = [data.convergence; convergence];
                 data.bestX = [data.bestX, bestX];
             end
-            data.bestX = uni2real(data.bestX, Tasks);
+            % data.bestX = uni2real(data.bestX, Tasks);
             data.clock_time = toc;
         end
     end
