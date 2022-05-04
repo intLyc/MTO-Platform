@@ -1,5 +1,5 @@
-function [population, calls] = evaluate_opt(population, Task, task_idx, pil)
-    %% Evaluate population in a Task
+function [population, calls] = evaluateOpt(population, Task, task_idx, pil)
+    %% Evaluate population in a Task with optimoptions
     % Input: population, Task (single task), task_idx (factorial_costs idx)
     % Output: population (evaluated), calls (function calls number)
 
