@@ -22,13 +22,6 @@ classdef CMA_ES < Algorithm
     %--------------------------------------------------------------------------
 
     methods
-        function parameter = getParameter(obj)
-            parameter = {};
-        end
-
-        function obj = setParameter(obj, parameter_cell)
-        end
-
         function data = run(obj, Tasks, run_parameter_list)
             sub_pop = run_parameter_list(1);
             sub_eva = run_parameter_list(2);
@@ -76,6 +69,8 @@ classdef CMA_ES < Algorithm
                     for i = 1:sub_pop
                         Pstep(i, :) = mvnrnd(zeros(1, Task.dims), C);
                         population(i).rnvec = Mdec + sigma .* Pstep(i, :);
+                        population(i).rnvec(population(i).rnvec > 1) = 1;
+                        population(i).rnvec(population(i).rnvec < 0) = 0;
                     end
                     [population, calls] = evaluate(population, Task, 1);
                     fnceval_calls = fnceval_calls + calls;
