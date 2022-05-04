@@ -1,6 +1,6 @@
-function [population, calls] = evaluate(population, Task, task_idx)
+function [population, calls] = evaluate(population, Task, task_idx, varargin)
     %% Evaluate population in a Task
-    % Input: population, Task (single task), task_idx (factorial_costs idx)
+    % Input: population, Task (single task), task_idx (factorial_costs idx), gene_type
     % Output: population (evaluated), calls (function calls number)
 
     %------------------------------- Copyright --------------------------------
@@ -9,9 +9,20 @@ function [population, calls] = evaluate(population, Task, task_idx)
     % in the platform should acknowledge the use of "MTO-Platform" and cite
     % or footnote "https://github.com/intLyc/MTO-Platform"
     %--------------------------------------------------------------------------
+    n = numel(varargin);
+    if n == 0
+        gene_type = 'unified'; % unified [0, 1]
+    elseif n == 1
+        gene_type = varargin{1};
+    end
 
     for i = 1:length(population)
-        x = (Task.Ub - Task.Lb) .* population(i).rnvec(1:Task.dims) + Task.Lb;
+        switch gene_type
+            case 'unified'
+                x = (Task.Ub - Task.Lb) .* population(i).rnvec(1:Task.dims) + Task.Lb;
+            case 'real'
+                x = population(i).rnvec(1:Task.dims);
+        end
         [obj, con] = Task.fnc(x);
         population(i).factorial_costs(task_idx) = obj;
         population(i).constraint_violation(task_idx) = con;
