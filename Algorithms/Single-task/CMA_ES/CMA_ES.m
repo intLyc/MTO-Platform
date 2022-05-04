@@ -72,6 +72,7 @@ classdef CMA_ES < Algorithm
                     generation = generation + 1;
 
                     % Sample solutions
+                    Pstep = zeros(length(population), Task.dims);
                     for i = 1:sub_pop
                         Pstep(i, :) = mvnrnd(zeros(1, Task.dims), C);
                         population(i).rnvec = Mdec + sigma .* Pstep(i, :);
