@@ -51,9 +51,10 @@ classdef JADE < Algorithm
                 [population, fnceval_calls, bestobj, bestX] = initialize(IndividualJADE, sub_pop, Task, Task.dims);
                 convergence(1) = bestobj;
 
-                % initialize uF uCR
+                % initialize parameter
                 uF = 0.5;
                 uCR = 0.5;
+                arc = IndividualJADE.empty();
 
                 generation = 1;
                 while fnceval_calls < sub_eva
@@ -73,11 +74,19 @@ classdef JADE < Algorithm
                     end
 
                     % generation
-                    [offspring, calls] = OperatorJADE.generate(1, population, Task, obj.p);
+                    union = [population, arc];
+                    [offspring, calls] = OperatorJADE.generate(1, Task, population, union, obj.p);
                     fnceval_calls = fnceval_calls + calls;
 
                     % selection
                     replace = [population.factorial_costs] > [offspring.factorial_costs];
+
+                    % update archive
+                    arc = [arc, population(replace)];
+                    if length(arc) > length(population)
+                        rnd = randperm(length(arc));
+                        arc = arc(rnd(1:length(population)));
+                    end
 
                     % calculate SF SCR
                     SF = [population(replace).F];

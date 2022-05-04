@@ -8,7 +8,7 @@ classdef OperatorJADE < Operator
     %--------------------------------------------------------------------------
 
     methods (Static)
-        function [offspring, calls] = generate(callfun, population, Task, p)
+        function [offspring, calls] = generate(callfun, Task, population, union, p)
             if length(population) <= 3
                 offspring = population;
                 calls = 0;
@@ -27,13 +27,16 @@ classdef OperatorJADE < Operator
                 offspring(i) = feval(Individual_class);
 
                 pbest = pop_pbest(randi(length(pop_pbest)));
+                x1 = randi(length(population));
+                while x1 == i
+                    x1 = randi(length(population));
+                end
+                x2 = randi(length(union));
+                while x2 == i || x2 == x1
+                    x2 = randi(length(union));
+                end
 
-                A = randperm(length(population));
-                A(A == i) = [];
-                x1 = A(1);
-                x2 = A(mod(2 - 1, length(A)) + 1);
-
-                offspring(i) = OperatorJADE.mutate_current_pbest_1(offspring(i), population(i), population(pbest), population(x1), population(x2));
+                offspring(i) = OperatorJADE.mutate(offspring(i), population(i), population(pbest), population(x1), population(x2));
                 offspring(i) = OperatorJADE.crossover(offspring(i), population(i));
 
                 offspring(i).rnvec(offspring(i).rnvec > 1) = 1;
@@ -46,7 +49,7 @@ classdef OperatorJADE < Operator
             end
         end
 
-        function object = mutate_current_pbest_1(object, current, pbest, x1, x2)
+        function object = mutate(object, current, pbest, x1, x2)
             object.rnvec = current.rnvec + current.F * (pbest.rnvec - current.rnvec) + current.F * (x1.rnvec - x2.rnvec);
         end
 
