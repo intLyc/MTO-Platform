@@ -57,10 +57,12 @@ classdef CMA_ES < Algorithm
                 C = eye(Task.dims);
                 sigma = 0.1 * (Task.Ub - Task.Lb);
 
-                [population, fnceval_calls, bestobj, bestX] = initialize(Individual, sub_pop, Task, Task.dims);
-                convergence(1) = bestobj;
+                for i = 1:sub_pop
+                    population(i) = Individual();
+                end
+                fnceval_calls = 0;
 
-                generation = 1;
+                generation = 0;
                 while fnceval_calls < sub_eva
                     generation = generation + 1;
 
@@ -77,9 +79,14 @@ classdef CMA_ES < Algorithm
 
                     [~, rank] = sort([population.factorial_costs]);
                     bestobj_now = population(rank(1)).factorial_costs;
-                    if bestobj_now < bestobj
+                    if generation == 1
                         bestobj = bestobj_now;
                         bestX = population(rank(1)).rnvec;
+                    else
+                        if bestobj_now < bestobj
+                            bestobj = bestobj_now;
+                            bestX = population(rank(1)).rnvec;
+                        end
                     end
                     convergence(generation) = bestobj;
 
