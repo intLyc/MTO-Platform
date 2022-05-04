@@ -1,4 +1,4 @@
-function idx = sort_sr(obj, cv, sr)
+function idx = sort_SR(obj, cv, sr)
     %% Stochastic Ranking Sort
     idx = 1:length(obj);
     for i = 1:length(obj)

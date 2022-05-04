@@ -29,7 +29,7 @@ function [population, bestobj, bestCV, bestX] = selectMF_SR(population, offsprin
             bestX{t} = population(idx(best_idx)).rnvec;
         end
 
-        rank = sort_sr(factorial_costs, constraint_violation, sr);
+        rank = sort_SR(factorial_costs, constraint_violation, sr);
         for i = 1:length(population)
             population(rank(i)).factorial_ranks(t) = i;
         end
