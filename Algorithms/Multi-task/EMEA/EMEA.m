@@ -28,7 +28,7 @@ classdef EMEA < Algorithm
         GA_mu = 2;
         GA_mum = 5;
         DE_F = 0.5;
-        DE_CR = 0.6;
+        DE_CR = 0.9;
     end
 
     methods
