@@ -39,15 +39,16 @@ classdef OperatorMFEA_DV < Operator
             for i = 1:p * length(population)
                 offspring_tt = feval(Individual_class);
                 offspring_tt.factorial_costs = inf(1, length(Tasks));
-                other = [];
                 for t = 1:length(group)
-                    if population(i).skill_factor ~= t
-                        other = [other, group{t}];
+                    pbest = pop_pbest{t}(i);
+                    other = [];
+                    for w = 1:length(group)
+                        if population(pbest).skill_factor ~= w
+                            other = [other, group{w}];
+                        end
                     end
-                end
-                other = other(randperm(length(other)));
-                pbest = pop_pbest{population(i).skill_factor}(i);
-                for t = 1:length(group)
+
+                    other = other(randperm(length(other)));
                     x2 = other(randi(length(other)));
                     c_pbest = pop_pbest{population(x2).skill_factor}(i);
                     offspring_tt.rnvec = population(pbest).rnvec + population(x2).rnvec - population(c_pbest).rnvec;
@@ -57,7 +58,6 @@ classdef OperatorMFEA_DV < Operator
             end
             population = [population, P];
             population = population(randperm(length(population)));
-            %length(population)
             indorder = randperm(length(population));
 
             for i = 1:ceil(length(population) / 2)
