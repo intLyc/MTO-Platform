@@ -36,7 +36,7 @@ classdef OperatorJADE < Operator
                     x2 = randi(length(union));
                 end
 
-                offspring(i) = OperatorJADE.mutate(offspring(i), population(i), population(pbest), population(x1), population(x2));
+                offspring(i) = OperatorJADE.mutate(offspring(i), population(i), population(pbest), population(x1), union(x2));
                 offspring(i) = OperatorJADE.crossover(offspring(i), population(i));
 
                 offspring(i).rnvec(offspring(i).rnvec > 1) = 1;
@@ -56,7 +56,7 @@ classdef OperatorJADE < Operator
         function object = crossover(object, current)
             replace = rand(1, length(object.rnvec)) > current.CR;
             replace(randi(length(object.rnvec))) = true;
-            object.rnvec(replace) = x.rnvec(replace);
+            object.rnvec(replace) = current.rnvec(replace);
         end
     end
 end

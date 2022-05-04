@@ -31,8 +31,8 @@ classdef OperatorjDE < Operator
                 A = randperm(length(population), 4);
                 A(A == i) = []; x1 = A(1); x2 = A(2); x3 = A(3);
 
-                offspring(i) = OperatorDE.mutate(offspring(i), population(x1), population(x2), population(x3), offspring.F);
-                offspring(i) = OperatorDE.crossover(offspring(i), population(i), offspring.CR);
+                offspring(i) = OperatorDE.mutate(offspring(i), population(x1), population(x2), population(x3), offspring(i).F);
+                offspring(i) = OperatorDE.crossover(offspring(i), population(i), offspring(i).CR);
 
                 offspring(i).rnvec(offspring(i).rnvec > 1) = 1;
                 offspring(i).rnvec(offspring(i).rnvec < 0) = 0;

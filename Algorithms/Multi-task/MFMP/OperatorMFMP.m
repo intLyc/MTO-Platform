@@ -42,7 +42,7 @@ classdef OperatorMFMP < Operator
                     end
                     x2 = randi(length(c_union));
 
-                    offspring(i) = OperatorJADE.mutate_current_pbest_1(offspring(i), population(i), c_pop(c_pbest), c_pop(x1), c_union(x2));
+                    offspring(i) = OperatorJADE.mutate(offspring(i), population(i), c_pop(c_pbest), c_pop(x1), c_union(x2));
                     offspring(i) = OperatorJADE.crossover(offspring(i), population(i));
                     flag(i) = 1;
                 else
@@ -53,7 +53,7 @@ classdef OperatorMFMP < Operator
                     end
                     x2 = randi(length(union));
 
-                    offspring(i) = OperatorJADE.mutate_current_pbest_1(offspring(i), population(i), population(pbest), population(x1), union(x2));
+                    offspring(i) = OperatorJADE.mutate(offspring(i), population(i), population(pbest), population(x1), union(x2));
                     offspring(i) = OperatorJADE.crossover(offspring(i), population(i));
                 end
 
