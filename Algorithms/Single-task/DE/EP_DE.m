@@ -1,7 +1,5 @@
-classdef FP_DE < Algorithm
+classdef EP_DE < Algorithm
     % <Single> <Constrained>
-
-    % DE with Feasibility Priority for Constrained MTOPs
 
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
@@ -13,18 +11,21 @@ classdef FP_DE < Algorithm
     properties (SetAccess = private)
         F = 0.5
         CR = 0.9
+        cp = 5
     end
 
     methods
         function parameter = getParameter(obj)
             parameter = {'F: Mutation Factor', num2str(obj.F), ...
-                        'CR: Crossover Probability', num2str(obj.CR)};
+                        'CR: Crossover Probability', num2str(obj.CR), ...
+                        'cp', num2str(obj.cp)};
         end
 
         function obj = setParameter(obj, parameter_cell)
             count = 1;
             obj.F = str2double(parameter_cell{count}); count = count + 1;
             obj.CR = str2double(parameter_cell{count}); count = count + 1;
+            obj.cp = str2double(parameter_cell{count}); count = count + 1;
         end
 
         function data = run(obj, Tasks, run_parameter_list)
@@ -43,6 +44,12 @@ classdef FP_DE < Algorithm
                 % initialize
                 [population, fnceval_calls, bestobj, bestX] = initialize(Individual, sub_pop, Task, Task.dims);
 
+                n = ceil(0.05 * length(population));
+                cv_temp = [population.constraint_violation];
+                [~, idx] = sort(cv_temp);
+                ep0 = cv_temp(idx(n));
+                Tc = round(0.2 * sub_eva / sub_pop);
+
                 bestCV = min([population.constraint_violation]);
                 pop_temp = population([population.constraint_violation] == bestCV);
                 [bestobj, idx] = min([pop_temp.factorial_costs]);
@@ -54,15 +61,21 @@ classdef FP_DE < Algorithm
                 while fnceval_calls < sub_eva
                     generation = generation + 1;
 
+                    if generation <= Tc
+                        ep = ep0 * ((1 - generation / Tc)^obj.cp);
+                    else
+                        ep = 0;
+                    end
+
                     % generation
                     [offspring, calls] = OperatorDE.generate(1, population, Task, obj.F, obj.CR);
                     fnceval_calls = fnceval_calls + calls;
 
                     % selection
                     replace_cv = [population.constraint_violation] > [offspring.constraint_violation];
-                    equal_cv = [population.constraint_violation] <= 0 & [offspring.constraint_violation] <= 0;
-                    replace_f = [population.factorial_costs] > [offspring.factorial_costs];
-                    replace = (equal_cv & replace_f) | replace_cv;
+                    equal_cv = [population.constraint_violation] <= ep & [offspring.constraint_violation] <= ep;
+                    replace_obj = [population.factorial_costs] > [offspring.factorial_costs];
+                    replace = (equal_cv & replace_obj) | replace_cv;
 
                     population(replace) = offspring(replace);
 
