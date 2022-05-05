@@ -11,7 +11,7 @@ classdef FP_DE < Algorithm
     %--------------------------------------------------------------------------
 
     properties (SetAccess = private)
-        F = 0.5
+        F = 0.7
         CR = 0.9
     end
 

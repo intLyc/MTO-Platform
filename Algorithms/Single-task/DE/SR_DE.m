@@ -22,9 +22,9 @@ classdef SR_DE < Algorithm
     %--------------------------------------------------------------------------
 
     properties (SetAccess = private)
-        F = 0.5
+        F = 0.7
         CR = 0.9
-        sr = 0.45
+        sr = 0.475
     end
 
     methods
@@ -54,6 +54,9 @@ classdef SR_DE < Algorithm
             for sub_task = 1:length(Tasks)
                 Task = Tasks(sub_task);
 
+                Sr = obj.sr;
+                dSr = (obj.sr - 0.025) / (sub_eva / sub_pop);
+
                 % initialize
                 [population, fnceval_calls, bestobj, bestX] = initialize(Individual, sub_pop, Task, Task.dims);
 
@@ -79,7 +82,8 @@ classdef SR_DE < Algorithm
                     replace = (equal_cv & replace_obj) | replace_cv;
 
                     % rand<=sr:obj else rand>sr:fp
-                    idx_sr = rand(1, length(population)) <= obj.sr;
+                    Sr = Sr - dSr;
+                    idx_sr = rand(1, length(population)) <= Sr;
                     replace(idx_sr) = replace_obj(idx_sr);
 
                     population(replace) = offspring(replace);

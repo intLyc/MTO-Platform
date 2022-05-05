@@ -51,8 +51,11 @@ classdef OperatorDE < Operator
                 offspring(i) = OperatorDE.mutate(offspring(i), population(x1), population(x2), population(x3), F);
                 offspring(i) = OperatorDE.crossover(offspring(i), population(i), CR);
 
-                offspring(i).rnvec(offspring(i).rnvec > 1) = 1;
-                offspring(i).rnvec(offspring(i).rnvec < 0) = 0;
+                % offspring(i).rnvec(offspring(i).rnvec > 1) = 1;
+                % offspring(i).rnvec(offspring(i).rnvec < 0) = 0;
+                rand_rnvec = rand(1, Task.dims);
+                offspring(i).rnvec(offspring(i).rnvec > 1) = rand_rnvec(offspring(i).rnvec > 1);
+                offspring(i).rnvec(offspring(i).rnvec < 0) = rand_rnvec(offspring(i).rnvec < 0);
             end
             if callfun
                 [offspring, calls] = evaluate(offspring, Task, 1);
