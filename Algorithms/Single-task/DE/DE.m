@@ -32,7 +32,6 @@ classdef DE < Algorithm
 
             data.convergence = [];
             data.bestX = {};
-            tic
 
             for sub_task = 1:length(Tasks)
                 Task = Tasks(sub_task);
