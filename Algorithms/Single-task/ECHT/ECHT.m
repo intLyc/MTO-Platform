@@ -145,11 +145,11 @@ classdef ECHT < Algorithm
                                 cv_pair = [population{t}(i).constraint_violation, offspring_temp(i).constraint_violation];
                                 switch t
                                     case 1 % Superiority of feasible solutions
-                                        replace(t) = obj.compare_FP(obj_pair, cv_pair);
+                                        replace(i) = obj.compare_FP(obj_pair, cv_pair);
                                     case 2 % Stochastic ranking
-                                        replace(t) = obj.compare_SR(obj_pair, cv_pair, Sr);
+                                        replace(i) = obj.compare_SR(obj_pair, cv_pair, Sr);
                                     case 3 % Epsilon constraint
-                                        replace(t) = obj.compare_EC(obj_pair, cv_pair, Ep);
+                                        replace(i) = obj.compare_EC(obj_pair, cv_pair, Ep);
                                         % case 4 % Self-adaptive penalty
                                 end
                             end
@@ -164,8 +164,8 @@ classdef ECHT < Algorithm
                             bestX{k} = pop_temp(idx).rnvec;
                         end
                     end
-                    convergence_obj(:, generation) = bestobj;
-                    convergence_cv(:, generation) = bestCV;
+                    convergence_obj(:, generation) = bestobj';
+                    convergence_cv(:, generation) = bestCV';
                 end
                 convergence_obj(convergence_cv > 0) = NaN;
                 data.convergence = [data.convergence; nanmin(convergence_obj)];
