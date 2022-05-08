@@ -23,15 +23,17 @@ classdef MFMP < Algorithm
 
     properties (SetAccess = private)
         theta = 0.2
-        c = 0.3;
-        p = 0.1;
-        H = 100;
+        c = 0.3
+        alpha = 0.25
+        p = 0.1
+        H = 100
     end
 
     methods
         function parameter = getParameter(obj)
             parameter = {'theta', num2str(obj.theta), ...
                         'c', num2str(obj.c), ...
+                        'alpha', num2str(obj.alpha), ...
                         'p: 100p% top as pbest', num2str(obj.p), ...
                         'H: success memory size', num2str(obj.H)};
         end
@@ -40,6 +42,7 @@ classdef MFMP < Algorithm
             count = 1;
             obj.theta = str2double(parameter_cell{count}); count = count + 1;
             obj.c = str2double(parameter_cell{count}); count = count + 1;
+            obj.alpha = str2double(parameter_cell{count}); count = count + 1;
             obj.p = str2double(parameter_cell{count}); count = count + 1;
             obj.H = str2double(parameter_cell{count}); count = count + 1;
         end
@@ -47,7 +50,6 @@ classdef MFMP < Algorithm
         function data = run(obj, Tasks, run_parameter_list)
             sub_pop = run_parameter_list(1);
             sub_eva = run_parameter_list(2);
-            pop_size = sub_pop * length(Tasks);
             eva_num = sub_eva * length(Tasks);
             tic
 
@@ -59,6 +61,7 @@ classdef MFMP < Algorithm
                 MCR{t} = 0.5 * ones(1, obj.H);
                 arc{t} = IndividualJADE.empty();
             end
+            reduce_flag = false;
 
             % initialize
             [population, fnceval_calls, bestobj, data.bestX] = initializeMT(IndividualJADE, sub_pop, Tasks, max([Tasks.dims]) * ones(1, length(Tasks)));
@@ -102,9 +105,8 @@ classdef MFMP < Algorithm
 
                     % update archive
                     arc{t} = [arc{t}, population{t}(replace)];
-                    if length(arc{t}) > length(population{t})
-                        rnd = randperm(length(arc{t}));
-                        arc{t} = arc{t}(rnd(1:length(population{t})));
+                    if length(arc{t}) > sub_pop
+                        arc{t} = arc{t}(randperm(length(arc{t}), sub_pop));
                     end
 
                     % calculate SF SCR
@@ -124,14 +126,14 @@ classdef MFMP < Algorithm
                     H_idx(t) = mod(H_idx(t), obj.H) + 1;
 
                     % update rmp
-                    SR(t, generation) = sum(~replace) / length(population{t});
+                    SR(t, generation) = sum(replace) / length(population{t});
                     if SR(t, generation) >= obj.theta
                         rmp(t, generation) = rmp(t, generation - 1);
                     else
                         if sum(flag) == 0
                             rmp(t, generation) = min(rmp(t, generation - 1) + obj.c * (1 - SR(t, generation)), 1);
                         else
-                            temp = (sum(~replace & flag) / sum(flag));
+                            temp = (sum(replace & flag) / sum(flag));
                             if temp > SR(t, generation)
                                 rmp(t, generation) = min(rmp(t, generation - 1) + obj.c * temp, 1);
                             else
@@ -147,6 +149,23 @@ classdef MFMP < Algorithm
                         data.bestX{t} = population{t}(idx).rnvec;
                     end
                     data.convergence(t, generation) = bestobj(t);
+                end
+
+                % population reduction
+                if ~reduce_flag && fnceval_calls >= eva_num * obj.alpha
+                    pop_size = round(sub_pop / 2);
+                    for t = 1:length(Tasks)
+                        [~, rank] = sort([population{t}.factorial_costs]);
+
+                        % save to archive
+                        arc{t} = [arc{t}, population{t}(rank(pop_size + 1:end))];
+                        if length(arc{t}) > sub_pop
+                            arc{t} = arc{t}(randperm(length(arc{t}), sub_pop));
+                        end
+                        % reduce
+                        population{t} = population{t}(rank(1:pop_size));
+                    end
+                    reduce_flag = true;
                 end
             end
             data.bestX = uni2real(data.bestX, Tasks);
