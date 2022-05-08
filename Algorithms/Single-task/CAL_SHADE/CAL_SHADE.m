@@ -116,7 +116,6 @@ classdef CAL_SHADE < Algorithm
                     else
                         Ep = 0;
                     end
-                    Ep
 
                     % generation
                     union = [population, arc];
