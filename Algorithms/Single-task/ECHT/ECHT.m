@@ -80,7 +80,7 @@ classdef ECHT < Algorithm
             % Epsilon Constraint Compare
             flag = false;
             if cv_pair(1) > cv_pair(2) || ...
-                    (cv_pair(1) < Ep && cv_pair(2) < Ep && obj_pair(1) > obj_pair(2))
+                    (cv_pair(1) <= Ep && cv_pair(2) <= Ep && obj_pair(1) > obj_pair(2))
                 flag = true;
             end
         end

@@ -4,7 +4,7 @@ function idx = sort_EC(obj, cv, ep)
     for i = 1:length(obj)
         swap = 0;
         for j = 1:length(obj) - i
-            if cv(j) > cv(j + 1) || (cv(j) < ep && cv(j + 1) < ep && obj(j) > obj(j + 1))
+            if cv(j) > cv(j + 1) || (cv(j) <= ep && cv(j + 1) <= ep && obj(j) > obj(j + 1))
                 t = idx(j); t_obj = obj(j); t_cv = cv(j);
                 idx(j) = idx(j + 1); obj(j) = obj(j + 1); cv(j) = cv(j + 1);
                 idx(j + 1) = t; obj(j + 1) = t_obj; cv(j + 1) = t_cv;
