@@ -37,10 +37,13 @@ classdef OperatorMFMP < Operator
                 if rand < rmp
                     c_pbest = c_pop_pbest(randi(length(c_pop_pbest)));
                     x1 = randi(length(c_pop));
-                    while x1 == i
+                    while x1 == c_pbest
                         x1 = randi(length(c_pop));
                     end
                     x2 = randi(length(c_union));
+                    while x2 == x1 || x2 == c_pbest
+                        x2 = randi(length(c_union));
+                    end
 
                     offspring(i) = OperatorJADE.mutate(offspring(i), population(i), c_pop(c_pbest), c_pop(x1), c_union(x2));
                     offspring(i) = OperatorJADE.crossover(offspring(i), population(i));
@@ -48,10 +51,13 @@ classdef OperatorMFMP < Operator
                 else
                     pbest = pop_pbest(randi(length(pop_pbest)));
                     x1 = randi(length(population));
-                    while x1 == i
+                    while x1 == i || x1 == pbest
                         x1 = randi(length(population));
                     end
                     x2 = randi(length(union));
+                    while x2 == i || x2 == x1 || x2 == pbest
+                        x2 = randi(length(union));
+                    end
 
                     offspring(i) = OperatorJADE.mutate(offspring(i), population(i), population(pbest), population(x1), union(x2));
                     offspring(i) = OperatorJADE.crossover(offspring(i), population(i));

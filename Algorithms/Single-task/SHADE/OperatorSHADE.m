@@ -28,11 +28,11 @@ classdef OperatorSHADE < Operator
 
                 pbest = pop_pbest(randi(length(pop_pbest)));
                 x1 = randi(length(population));
-                while x1 == i
+                while x1 == i || x1 == pbest
                     x1 = randi(length(population));
                 end
                 x2 = randi(length(union));
-                while x2 == i || x2 == x1
+                while x2 == i || x2 == x1 || x2 == pbest
                     x2 = randi(length(union));
                 end
 
