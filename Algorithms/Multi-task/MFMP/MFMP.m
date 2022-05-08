@@ -124,7 +124,7 @@ classdef MFMP < Algorithm
                     H_idx(t) = mod(H_idx(t), obj.H) + 1;
 
                     % update rmp
-                    SR(t, generation) = sum(~replace) / length(population);
+                    SR(t, generation) = sum(~replace) / length(population{t});
                     if SR(t, generation) >= obj.theta
                         rmp(t, generation) = rmp(t, generation - 1);
                     else
