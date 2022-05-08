@@ -36,8 +36,10 @@ classdef OperatorSHADE < Operator
                 offspring(i) = OperatorJADE.mutate(offspring(i), population(i), population(pbest), population(x1), union(x2));
                 offspring(i) = OperatorJADE.crossover(offspring(i), population(i));
 
-                offspring(i).rnvec(offspring(i).rnvec > 1) = 1;
-                offspring(i).rnvec(offspring(i).rnvec < 0) = 0;
+                vio_low = find(offspring(i).rnvec < 0);
+                offspring(i).rnvec(vio_low) = (population{k}(i).rnvec(vio_low) + 0) / 2;
+                vio_up = find(offspring(i).rnvec > 1);
+                offspring(i).rnvec(vio_up) = (population{k}(i).rnvec(vio_up) + 1) / 2;
             end
             if callfun
                 [offspring, calls] = evaluate(offspring, Task, 1);
