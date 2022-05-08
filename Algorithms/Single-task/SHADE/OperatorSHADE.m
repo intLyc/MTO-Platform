@@ -17,10 +17,7 @@ classdef OperatorSHADE < Operator
             Individual_class = class(population(1));
 
             % get top 100p% individuals
-            for i = 1:length(population)
-                factorial_costs(i) = population(i).factorial_costs;
-            end
-            [~, rank] = sort(factorial_costs);
+            [~, rank] = sort([population.factorial_costs]);
             pop_pbest = rank(1:round(p * length(population)));
 
             for i = 1:length(population)
