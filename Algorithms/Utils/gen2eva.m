@@ -10,11 +10,11 @@ function converge_eva = gen2eva(converge_gen, varargin)
     % or footnote "https://github.com/intLyc/MTO-Platform"
     %--------------------------------------------------------------------------
 
-    converge_num = 200;
+    converge_num = 1000;
 
     n = numel(varargin);
     if n == 0
-        eva_gen = repmat(1:length(converge_gen), [size(converge_gen) 1]);
+        eva_gen = repmat(1:size(converge_gen, 2), [size(converge_gen, 1), 1]);
     elseif n == 1
         eva_gen = varargin{1};
     elseif n == 2
