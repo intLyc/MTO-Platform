@@ -610,18 +610,30 @@ classdef MTO_GUI < matlab.apps.AppBase
                     x(:, 1:2:end) = fitness_mean;
                     x(:, 2:2:end) = fitness_suc;
                     app.Etable_view = sprintfc(format_str, x);
+                case 'Mean&Std&Suc'
+                    fitness_mean = nanmean(data_fitness, 3);
+                    fitness_std = std(data_fitness, 0, 3);
+                    fitness_suc = sum(~isnan(data_fitness), 3) ./ size(data_fitness, 3) * 100;
+                    app.Etable_data = fitness_mean;
+                    x = zeros([size(fitness_mean, 1), 3*size(fitness_mean, 2)]);
+                    x(:, 1:3:end) = fitness_mean;
+                    x(:, 2:3:end) = fitness_std;
+                    x(:, 3:3:end) = fitness_suc;
+                    app.Etable_view = sprintfc(format_str, x);
+                case 'Std'
+                    fitness_mean = nanmean(data_fitness, 3);
+                    fitness_std = std(data_fitness, 0, 3);
+                    app.Etable_data = fitness_mean;
+                    app.Etable_view = sprintfc(format_str, fitness_std);
+                case 'Suc'
+                    fitness_mean = nanmean(data_fitness, 3);
+                    fitness_suc = sum(~isnan(data_fitness), 3) ./ size(data_fitness, 3) * 100;
+                    app.Etable_data = fitness_mean;
+                    app.Etable_view = sprintfc(format_str, fitness_suc);
                 case 'Median' % Median
                     fitness_median = nanmedian(data_fitness, 3);
                     app.Etable_data = fitness_median;
                     app.Etable_view = sprintfc(format_str, fitness_median);
-                case 'Median&Std' % Median&Std
-                    fitness_median = nanmedian(data_fitness, 3);
-                    fitness_std = std(data_fitness, 0, 3);
-                    app.Etable_data = fitness_median;
-                    x = zeros([size(fitness_median, 1), 2*size(fitness_median, 2)]);
-                    x(:, 1:2:end) = fitness_median;
-                    x(:, 2:2:end) = fitness_std;
-                    app.Etable_view = sprintfc(format_str, x);
             end
             
             if ~isempty(app.Etable_view_test)
@@ -719,12 +731,12 @@ classdef MTO_GUI < matlab.apps.AppBase
                     end
                     
                     p = 0;
-                    if ~(sum(isnan(x1)) == length(x1) || sum(isnan(x2)) == length(x2))
+                    if sum(~isnan(x1)) == length(x1) && sum(~isnan(x2)) == length(x2)
                         % without NaN
                         if strcmp(test_type, 'Rank sum test')
-                            p = ranksum(x1(~isnan(x1)), x2(~isnan(x2)));
+                            p = ranksum(x1, x2);
                         elseif strcmp(test_type, 'Signed rank test')
-                            p = signrank(x1(~isnan(x1)), x2(~isnan(x2)));
+                            p = signrank(x1, x2);
                         end
                         if p < 0.05
                             if app.Etable_data(row_i, algo) < app.Etable_data(row_i, algo_selected)
@@ -740,15 +752,15 @@ classdef MTO_GUI < matlab.apps.AppBase
                         end
                     else
                         % Contains NaN
-                        if isnan(app.Etable_data(row_i, algo)) && isnan(app.Etable_data(row_i, algo_selected))
-                            app.Etable_view_test{row_i, algo} = '=';
-                            sign_p(3) = sign_p(3) + 1;
-                        elseif isnan(app.Etable_data(row_i, algo)) && ~isnan(app.Etable_data(row_i, algo_selected))
-                            app.Etable_view_test{row_i, algo} = '-';
-                            sign_p(2) = sign_p(2) + 1;
-                        elseif ~isnan(app.Etable_data(row_i, algo)) && isnan(app.Etable_data(row_i, algo_selected))
+                        if sum(~isnan(x1)) == length(x1) && sum(~isnan(x2)) ~= length(x2)
                             app.Etable_view_test{row_i, algo} = '+';
                             sign_p(1) = sign_p(1) + 1;
+                        elseif sum(~isnan(x1)) ~= length(x1) && sum(~isnan(x2)) == length(x2)
+                            app.Etable_view_test{row_i, algo} = '-';
+                            sign_p(2) = sign_p(2) + 1;
+                        elseif sum(~isnan(x1)) ~= length(x1) && sum(~isnan(x2)) ~= length(x2)
+                            app.Etable_view_test{row_i, algo} = '=';
+                            sign_p(3) = sign_p(3) + 1;
                         end
                     end
                 end
@@ -842,27 +854,25 @@ classdef MTO_GUI < matlab.apps.AppBase
         
         function EresetFormat(app)
             format_str = app.EDataFormatEditField.Value;
-            switch app.EDataTypeDropDown.Value
-                case 'Obj'
-                    type = app.EShowTypeDropDown.Value;
-                    if contains(type, 'Std')
-                        format_str = '%.2e (%.2e)';
-                    elseif contains(type, 'Suc')
-                        format_str = '%.2e (%2.2f%%)';
-                    else
+            if contains(app.EDataTypeDropDown.Value, 'Obj')
+                switch app.EShowTypeDropDown.Value
+                    case 'Mean'
                         format_str = '%.2e';
-                    end
-                case 'Score'
-                    format_str = '%.4f';
-                case 'min(Obj)'
-                    type = app.EShowTypeDropDown.Value;
-                    if contains(type, 'Std')
+                    case 'Mean&Std'
                         format_str = '%.2e (%.2e)';
-                    elseif contains(type, 'Suc')
+                    case 'Mean&Suc'
                         format_str = '%.2e (%2.2f%%)';
-                    else
+                    case 'Mean&Std&Suc'
+                        format_str = '%.2e ± %.2e (%2.2f%%)';
+                    case 'Std'
                         format_str = '%.2e';
-                    end
+                    case 'Suc'
+                        format_str = '%2.2f%%';
+                    case 'Median'
+                        format_str = '%.2e';
+                end
+            else
+                format_str = '%.4f';
             end
             app.EDataFormatEditField.Value = format_str;
         end
@@ -1486,16 +1496,12 @@ classdef MTO_GUI < matlab.apps.AppBase
                                 gen_new = size(data.convergence, 2);
                                 if gen_old < gen_new
                                     app.Edata.result(prob, algo).convergence = [app.Edata.result(prob, algo).convergence, repmat(app.Edata.result(prob, algo).convergence(:, gen_old), 1, gen_new-gen_old)];
-                                    %                                     app.Edata.result(prob, algo).convergence_fr = [app.Edata.result(prob, algo).convergence_fr, repmat(app.Edata.result(prob, algo).convergence_fr(:, gen_old), 1, gen_new-gen_old)];
-                                else
+                                    else
                                     data.convergence = [data.convergence, repmat(data.convergence(:, gen_new), 1, gen_old-gen_new)];
-                                    %                                     data.convergence_fr = [data.convergence_fr, repmat(data.convergence_fr(:, gen_new), 1, gen_old-gen_new)];
-                                end
+                                    end
                                 app.Edata.result(prob, algo).convergence = [app.Edata.result(prob, algo).convergence; data.convergence];
-                                %                                 app.Edata.result(prob, algo).convergence_fr = [app.Edata.result(prob, algo).convergence_fr; data.convergence_fr];
                             else
                                 app.Edata.result(prob, algo).convergence = data.convergence;
-                                %                                 app.Edata.result(prob, algo).convergence_fr = data.convergence_fr;
                             end
                             app.Edata.result(prob, algo).bestX = [app.Edata.result(prob, algo).bestX; data.bestX];
                             app.Etable_reps(prob, algo) = rep;
@@ -1523,23 +1529,18 @@ classdef MTO_GUI < matlab.apps.AppBase
                             data = singleRun(algo_obj, prob_obj);
                             clock_time = clock_time + data.clock_time;
                             convergence = [convergence; {data.convergence}];
-                            %                             convergence_fr = [convergence_fr; {data.convergence_fr}];
                             bestX = [bestX; data.bestX];
                         end
                         app.Edata.result(prob, algo).convergence = convergence{1};
-                        %                         app.Edata.result(prob, algo).convergence_fr = convergence_fr{1};
                         for rep = 2:reps
                             gen_old = size(app.Edata.result(prob, algo).convergence, 2);
                             gen_new = size(convergence{rep}, 2);
                             if gen_old < gen_new
                                 app.Edata.result(prob, algo).convergence = [app.Edata.result(prob, algo).convergence, repmat(app.Edata.result(prob, algo).convergence(:, gen_old), 1, gen_new-gen_old)];
-                                %                                 app.Edata.result(prob, algo).convergence_fr = [app.Edata.result(prob, algo).convergence_fr, repmat(app.Edata.result(prob, algo).convergence_fr(:, gen_old), 1, gen_new-gen_old)];
-                            else
+                                else
                                 convergence{rep} = [convergence{rep}, repmat(convergence{rep}(:, gen_new), 1, gen_old-gen_new)];
-                                %                                 convergence_fr{rep} = [convergence_fr{rep}, repmat(convergence_fr{rep}(:, gen_new), 1, gen_old-gen_new)];
-                            end
+                                end
                             app.Edata.result(prob, algo).convergence = [app.Edata.result(prob, algo).convergence; convergence{rep}];
-                            %                             app.Edata.result(prob, algo).convergence_fr = [app.Edata.result(prob, algo).convergence_fr; convergence_fr{rep}];
                         end
                         app.Edata.result(prob, algo).clock_time = clock_time;
                         app.Edata.result(prob, algo).bestX = bestX;
@@ -1945,6 +1946,10 @@ classdef MTO_GUI < matlab.apps.AppBase
             %load data mat files
             for i = 1:length(file_name_list)
                 load([pathname, file_name_list{i}], 'data_save');
+                % extract necessary field
+                if isfield(data_save.result, 'bestX')
+                    data_save.result = rmfield(data_save.result, 'bestX');
+                end
                 app.DputDataNode(file_name_list{i}(1:end-4), data_save);
                 drawnow;
             end
@@ -2035,9 +2040,9 @@ classdef MTO_GUI < matlab.apps.AppBase
                         for algo = 1:length(data_save.algo_cell)
                             data_save.result(prob, algo).clock_time = data_selected(i).NodeData.result(prob, algo).clock_time / data_selected(i).NodeData.reps;
                             data_save.result(prob, algo).convergence = data_selected(i).NodeData.result(prob, algo).convergence((rep-1)*task_num+1 : rep*task_num, :);
-                            if isfield(data_save.result(prob, algo), 'bestX') && isfield(data_selected(i).NodeData.result(prob, algo), 'bestX')
-                                data_save.result(prob, algo).bestX = data_selected(i).NodeData.result(prob, algo).bestX(rep, :);
-                            end
+                            % if isfield(data_save.result(prob, algo), 'bestX') && isfield(data_selected(i).NodeData.result(prob, algo), 'bestX')
+                            %     data_save.result(prob, algo).bestX = data_selected(i).NodeData.result(prob, algo).bestX(rep, :);
+                            % end
                         end
                     end
                     app.DputDataNode([data_selected(i).Text, ' (Split Rep: ', num2str(rep), ')'], data_save);
@@ -2142,9 +2147,9 @@ classdef MTO_GUI < matlab.apps.AppBase
                     for algo = 1:length(data_save.algo_cell)
                         data_save.result(prob, algo).clock_time = data_save.result(prob, algo).clock_time + data_selected(i).NodeData.result(prob, algo).clock_time;
                         data_save.result(prob, algo).convergence = [data_save.result(prob, algo).convergence; data_selected(i).NodeData.result(prob, algo).convergence];
-                        if isfield(data_selected(i).NodeData.result(prob, algo), 'bestX')
-                            data_save.result(prob, algo).bestX = [data_save.result(prob, algo).bestX; data_selected(i).NodeData.result(prob, algo).bestX];
-                        end
+                        % if isfield(data_selected(i).NodeData.result(prob, algo), 'bestX')
+                        %     data_save.result(prob, algo).bestX = [data_save.result(prob, algo).bestX; data_selected(i).NodeData.result(prob, algo).bestX];
+                        % end
                     end
                 end
             end
@@ -2660,7 +2665,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create EShowTypeDropDown
             app.EShowTypeDropDown = uidropdown(app.EP3T1GridLayout);
-            app.EShowTypeDropDown.Items = {'Mean', 'Mean&Std', 'Mean&Suc', 'Median', 'Median&Std'};
+            app.EShowTypeDropDown.Items = {'Mean', 'Mean&Std', 'Mean&Suc', 'Mean&Std&Suc', 'Std', 'Suc', 'Median'};
             app.EShowTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EShowTypeDropDownValueChanged, true);
             app.EShowTypeDropDown.Tooltip = {'Data Type (Only for Objective value)'};
             app.EShowTypeDropDown.FontWeight = 'bold';
