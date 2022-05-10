@@ -23,8 +23,7 @@ function converge_eva = gen2eva(converge_gen, varargin)
     end
 
     if length(converge_gen) <= converge_num
-        converge_eva = converge_gen;
-        return;
+        converge_num = length(converge_gen);
     end
 
     converge_eva = nan(size(converge_gen, 1), converge_num);
