@@ -112,7 +112,7 @@ classdef CMA_ES < Algorithm
                 data.convergence = [data.convergence; convergence];
                 data.bestX = [data.bestX, bestX];
             end
-            % data.bestX = uni2real(data.bestX, Tasks);
+            data.convergence = gen2eva(data.convergence);
             data.clock_time = toc;
         end
     end

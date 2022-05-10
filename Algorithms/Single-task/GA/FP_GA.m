@@ -86,6 +86,7 @@ classdef FP_GA < Algorithm
                 data.bestX = [data.bestX, bestX];
             end
             data.convergence(data.convergence_cv > 0) = NaN;
+            data.convergence = gen2eva(data.convergence);
             data.bestX = uni2real(data.bestX, Tasks);
             data.clock_time = toc;
         end

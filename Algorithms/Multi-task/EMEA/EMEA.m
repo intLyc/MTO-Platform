@@ -144,6 +144,7 @@ classdef EMEA < Algorithm
                     end
                 end
             end
+            data.convergence = gen2eva(data.convergence);
             data.bestX = uni2real(data.bestX, Tasks);
             data.clock_time = toc;
         end

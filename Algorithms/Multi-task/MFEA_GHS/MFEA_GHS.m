@@ -71,6 +71,7 @@ classdef MFEA_GHS < Algorithm
                 [max_T, min_T] = cal_max_min(population, Tasks);
                 M = domain_ad(population, Tasks);
             end
+            data.convergence = gen2eva(data.convergence);
             data.bestX = uni2real(data.bestX, Tasks);
             data.clock_time = toc;
         end

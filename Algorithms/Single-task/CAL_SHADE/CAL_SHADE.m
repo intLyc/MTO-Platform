@@ -61,7 +61,7 @@ classdef CAL_SHADE < Algorithm
 
             data.convergence = [];
             data.convergence_cv = [];
-            data.convergence_fr = [];
+            data.eva_gen = [];
             data.bestX = {};
 
             for sub_task = 1:length(Tasks)
@@ -77,6 +77,7 @@ classdef CAL_SHADE < Algorithm
                 bestX = pop_temp(idx).rnvec;
                 convergence(1) = bestobj;
                 convergence_cv(1) = pop_temp(idx).constraint_violation;
+                eva_gen(1) = fnceval_calls;
 
                 % initialize parameter
                 n = ceil(obj.ep_top * length(population));
@@ -171,12 +172,15 @@ classdef CAL_SHADE < Algorithm
                     end
                     convergence(generation) = bestobj;
                     convergence_cv(generation) = bestCV;
+                    eva_gen(generation) = fnceval_calls;
                 end
                 data.convergence = [data.convergence; convergence];
                 data.convergence_cv = [data.convergence_cv; convergence_cv];
+                data.eva_gen = [data.eva_gen; eva_gen];
                 data.bestX = [data.bestX, bestX];
             end
             data.convergence(data.convergence_cv > 0) = NaN;
+            data.convergence = gen2eva(data.convergence);
             data.bestX = uni2real(data.bestX, Tasks);
             data.clock_time = toc;
         end

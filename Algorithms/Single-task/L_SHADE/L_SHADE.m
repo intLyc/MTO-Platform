@@ -42,6 +42,7 @@ classdef L_SHADE < Algorithm
             tic
 
             data.convergence = [];
+            data.eva_gen = [];
             data.bestX = {};
             for sub_task = 1:length(Tasks)
                 Task = Tasks(sub_task);
@@ -51,6 +52,7 @@ classdef L_SHADE < Algorithm
                 pop_min = 4;
                 [population, fnceval_calls, bestobj, bestX] = initialize(IndividualJADE, pop_init, Task, Task.dims);
                 convergence(1) = bestobj;
+                eva_gen(1) = fnceval_calls;
 
                 % initialize parameter
                 H_idx = 1;
@@ -126,10 +128,13 @@ classdef L_SHADE < Algorithm
                         bestX = population(idx).rnvec;
                     end
                     convergence(generation) = bestobj;
+                    eva_gen(generation) = fnceval_calls;
                 end
                 data.convergence = [data.convergence; convergence];
+                data.eva_gen = [data.eva_gen; eva_gen];
                 data.bestX = [data.bestX, bestX];
             end
+            data.convergence = gen2eva(data.convergence, data.eva_gen);
             data.bestX = uni2real(data.bestX, Tasks);
             data.clock_time = toc;
         end
