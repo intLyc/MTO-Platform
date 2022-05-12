@@ -58,6 +58,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         EFigureTypeDropDown          matlab.ui.control.DropDown
         EMarkerIndicesEditField      matlab.ui.control.NumericEditField
         EConvergenceTypeDropDown     matlab.ui.control.DropDown
+        EXLimTypeDropDown            matlab.ui.control.DropDown
         EConvergenceTrendUIAxes      matlab.ui.control.UIAxes
         EPanel1                      matlab.ui.container.Panel
         EP1GridLayout                matlab.ui.container.GridLayout
@@ -922,8 +923,12 @@ classdef MTO_GUI < matlab.apps.AppBase
                         convergence_task = app.Edata.result(prob, algo).convergence(task:tasks_num:end, :);
                         convergence = mean(convergence_task, 1);
                         x_cell{algo} = 1:size(convergence,2);
-                        % xlabel evaluation
-                        x_cell{algo} = x_cell{algo} / length(x_cell{algo}) * app.Edata.sub_eva(prob);
+                        % xlabel
+                        if strcmp(app.EXLimTypeDropDown.Value, 'Evaluation')
+                            x_cell{algo} = x_cell{algo} / length(x_cell{algo}) * app.Edata.sub_eva(prob);
+                        elseif strcmp(app.EXLimTypeDropDown.Value, 'Generation')
+                            x_cell{algo} = x_cell{algo} / length(x_cell{algo}) * (app.Edata.sub_eva(prob) / app.Edata.sub_pop(prob));
+                        end
                         y_cell{algo} = convergence;
                     end
                 case 'min(Obj)'
@@ -936,8 +941,12 @@ classdef MTO_GUI < matlab.apps.AppBase
                         end
                         convergence = mean(convergence_rep, 1);
                         x_cell{algo} = 1:size(convergence,2);
-                        % xlabel evaluation
-                        x_cell{algo} = x_cell{algo} / length(x_cell{algo}) * app.Edata.sub_eva(prob) * tasks_num;
+                        % xlabel
+                        if strcmp(app.EXLimTypeDropDown.Value, 'Evaluation')
+                            x_cell{algo} = x_cell{algo} / length(x_cell{algo}) * app.Edata.sub_eva(prob) * tasks_num;
+                        elseif strcmp(app.EXLimTypeDropDown.Value, 'Generation')
+                            x_cell{algo} = x_cell{algo} / length(x_cell{algo}) * (app.Edata.sub_eva(prob) / app.Edata.sub_pop(prob));
+                        end
                         y_cell{algo} = convergence;
                     end
             end
@@ -962,7 +971,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                 hold(app.EConvergenceTrendUIAxes, 'on');
             end
             legend(app.EConvergenceTrendUIAxes, strrep(app.Edata.algo_cell, '_', '\_'));
-            xlabel(app.EConvergenceTrendUIAxes, 'Evaluation');
+            xlabel(app.EConvergenceTrendUIAxes, app.EXLimTypeDropDown.Value);
             ylabel(app.EConvergenceTrendUIAxes, app.EYLimTypeDropDown.Value);
             grid(app.EConvergenceTrendUIAxes, 'on');
         end
@@ -1757,6 +1766,11 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EupdateConvergenceAxes();
         end
 
+        % Value changed function: EXLimTypeDropDown
+        function EXLimTypeDropDownValueChanged(app, event)
+            app.EupdateConvergenceAxes();
+        end
+
         % Value changed function: EProblemsDropDown
         function EProblemsDropDownValueChanged(app, event)
             app.EupdateConvergenceAxes();
@@ -2334,7 +2348,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create MTOPlatformUIFigure and hide until all components are created
             app.MTOPlatformUIFigure = uifigure('Visible', 'off');
             app.MTOPlatformUIFigure.Color = [1 1 1];
-            app.MTOPlatformUIFigure.Position = [100 100 1029 663];
+            app.MTOPlatformUIFigure.Position = [100 100 1032 664];
             app.MTOPlatformUIFigure.Name = 'MTO Platform';
             app.MTOPlatformUIFigure.WindowStyle = 'modal';
 
@@ -2736,7 +2750,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create EP3F1GridLayout
             app.EP3F1GridLayout = uigridlayout(app.EP3FGridLayout);
-            app.EP3F1GridLayout.ColumnWidth = {97, 55, '1x', 90, 90, 90, 90};
+            app.EP3F1GridLayout.ColumnWidth = {97, 55, '1x', 90, 90, 90, 90, 90};
             app.EP3F1GridLayout.RowHeight = {'fit'};
             app.EP3F1GridLayout.ColumnSpacing = 5;
             app.EP3F1GridLayout.Padding = [0 0 0 0];
@@ -2752,7 +2766,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EProblemsDropDown.FontWeight = 'bold';
             app.EProblemsDropDown.BackgroundColor = [1 1 1];
             app.EProblemsDropDown.Layout.Row = 1;
-            app.EProblemsDropDown.Layout.Column = 7;
+            app.EProblemsDropDown.Layout.Column = 8;
             app.EProblemsDropDown.Value = 'Problem ';
 
             % Create EYLimTypeDropDown
@@ -2763,7 +2777,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EYLimTypeDropDown.FontWeight = 'bold';
             app.EYLimTypeDropDown.BackgroundColor = [1 1 1];
             app.EYLimTypeDropDown.Layout.Row = 1;
-            app.EYLimTypeDropDown.Layout.Column = 6;
+            app.EYLimTypeDropDown.Layout.Column = 7;
             app.EYLimTypeDropDown.Value = 'log(Objective Value)';
 
             % Create ESaveAllFigureButton
@@ -2808,6 +2822,17 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EConvergenceTypeDropDown.Layout.Row = 1;
             app.EConvergenceTypeDropDown.Layout.Column = 5;
             app.EConvergenceTypeDropDown.Value = 'Obj';
+
+            % Create EXLimTypeDropDown
+            app.EXLimTypeDropDown = uidropdown(app.EP3F1GridLayout);
+            app.EXLimTypeDropDown.Items = {'Evaluation', 'Generation'};
+            app.EXLimTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EXLimTypeDropDownValueChanged, true);
+            app.EXLimTypeDropDown.Tooltip = {'Data Type'};
+            app.EXLimTypeDropDown.FontWeight = 'bold';
+            app.EXLimTypeDropDown.BackgroundColor = [1 1 1];
+            app.EXLimTypeDropDown.Layout.Row = 1;
+            app.EXLimTypeDropDown.Layout.Column = 6;
+            app.EXLimTypeDropDown.Value = 'Evaluation';
 
             % Create EConvergenceTrendUIAxes
             app.EConvergenceTrendUIAxes = uiaxes(app.EP3FGridLayout);
