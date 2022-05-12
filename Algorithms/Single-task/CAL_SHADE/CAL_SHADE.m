@@ -22,6 +22,7 @@ classdef CAL_SHADE < Algorithm
     properties (SetAccess = private)
         p = 0.11;
         H = 5;
+        arc_rate = 1.4
         ep_top = 0.2
         ep_tc = 500
         ep_cp = 5
@@ -31,6 +32,7 @@ classdef CAL_SHADE < Algorithm
         function parameter = getParameter(obj)
             parameter = {'p: 100p% top as pbest', num2str(obj.p), ...
                         'H: success memory size', num2str(obj.H), ...
+                        'arc_rate: arcive size rate', num2str(obj.arc_rate), ...
                         'ep_top', num2str(obj.ep_top), ...
                         'ep_tc', num2str(obj.ep_tc), ...
                         'ep_cp', num2str(obj.ep_cp)};
@@ -40,6 +42,7 @@ classdef CAL_SHADE < Algorithm
             count = 1;
             obj.p = str2double(parameter_cell{count}); count = count + 1;
             obj.H = str2double(parameter_cell{count}); count = count + 1;
+            obj.arc_rate = str2double(parameter_cell{count}); count = count + 1;
             obj.ep_top = str2double(parameter_cell{count}); count = count + 1;
             obj.ep_tc = str2double(parameter_cell{count}); count = count + 1;
             obj.ep_cp = str2double(parameter_cell{count}); count = count + 1;
@@ -113,7 +116,7 @@ classdef CAL_SHADE < Algorithm
                     end
                     % calculate epsilon
                     if generation <= obj.ep_tc
-                        Ep = ep0 * ((1 - generation / obj.ep_tc)^obj.ep_cp);
+                        Ep = ep0 * ((1 - fnceval_calls / sub_eva)^obj.ep_cp);
                     else
                         Ep = 0;
                     end
@@ -134,7 +137,8 @@ classdef CAL_SHADE < Algorithm
                     % calculate SF SCR
                     SF = [population(replace).F];
                     SCR = [population(replace).CR];
-                    dif = abs([population(replace).factorial_costs] - [offspring(replace).factorial_costs]);
+                    dif = 1e30 * abs([population(replace).factorial_costs] - [offspring(replace).factorial_costs]) + ...
+                        abs([population(replace).factorial_costs] - [offspring(replace).factorial_costs]);
                     dif = dif ./ sum(dif);
 
                     % update MF MCR
@@ -151,16 +155,17 @@ classdef CAL_SHADE < Algorithm
 
                     % update archive
                     arc = [arc, population(replace)];
-                    if length(arc) > length(pop_size)
+                    if length(arc) > length(pop_size) * obj.arc_rate
                         rnd = randperm(length(arc));
                         arc = arc(rnd(1:length(pop_size)));
                     end
 
                     % Linear Population Size Reduction
-                    if pop_size < length(population)
-                        rank = sort_EC([population.factorial_costs], [population.constraint_violation], Ep);
-                        population = population(rank(1:pop_size));
-                    end
+                    obj_list = [population.factorial_costs];
+                    cv_list = [population.constraint_violation];
+                    cv_list(cv_list < Ep) = 0;
+                    [~, rank] = sortrows([cv_list', obj_list']);
+                    population = population(rank(1:pop_size));
 
                     bestCV_now = min([population.constraint_violation]);
                     pop_temp = population([population.constraint_violation] == bestCV_now);
