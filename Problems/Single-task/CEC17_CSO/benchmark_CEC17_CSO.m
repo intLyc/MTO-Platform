@@ -11,6 +11,7 @@ function Task = benchmark_CEC17_CSO(index, dim)
         ub = 50;
     end
     o = 0;
+    M = 1;
     M_10 = 1;
     M_30 = 1;
     M_50 = 1;
@@ -36,6 +37,19 @@ function Task = benchmark_CEC17_CSO(index, dim)
         M = M_100;
     end
     Task.dims = dim; % dimensionality of Task 1
+
+    if size(M, 1) > 1
+        if index == 5
+            M{1} = M{1}(1:dim, 1:dim);
+            M{2} = M{2}(1:dim, 1:dim);
+        else
+            M = M(1:dim, 1:dim);
+        end
+    end
+    if length(o) > 1
+        o = o(1:dim);
+    end
+
     Task.fnc = @(x)CEC17_CSO_Func(x, index, o, M);
     Task.Lb = -ub * ones(1, dim); % Upper bound of Task 1
     Task.Ub = ub * ones(1, dim); % Lower bound of Task 1

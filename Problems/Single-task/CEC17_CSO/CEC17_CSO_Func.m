@@ -109,7 +109,7 @@ function [obj, con] = CEC17_CSO_Func(x, I_fno, o, M)
         z1 = y(:, 1:2:D);
         z2 = y(:, 2:2:D);
         h1 = 0; h2 = 0;
-        for i = 1:D / 2
+        for i = 1:round(D / 2)
             h1 = h1 + sum(z1(:, 1:i), 2).^2;
             h2 = h2 + sum(z2(:, 1:i), 2).^2;
         end
@@ -123,7 +123,7 @@ function [obj, con] = CEC17_CSO_Func(x, I_fno, o, M)
         f = max(y, [], 2);
         z1 = y(:, 1:2:D);
         z2 = y(:, 2:2:D);
-        h = sum((z1(:, 1:D / 2 - 1).^2 - z1(:, 2:D / 2)).^2, 2);
+        h = sum((z1(:, 1:round(D / 2) - 1).^2 - z1(:, 2:round(D / 2))).^2, 2);
         g = prod(z2, 2);
     end
 
