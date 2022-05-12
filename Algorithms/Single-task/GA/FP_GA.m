@@ -58,17 +58,8 @@ classdef FP_GA < Algorithm
 
                     % selection
                     population = [population, offspring];
-                    feasible_num = sum([population.constraint_violation] == 0);
-                    if feasible_num < sub_pop
-                        % Feasibility Priority
-                        [~, rank_cv] = sort([population.constraint_violation]);
-                        population = population(rank_cv(1:sub_pop));
-                    else
-                        % Object Priority
-                        pop_temp = population([population.constraint_violation] == 0);
-                        [~, rank] = sort([pop_temp.factorial_costs]);
-                        population = pop_temp(rank(1:sub_pop));
-                    end
+                    [~, rank] = sortrows([population.constraint_violation]', [population.factorial_costs]');
+                    population = population(rank(1:sub_pop));
 
                     bestCV_now = min([population.constraint_violation]);
                     pop_temp = population([population.constraint_violation] == bestCV_now);
