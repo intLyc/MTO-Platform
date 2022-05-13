@@ -156,7 +156,7 @@ classdef CAL_SHADE < Algorithm
                     obj_list = [population.factorial_costs];
                     cv_list = [population.constraint_violation];
                     cv_list(cv_list < Ep) = 0;
-                    [~, rank] = sortrows([cv_list', obj_list']);
+                    [~, rank] = sortrows([cv_list', obj_list'], [1, 2]);
                     population = population(rank(1:pop_size));
 
                     bestCV_now = min([population.constraint_violation]);
