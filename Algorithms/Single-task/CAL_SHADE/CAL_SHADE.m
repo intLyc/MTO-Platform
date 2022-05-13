@@ -144,13 +144,13 @@ classdef CAL_SHADE < Algorithm
                     end
                     H_idx = mod(H_idx, obj.H) + 1;
 
-                    population(replace) = offspring(replace);
-
                     % update archive
                     arc = [arc, population(replace)];
                     if length(arc) > round(pop_size * obj.arc_rate)
                         arc = arc(randperm(length(arc), round(pop_size * obj.arc_rate)));
                     end
+
+                    population(replace) = offspring(replace);
 
                     % Linear Population Size Reduction
                     obj_list = [population.factorial_costs];

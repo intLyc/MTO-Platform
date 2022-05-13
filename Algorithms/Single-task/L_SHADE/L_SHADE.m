@@ -107,14 +107,13 @@ classdef L_SHADE < Algorithm
                     end
                     H_idx = mod(H_idx, obj.H) + 1;
 
-                    population(replace) = offspring(replace);
-
                     % update archive
                     arc = [arc, population(replace)];
                     if length(arc) > length(pop_size)
-                        rnd = randperm(length(arc));
-                        arc = arc(rnd(1:length(pop_size)));
+                        arc = arc(randperm(length(arc), pop_size));
                     end
+
+                    population(replace) = offspring(replace);
 
                     % Linear Population Size Reduction
                     if pop_size < length(population)
