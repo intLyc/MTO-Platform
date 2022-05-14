@@ -109,7 +109,7 @@ classdef L_SHADE < Algorithm
 
                     % update archive
                     arc = [arc, population(replace)];
-                    if length(arc) > length(pop_size)
+                    if length(arc) > pop_size
                         arc = arc(randperm(length(arc), pop_size));
                     end
 
