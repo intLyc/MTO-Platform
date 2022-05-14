@@ -50,7 +50,7 @@ function Task = benchmark_CEC20_RWCO(index)
     end
     GBPQL = {G, B, P, Q, L};
 
-    %% Parameter
+    %% Parameter Dim and Boundary Constraint
     D = [9	11	7	6	9	38	48	2	3	3	7	7	5	10	7	14	3	4	4	2	5	9	5	7	4	22	10	10	4	3	4	5 ...
         30	118	153	158	126	126	126	76	74	86	86	30	25	25	25	30	30	30	59	59	59	59	64	64	64];
     % bound constraint definitions for all 18 test functions
@@ -169,7 +169,7 @@ function Task = benchmark_CEC20_RWCO(index)
     xmin57 = 0 .* ones(1, D(index));
     xmax57 = 10 .* ones(1, D(index));
 
-    %% Task
+    %% Set Task
     Task.dims = D(index); % dimensionality of Task 1
     eval(['Task.Lb=xmin', int2str(index), ';'])
     eval(['Task.Ub=xmax', int2str(index), ';'])

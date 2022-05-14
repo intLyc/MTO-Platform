@@ -18,6 +18,7 @@ function Task = benchmark_CEC17_CSO(index, dim)
 
     file_dir = './Problems/Single-task/CEC17_CSO/Data/';
 
+    %% Boundary Constraint
     ub = 100;
     if index == 4 || index == 5 || index == 9
         ub = 10;
@@ -26,6 +27,8 @@ function Task = benchmark_CEC17_CSO(index, dim)
     elseif index == 7 || index == 19 || index == 28
         ub = 50;
     end
+
+    %% Rotation and Shift load
     o = 0;
     M = 1;
     M_10 = 1;
@@ -52,8 +55,7 @@ function Task = benchmark_CEC17_CSO(index, dim)
     elseif dim == 100
         M = M_100;
     end
-    Task.dims = dim; % dimensionality of Task 1
-
+    % fix
     if size(M, 1) > 1
         if index == 5
             M{1} = M{1}(1:dim, 1:dim);
@@ -66,6 +68,8 @@ function Task = benchmark_CEC17_CSO(index, dim)
         o = o(1:dim);
     end
 
+    %% Set Task
+    Task.dims = dim; % dimensionality of Task 1
     Task.fnc = @(x)CEC17_CSO_Func(x, index, o, M);
     Task.Lb = -ub * ones(1, dim); % Upper bound of Task 1
     Task.Ub = ub * ones(1, dim); % Lower bound of Task 1
