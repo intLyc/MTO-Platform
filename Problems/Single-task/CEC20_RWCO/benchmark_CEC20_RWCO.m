@@ -1,5 +1,25 @@
 function Task = benchmark_CEC20_RWCO(index)
 
+    %------------------------------- Reference --------------------------------
+    % @Article{Kumar2020CEC20-RWCO,
+    %   title    = {A Test-suite of Non-convex Constrained Optimization Problems from the Real-world and Some Baseline Results},
+    %   author   = {Abhishek Kumar and Guohua Wu and Mostafa Z. Ali and Rammohan Mallipeddi and Ponnuthurai Nagaratnam Suganthan and Swagatam Das},
+    %   journal  = {Swarm and Evolutionary Computation},
+    %   year     = {2020},
+    %   issn     = {2210-6502},
+    %   pages    = {100693},
+    %   volume   = {56},
+    %   doi      = {https://doi.org/10.1016/j.swevo.2020.100693},
+    % }
+    %--------------------------------------------------------------------------
+
+    %------------------------------- Copyright --------------------------------
+    % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
+    % research purposes. All publications which use this platform or any code
+    % in the platform should acknowledge the use of "MTO-Platform" and cite
+    % or footnote "https://github.com/intLyc/MTO-Platform"
+    %--------------------------------------------------------------------------
+
     file_dir = './Problems/Single-task/CEC20_RWCO/Data/';
 
     %% load data GBPQL
