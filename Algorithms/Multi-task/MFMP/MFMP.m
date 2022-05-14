@@ -117,8 +117,8 @@ classdef MFMP < Algorithm
 
                     % update MF MCR
                     if ~isempty(SF)
-                        MF{t}(H_idx(t)) = (dif * (SF'.^2)) / (dif * SF');
-                        MCR{t}(H_idx(t)) = (dif * (SCR'.^2)) / (dif * SCR');
+                        MF{t}(H_idx(t)) = sum(dif .* (SF.^2)) / sum(dif .* SF);
+                        MCR{t}(H_idx(t)) = sum(dif .* SCR);
                     else
                         MF{t}(H_idx(t)) = MF{t}(mod(H_idx(t) + obj.H - 2, obj.H) + 1);
                         MCR{t}(H_idx(t)) = MCR{t}(mod(H_idx(t) + obj.H - 2, obj.H) + 1);

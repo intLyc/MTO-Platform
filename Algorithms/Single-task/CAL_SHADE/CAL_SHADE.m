@@ -137,8 +137,8 @@ classdef CAL_SHADE < Algorithm
 
                     % update MF MCR
                     if ~isempty(SF)
-                        MF(H_idx) = (dif * (SF'.^2)) / (dif * SF');
-                        MCR(H_idx) = (dif * (SCR'.^2)) / (dif * SCR');
+                        MF(H_idx) = sum(dif .* (SF.^2)) / sum(dif .* SF);
+                        MCR(H_idx) = sum(dif .* SCR);
                     else
                         MF(H_idx) = MF(mod(H_idx + obj.H - 2, obj.H) + 1);
                         MCR(H_idx) = MCR(mod(H_idx + obj.H - 2, obj.H) + 1);
