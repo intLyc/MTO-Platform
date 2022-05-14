@@ -68,7 +68,8 @@ classdef CAL_SHADE < Algorithm
                 Task = Tasks(sub_task);
 
                 % initialize
-                pop_init = Task.dims * 2;
+                % pop_init = Task.dims * 2;
+                pop_init = sub_pop;
                 pop_min = 4;
                 [population, fnceval_calls, bestobj, bestX] = initialize(IndividualJADE, pop_init, Task, Task.dims);
                 bestCV = min([population.constraint_violation]);
