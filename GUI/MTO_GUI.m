@@ -524,7 +524,11 @@ classdef MTO_GUI < matlab.apps.AppBase
             prob_row_cell = {};
             for prob = 1:length(prob_cell)
                 for task = 1:tasks_num_list(prob)
-                    prob_row_cell = [prob_row_cell, [prob_cell{prob}, '-T', num2str(task)]];
+                    if app.Edata.tasks_num_list(prob) == 1
+                        prob_row_cell = [prob_row_cell, prob_cell{prob}];
+                    else
+                        prob_row_cell = [prob_row_cell, [prob_cell{prob}, '-T', num2str(task)]];
+                    end
                 end
             end
             
@@ -887,7 +891,11 @@ classdef MTO_GUI < matlab.apps.AppBase
                     prob_row_index = {};
                     for prob = 1:length(app.Edata.prob_cell)
                         for task = 1:app.Edata.tasks_num_list(prob)
-                            prob_row_cell = [prob_row_cell, [app.Edata.prob_cell{prob}, '-T', num2str(task)]];
+                            if app.Edata.tasks_num_list(prob) == 1
+                                prob_row_cell = [prob_row_cell, app.Edata.prob_cell{prob}];
+                            else
+                                prob_row_cell = [prob_row_cell, [app.Edata.prob_cell{prob}, '-T', num2str(task)]];
+                            end
                             prob_row_index = [prob_row_index, [prob, task]];
                         end
                     end
@@ -1889,7 +1897,11 @@ classdef MTO_GUI < matlab.apps.AppBase
                             draw_obj.setXY(x_cell, y_cell);
                             draw_obj.setXYlabel('Evaluation', app.EYLimTypeDropDown.Value);
                             draw_obj.setLegend(app.Edata.algo_cell);
-                            draw_obj.setTitle([app.Edata.prob_cell{prob}, ' T', num2str(task)]);
+                            if app.Edata.tasks_num_list(prob) == 1
+                                draw_obj.setTitle(app.Edata.prob_cell{prob});
+                            else
+                                draw_obj.setTitle([app.Edata.prob_cell{prob}, ' T', num2str(task)]);
+                            end
                             draw_obj.setSaveDir(fig_dir_name);
                             draw_obj.setFigureType(app.EFigureTypeDropDown.Value);
                             draw_obj.setMarkerIndices(app.EMarkerIndicesEditField.Value);
