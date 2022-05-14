@@ -131,7 +131,7 @@ classdef CAL_SHADE < Algorithm
                     % calculate SF SCR
                     SF = [population(replace).F];
                     SCR = [population(replace).CR];
-                    dif = 1e30 * abs([population(replace).factorial_costs] - [offspring(replace).factorial_costs]) + ...
+                    dif = 1e30 * abs([population(replace).constraint_violation] - [offspring(replace).constraint_violation]) + ...
                         abs([population(replace).factorial_costs] - [offspring(replace).factorial_costs]);
                     dif = dif ./ sum(dif);
 
