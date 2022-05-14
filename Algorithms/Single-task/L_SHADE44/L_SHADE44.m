@@ -1,5 +1,5 @@
 classdef L_SHADE44 < Algorithm
-    % <Single> <Constrained>
+    % <Single> <None/Constrained>
 
     %------------------------------- Reference --------------------------------
     % @InProceedings{Polakova2017L-SHADE44,
