@@ -139,9 +139,7 @@ classdef L_SHADE44 < Algorithm
                         SF = [population(replace(k_idx)).F];
                         SCR = [population(replace(k_idx)).CR];
                         dif = abs([population(replace(k_idx)).constraint_violation] - [offspring(replace(k_idx)).constraint_violation]);
-                        dif = dif ./ sum(dif);
                         dif_obj = abs([population(replace(k_idx)).factorial_costs] - [offspring(replace(k_idx)).factorial_costs]);
-                        dif_obj = dif_obj ./ sum(dif_obj);
                         zero_cv = [population(replace(k_idx)).constraint_violation] == 0 & ...
                             [offspring(replace(k_idx)).constraint_violation] == 0;
                         dif(zero_cv) = dif_obj(zero_cv);
