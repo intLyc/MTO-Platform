@@ -91,7 +91,7 @@ classdef OperatorSHADE44 < Operator
             L = 1 + fix(length(object.rnvec) * rand());
             replace = L;
             position = L;
-            while rand() > current.CR && length(replace) < D
+            while rand() < current.CR && length(replace) < D
                 position = position + 1;
                 if position <= D
                     replace(end + 1) = position;
@@ -99,7 +99,9 @@ classdef OperatorSHADE44 < Operator
                     replace(end + 1) = mod(position, D);
                 end
             end
-            object.rnvec(replace) = current.rnvec(replace);
+            rnvec_temp = current.rnvec;
+            rnvec_temp(replace) = object.rnvec(replace);
+            object.rnvec = rnvec_temp;
         end
     end
 end
