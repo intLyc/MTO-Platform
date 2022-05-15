@@ -60,8 +60,8 @@ classdef SBO < Algorithm
             AIJ = ones(length(Tasks), length(Tasks)); % harm and neutral
 
             % initialize
-            [population_temp, fnceval_calls, bestobj, data.bestX] = initializeMT(IndividualSBO, sub_pop, Tasks, max([Tasks.dims]) * ones(1, length(Tasks)));
-            data.convergence(:, 1) = bestobj;
+            [population_temp, fnceval_calls, bestobj, bestX] = initializeMT(IndividualSBO, sub_pop, Tasks, max([Tasks.dims]) * ones(1, length(Tasks)));
+            convergence(:, 1) = bestobj;
             population = IndividualSBO.empty();
             for t = 1:length(Tasks)
                 [~, rank] = sort([population_temp{t}.factorial_costs]);
@@ -131,7 +131,7 @@ classdef SBO < Algorithm
                     [bestobj_temp, idx] = min([population(t_idx).factorial_costs]);
                     if bestobj_temp < bestobj(t)
                         bestobj(t) = bestobj_temp;
-                        data.bestX{t} = population(find_idx(idx)).rnvec;
+                        bestX{t} = population(find_idx(idx)).rnvec;
                     end
                 end
 
@@ -166,10 +166,10 @@ classdef SBO < Algorithm
                 % update transfer rates
                 RIJ = (MIJ + OIJ + PIJ) ./ (MIJ + OIJ + PIJ + AIJ + CIJ + NIJ);
 
-                data.convergence(:, generation) = bestobj;
+                convergence(:, generation) = bestobj;
             end
-            data.convergence = gen2eva(data.convergence);
-            data.bestX = uni2real(data.bestX, Tasks);
+            data.convergence = gen2eva(convergence);
+            data.bestX = uni2real(bestX, Tasks);
         end
     end
 end

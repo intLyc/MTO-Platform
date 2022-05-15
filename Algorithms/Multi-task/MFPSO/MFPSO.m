@@ -55,8 +55,8 @@ classdef MFPSO < Algorithm
             eva_num = sub_eva * length(Tasks);
 
             % initialize
-            [population, fnceval_calls, bestobj, data.bestX] = initializeMF(IndividualPSO, pop_size, Tasks, max([Tasks.dims]));
-            data.convergence(:, 1) = bestobj;
+            [population, fnceval_calls, bestobj, bestX] = initializeMF(IndividualPSO, pop_size, Tasks, max([Tasks.dims]));
+            convergence(:, 1) = bestobj;
             % initialize pso
             for i = 1:pop_size
                 population(i).pbest = population(i).rnvec;
@@ -71,7 +71,7 @@ classdef MFPSO < Algorithm
                 w = obj.wmax - (obj.wmax - obj.wmin) * fnceval_calls / eva_num;
 
                 % generation
-                [population, calls] = OperatorMFPSO.generate(1, population, Tasks, obj.rmp, w, obj.c1, obj.c2, obj.c3, data.bestX);
+                [population, calls] = OperatorMFPSO.generate(1, population, Tasks, obj.rmp, w, obj.c1, obj.c2, obj.c3, bestX);
                 fnceval_calls = fnceval_calls + calls;
 
                 % update best
@@ -82,13 +82,13 @@ classdef MFPSO < Algorithm
                     [bestobj_offspring, idx] = min(factorial_costs);
                     if bestobj_offspring < bestobj(t)
                         bestobj(t) = bestobj_offspring;
-                        data.bestX{t} = population(idx).rnvec;
+                        bestX{t} = population(idx).rnvec;
                     end
-                    data.convergence(t, generation) = bestobj(t);
+                    convergence(t, generation) = bestobj(t);
                 end
             end
-            data.convergence = gen2eva(data.convergence);
-            data.bestX = uni2real(data.bestX, Tasks);
+            data.convergence = gen2eva(convergence);
+            data.bestX = uni2real(bestX, Tasks);
         end
     end
 end

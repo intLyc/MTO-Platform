@@ -70,8 +70,8 @@ classdef MaTDE < Algorithm
             reward = ones(length(Tasks), length(Tasks));
 
             % initialize
-            [population, fnceval_calls, bestobj, data.bestX] = initializeMT(Individual, sub_pop, Tasks, max([Tasks.dims]) * ones(1, length(Tasks)));
-            data.convergence(:, 1) = bestobj;
+            [population, fnceval_calls, bestobj, bestX] = initializeMT(Individual, sub_pop, Tasks, max([Tasks.dims]) * ones(1, length(Tasks)));
+            convergence(:, 1) = bestobj;
             for t = 1:length(Tasks)
                 for i = 1:length(population{t})
                     archive = obj.putarchive(archive, t, population{t}(i), sub_pop);
@@ -97,7 +97,7 @@ classdef MaTDE < Algorithm
                         [bestobj_now, idx] = min([population{t}.factorial_costs]);
                         if bestobj_now < bestobj(t)
                             bestobj(t) = bestobj_now;
-                            data.bestX{t} = population{t}(idx).rnvec;
+                            bestX{t} = population{t}(idx).rnvec;
                         end
                     else
                         % Knowledge transfer
@@ -122,7 +122,7 @@ classdef MaTDE < Algorithm
                         if bestobj_now < bestobj(t)
                             reward(t, transfer_task) = reward(t, transfer_task) / obj.shrink_rate;
                             bestobj(t) = bestobj_now;
-                            data.bestX{t} = population{t}(idx).rnvec;
+                            bestX{t} = population{t}(idx).rnvec;
                         else
                             reward(t, transfer_task) = reward(t, transfer_task) * obj.shrink_rate;
                         end
@@ -134,10 +134,10 @@ classdef MaTDE < Algorithm
                         end
                     end
                 end
-                data.convergence(:, generation) = bestobj;
+                convergence(:, generation) = bestobj;
             end
-            data.convergence = gen2eva(data.convergence);
-            data.bestX = uni2real(data.bestX, Tasks);
+            data.convergence = gen2eva(convergence);
+            data.bestX = uni2real(bestX, Tasks);
         end
 
         function [num, possibility] = adaptivechoose(obj, task_num, no_of_tasks, archive, reward, possibility, Tasks)

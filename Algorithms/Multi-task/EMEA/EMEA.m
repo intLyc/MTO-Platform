@@ -62,8 +62,8 @@ classdef EMEA < Algorithm
             op_list = split(obj.Op, '/');
 
             % initialize
-            [population, fnceval_calls, bestobj, data.bestX] = initializeMT(Individual, sub_pop, Tasks, [Tasks.dims]);
-            data.convergence(:, 1) = bestobj;
+            [population, fnceval_calls, bestobj, bestX] = initializeMT(Individual, sub_pop, Tasks, [Tasks.dims]);
+            convergence(:, 1) = bestobj;
 
             generation = 1;
             while fnceval_calls < eva_num
@@ -127,9 +127,9 @@ classdef EMEA < Algorithm
                     [bestobj_offspring, idx] = min([offspring.factorial_costs]);
                     if bestobj_offspring < bestobj(t)
                         bestobj(t) = bestobj_offspring;
-                        data.bestX{t} = offspring(idx).rnvec;
+                        bestX{t} = offspring(idx).rnvec;
                     end
-                    data.convergence(t, generation) = bestobj(t);
+                    convergence(t, generation) = bestobj(t);
 
                     % selection
                     switch op
@@ -143,8 +143,8 @@ classdef EMEA < Algorithm
                     end
                 end
             end
-            data.convergence = gen2eva(data.convergence);
-            data.bestX = uni2real(data.bestX, Tasks);
+            data.convergence = gen2eva(convergence);
+            data.bestX = uni2real(bestX, Tasks);
         end
     end
 end

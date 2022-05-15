@@ -48,8 +48,8 @@ classdef MTEA_AD < Algorithm
             epsilon = zeros(1, length(Tasks)); % Parameter of the anomaly detection model
 
             % initialize
-            [population, fnceval_calls, bestobj, data.bestX] = initializeMT(Individual, sub_pop, Tasks, [Tasks.dims]);
-            data.convergence(:, 1) = bestobj;
+            [population, fnceval_calls, bestobj, bestX] = initializeMT(Individual, sub_pop, Tasks, [Tasks.dims]);
+            convergence(:, 1) = bestobj;
 
             generation = 1;
             while fnceval_calls < eva_num
@@ -114,13 +114,13 @@ classdef MTEA_AD < Algorithm
                     [bestobj_temp, idx] = min([population{t}.factorial_costs]);
                     if bestobj_temp < bestobj(t)
                         bestobj(t) = bestobj_temp;
-                        data.bestX{t} = population{t}(idx).rnvec;
+                        bestX{t} = population{t}(idx).rnvec;
                     end
-                    data.convergence(t, generation) = bestobj(t);
+                    convergence(t, generation) = bestobj(t);
                 end
             end
-            data.convergence = gen2eva(data.convergence);
-            data.bestX = uni2real(data.bestX, Tasks);
+            data.convergence = gen2eva(convergence);
+            data.bestX = uni2real(bestX, Tasks);
         end
     end
 end

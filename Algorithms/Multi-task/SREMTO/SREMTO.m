@@ -82,9 +82,9 @@ classdef SREMTO < Algorithm
                     end
                 end
                 bestobj(t) = population(rank(1)).factorial_costs(t);
-                data.bestX{t} = population(rank(1)).rnvec;
+                bestX{t} = population(rank(1)).rnvec;
             end
-            data.convergence(:, 1) = bestobj;
+            convergence(:, 1) = bestobj;
 
             generation = 1;
             while fnceval_calls < eva_num
@@ -115,7 +115,7 @@ classdef SREMTO < Algorithm
                     [bestobj_offspring, idx] = min(factorial_costs);
                     if bestobj_offspring < bestobj(t)
                         bestobj(t) = bestobj_offspring;
-                        data.bestX{t} = int_population(idx).rnvec;
+                        bestX{t} = int_population(idx).rnvec;
                     end
 
                     [~, rank] = sort(factorial_costs);
@@ -145,10 +145,10 @@ classdef SREMTO < Algorithm
                         end
                     end
                 end
-                data.convergence(:, generation) = bestobj;
+                convergence(:, generation) = bestobj;
             end
-            data.convergence = gen2eva(data.convergence);
-            data.bestX = uni2real(data.bestX, Tasks);
+            data.convergence = gen2eva(convergence);
+            data.bestX = uni2real(bestX, Tasks);
         end
     end
 end

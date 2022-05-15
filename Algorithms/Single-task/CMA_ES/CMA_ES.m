@@ -26,8 +26,8 @@ classdef CMA_ES < Algorithm
             sub_pop = run_parameter_list(1);
             sub_eva = run_parameter_list(2);
 
-            data.convergence = [];
-            data.bestX = {};
+            convergence = [];
+            bestX = {};
 
             for sub_task = 1:length(Tasks)
                 Task = Tasks(sub_task);
@@ -80,14 +80,14 @@ classdef CMA_ES < Algorithm
                     bestobj_now = population(rank(1)).factorial_costs;
                     if generation == 1
                         bestobj = bestobj_now;
-                        bestX = population(rank(1)).rnvec;
+                        bestX_temp = population(rank(1)).rnvec;
                     else
                         if bestobj_now < bestobj
                             bestobj = bestobj_now;
-                            bestX = population(rank(1)).rnvec;
+                            bestX_temp = population(rank(1)).rnvec;
                         end
                     end
-                    convergence(generation) = bestobj;
+                    converge_temp(generation) = bestobj;
 
                     % Update mean
                     Pstep = Pstep(rank, :);
@@ -108,10 +108,11 @@ classdef CMA_ES < Algorithm
                         C = V * max(E, 0) / V;
                     end
                 end
-                data.convergence = [data.convergence; convergence];
-                data.bestX = [data.bestX, bestX];
+                convergence = [convergence; converge_temp];
+                bestX = [bestX, bestX_temp];
             end
-            data.convergence = gen2eva(data.convergence);
+            data.convergence = gen2eva(convergence);
+            data.bestX = bestX;
         end
     end
 end

@@ -65,8 +65,8 @@ classdef DEORA < Algorithm
             rmp(logical(eye(size(rmp)))) = (1 - obj.rmp0);
 
             % initialize
-            [population, fnceval_calls, bestobj, data.bestX] = initializeMT(Individual, sub_pop, Tasks, max([Tasks.dims]) * ones(1, length(Tasks)));
-            data.convergence(:, 1) = bestobj;
+            [population, fnceval_calls, bestobj, bestX] = initializeMT(Individual, sub_pop, Tasks, max([Tasks.dims]) * ones(1, length(Tasks)));
+            convergence(:, 1) = bestobj;
 
             generation = 1;
             while fnceval_calls < eva_num
@@ -139,14 +139,13 @@ classdef DEORA < Algorithm
                 [bestobj_now, idx] = min([population{k}.factorial_costs]);
                 if bestobj_now < bestobj(k)
                     bestobj(k) = bestobj_now;
-                    data.bestX{k} = population{k}(idx).rnvec;
+                    bestX{k} = population{k}(idx).rnvec;
                 end
-                data.convergence(:, generation) = data.convergence(:, generation - 1);
-                data.convergence(k, generation) = bestobj(k);
+                convergence(:, generation) = convergence(:, generation - 1);
+                convergence(k, generation) = bestobj(k);
             end
-
-            data.convergence = gen2eva(data.convergence);
-            data.bestX = uni2real(data.bestX, Tasks);
+            data.convergence = gen2eva(convergence);
+            data.bestX = uni2real(bestX, Tasks);
         end
     end
 end

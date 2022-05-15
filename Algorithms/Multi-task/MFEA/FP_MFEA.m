@@ -37,9 +37,9 @@ classdef FP_MFEA < Algorithm
             eva_num = sub_eva * length(Tasks);
 
             % initialize
-            [population, fnceval_calls, bestobj, bestCV, data.bestX] = initializeCMF(Individual, pop_size, Tasks, max([Tasks.dims]));
-            data.convergence(:, 1) = bestobj;
-            data.convergence_cv(:, 1) = bestCV;
+            [population, fnceval_calls, bestobj, bestCV, bestX] = initializeCMF(Individual, pop_size, Tasks, max([Tasks.dims]));
+            convergence(:, 1) = bestobj;
+            convergence_cv(:, 1) = bestCV;
 
             generation = 1;
             while fnceval_calls < eva_num
@@ -50,13 +50,13 @@ classdef FP_MFEA < Algorithm
                 fnceval_calls = fnceval_calls + calls;
 
                 % selection
-                [population, bestobj, bestCV, data.bestX] = selectCMF(population, offspring, Tasks, pop_size, bestobj, bestCV, data.bestX);
-                data.convergence(:, generation) = bestobj;
-                data.convergence_cv(:, generation) = bestCV;
+                [population, bestobj, bestCV, bestX] = selectCMF(population, offspring, Tasks, pop_size, bestobj, bestCV, bestX);
+                convergence(:, generation) = bestobj;
+                convergence_cv(:, generation) = bestCV;
             end
-            data.convergence(data.convergence_cv > 0) = NaN;
-            data.convergence = gen2eva(data.convergence);
-            data.bestX = uni2real(data.bestX, Tasks);
+            data.convergence = gen2eva(convergence);
+            data.convergence_cv = gen2eva(convergence_cv);
+            data.bestX = uni2real(bestX, Tasks);
         end
     end
 end

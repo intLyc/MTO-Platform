@@ -57,8 +57,8 @@ classdef G_MFEA < Algorithm
             eva_num = sub_eva * length(Tasks);
 
             % initialize
-            [population, fnceval_calls, bestobj, data.bestX] = initializeMF(IndividualG, pop_size, Tasks, max([Tasks.dims]));
-            data.convergence(:, 1) = bestobj;
+            [population, fnceval_calls, bestobj, bestX] = initializeMF(IndividualG, pop_size, Tasks, max([Tasks.dims]));
+            convergence(:, 1) = bestobj;
 
             midnum = 0.5 * ones(1, max([Tasks.dims]));
             alpha = 0;
@@ -123,8 +123,8 @@ classdef G_MFEA < Algorithm
                 end
 
                 % selection
-                [population, bestobj, data.bestX] = selectMF(population, offspring, Tasks, pop_size, bestobj, data.bestX);
-                data.convergence(:, generation) = bestobj;
+                [population, bestobj, bestX] = selectMF(population, offspring, Tasks, pop_size, bestobj, bestX);
+                convergence(:, generation) = bestobj;
 
                 pop_rnvec = {};
                 pop_fit = {};
@@ -166,8 +166,8 @@ classdef G_MFEA < Algorithm
                     end
                 end
             end
-            data.convergence = gen2eva(data.convergence);
-            data.bestX = uni2real(data.bestX, Tasks);
+            data.convergence = gen2eva(convergence);
+            data.bestX = uni2real(bestX, Tasks);
         end
     end
 end

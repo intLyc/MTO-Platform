@@ -55,8 +55,8 @@ classdef EMaTO_MKT < Algorithm
             eva_num = sub_eva * length(Tasks);
 
             % initialize
-            [population, fnceval_calls, bestobj, data.bestX] = initializeMT(IndividualMKT, sub_pop, Tasks, max([Tasks.dims]) * ones(1, length(Tasks)));
-            data.convergence(:, 1) = bestobj;
+            [population, fnceval_calls, bestobj, bestX] = initializeMT(IndividualMKT, sub_pop, Tasks, max([Tasks.dims]) * ones(1, length(Tasks)));
+            convergence(:, 1) = bestobj;
 
             generation = 1;
             while fnceval_calls < eva_num
@@ -66,8 +66,8 @@ classdef EMaTO_MKT < Algorithm
                 if generation < 4
                     amp(1:length(Tasks)) = obj.amp0;
                 else
-                    temp1 = data.convergence(:, generation - 2)' - data.convergence(:, generation - 1)';
-                    temp2 = data.convergence(:, generation - 3)' - data.convergence(:, generation - 2)';
+                    temp1 = convergence(:, generation - 2)' - convergence(:, generation - 1)';
+                    temp2 = convergence(:, generation - 3)' - convergence(:, generation - 2)';
                     amp = temp1 ./ (temp1 + temp2);
                     amp(isnan(amp)) = obj.amp0;
                 end
@@ -98,13 +98,13 @@ classdef EMaTO_MKT < Algorithm
                     [bestobj_now, idx] = min([population{t}.factorial_costs]);
                     if bestobj_now < bestobj(t)
                         bestobj(t) = bestobj_now;
-                        data.bestX{t} = population{t}(idx).rnvec;
+                        bestX{t} = population{t}(idx).rnvec;
                     end
                 end
-                data.convergence(:, generation) = bestobj;
+                convergence(:, generation) = bestobj;
             end
-            data.convergence = gen2eva(data.convergence);
-            data.bestX = uni2real(data.bestX, Tasks);
+            data.convergence = gen2eva(convergence);
+            data.bestX = uni2real(bestX, Tasks);
         end
 
         function [clusterModel, population] = LEKT(obj, population, task_num, difference)

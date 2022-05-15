@@ -35,15 +35,15 @@ classdef PSO < Algorithm
             sub_pop = run_parameter_list(1);
             sub_eva = run_parameter_list(2);
 
-            data.convergence = [];
-            data.bestX = {};
+            convergence = [];
+            bestX = {};
 
             for sub_task = 1:length(Tasks)
                 Task = Tasks(sub_task);
 
                 % initialize
-                [population, fnceval_calls, bestobj, bestX] = initialize(IndividualPSO, sub_pop, Task, Task.dims);
-                convergence(1) = bestobj;
+                [population, fnceval_calls, bestobj, bestX_temp] = initialize(IndividualPSO, sub_pop, Task, Task.dims);
+                converge_temp(1) = bestobj;
                 % initialize pso
                 for i = 1:sub_pop
                     population(i).pbest = population(i).rnvec;
@@ -58,22 +58,22 @@ classdef PSO < Algorithm
                     w = obj.wmax - (obj.wmax - obj.wmin) * fnceval_calls / sub_eva;
 
                     % generation
-                    [population, calls] = OperatorPSO.generate(1, population, Task, w, obj.c1, obj.c2, bestX);
+                    [population, calls] = OperatorPSO.generate(1, population, Task, w, obj.c1, obj.c2, bestX_temp);
                     fnceval_calls = fnceval_calls + calls;
 
                     % update best
                     [bestobj_offspring, idx] = min([population.factorial_costs]);
                     if bestobj_offspring < bestobj
                         bestobj = bestobj_offspring;
-                        bestX = population(idx).rnvec;
+                        bestX_temp = population(idx).rnvec;
                     end
-                    convergence(generation) = bestobj;
+                    converge_temp(generation) = bestobj;
                 end
-                data.convergence = [data.convergence; convergence];
-                data.bestX = [data.bestX, bestX];
+                convergence = [convergence; converge_temp];
+                bestX = [bestX, bestX_temp];
             end
-            data.convergence = gen2eva(data.convergence);
-            data.bestX = uni2real(data.bestX, Tasks);
+            data.convergence = gen2eva(convergence);
+            data.bestX = uni2real(bestX, Tasks);
         end
     end
 end

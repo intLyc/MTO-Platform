@@ -40,9 +40,9 @@ classdef FP_AT_MFEA < Algorithm
             eva_num = sub_eva * length(Tasks);
 
             % initialize
-            [population, fnceval_calls, bestobj, bestCV, data.bestX] = initializeCMF(Individual, pop_size, Tasks, max([Tasks.dims]));
-            data.convergence(:, 1) = bestobj;
-            data.convergence_cv(:, 1) = bestCV;
+            [population, fnceval_calls, bestobj, bestCV, bestX] = initializeCMF(Individual, pop_size, Tasks, max([Tasks.dims]));
+            convergence(:, 1) = bestobj;
+            convergence_cv(:, 1) = bestCV;
             % initialize affine transformation
             [mu_tasks, Sigma_tasks] = InitialDistribution(population, length(Tasks));
 
@@ -55,16 +55,16 @@ classdef FP_AT_MFEA < Algorithm
                 fnceval_calls = fnceval_calls + calls;
 
                 % selection
-                [population, bestobj, bestCV, data.bestX] = selectCMF(population, offspring, Tasks, pop_size, bestobj, bestCV, data.bestX);
-                data.convergence(:, generation) = bestobj;
-                data.convergence_cv(:, generation) = bestCV;
+                [population, bestobj, bestCV, bestX] = selectCMF(population, offspring, Tasks, pop_size, bestobj, bestCV, bestX);
+                convergence(:, generation) = bestobj;
+                convergence_cv(:, generation) = bestCV;
 
                 % Updates of the progresisonal representation models
                 [mu_tasks, Sigma_tasks] = DistributionUpdate(mu_tasks, Sigma_tasks, population, length(Tasks));
             end
-            data.convergence(data.convergence_cv > 0) = NaN;
-            data.convergence = gen2eva(data.convergence);
-            data.bestX = uni2real(data.bestX, Tasks);
+            data.convergence = gen2eva(convergence);
+            data.convergence_cv = gen2eva(convergence_cv);
+            data.bestX = uni2real(bestX, Tasks);
         end
     end
 end

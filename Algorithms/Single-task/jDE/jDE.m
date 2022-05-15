@@ -42,15 +42,15 @@ classdef jDE < Algorithm
             sub_pop = run_parameter_list(1);
             sub_eva = run_parameter_list(2);
 
-            data.convergence = [];
-            data.bestX = {};
+            convergence = [];
+            bestX = {};
 
             for sub_task = 1:length(Tasks)
                 Task = Tasks(sub_task);
 
                 % initialize
-                [population, fnceval_calls, bestobj, bestX] = initialize(IndividualjDE, sub_pop, Task, Task.dims);
-                convergence(1) = bestobj;
+                [population, fnceval_calls, bestobj, bestX_temp] = initialize(IndividualjDE, sub_pop, Task, Task.dims);
+                converge_temp(1) = bestobj;
                 % initialize F and CR
                 for i = 1:length(population)
                     population(i).F = rand * 0.9 + 0.1;
@@ -71,15 +71,15 @@ classdef jDE < Algorithm
                     [bestobj_now, idx] = min([population.factorial_costs]);
                     if bestobj_now < bestobj
                         bestobj = bestobj_now;
-                        bestX = population(idx).rnvec;
+                        bestX_temp = population(idx).rnvec;
                     end
-                    convergence(generation) = bestobj;
+                    converge_temp(generation) = bestobj;
                 end
-                data.convergence = [data.convergence; convergence];
-                data.bestX = [data.bestX, bestX];
+                convergence = [convergence; converge_temp];
+                bestX = [bestX, bestX_temp];
             end
-            data.convergence = gen2eva(data.convergence);
-            data.bestX = uni2real(data.bestX, Tasks);
+            data.convergence = gen2eva(convergence);
+            data.bestX = uni2real(bestX, Tasks);
         end
     end
 end

@@ -89,8 +89,9 @@ classdef ECHT < Algorithm
             sub_pop = run_parameter_list(1);
             sub_eva = run_parameter_list(2);
 
-            data.convergence = [];
-            data.bestX = {};
+            convergence = [];
+            convergence_cv = [];
+            bestX = {};
 
             for sub_task = 1:length(Tasks)
                 Task = Tasks(sub_task);
@@ -98,9 +99,9 @@ classdef ECHT < Algorithm
                 ch_num = 3; % constraint handling techniques
 
                 % initialize
-                [population, fnceval_calls, bestobj, bestCV, bestX] = initializeECHT(Individual, sub_pop, Task, ch_num);
-                convergence_obj(:, 1) = bestobj;
-                convergence_cv(:, 1) = bestCV;
+                [population, fnceval_calls, bestobj, bestCV, bestX_temp] = initializeECHT(Individual, sub_pop, Task, ch_num);
+                converge_temp(:, 1) = bestobj;
+                converge_cv_temp(:, 1) = bestCV;
 
                 % Stochastic Ranking
                 Sr = obj.sr_max;
@@ -158,19 +159,20 @@ classdef ECHT < Algorithm
                         if bestCV_now <= bestCV(t) && bestobj_now <= bestobj(t)
                             bestobj(t) = bestobj_now;
                             bestCV(t) = bestCV_now;
-                            bestX{t} = population{t}(best_idx).rnvec;
+                            bestX_temp{t} = population{t}(best_idx).rnvec;
                         end
                     end
-                    convergence_obj(:, generation) = bestobj';
-                    convergence_cv(:, generation) = bestCV';
+                    converge_temp(:, generation) = bestobj;
+                    converge_cv_temp(:, generation) = bestCV;
                 end
-                convergence_obj(convergence_cv > 0) = NaN;
-                data.convergence = [data.convergence; nanmin(convergence_obj)];
-                [~, best_idx] = nanmin(convergence_obj(:, end));
-                data.bestX = [data.bestX, bestX{best_idx}];
+                [~, ~, best_idx] = min_FP(converge_temp(:, end), converge_cv_temp(:, end));
+                convergence = [convergence; converge_temp(best_idx, :)];
+                convergence_cv = [convergence_cv; converge_cv_temp(best_idx, :)];
+                bestX = [bestX, bestX_temp{best_idx}];
             end
-            data.convergence = gen2eva(data.convergence);
-            data.bestX = uni2real(data.bestX, Tasks);
+            data.convergence = gen2eva(convergence);
+            data.convergence_cv = gen2eva(convergence_cv);
+            data.bestX = uni2real(bestX, Tasks);
         end
     end
 end

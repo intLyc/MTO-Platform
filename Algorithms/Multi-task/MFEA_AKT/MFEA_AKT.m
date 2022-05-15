@@ -51,8 +51,8 @@ classdef MFEA_AKT < Algorithm
             eva_num = sub_eva * length(Tasks);
 
             % initialize
-            [population, fnceval_calls, bestobj, data.bestX] = initializeMF(IndividualAKT, pop_size, Tasks, max(Tasks.dims));
-            data.convergence(:, 1) = bestobj;
+            [population, fnceval_calls, bestobj, bestX] = initializeMF(IndividualAKT, pop_size, Tasks, max(Tasks.dims));
+            convergence(:, 1) = bestobj;
             % initialize akt
             cfb_record = [];
             for i = 1:pop_size
@@ -112,11 +112,11 @@ classdef MFEA_AKT < Algorithm
                 end
 
                 % selection
-                [population, bestobj, data.bestX] = selectMF(population, offspring, Tasks, pop_size, bestobj, data.bestX);
-                data.convergence(:, generation) = bestobj;
+                [population, bestobj, bestX] = selectMF(population, offspring, Tasks, pop_size, bestobj, bestX);
+                convergence(:, generation) = bestobj;
             end
-            data.convergence = gen2eva(data.convergence);
-            data.bestX = uni2real(data.bestX, Tasks);
+            data.convergence = gen2eva(convergence);
+            data.bestX = uni2real(bestX, Tasks);
         end
     end
 end

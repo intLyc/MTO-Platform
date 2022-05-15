@@ -47,8 +47,8 @@ classdef TLTLA < Algorithm
             eva_num = sub_eva * length(Tasks);
 
             % initialize
-            [population, fnceval_calls, bestobj, data.bestX] = initializeMF(Individual, pop_size, Tasks, max([Tasks.dims]));
-            data.convergence(:, 1) = bestobj;
+            [population, fnceval_calls, bestobj, bestX] = initializeMF(Individual, pop_size, Tasks, max([Tasks.dims]));
+            convergence(:, 1) = bestobj;
 
             generation = 1;
             while fnceval_calls < eva_num
@@ -59,7 +59,7 @@ classdef TLTLA < Algorithm
                 [offspring, calls] = OperatorMFEA.generate(1, population, Tasks, obj.rmp, obj.mu, obj.mum);
                 fnceval_calls = fnceval_calls + calls;
                 % selection
-                [population, bestobj, data.bestX] = selectMF(population, offspring, Tasks, pop_size, bestobj, data.bestX);
+                [population, bestobj, bestX] = selectMF(population, offspring, Tasks, pop_size, bestobj, bestX);
 
                 % Lower-level: Intra-task Knowledge Transfer
                 parent = randi(length(population));
@@ -113,10 +113,10 @@ classdef TLTLA < Algorithm
                     bestX{t} = population(parent).rnvec;
                 end
 
-                data.convergence(:, generation) = bestobj;
+                convergence(:, generation) = bestobj;
             end
-            data.convergence = gen2eva(data.convergence);
-            data.bestX = uni2real(data.bestX, Tasks);
+            data.convergence = gen2eva(convergence);
+            data.bestX = uni2real(bestX, Tasks);
         end
     end
 end

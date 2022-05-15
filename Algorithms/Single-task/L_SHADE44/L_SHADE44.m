@@ -57,10 +57,10 @@ classdef L_SHADE44 < Algorithm
             sub_pop = run_parameter_list(1);
             sub_eva = run_parameter_list(2);
 
-            data.convergence = [];
-            data.convergence_cv = [];
-            data.eva_gen = [];
-            data.bestX = {};
+            convergence = [];
+            convergence_cv = [];
+            eva_gen = [];
+            bestX = {};
 
             for sub_task = 1:length(Tasks)
                 Task = Tasks(sub_task);
@@ -71,10 +71,10 @@ classdef L_SHADE44 < Algorithm
                 pop_min = 4;
                 [population, fnceval_calls] = initialize(IndividualSHADE44, pop_init, Task, Task.dims);
                 [bestobj, bestCV, best_idx] = min_FP([population.factorial_costs], [population.constraint_violation]);
-                bestX = population(best_idx).rnvec;
-                convergence(1) = bestobj;
-                convergence_cv(1) = bestCV;
-                eva_gen(1) = fnceval_calls;
+                bestX_temp = population(best_idx).rnvec;
+                converge_temp(1) = bestobj;
+                converge_cv_temp(1) = bestCV;
+                eva_gen_temp(1) = fnceval_calls;
 
                 % initialize parameter
                 st_num = 4;
@@ -168,20 +168,20 @@ classdef L_SHADE44 < Algorithm
                     if bestCV_now <= bestCV && bestobj_now <= bestobj
                         bestobj = bestobj_now;
                         bestCV = bestCV_now;
-                        bestX = population(best_idx).rnvec;
+                        bestX_temp = population(best_idx).rnvec;
                     end
-                    convergence(generation) = bestobj;
-                    convergence_cv(generation) = bestCV;
-                    eva_gen(generation) = fnceval_calls;
+                    converge_temp(generation) = bestobj;
+                    converge_cv_temp(generation) = bestCV;
+                    eva_gen_temp(generation) = fnceval_calls;
                 end
-                data.convergence = [data.convergence; convergence];
-                data.convergence_cv = [data.convergence_cv; convergence_cv];
-                data.eva_gen = [data.eva_gen; eva_gen];
-                data.bestX = [data.bestX, bestX];
+                convergence = [convergence; converge_temp];
+                convergence_cv = [convergence_cv; converge_cv_temp];
+                eva_gen = [eva_gen; eva_gen_temp];
+                bestX = [bestX, bestX_temp];
             end
-            data.convergence(data.convergence_cv > 0) = NaN;
-            data.convergence = gen2eva(data.convergence, data.eva_gen);
-            data.bestX = uni2real(data.bestX, Tasks);
+            data.convergence = gen2eva(convergence, eva_gen);
+            data.convergence = gen2eva(convergence_cv, eva_gen);
+            data.bestX = uni2real(bestX, Tasks);
         end
     end
 end
