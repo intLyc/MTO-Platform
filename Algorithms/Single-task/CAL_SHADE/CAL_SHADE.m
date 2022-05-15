@@ -45,15 +45,6 @@ classdef CAL_SHADE < Algorithm
             obj.ep_cp = str2double(parameter_cell{count}); count = count + 1;
         end
 
-        function flag = compare_EC(obj, obj_pair, cv_pair, Ep)
-            % Epsilon Constraint Compare
-            flag = false;
-            if cv_pair(1) > cv_pair(2) || ...
-                    (cv_pair(1) <= Ep && cv_pair(2) <= Ep && obj_pair(1) > obj_pair(2))
-                flag = true;
-            end
-        end
-
         function data = run(obj, Tasks, run_parameter_list)
             sub_pop = run_parameter_list(1);
             sub_eva = run_parameter_list(2);
@@ -121,12 +112,10 @@ classdef CAL_SHADE < Algorithm
                     fnceval_calls = fnceval_calls + calls;
 
                     % selection
-                    replace = false(1, length(population));
-                    for i = 1:length(population)
-                        obj_pair = [population(i).factorial_costs, offspring(i).factorial_costs];
-                        cv_pair = [population(i).constraint_violation, offspring(i).constraint_violation];
-                        replace(i) = obj.compare_EC(obj_pair, cv_pair, Ep);
-                    end
+                    replace_cv = [population.constraint_violation] > [offspring.constraint_violation];
+                    equal_cv = [population.constraint_violation] <= Ep & [offspring.constraint_violation] <= Ep;
+                    replace_obj = [population.factorial_costs] > [offspring.factorial_costs];
+                    replace = (equal_cv & replace_obj) | replace_cv;
 
                     % calculate SF SCR
                     SF = [population(replace).F];
