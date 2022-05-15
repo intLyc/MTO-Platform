@@ -62,8 +62,8 @@ classdef CAL_SHADE < Algorithm
                 % pop_init = Task.dims * 2;
                 pop_init = sub_pop;
                 pop_min = 4;
-                [population, fnceval_calls] = initialize(IndividualSHADE44, pop_init, Task, Task.dims);
-                [bestobj, bestCV, best_idx] = min_FP([popualtion.factorial_costs], [popualtion.constraint_violation]);
+                [population, fnceval_calls] = initialize(IndividualJADE, pop_init, Task, Task.dims);
+                [bestobj, bestCV, best_idx] = min_FP([population.factorial_costs], [population.constraint_violation]);
                 bestX = population(best_idx).rnvec;
                 convergence(1) = bestobj;
                 convergence_cv(1) = bestCV;
