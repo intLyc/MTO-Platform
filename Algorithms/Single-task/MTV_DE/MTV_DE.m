@@ -78,7 +78,7 @@ classdef MTV_DE < Algorithm
 
                     % selection
                     replace_cv = [population.constraint_violation] > [offspring.constraint_violation];
-                    equal_cv = [population.constraint_violation] == [offspring.constraint_violation];
+                    equal_cv = [population.constraint_violation] <= 0 & [offspring.constraint_violation] <= 0;
                     replace_obj = [population.factorial_costs] > [offspring.factorial_costs];
                     replace = (equal_cv & replace_obj) | replace_cv;
 

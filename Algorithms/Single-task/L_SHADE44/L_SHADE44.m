@@ -140,8 +140,8 @@ classdef L_SHADE44 < Algorithm
                         SCR = [population(replace & k_idx).CR];
                         dif = abs([population(replace & k_idx).constraint_violation] - [offspring(replace & k_idx).constraint_violation]);
                         dif_obj = abs([population(replace & k_idx).factorial_costs] - [offspring(replace & k_idx).factorial_costs]);
-                        zero_cv = [population(replace & k_idx).constraint_violation] == 0 & ...
-                            [offspring(replace & k_idx).constraint_violation] == 0;
+                        zero_cv = [population(replace & k_idx).constraint_violation] <= 0 & ...
+                            [offspring(replace & k_idx).constraint_violation] <= 0;
                         dif(zero_cv) = dif_obj(zero_cv);
                         dif = dif ./ sum(dif);
                         % update MF MCR

@@ -57,7 +57,7 @@ classdef ECHT < Algorithm
             % Feasible Priority Compare
             flag = false;
             if cv_pair(1) > cv_pair(2) || ...
-                    (0 == cv_pair(1) && 0 == cv_pair(2) && obj_pair(1) > obj_pair(2))
+                    (cv_pair(1) <= 0 && cv_pair(2) <= 0 && obj_pair(1) > obj_pair(2))
                 flag = true;
             end
         end
@@ -65,7 +65,7 @@ classdef ECHT < Algorithm
         function flag = compare_SR(obj, obj_pair, cv_pair, Sr)
             % Stochastic Ranking Compare
             flag = false;
-            if ((0 == cv_pair(1) && 0 == cv_pair(2)) || rand() < Sr)
+            if ((cv_pair(1) <= 0 && cv_pair(2) <= 0) || rand() < Sr)
                 if obj_pair(1) > obj_pair(2)
                     flag = true;
                 end
