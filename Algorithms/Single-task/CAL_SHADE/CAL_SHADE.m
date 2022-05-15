@@ -62,13 +62,11 @@ classdef CAL_SHADE < Algorithm
                 % pop_init = Task.dims * 2;
                 pop_init = sub_pop;
                 pop_min = 4;
-                [population, fnceval_calls, bestobj, bestX] = initialize(IndividualJADE, pop_init, Task, Task.dims);
-                bestCV = min([population.constraint_violation]);
-                pop_temp = population([population.constraint_violation] == bestCV);
-                [bestobj, idx] = min([pop_temp.factorial_costs]);
-                bestX = pop_temp(idx).rnvec;
+                [population, fnceval_calls] = initialize(IndividualSHADE44, pop_init, Task, Task.dims);
+                [bestobj, bestCV, best_idx] = min_FP([popualtion.factorial_costs], [popualtion.constraint_violation]);
+                bestX = population(best_idx).rnvec;
                 convergence(1) = bestobj;
-                convergence_cv(1) = pop_temp(idx).constraint_violation;
+                convergence_cv(1) = bestCV;
                 eva_gen(1) = fnceval_calls;
 
                 % initialize parameter
@@ -149,13 +147,11 @@ classdef CAL_SHADE < Algorithm
                     [~, rank] = sortrows([cv_list', obj_list'], [1, 2]);
                     population = population(rank(1:pop_size));
 
-                    bestCV_now = min([population.constraint_violation]);
-                    pop_temp = population([population.constraint_violation] == bestCV_now);
-                    [bestobj_now, idx] = min([pop_temp.factorial_costs]);
-                    if bestCV_now <= bestCV && bestobj_now < bestobj
+                    [bestobj_now, bestCV_now, best_idx] = min_FP([population.factorial_costs], [population.constraint_violation]);
+                    if bestCV_now <= bestCV && bestobj_now <= bestobj
                         bestobj = bestobj_now;
                         bestCV = bestCV_now;
-                        bestX = pop_temp(idx).rnvec;
+                        bestX = population(best_idx).rnvec;
                     end
                     convergence(generation) = bestobj;
                     convergence_cv(generation) = bestCV;

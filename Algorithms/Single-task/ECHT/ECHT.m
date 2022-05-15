@@ -155,13 +155,11 @@ classdef ECHT < Algorithm
                             end
                             population{t}(replace) = offspring_temp(replace);
                         end
-                        bestCV_now = min([population{t}.constraint_violation]);
-                        pop_temp = population{t}([population{t}.constraint_violation] == bestCV_now);
-                        [bestobj_now, idx] = min([pop_temp.factorial_costs]);
-                        if bestCV_now <= bestCV(t) && bestobj_now < bestobj(t)
+                        [bestobj_now, bestCV_now, best_idx] = min_FP([population{t}.factorial_costs], [population{t}.constraint_violation]);
+                        if bestCV_now <= bestCV(t) && bestobj_now <= bestobj(t)
                             bestobj(t) = bestobj_now;
                             bestCV(t) = bestCV_now;
-                            bestX{k} = pop_temp(idx).rnvec;
+                            bestX{t} = population{t}(best_idx).rnvec;
                         end
                     end
                     convergence_obj(:, generation) = bestobj';

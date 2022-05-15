@@ -17,10 +17,8 @@ function [population, calls, bestobj, bestCV, bestX] = initializeECHT(Individual
     [pop_temp, cal] = evaluate(pop_temp, Task, 1);
     calls = calls + cal;
 
-    bestCV_temp = min([pop_temp.constraint_violation]);
-    idx = find([pop_temp.constraint_violation] == bestCV_temp);
-    [bestobj_temp, best_idx] = min([pop_temp(idx).factorial_costs]);
-    bestX_temp = pop_temp(idx(best_idx)).rnvec;
+    [bestobj_temp, bestCV_temp, best_idx] = min_FP([pop_temp.factorial_costs], [pop_temp.constraint_violation]);
+    bestX_temp = pop_temp(best_idx).rnvec;
 
     for t = 1:task_num
         population{t} = pop_temp;

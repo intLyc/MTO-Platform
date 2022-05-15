@@ -42,20 +42,17 @@ classdef EP_DE < Algorithm
                 Task = Tasks(sub_task);
 
                 % initialize
-                [population, fnceval_calls, bestobj, bestX] = initialize(Individual, sub_pop, Task, Task.dims);
+                [population, fnceval_calls] = initialize(Individual, pop_init, Task, Task.dims);
+                [bestobj, bestCV, best_idx] = min_FP([popualtion.factorial_costs], [popualtion.constraint_violation]);
+                bestX = population(best_idx).rnvec;
+                convergence(1) = bestobj;
+                convergence_cv(1) = bestCV;
 
                 n = ceil(0.05 * length(population));
                 cv_temp = [population.constraint_violation];
                 [~, idx] = sort(cv_temp);
                 ep0 = cv_temp(idx(n));
                 Tc = round(0.2 * sub_eva / sub_pop);
-
-                bestCV = min([population.constraint_violation]);
-                pop_temp = population([population.constraint_violation] == bestCV);
-                [bestobj, idx] = min([pop_temp.factorial_costs]);
-                bestX = pop_temp(idx).rnvec;
-                convergence(1) = bestobj;
-                convergence_cv(1) = pop_temp(idx).constraint_violation;
 
                 generation = 1;
                 while fnceval_calls < sub_eva
@@ -79,13 +76,11 @@ classdef EP_DE < Algorithm
 
                     population(replace) = offspring(replace);
 
-                    bestCV_now = min([population.constraint_violation]);
-                    pop_temp = population([population.constraint_violation] == bestCV_now);
-                    [bestobj_now, idx] = min([pop_temp.factorial_costs]);
-                    if bestCV_now <= bestCV && bestobj_now < bestobj
+                    [bestobj_now, bestCV_now, best_idx] = min_FP([population.factorial_costs], [population.constraint_violation]);
+                    if bestCV_now <= bestCV && bestobj_now <= bestobj
                         bestobj = bestobj_now;
                         bestCV = bestCV_now;
-                        bestX = pop_temp(idx).rnvec;
+                        bestX = population(best_idx).rnvec;
                     end
                     convergence(generation) = bestobj;
                     convergence_cv(generation) = bestCV;
