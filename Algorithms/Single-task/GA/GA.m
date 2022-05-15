@@ -1,5 +1,5 @@
 classdef GA < Algorithm
-    % <Single> <None>
+    % <Single> <None/Constrained>
 
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
@@ -31,13 +31,17 @@ classdef GA < Algorithm
             tic
 
             data.convergence = [];
+            data.convergence_cv = [];
             data.bestX = {};
 
             for sub_task = 1:length(Tasks)
                 Task = Tasks(sub_task);
 
-                [population, fnceval_calls, bestobj, bestX] = initialize(Individual, sub_pop, Task, Task.dims);
+                [population, fnceval_calls] = initialize(Individual, sub_pop, Task, Task.dims);
+                [bestobj, bestCV, best_idx] = min_FP([population.factorial_costs], [population.constraint_violation]);
+                bestX = population(best_idx).rnvec;
                 convergence(1) = bestobj;
+                convergence_cv(1) = bestCV;
 
                 generation = 1;
                 while fnceval_calls < sub_eva
@@ -49,18 +53,23 @@ classdef GA < Algorithm
 
                     % selection
                     population = [population, offspring];
-                    [~, rank] = sort([population.factorial_costs]);
+                    [~, rank] = sortrows([[population.constraint_violation]', [population.factorial_costs]'], [1, 2]);
                     population = population(rank(1:sub_pop));
-                    [bestobj_now, idx] = min([population.factorial_costs]);
-                    if bestobj_now < bestobj
+
+                    [bestobj_now, bestCV_now, best_idx] = min_FP([population.factorial_costs], [population.constraint_violation]);
+                    if bestCV_now <= bestCV && bestobj_now <= bestobj
                         bestobj = bestobj_now;
-                        bestX = population(idx).rnvec;
+                        bestCV = bestCV_now;
+                        bestX = population(best_idx).rnvec;
                     end
                     convergence(generation) = bestobj;
+                    convergence_cv(generation) = bestCV;
                 end
                 data.convergence = [data.convergence; convergence];
+                data.convergence_cv = [data.convergence_cv; convergence_cv];
                 data.bestX = [data.bestX, bestX];
             end
+            data.convergence(data.convergence_cv > 0) = NaN;
             data.convergence = gen2eva(data.convergence);
             data.bestX = uni2real(data.bestX, Tasks);
             data.clock_time = toc;
