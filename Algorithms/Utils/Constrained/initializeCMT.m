@@ -20,9 +20,7 @@ function [population, calls, bestobj, bestCV, bestX] = initializeCMT(Individual_
         [population{t}, cal] = evaluate(population{t}, Tasks(t), 1);
         calls = calls + cal;
 
-        bestCV(t) = min([population{t}.constraint_violation]);
-        idx = find([population{t}.constraint_violation] == bestCV(t));
-        [bestobj(t), best_idx] = min([population{t}(idx).factorial_costs]);
-        bestX{t} = population{t}(idx(best_idx)).rnvec;
+        [bestobj(t), bestCV(t), best_idx] = min_FP([population{t}.factorial_costs], [population{t}.constraint_violation]);
+        bestX{t} = population{t}(best_idx);
     end
 end

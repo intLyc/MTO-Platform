@@ -15,7 +15,7 @@ function [population, bestobj, bestCV, bestX] = selectCMF(population, offspring,
         type = 'Feasible_Priority'; % unified [0, 1]
     elseif n == 2
         type = varargin{1};
-        sr = varargin{2};
+        var = varargin{2};
     end
 
     population = [population, offspring];
@@ -25,22 +25,20 @@ function [population, bestobj, bestCV, bestX] = selectCMF(population, offspring,
             factorial_costs(i) = population(i).factorial_costs(t);
             constraint_violation(i) = population(i).constraint_violation(t);
         end
-        [~, rank_cv] = sort(constraint_violation);
-        bestCV_now = constraint_violation(rank_cv(1));
-        idx = find(constraint_violation == bestCV_now);
-        [bestobj_now, best_idx] = min(factorial_costs(idx));
-
-        if bestCV_now < bestCV(t) || (bestCV_now == bestCV(t) && bestobj_now < bestobj(t))
+        [bestobj_now, bestCV_now, best_idx] = min_FP(factorial_costs, constraint_violation);
+        if bestCV_now <= bestCV(t) && bestobj_now <= bestobj(t)
             bestobj(t) = bestobj_now;
             bestCV(t) = bestCV_now;
-            bestX{t} = population(idx(best_idx)).rnvec;
+            bestX{t} = population(best_idx).rnvec;
         end
 
         switch type
             case 'Feasible_Priority'
                 rank = sort_FP(factorial_costs, constraint_violation);
             case 'Stochastic_Ranking'
-                rank = sort_SR(factorial_costs, constraint_violation, sr);
+                rank = sort_SR(factorial_costs, constraint_violation, var);
+            case 'Epsilon_Constraint'
+                rank = sort_EC(factorial_costs, constraint_violation, var);
         end
         for i = 1:length(population)
             population(rank(i)).factorial_ranks(t) = i;

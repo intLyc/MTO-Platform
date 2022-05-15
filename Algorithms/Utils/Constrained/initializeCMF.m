@@ -15,7 +15,7 @@ function [population, calls, bestobj, bestCV, bestX] = initializeCMF(Individual_
         type = 'Feasible_Priority'; % unified [0, 1]
     elseif n == 2
         type = varargin{1};
-        sr = varargin{2};
+        var = varargin{2};
     end
 
     for i = 1:pop_size
@@ -35,17 +35,16 @@ function [population, calls, bestobj, bestCV, bestX] = initializeCMF(Individual_
             factorial_costs(i) = population(i).factorial_costs(t);
             constraint_violation(i) = population(i).constraint_violation(t);
         end
-        [~, rank_cv] = sort(constraint_violation);
-        bestCV(t) = constraint_violation(rank_cv(1));
-        idx = find(constraint_violation == bestCV(t));
-        [bestobj(t), best_idx] = min(factorial_costs(idx));
-        bestX{t} = population(idx(best_idx)).rnvec;
+        [bestobj(t), bestCV(t), best_idx] = min_FP(factorial_costs, constraint_violation);
+        bestX{t} = population(best_idx).rnvec;
 
         switch type
             case 'Feasible_Priority'
                 rank = sort_FP(factorial_costs, constraint_violation);
             case 'Stochastic_Ranking'
-                rank = sort_SR(factorial_costs, constraint_violation, sr);
+                rank = sort_SR(factorial_costs, constraint_violation, var);
+            case 'Epsilon_Constraint'
+                rank = sort_EC(factorial_costs, constraint_violation, var);
         end
         for i = 1:length(population)
             population(rank(i)).factorial_ranks(t) = i;
