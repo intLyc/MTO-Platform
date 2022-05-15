@@ -59,8 +59,8 @@ classdef MTV_DE < Algorithm
                 Task = Tasks(sub_task);
 
                 % initialize
-                [population, fnceval_calls] = initialize(Individual, pop_init, Task, Task.dims);
-                [bestobj, bestCV, best_idx] = min_FP([popualtion.factorial_costs], [popualtion.constraint_violation]);
+                [population, fnceval_calls] = initialize(Individual, sub_pop, Task, Task.dims);
+                [bestobj, bestCV, best_idx] = min_FP([population.factorial_costs], [population.constraint_violation]);
                 bestX = population(best_idx).rnvec;
                 convergence(1) = bestobj;
                 convergence_cv(1) = bestCV;
