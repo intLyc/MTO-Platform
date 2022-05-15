@@ -50,7 +50,6 @@ classdef SBO < Algorithm
             sub_eva = run_parameter_list(2);
             pop_size = sub_pop * length(Tasks);
             eva_num = sub_eva * length(Tasks);
-            tic
 
             RIJ = 0.5 * ones(length(Tasks), length(Tasks)); % transfer rates
             MIJ = ones(length(Tasks), length(Tasks)); % benefit and benefit
@@ -171,7 +170,6 @@ classdef SBO < Algorithm
             end
             data.convergence = gen2eva(data.convergence);
             data.bestX = uni2real(data.bestX, Tasks);
-            data.clock_time = toc;
         end
     end
 end

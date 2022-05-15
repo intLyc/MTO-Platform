@@ -56,7 +56,6 @@ classdef DEORA < Algorithm
             sub_eva = run_parameter_list(2);
             pop_size = sub_pop * length(Tasks);
             eva_num = sub_eva * length(Tasks);
-            tic
 
             HR = []; % HR is used to store the historical rewards
             gen = (eva_num - (pop_size * length(Tasks) - 1)) / pop_size;
@@ -148,7 +147,6 @@ classdef DEORA < Algorithm
 
             data.convergence = gen2eva(data.convergence);
             data.bestX = uni2real(data.bestX, Tasks);
-            data.clock_time = toc;
         end
     end
 end

@@ -51,7 +51,6 @@ classdef MFMP < Algorithm
             sub_pop = run_parameter_list(1);
             sub_eva = run_parameter_list(2);
             eva_num = sub_eva * length(Tasks);
-            tic
 
             SR(:, 1) = ones(length(Tasks), 1);
             rmp(:, 1) = 0.5 * ones(length(Tasks), 1);
@@ -170,7 +169,6 @@ classdef MFMP < Algorithm
             end
             data.convergence = gen2eva(data.convergence);
             data.bestX = uni2real(data.bestX, Tasks);
-            data.clock_time = toc;
         end
     end
 end

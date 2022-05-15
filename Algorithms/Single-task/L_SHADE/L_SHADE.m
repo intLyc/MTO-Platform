@@ -39,7 +39,6 @@ classdef L_SHADE < Algorithm
         function data = run(obj, Tasks, run_parameter_list)
             sub_pop = run_parameter_list(1);
             sub_eva = run_parameter_list(2);
-            tic
 
             data.convergence = [];
             data.eva_gen = [];
@@ -135,7 +134,6 @@ classdef L_SHADE < Algorithm
             end
             data.convergence = gen2eva(data.convergence, data.eva_gen);
             data.bestX = uni2real(data.bestX, Tasks);
-            data.clock_time = toc;
         end
     end
 end

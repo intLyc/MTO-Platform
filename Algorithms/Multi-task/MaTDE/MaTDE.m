@@ -64,7 +64,6 @@ classdef MaTDE < Algorithm
             sub_eva = run_parameter_list(2);
             pop_size = sub_pop * length(Tasks);
             eva_num = sub_eva * length(Tasks);
-            tic
 
             archive = cell(1, length(Tasks));
             possibility = zeros(length(Tasks), length(Tasks));
@@ -139,7 +138,6 @@ classdef MaTDE < Algorithm
             end
             data.convergence = gen2eva(data.convergence);
             data.bestX = uni2real(data.bestX, Tasks);
-            data.clock_time = toc;
         end
 
         function [num, possibility] = adaptivechoose(obj, task_num, no_of_tasks, archive, reward, possibility, Tasks)

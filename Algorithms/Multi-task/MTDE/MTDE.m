@@ -47,7 +47,6 @@ classdef MTDE < Algorithm
             sub_eva = run_parameter_list(2);
             pop_size = sub_pop * length(Tasks);
             eva_num = sub_eva * length(Tasks);
-            tic
 
             gen = (eva_num - (pop_size * length(Tasks) - 1)) / pop_size;
             delta_rmp = 1 / gen;
@@ -115,7 +114,6 @@ classdef MTDE < Algorithm
             end
             data.convergence = gen2eva(data.convergence);
             data.bestX = uni2real(data.bestX, Tasks);
-            data.clock_time = toc;
         end
     end
 end

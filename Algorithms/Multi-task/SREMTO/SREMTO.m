@@ -49,7 +49,6 @@ classdef SREMTO < Algorithm
             sub_eva = run_parameter_list(2);
             pop_size = sub_pop * length(Tasks);
             eva_num = sub_eva * length(Tasks);
-            tic
 
             a1 = (obj.TH - 1) ./ (sub_pop - 1);
             b1 = (sub_pop - obj.TH) ./ (sub_pop - 1);
@@ -150,7 +149,6 @@ classdef SREMTO < Algorithm
             end
             data.convergence = gen2eva(data.convergence);
             data.bestX = uni2real(data.bestX, Tasks);
-            data.clock_time = toc;
         end
     end
 end

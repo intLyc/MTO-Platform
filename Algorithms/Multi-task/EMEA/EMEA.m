@@ -58,7 +58,6 @@ classdef EMEA < Algorithm
             sub_eva = run_parameter_list(2);
             pop_size = sub_pop * length(Tasks);
             eva_num = sub_eva * length(Tasks);
-            tic
 
             op_list = split(obj.Op, '/');
 
@@ -146,7 +145,6 @@ classdef EMEA < Algorithm
             end
             data.convergence = gen2eva(data.convergence);
             data.bestX = uni2real(data.bestX, Tasks);
-            data.clock_time = toc;
         end
     end
 end

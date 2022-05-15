@@ -53,7 +53,6 @@ classdef EMaTO_MKT < Algorithm
             sub_eva = run_parameter_list(2);
             pop_size = sub_pop * length(Tasks);
             eva_num = sub_eva * length(Tasks);
-            tic
 
             % initialize
             [population, fnceval_calls, bestobj, data.bestX] = initializeMT(IndividualMKT, sub_pop, Tasks, max([Tasks.dims]) * ones(1, length(Tasks)));
@@ -106,7 +105,6 @@ classdef EMaTO_MKT < Algorithm
             end
             data.convergence = gen2eva(data.convergence);
             data.bestX = uni2real(data.bestX, Tasks);
-            data.clock_time = toc;
         end
 
         function [clusterModel, population] = LEKT(obj, population, task_num, difference)

@@ -25,7 +25,6 @@ classdef CMA_ES < Algorithm
         function data = run(obj, Tasks, run_parameter_list)
             sub_pop = run_parameter_list(1);
             sub_eva = run_parameter_list(2);
-            tic
 
             data.convergence = [];
             data.bestX = {};
@@ -113,7 +112,6 @@ classdef CMA_ES < Algorithm
                 data.bestX = [data.bestX, bestX];
             end
             data.convergence = gen2eva(data.convergence);
-            data.clock_time = toc;
         end
     end
 end

@@ -28,7 +28,6 @@ classdef GA < Algorithm
         function data = run(obj, Tasks, run_parameter_list)
             sub_pop = run_parameter_list(1);
             sub_eva = run_parameter_list(2);
-            tic
 
             data.convergence = [];
             data.convergence_cv = [];
@@ -72,7 +71,6 @@ classdef GA < Algorithm
             data.convergence(data.convergence_cv > 0) = NaN;
             data.convergence = gen2eva(data.convergence);
             data.bestX = uni2real(data.bestX, Tasks);
-            data.clock_time = toc;
         end
     end
 end

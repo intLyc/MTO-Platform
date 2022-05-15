@@ -44,7 +44,6 @@ classdef MTEA_AD < Algorithm
             sub_eva = run_parameter_list(2);
             pop_size = sub_pop * length(Tasks);
             eva_num = sub_eva * length(Tasks);
-            tic
 
             epsilon = zeros(1, length(Tasks)); % Parameter of the anomaly detection model
 
@@ -122,7 +121,6 @@ classdef MTEA_AD < Algorithm
             end
             data.convergence = gen2eva(data.convergence);
             data.bestX = uni2real(data.bestX, Tasks);
-            data.clock_time = toc;
         end
     end
 end
