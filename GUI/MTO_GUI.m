@@ -1506,16 +1506,17 @@ classdef MTO_GUI < matlab.apps.AppBase
                             % check pause and stop
                             app.EcheckPauseStopStatus();
                             % run
+                            tStart = tic;
                             data = singleRun(app.EAlgorithmsTree.Children(algo).NodeData, app.EProblemsTree.Children(prob).NodeData);
-                            app.Edata.result(prob, algo).clock_time = app.Edata.result(prob, algo).clock_time + data.clock_time;
+                            app.Edata.result(prob, algo).clock_time = app.Edata.result(prob, algo).clock_time + toc(tStart);
                             if app.Edata.result(prob, algo).convergence
                                 gen_old = size(app.Edata.result(prob, algo).convergence, 2);
                                 gen_new = size(data.convergence, 2);
                                 if gen_old < gen_new
                                     app.Edata.result(prob, algo).convergence = [app.Edata.result(prob, algo).convergence, repmat(app.Edata.result(prob, algo).convergence(:, gen_old), 1, gen_new-gen_old)];
-                                    else
+                                else
                                     data.convergence = [data.convergence, repmat(data.convergence(:, gen_new), 1, gen_old-gen_new)];
-                                    end
+                                end
                                 app.Edata.result(prob, algo).convergence = [app.Edata.result(prob, algo).convergence; data.convergence];
                             else
                                 app.Edata.result(prob, algo).convergence = data.convergence;
@@ -1538,13 +1539,13 @@ classdef MTO_GUI < matlab.apps.AppBase
                     for algo = 1:algo_num
                         algo_obj = app.EAlgorithmsTree.Children(algo).NodeData;
                         prob_obj = app.EProblemsTree.Children(prob).NodeData;
-                        clock_time = 0;
                         convergence = {};
-                        %                         convergence_fr = {};
                         bestX = {};
+                        par_tool = Par(reps);
                         parfor rep = 1:reps
+                            Par.tic
                             data = singleRun(algo_obj, prob_obj);
-                            clock_time = clock_time + data.clock_time;
+                            par_tool(rep) = Par.toc;
                             convergence = [convergence; {data.convergence}];
                             bestX = [bestX; data.bestX];
                         end
@@ -1554,12 +1555,12 @@ classdef MTO_GUI < matlab.apps.AppBase
                             gen_new = size(convergence{rep}, 2);
                             if gen_old < gen_new
                                 app.Edata.result(prob, algo).convergence = [app.Edata.result(prob, algo).convergence, repmat(app.Edata.result(prob, algo).convergence(:, gen_old), 1, gen_new-gen_old)];
-                                else
+                            else
                                 convergence{rep} = [convergence{rep}, repmat(convergence{rep}(:, gen_new), 1, gen_old-gen_new)];
-                                end
+                            end
                             app.Edata.result(prob, algo).convergence = [app.Edata.result(prob, algo).convergence; convergence{rep}];
                         end
-                        app.Edata.result(prob, algo).clock_time = clock_time;
+                        app.Edata.result(prob, algo).clock_time = sum([par_tool.ItStop]- [par_tool.ItStart]);
                         app.Edata.result(prob, algo).bestX = bestX;
                         app.Etable_reps(prob, algo) = reps;
                         app.EupdateTableReps();
