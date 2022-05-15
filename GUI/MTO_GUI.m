@@ -149,7 +149,9 @@ classdef MTO_GUI < matlab.apps.AppBase
         Edata % data
         Estop_flag % stop button clicked flag
         Efitness % fitness calculated
+        Efitness_cv % constraint violation
         Eminfitness % competitive fitness calculated
+        Eminfitness_cv
         Etime_used % time_used calculated
         Etable_data % table data for calculate
         Etable_view % table data view
@@ -556,7 +558,9 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
             
             app.Efitness = [];
+            app.Efitness_cv = [];
             app.Eminfitness = [];
+            app.Eminfitness_cv = [];
             app.Etime_used = [];
             % calculate fitness
             for algo = 1:length(app.Edata.algo_cell)
@@ -569,11 +573,18 @@ classdef MTO_GUI < matlab.apps.AppBase
                         if isfield(app.Edata.result(prob, algo), 'convergence_cv')
                             convergence_cv_task = app.Edata.result(prob, algo).convergence_cv(task:tasks_num:end, :);
                             convergence_task(convergence_cv_task>0) = NaN;
+                        else
+                            convergence_cv_task = zeros(size(app.Edata.result(prob, algo).convergence(task:tasks_num:end, :)));
                         end
                         app.Efitness(row_i, algo, :) = convergence_task(:, end);
+                        app.Efitness_cv(row_i, algo, :) = convergence_cv_task(:, end);
                         row_i = row_i + 1;
                     end
-                    app.Eminfitness(prob, algo, :) = min(app.Efitness(temp_i:temp_i+tasks_num-1, algo, :), [], 1);
+                    [app.Eminfitness(prob, algo, :), min_idx] = min(app.Efitness(temp_i:temp_i+tasks_num-1, algo, :), [], 1);
+                    min_cv_temp = app.Efitness(temp_i:temp_i+tasks_num-1, algo, :);
+                    for i = 1:length(min_idx)
+                        app.Eminfitness_cv(prob, algo, i) = min_cv_temp(min_idx(i), i);
+                    end
                     app.Etime_used(prob, algo) = app.Edata.result(prob, algo).clock_time;
                 end
             end
@@ -594,8 +605,10 @@ classdef MTO_GUI < matlab.apps.AppBase
             
             if strcmp(app.EDataTypeDropDown.Value, 'Obj')
                 data_fitness = app.Efitness;
+                data_fitness_cv = app.Efitness_cv;
             elseif strcmp(app.EDataTypeDropDown.Value, 'min(Obj)')
                 data_fitness = app.Eminfitness;
+                data_fitness_cv = app.Eminfitness_cv;
             else
                 return;
             end
@@ -615,38 +628,40 @@ classdef MTO_GUI < matlab.apps.AppBase
                     x(:, 1:2:end) = fitness_mean;
                     x(:, 2:2:end) = fitness_std;
                     app.Etable_view = sprintfc(format_str, x);
-                case 'Mean&Suc' % Mean&Suc
+                case 'Mean&CV' % Mean&Suc
                     fitness_mean = nanmean(data_fitness, 3);
-                    fitness_suc = sum(~isnan(data_fitness), 3) ./ size(data_fitness, 3) * 100;
+                    fitness_cv = mean(data_fitness_cv, 3);
                     app.Etable_data = fitness_mean;
                     x = zeros([size(fitness_mean, 1), 2*size(fitness_mean, 2)]);
                     x(:, 1:2:end) = fitness_mean;
-                    x(:, 2:2:end) = fitness_suc;
-                    app.Etable_view = sprintfc(format_str, x);
-                case 'Mean&Std&Suc'
-                    fitness_mean = nanmean(data_fitness, 3);
-                    fitness_std = std(data_fitness, 0, 3);
-                    fitness_suc = sum(~isnan(data_fitness), 3) ./ size(data_fitness, 3) * 100;
-                    app.Etable_data = fitness_mean;
-                    x = zeros([size(fitness_mean, 1), 3*size(fitness_mean, 2)]);
-                    x(:, 1:3:end) = fitness_mean;
-                    x(:, 2:3:end) = fitness_std;
-                    x(:, 3:3:end) = fitness_suc;
+                    x(:, 2:2:end) = fitness_cv;
                     app.Etable_view = sprintfc(format_str, x);
                 case 'Std'
-                    fitness_mean = nanmean(data_fitness, 3);
                     fitness_std = std(data_fitness, 0, 3);
-                    app.Etable_data = fitness_mean;
+                    app.Etable_data = fitness_std;
                     app.Etable_view = sprintfc(format_str, fitness_std);
-                case 'Suc'
-                    fitness_mean = nanmean(data_fitness, 3);
-                    fitness_suc = sum(~isnan(data_fitness), 3) ./ size(data_fitness, 3) * 100;
-                    app.Etable_data = fitness_mean;
-                    app.Etable_view = sprintfc(format_str, fitness_suc);
-                case 'Median' % Median
+                case 'Median'
                     fitness_median = nanmedian(data_fitness, 3);
                     app.Etable_data = fitness_median;
                     app.Etable_view = sprintfc(format_str, fitness_median);
+                case 'Best'
+                    fitness_min = min(data_fitness, [], 3);
+                    app.Etable_data = fitness_min;
+                    app.Etable_view = sprintfc(format_str, fitness_min);
+                case 'Worst'
+                    fitness_nan = max(isnan(data_fitness), [], 3);
+                    fitness_max = max(data_fitness, [], 3);
+                    fitness_max(fitness_nan == 1) = NaN;
+                    app.Etable_data = fitness_max;
+                    app.Etable_view = sprintfc(format_str, fitness_max);
+                case 'CV'
+                    fitness_cv = mean(data_fitness_cv, 3);
+                    app.Etable_data = fitness_cv;
+                    app.Etable_view = sprintfc(format_str, fitness_cv);
+                case 'Suc'
+                    fitness_suc = sum(~isnan(data_fitness), 3) ./ size(data_fitness, 3) * 100;
+                    app.Etable_data = fitness_suc;
+                    app.Etable_view = sprintfc(format_str, fitness_suc);
             end
             
             if ~isempty(app.Etable_view_test)
@@ -873,16 +888,20 @@ classdef MTO_GUI < matlab.apps.AppBase
                         format_str = '%.2e';
                     case 'Mean&Std'
                         format_str = '%.2e (%.2e)';
-                    case 'Mean&Suc'
-                        format_str = '%.2e (%2.2f%%)';
-                    case 'Mean&Std&Suc'
-                        format_str = '%.2e ± %.2e (%2.2f%%)';
+                    case 'Mean&CV'
+                        format_str = '%.2e (%.2e)';
                     case 'Std'
+                        format_str = '%.2e';
+                    case 'Median'
+                        format_str = '%.2e';
+                    case 'Best'
+                        format_str = '%.2e';
+                    case 'Worst'
+                        format_str = '%.2e';
+                    case 'CV'
                         format_str = '%.2e';
                     case 'Suc'
                         format_str = '%2.2f%%';
-                    case 'Median'
-                        format_str = '%.2e';
                 end
             else
                 format_str = '%.4f';
@@ -1799,7 +1818,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Value changed function: EShowTypeDropDown
         function EShowTypeDropDownValueChanged(app, event)
             app.EresetFormat();
-            app.EupdateTableObjective();
+            app.EupdateTable();
         end
 
         % Value changed function: ETestTypeDropDown
@@ -2763,7 +2782,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create EShowTypeDropDown
             app.EShowTypeDropDown = uidropdown(app.EP3T1GridLayout);
-            app.EShowTypeDropDown.Items = {'Mean', 'Mean&Std', 'Mean&Suc', 'Mean&Std&Suc', 'Std', 'Suc', 'Median'};
+            app.EShowTypeDropDown.Items = {'Mean', 'Mean&Std', 'Mean&CV', 'Std', 'Median', 'Best', 'Worst', 'CV', 'Suc'};
             app.EShowTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EShowTypeDropDownValueChanged, true);
             app.EShowTypeDropDown.Tooltip = {'Data Type (Only for Objective value)'};
             app.EShowTypeDropDown.FontWeight = 'bold';
