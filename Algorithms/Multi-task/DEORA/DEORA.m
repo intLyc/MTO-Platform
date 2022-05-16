@@ -58,7 +58,7 @@ classdef DEORA < Algorithm
             eva_num = sub_eva * length(Tasks);
 
             HR = []; % HR is used to store the historical rewards
-            gen = (eva_num - (pop_size * length(Tasks) - 1)) / pop_size;
+            gen = (eva_num - sub_pop * length(Tasks)) / sub_pop + 1;
             T = obj.beta * gen;
             delta_rmp = 1 / gen;
             rmp = obj.rmp0 * ones(length(Tasks), length(Tasks)) / (length(Tasks) - 1);
@@ -105,11 +105,11 @@ classdef DEORA < Algorithm
 
                 % calculate the reward
                 R_p = max((fit_old - fit_new) ./ (fit_old), 0);
-                R_b = max((min(bestobj) - min(fit_new)) / (min(bestobj)), 0);
+                R_b = max((min(bestobj) - min(fit_new)) / min(bestobj), 0);
                 R = zeros(length(Tasks), 1);
                 for t = 1:length(Tasks)
                     if t == k %The main task
-                        R(t) = obj.alpha * R_b + (1 - obj.alpha) * (sum(R_p) / pop_size);
+                        R(t) = obj.alpha * R_b + (1 - obj.alpha) * (sum(R_p) / length(R_p));
                     else % The auxiliary task
                         index = find(r1_task == t);
                         if isempty(index)

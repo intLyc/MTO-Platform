@@ -8,7 +8,7 @@ classdef OperatorDEORA < Operator
     %--------------------------------------------------------------------------
 
     methods (Static)
-        function [offspring, r1_task, calls] = generate(callfun, population, Tasks, k, rmp, F, pCR)
+        function [offspring, r1_task, calls] = generate(callfun, population, Tasks, k, rmp, F, CR)
             if isempty(population{k})
                 offspring = population{k};
                 calls = 0;
@@ -32,7 +32,7 @@ classdef OperatorDEORA < Operator
                 end
 
                 offspring(i) = OperatorDE.mutate(offspring(i), population{r1_task(i)}(x1), population{k}(x2), population{k}(x3), F);
-                offspring(i) = OperatorDE.crossover(offspring(i), population{k}(i), pCR);
+                offspring(i) = OperatorDE.crossover(offspring(i), population{k}(i), CR);
 
                 vio_low = find(offspring(i).rnvec < 0);
                 offspring(i).rnvec(vio_low) = (population{k}(i).rnvec(vio_low) + 0) / 2;
