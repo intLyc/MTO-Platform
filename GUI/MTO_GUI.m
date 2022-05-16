@@ -2148,10 +2148,10 @@ classdef MTO_GUI < matlab.apps.AppBase
                         for algo = 1:length(data_save.algo_cell)
                             data_save.result(prob, algo).clock_time = data_selected(i).NodeData.result(prob, algo).clock_time / data_selected(i).NodeData.reps;
                             data_save.result(prob, algo).convergence = data_selected(i).NodeData.result(prob, algo).convergence((rep-1)*task_num+1 : rep*task_num, :);
-                            if isfield(data_save.result(prob, algo), 'convergence_cv')
+                            if isfield(data_selected(i).NodeData.result(prob, algo), 'convergence_cv')
                                 data_save.result(prob, algo).convergence_cv = data_selected(i).NodeData.result(prob, algo).convergence_cv((rep-1)*task_num+1 : rep*task_num, :);
                             end
-                            if isfield(data_save.result(prob, algo), 'bestX') && isfield(data_selected(i).NodeData.result(prob, algo), 'bestX')
+                            if isfield(data_selected(i).NodeData.result(prob, algo), 'bestX')
                                 data_save.result(prob, algo).bestX = data_selected(i).NodeData.result(prob, algo).bestX(rep, :);
                             end
                         end
