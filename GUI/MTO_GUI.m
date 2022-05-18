@@ -581,7 +581,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                         row_i = row_i + 1;
                     end
                     [app.Eminfitness(prob, algo, :), min_idx] = min(app.Efitness(temp_i:temp_i+tasks_num-1, algo, :), [], 1);
-                    min_cv_temp = app.Efitness(temp_i:temp_i+tasks_num-1, algo, :);
+                    min_cv_temp = app.Efitness_cv(temp_i:temp_i+tasks_num-1, algo, :);
                     for i = 1:length(min_idx)
                         app.Eminfitness_cv(prob, algo, i) = min_cv_temp(min_idx(i), i);
                     end
@@ -822,6 +822,10 @@ classdef MTO_GUI < matlab.apps.AppBase
             high_color = uistyle('BackgroundColor', [0.67,0.95,0.67]);
             font_bold = uistyle('FontWeight', 'bold');
             low_color = uistyle('BackgroundColor', [1.00,0.60,0.60]);
+            if size(app.EUITable, 2) <= 1
+                drawnow;
+                return;
+            end
             for row_i = 1:size(app.Etable_data, 1)
                 % best
                 if ~strcmp(highlight_type, 'None')
