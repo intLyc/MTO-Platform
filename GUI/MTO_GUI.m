@@ -953,6 +953,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             
             % draw
             value = app.EProblemsDropDown.Value;
+            xlim_max = 0;
             switch app.EConvergenceTypeDropDown.Value
                 case 'Obj'
                     prob = value(1);
@@ -972,6 +973,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                         elseif strcmp(app.EXLimTypeDropDown.Value, 'Generation')
                             x_cell{algo} = x_cell{algo} / length(x_cell{algo}) * (app.Edata.sub_eva(prob) / app.Edata.sub_pop(prob));
                         end
+                        xlim_max = max(xlim_max, x_cell{algo}(end));
                         y_cell{algo} = convergence;
                     end
                 case 'min(Obj)'
@@ -995,6 +997,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                         elseif strcmp(app.EXLimTypeDropDown.Value, 'Generation')
                             x_cell{algo} = x_cell{algo} / length(x_cell{algo}) * (app.Edata.sub_eva(prob) / app.Edata.sub_pop(prob));
                         end
+                        xlim_max = max(xlim_max, x_cell{algo}(end));
                         y_cell{algo} = convergence;
                     end
             end
@@ -1018,6 +1021,8 @@ classdef MTO_GUI < matlab.apps.AppBase
                 p.MarkerSize = app.marker_size;
                 hold(app.EConvergenceTrendUIAxes, 'on');
             end
+            
+            xlim(app.EConvergenceTrendUIAxes, [1, xlim_max]);
             legend(app.EConvergenceTrendUIAxes, strrep(app.Edata.algo_cell, '_', '\_'));
             xlabel(app.EConvergenceTrendUIAxes, app.EXLimTypeDropDown.Value);
             ylabel(app.EConvergenceTrendUIAxes, app.EYLimTypeDropDown.Value);
@@ -1964,7 +1969,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                                     convergence_cv_task = app.Edata.result(prob, algo).convergence_cv(task:tasks_num:end, :);
                                     convergence_task(convergence_cv_task>0)= NaN;
                                 end
-                                convergence = nanmean(convergence_task, 1);
+                                convergence = mean(convergence_task, 1);
                                 x_cell{algo} = 1:size(convergence,2);
                                 x_cell{algo} = x_cell{algo} / length(x_cell{algo}) * app.Edata.sub_eva(prob);
                                 y_cell{algo} = convergence;
@@ -1996,14 +2001,14 @@ classdef MTO_GUI < matlab.apps.AppBase
                         for algo = 1:length(app.Edata.algo_cell)
                             convergence_rep = [];
                             for rep = 1:app.Edata.reps
-                                convergenvce_temp = app.Edata.result(prob, algo).convergence(1+(rep-1)*tasks_num:rep*tasks_num, :);
+                                convergence_temp = app.Edata.result(prob, algo).convergence(1+(rep-1)*tasks_num:rep*tasks_num, :);
                                 if isfield(app.Edata.result(prob, algo), 'convergence_cv')
                                     convergence_cv_temp = app.Edata.result(prob, algo).convergence_cv(1+(rep-1)*tasks_num:rep*tasks_num, :);
                                     convergence_temp(convergence_cv_temp>0)= NaN;
                                 end
                                 convergence_rep(rep, :) = min(convergence_temp, [], 1);
                             end
-                            convergence = nanmean(convergence_rep, 1);
+                            convergence = mean(convergence_rep, 1);
                             x_cell{algo} = 1:size(convergence,2);
                             x_cell{algo} = x_cell{algo} / length(x_cell{algo}) * app.Edata.sub_eva(prob) * tasks_num;
                             y_cell{algo} = convergence;

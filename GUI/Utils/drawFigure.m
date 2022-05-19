@@ -63,6 +63,7 @@ classdef drawFigure < handle
 
             marker_list = {'o', '*', 'x', '^', '+', 'p', 'v', 's', 'd', '<', '>', 'h'};
 
+            xlim_max = 0;
             for i = 1:length(obj.x_cell)
                 if i <= length(marker_list)
                     marker = marker_list{i};
@@ -75,7 +76,9 @@ classdef drawFigure < handle
                 p.MarkerIndices = indices:indices:length(obj.y_cell{i}) - round(indices / 2);
                 p.MarkerSize = 5;
                 hold on;
+                xlim_max = max(xlim_max, obj.x_cell{i}(end));
             end
+            xlim([1, xlim_max])
 
             if ~isempty(obj.title_str)
                 title(strrep(obj.title_str, '_', '-'));
