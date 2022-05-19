@@ -822,7 +822,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             high_color = uistyle('BackgroundColor', [0.67,0.95,0.67]);
             font_bold = uistyle('FontWeight', 'bold');
             low_color = uistyle('BackgroundColor', [1.00,0.60,0.60]);
-            if size(app.EUITable, 2) <= 1
+            if size(app.Etable_data, 2) <= 1
                 drawnow;
                 return;
             end
