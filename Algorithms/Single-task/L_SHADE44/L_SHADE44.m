@@ -180,7 +180,7 @@ classdef L_SHADE44 < Algorithm
                 bestX = [bestX, bestX_temp];
             end
             data.convergence = gen2eva(convergence, eva_gen);
-            data.convergence = gen2eva(convergence_cv, eva_gen);
+            data.convergence_cv = gen2eva(convergence_cv, eva_gen);
             data.bestX = uni2real(bestX, Tasks);
         end
     end
