@@ -54,9 +54,9 @@ classdef OperatorSHADE44 < Operator
                         rank_temp = sort_FP([population(idx).factorial_costs], [population(idx).constraint_violation]);
                         x1 = idx(rank_temp(1));
                         if rand < 0.5
-                            x2 = idx(rank_temp(2)); x3 = idx(rank_temp(2));
+                            x2 = idx(rank_temp(2)); x3 = idx(rank_temp(3));
                         else
-                            x3 = idx(rank_temp(2)); x2 = idx(rank_temp(2));
+                            x3 = idx(rank_temp(3)); x2 = idx(rank_temp(2));
                         end
                         offspring(i) = OperatorDE.mutate(offspring(i), population(x1), population(x2), population(x3), population(i).F);
                         offspring(i) = OperatorJADE.crossover(offspring(i), population(i));
@@ -66,9 +66,9 @@ classdef OperatorSHADE44 < Operator
                         rank_temp = sort_FP([population(idx).factorial_costs], [population(idx).constraint_violation]);
                         x1 = idx(rank_temp(1));
                         if rand < 0.5
-                            x2 = idx(rank_temp(2)); x3 = idx(rank_temp(2));
+                            x2 = idx(rank_temp(2)); x3 = idx(rank_temp(3));
                         else
-                            x3 = idx(rank_temp(2)); x2 = idx(rank_temp(2));
+                            x3 = idx(rank_temp(3)); x2 = idx(rank_temp(2));
                         end
                         offspring(i) = OperatorDE.mutate(offspring(i), population(x1), population(x2), population(x3), population(i).F);
                         offspring(i) = OperatorSHADE44.crossoverExp(offspring(i), population(i));
