@@ -53,38 +53,6 @@ classdef ECHT < Algorithm
             obj.ep_cp = str2double(parameter_cell{count}); count = count + 1;
         end
 
-        function flag = compare_FP(obj, obj_pair, cv_pair)
-            % Feasible Priority Compare
-            flag = false;
-            if cv_pair(1) > cv_pair(2) || ...
-                    (cv_pair(1) <= 0 && cv_pair(2) <= 0 && obj_pair(1) > obj_pair(2))
-                flag = true;
-            end
-        end
-
-        function flag = compare_SR(obj, obj_pair, cv_pair, Sr)
-            % Stochastic Ranking Compare
-            flag = false;
-            if ((cv_pair(1) <= 0 && cv_pair(2) <= 0) || rand() < Sr)
-                if obj_pair(1) > obj_pair(2)
-                    flag = true;
-                end
-            else
-                if cv_pair(1) > cv_pair(2)
-                    flag = true;
-                end
-            end
-        end
-
-        function flag = compare_EC(obj, obj_pair, cv_pair, Ep)
-            % Epsilon Constraint Compare
-            flag = false;
-            if cv_pair(1) > cv_pair(2) || ...
-                    (cv_pair(1) <= Ep && cv_pair(2) <= Ep && obj_pair(1) > obj_pair(2))
-                flag = true;
-            end
-        end
-
         function data = run(obj, Tasks, run_parameter_list)
             sub_pop = run_parameter_list(1);
             sub_eva = run_parameter_list(2);
@@ -145,13 +113,14 @@ classdef ECHT < Algorithm
                                 cv_pair = [population{t}(i).constraint_violation, offspring_temp(i).constraint_violation];
                                 switch t
                                     case 1 % Superiority of feasible solutions
-                                        replace(i) = obj.compare_FP(obj_pair, cv_pair);
+                                        flag = sort_FP(obj_pair, cv_pair);
                                     case 2 % Stochastic ranking
-                                        replace(i) = obj.compare_SR(obj_pair, cv_pair, Sr);
+                                        flag = sort_SR(obj_pair, cv_pair, Sr);
                                     case 3 % Epsilon constraint
-                                        replace(i) = obj.compare_EC(obj_pair, cv_pair, Ep);
+                                        flag = sort_EC(obj_pair, cv_pair, Ep);
                                         % case 4 % Self-adaptive penalty
                                 end
+                                replace(i) = (flag == 2);
                             end
                             population{t}(replace) = offspring_temp(replace);
                         end
