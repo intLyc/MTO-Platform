@@ -161,7 +161,7 @@ classdef L_SHADE44 < Algorithm
                     population(replace) = offspring(replace);
 
                     % Linear Population Size Reduction
-                    [~, rank] = sortrows([[population.factorial_costs]', [population.constraint_violation]'], [1, 2]);
+                    [~, rank] = sortrows([[population.constraint_violation]', [population.factorial_costs]'], [1, 2]);
                     population = population(rank(1:pop_size));
 
                     [bestobj_now, bestCV_now, best_idx] = min_FP([population.factorial_costs], [population.constraint_violation]);
