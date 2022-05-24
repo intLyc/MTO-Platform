@@ -120,7 +120,7 @@ classdef ECHT < Algorithm
                                         flag = sort_EC(obj_pair, cv_pair, Ep);
                                         % case 4 % Self-adaptive penalty
                                 end
-                                replace(i) = (flag == 2);
+                                replace(i) = (flag(1) ~= 1);
                             end
                             population{t}(replace) = offspring_temp(replace);
                         end
