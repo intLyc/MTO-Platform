@@ -538,12 +538,17 @@ classdef MTO_GUI < matlab.apps.AppBase
                 end
             end
             
+            total_type = '+/-/=';
+            if strcmp(app.ETestTypeDropDown.Value, 'FR rank')
+                total_type = 'Total FR Rank';
+            end
+            
             if strcmp(app.EDataTypeDropDown.Value, 'Obj')
                 app.EUITable.RowName = prob_row_cell;
-                app.EUITable.RowName = [app.EUITable.RowName; '+/-/='];
+                app.EUITable.RowName = [app.EUITable.RowName; total_type];
             elseif strcmp(app.EDataTypeDropDown.Value, 'min(Obj)')
                 app.EUITable.RowName = prob_cell;
-                app.EUITable.RowName = [app.EUITable.RowName; '+/-/='];
+                app.EUITable.RowName = [app.EUITable.RowName; total_type];
             else
                 app.EUITable.RowName = prob_cell;
             end
@@ -572,7 +577,6 @@ classdef MTO_GUI < matlab.apps.AppBase
                         convergence_task = app.Edata.result(prob, algo).convergence(task:tasks_num:end, :);
                         if isfield(app.Edata.result(prob, algo), 'convergence_cv')
                             convergence_cv_task = app.Edata.result(prob, algo).convergence_cv(task:tasks_num:end, :);
-                            convergence_task(convergence_cv_task>0) = NaN;
                         else
                             convergence_cv_task = zeros(size(app.Edata.result(prob, algo).convergence(task:tasks_num:end, :)));
                         end
@@ -617,31 +621,41 @@ classdef MTO_GUI < matlab.apps.AppBase
             
             switch show_type
                 case 'Mean' % Mean
-                    fitness_mean = nanmean(data_fitness, 3);
+                    fitness_mean = mean(data_fitness, 3);
                     app.Etable_data = fitness_mean;
                     app.Etable_view = sprintfc(format_str, fitness_mean);
                 case 'Mean&Std' % Mean&Std
-                    fitness_mean = nanmean(data_fitness, 3);
+                    fitness_mean = mean(data_fitness, 3);
                     fitness_std = std(data_fitness, 0, 3);
                     app.Etable_data = fitness_mean;
                     x = zeros([size(fitness_mean, 1), 2*size(fitness_mean, 2)]);
                     x(:, 1:2:end) = fitness_mean;
                     x(:, 2:2:end) = fitness_std;
                     app.Etable_view = sprintfc(format_str, x);
-                case 'Mean&CV' % Mean&Suc
-                    fitness_mean = nanmean(data_fitness, 3);
+                case 'Mean&CV' % Mean&CV
+                    fitness_mean = mean(data_fitness, 3);
                     fitness_cv = mean(data_fitness_cv, 3);
                     app.Etable_data = fitness_mean;
                     x = zeros([size(fitness_mean, 1), 2*size(fitness_mean, 2)]);
                     x(:, 1:2:end) = fitness_mean;
                     x(:, 2:2:end) = fitness_cv;
                     app.Etable_view = sprintfc(format_str, x);
+                case 'Mean&CV&FR' % Mean&CV&FR
+                    fitness_mean = mean(data_fitness, 3);
+                    fitness_cv = mean(data_fitness_cv, 3);
+                    fitness_fr = sum((data_fitness_cv == 0), 3) ./ size(data_fitness_cv, 3);
+                    app.Etable_data = fitness_mean;
+                    x = zeros([size(fitness_mean, 1), 3*size(fitness_mean, 2)]);
+                    x(:, 1:3:end) = fitness_mean;
+                    x(:, 2:3:end) = fitness_cv;
+                    x(:, 3:3:end) = fitness_fr;
+                    app.Etable_view = sprintfc(format_str, x);
                 case 'Std'
                     fitness_std = std(data_fitness, 0, 3);
                     app.Etable_data = fitness_std;
                     app.Etable_view = sprintfc(format_str, fitness_std);
                 case 'Median'
-                    fitness_median = nanmedian(data_fitness, 3);
+                    fitness_median = median(data_fitness, 3);
                     app.Etable_data = fitness_median;
                     app.Etable_view = sprintfc(format_str, fitness_median);
                 case 'Best'
@@ -649,19 +663,19 @@ classdef MTO_GUI < matlab.apps.AppBase
                     app.Etable_data = fitness_min;
                     app.Etable_view = sprintfc(format_str, fitness_min);
                 case 'Worst'
-                    fitness_nan = max(isnan(data_fitness), [], 3);
+                    % fitness_nan = max(isnan(data_fitness), [], 3);
                     fitness_max = max(data_fitness, [], 3);
-                    fitness_max(fitness_nan == 1) = NaN;
+                    % fitness_max(fitness_nan == 1) = NaN;
                     app.Etable_data = fitness_max;
                     app.Etable_view = sprintfc(format_str, fitness_max);
                 case 'CV'
                     fitness_cv = mean(data_fitness_cv, 3);
                     app.Etable_data = fitness_cv;
                     app.Etable_view = sprintfc(format_str, fitness_cv);
-                case 'Suc'
-                    fitness_suc = sum(~isnan(data_fitness), 3) ./ size(data_fitness, 3) * 100;
-                    app.Etable_data = fitness_suc;
-                    app.Etable_view = sprintfc(format_str, fitness_suc);
+                case 'FR'
+                    fitness_fr = sum((data_fitness_cv == 0), 3) ./ size(data_fitness_cv, 3);
+                    app.Etable_data = fitness_fr;
+                    app.Etable_view = sprintfc(format_str, fitness_fr);
             end
             
             if ~isempty(app.Etable_view_test)
@@ -743,8 +757,54 @@ classdef MTO_GUI < matlab.apps.AppBase
                 return;
             end
             
+            % feasible rate
+            if strcmp(test_type, 'FR rank')
+                switch app.EDataTypeDropDown.Value
+                    case 'Obj'
+                        fitness_fr = sum((app.Efitness_cv == 0), 3) ./ size(app.Efitness_cv, 3);
+                    case 'min(Obj)'
+                        fitness_fr = sum((app.Eminfitness_cv == 0), 3) ./ size(app.Eminfitness_cv, 3);
+                end
+                for row_i = 1:size(app.Etable_data, 1)
+                    a = fitness_fr(row_i, :);
+                    [~,ia,ic] = unique(a);
+                    [~,b] = sort(a, 'descend');
+                    b(b) = (1:numel(a))';
+                    b = b(ia(ic));
+                    fr_rank(row_i, :) = b;
+                    for algo = 1:size(app.Etable_data, 2)
+                        app.Etable_view_test{row_i, algo} = num2str(fr_rank(row_i, algo));
+                        drawnow;
+                    end
+                end
+                sign_p = sum(fr_rank, 1);
+                for algo = 1:size(app.Etable_data, 2)
+                    app.Etable_view_test{size(app.Etable_data, 1)+1, algo} = num2str(sign_p(algo));
+                    drawnow;
+                end
+                for algo = 1:size(app.Etable_data, 2)
+                    for row_i = 1:size(app.Etable_data, 1)
+                        if size(app.Etable_view_test, 2) < algo
+                            app.EUITable.Data{row_i, algo} = app.Etable_view{row_i, algo};
+                        else
+                            app.EUITable.Data{row_i, algo} = [app.Etable_view{row_i, algo}, ' (', app.Etable_view_test{row_i, algo}, ')'];
+                        end
+                        drawnow;
+                    end
+                    if size(app.Etable_view_test, 2) < algo
+                        app.EUITable.Data{size(app.Etable_data, 1)+1, algo} = '';
+                    else
+                        app.EUITable.Data{size(app.Etable_data, 1)+1, algo} = app.Etable_view_test{size(app.Etable_data, 1)+1, algo};
+                    end
+                    drawnow;
+                end
+                return;
+            end
+            
+            % Rank sum or Signed rank test
             for algo = 1:size(app.Etable_data, 2)
                 if algo == algo_selected
+                    app.Etable_view_test{size(app.Etable_data, 1)+1, algo} = 'Base';
                     continue;
                 end
                 sign_p = [0 0 0];
@@ -894,6 +954,8 @@ classdef MTO_GUI < matlab.apps.AppBase
                         format_str = '%.2e (%.2e)';
                     case 'Mean&CV'
                         format_str = '%.2e (%.2e)';
+                    case 'Mean&CV&FR'
+                        format_str = '%.2e / %.2e / %.2f';
                     case 'Std'
                         format_str = '%.2e';
                     case 'Median'
@@ -904,8 +966,8 @@ classdef MTO_GUI < matlab.apps.AppBase
                         format_str = '%.2e';
                     case 'CV'
                         format_str = '%.2e';
-                    case 'Suc'
-                        format_str = '%2.2f%%';
+                    case 'FR'
+                        format_str = '%.2f';
                 end
             else
                 format_str = '%.4f';
@@ -1832,12 +1894,12 @@ classdef MTO_GUI < matlab.apps.AppBase
 
         % Value changed function: ETestTypeDropDown
         function ETestTypeDropDownValueChanged(app, event)
-            app.EupdateTableTest();
+            app.EupdateTable();
         end
 
         % Value changed function: EAlgorithmDropDown
         function EAlgorithmDropDownValueChanged(app, event)
-            app.EupdateTableTest();
+            app.EupdateTable();
         end
 
         % Value changed function: EHighlightTypeDropDown
@@ -2460,7 +2522,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create MTOPlatformUIFigure and hide until all components are created
             app.MTOPlatformUIFigure = uifigure('Visible', 'off');
             app.MTOPlatformUIFigure.Color = [1 1 1];
-            app.MTOPlatformUIFigure.Position = [100 100 1032 664];
+            app.MTOPlatformUIFigure.Position = [100 100 1037 661];
             app.MTOPlatformUIFigure.Name = 'MTO Platform';
             app.MTOPlatformUIFigure.WindowStyle = 'modal';
 
@@ -2769,7 +2831,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create ETestTypeDropDown
             app.ETestTypeDropDown = uidropdown(app.EP3T1GridLayout);
-            app.ETestTypeDropDown.Items = {'None', 'Rank sum test', 'Signed rank test'};
+            app.ETestTypeDropDown.Items = {'None', 'Rank sum test', 'Signed rank test', 'FR rank'};
             app.ETestTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @ETestTypeDropDownValueChanged, true);
             app.ETestTypeDropDown.Tooltip = {'Statistical Analysis (Only for Objective value)'};
             app.ETestTypeDropDown.FontWeight = 'bold';
@@ -2791,7 +2853,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create EShowTypeDropDown
             app.EShowTypeDropDown = uidropdown(app.EP3T1GridLayout);
-            app.EShowTypeDropDown.Items = {'Mean', 'Mean&Std', 'Mean&CV', 'Std', 'Median', 'Best', 'Worst', 'CV', 'Suc'};
+            app.EShowTypeDropDown.Items = {'Mean', 'Mean&Std', 'Mean&CV', 'Mean&CV&FR', 'Std', 'Median', 'Best', 'Worst', 'CV', 'FR'};
             app.EShowTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EShowTypeDropDownValueChanged, true);
             app.EShowTypeDropDown.Tooltip = {'Data Type (Only for Objective value)'};
             app.EShowTypeDropDown.FontWeight = 'bold';
