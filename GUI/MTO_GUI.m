@@ -577,6 +577,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                         convergence_task = app.Edata.result(prob, algo).convergence(task:tasks_num:end, :);
                         if isfield(app.Edata.result(prob, algo), 'convergence_cv')
                             convergence_cv_task = app.Edata.result(prob, algo).convergence_cv(task:tasks_num:end, :);
+                            convergence_task(convergence_cv_task > 0) = NaN;
                         else
                             convergence_cv_task = zeros(size(app.Edata.result(prob, algo).convergence(task:tasks_num:end, :)));
                         end
@@ -621,19 +622,19 @@ classdef MTO_GUI < matlab.apps.AppBase
             
             switch show_type
                 case 'Mean' % Mean
-                    fitness_mean = mean(data_fitness, 3);
+                    fitness_mean = nanmean(data_fitness, 3);
                     app.Etable_data = fitness_mean;
                     app.Etable_view = sprintfc(format_str, fitness_mean);
                 case 'Mean&Std' % Mean&Std
-                    fitness_mean = mean(data_fitness, 3);
-                    fitness_std = std(data_fitness, 0, 3);
+                    fitness_mean = nanmean(data_fitness, 3);
+                    fitness_std = nanstd(data_fitness, 0, 3);
                     app.Etable_data = fitness_mean;
                     x = zeros([size(fitness_mean, 1), 2*size(fitness_mean, 2)]);
                     x(:, 1:2:end) = fitness_mean;
                     x(:, 2:2:end) = fitness_std;
                     app.Etable_view = sprintfc(format_str, x);
                 case 'Mean&CV' % Mean&CV
-                    fitness_mean = mean(data_fitness, 3);
+                    fitness_mean = nanmean(data_fitness, 3);
                     fitness_cv = mean(data_fitness_cv, 3);
                     app.Etable_data = fitness_mean;
                     x = zeros([size(fitness_mean, 1), 2*size(fitness_mean, 2)]);
@@ -641,7 +642,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     x(:, 2:2:end) = fitness_cv;
                     app.Etable_view = sprintfc(format_str, x);
                 case 'Mean&CV&FR' % Mean&CV&FR
-                    fitness_mean = mean(data_fitness, 3);
+                    fitness_mean = nanmean(data_fitness, 3);
                     fitness_cv = mean(data_fitness_cv, 3);
                     fitness_fr = sum((data_fitness_cv == 0), 3) ./ size(data_fitness_cv, 3);
                     app.Etable_data = fitness_mean;
@@ -651,11 +652,11 @@ classdef MTO_GUI < matlab.apps.AppBase
                     x(:, 3:3:end) = fitness_fr;
                     app.Etable_view = sprintfc(format_str, x);
                 case 'Std'
-                    fitness_std = std(data_fitness, 0, 3);
+                    fitness_std = nanstd(data_fitness, 0, 3);
                     app.Etable_data = fitness_std;
                     app.Etable_view = sprintfc(format_str, fitness_std);
                 case 'Median'
-                    fitness_median = median(data_fitness, 3);
+                    fitness_median = nanmedian(data_fitness, 3);
                     app.Etable_data = fitness_median;
                     app.Etable_view = sprintfc(format_str, fitness_median);
                 case 'Best'
@@ -663,9 +664,9 @@ classdef MTO_GUI < matlab.apps.AppBase
                     app.Etable_data = fitness_min;
                     app.Etable_view = sprintfc(format_str, fitness_min);
                 case 'Worst'
-                    % fitness_nan = max(isnan(data_fitness), [], 3);
+                    fitness_nan = max(isnan(data_fitness), [], 3);
                     fitness_max = max(data_fitness, [], 3);
-                    % fitness_max(fitness_nan == 1) = NaN;
+                    fitness_max(fitness_nan == 1) = NaN;
                     app.Etable_data = fitness_max;
                     app.Etable_view = sprintfc(format_str, fitness_max);
                 case 'CV'
@@ -819,8 +820,10 @@ classdef MTO_GUI < matlab.apps.AppBase
                     end
                     
                     p = 0;
-                    if sum(~isnan(x1)) == length(x1) && sum(~isnan(x2)) == length(x2)
-                        % without NaN
+                    if sum(isnan(x1)) == length(x1) || sum(isnan(x2)) == length(x2)
+                        % all NaN
+                        app.Etable_view_test{row_i, algo} = '';
+                    else
                         if strcmp(test_type, 'Rank sum test')
                             p = ranksum(x1, x2);
                         elseif strcmp(test_type, 'Signed rank test')
@@ -835,18 +838,6 @@ classdef MTO_GUI < matlab.apps.AppBase
                                 sign_p(2) = sign_p(2) + 1;
                             end
                         else
-                            app.Etable_view_test{row_i, algo} = '=';
-                            sign_p(3) = sign_p(3) + 1;
-                        end
-                    else
-                        % Contains NaN
-                        if sum(~isnan(x1)) == length(x1) && sum(~isnan(x2)) ~= length(x2)
-                            app.Etable_view_test{row_i, algo} = '+';
-                            sign_p(1) = sign_p(1) + 1;
-                        elseif sum(~isnan(x1)) ~= length(x1) && sum(~isnan(x2)) == length(x2)
-                            app.Etable_view_test{row_i, algo} = '-';
-                            sign_p(2) = sign_p(2) + 1;
-                        elseif sum(~isnan(x1)) ~= length(x1) && sum(~isnan(x2)) ~= length(x2)
                             app.Etable_view_test{row_i, algo} = '=';
                             sign_p(3) = sign_p(3) + 1;
                         end
