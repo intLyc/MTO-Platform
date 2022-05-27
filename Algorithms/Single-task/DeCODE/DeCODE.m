@@ -103,7 +103,7 @@ classdef DeCODE < Algorithm
 
                     % selection
                     [population, bestobj, bestCV, bestX_temp] = selectDeCODE(population, offspring, weights, bestobj, bestCV, bestX_temp);
-                    archive = selectDeCODEarchive(archive, offspring);
+                    [archive, bestobj, bestCV, bestX_temp] = selectDeCODEarchive(archive, offspring, bestobj, bestCV, bestX_temp);
                     converge_temp(generation) = bestobj;
                     converge_cv_temp(generation) = bestCV;
                 end

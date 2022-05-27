@@ -83,7 +83,7 @@ classdef CORCO < Algorithm
 
                     % selection
                     [population, bestobj, bestCV, bestX_temp] = selectCORCO(population, offspring, weights, bestobj, bestCV, bestX_temp);
-                    archive = selectCORCOarchive(archive, offspring, 1);
+                    [archive, bestobj, bestCV, bestX_temp] = selectCORCOarchive(archive, offspring, 1, bestobj, bestCV, bestX_temp);
 
                     [con_obj_betterNum, obj_con_betterNum] = InterCompare([archive.factorial_costs], [archive.constraint_violation], [population.factorial_costs], [population.constraint_violation]);
                     p = reshape([population.rnvec], length(population(1).rnvec), length(population))';
@@ -113,7 +113,7 @@ classdef CORCO < Algorithm
 
                     % selection
                     [population, bestobj, bestCV, bestX_temp] = selectCORCO(population, offspring, weights, bestobj, bestCV, bestX_temp);
-                    archive = selectCORCOarchive(archive, offspring, 2);
+                    [archive, bestobj, bestCV, bestX_temp] = selectCORCOarchive(archive, offspring, 2, bestobj, bestCV, bestX_temp);
                     converge_temp(generation) = bestobj;
                     converge_cv_temp(generation) = bestCV;
                 end
