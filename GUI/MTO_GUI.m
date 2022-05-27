@@ -774,7 +774,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     b = b(ia(ic));
                     fr_rank(row_i, :) = b;
                     for algo = 1:size(app.Etable_data, 2)
-                        app.Etable_view_test{row_i, algo} = num2str(fr_rank(row_i, algo));
+                        app.Etable_view_test{row_i, algo} = ['(', num2str(fr_rank(row_i, algo)), ')'];
                         drawnow;
                     end
                 end
@@ -788,7 +788,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                         if size(app.Etable_view_test, 2) < algo
                             app.EUITable.Data{row_i, algo} = app.Etable_view{row_i, algo};
                         else
-                            app.EUITable.Data{row_i, algo} = [app.Etable_view{row_i, algo}, ' (', app.Etable_view_test{row_i, algo}, ')'];
+                            app.EUITable.Data{row_i, algo} = [app.Etable_view{row_i, algo}, ' ', app.Etable_view_test{row_i, algo}];
                         end
                         drawnow;
                     end
