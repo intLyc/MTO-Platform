@@ -15,21 +15,18 @@ classdef DeCODE < Algorithm
     properties (SetAccess = private)
         F = '0.6/0.8/1.0'
         CR = '0.1/0.2/1.0'
-        lp = 0.05
     end
 
     methods
         function parameter = getParameter(obj)
             parameter = {'F pool: Mutation Factor', obj.F, ...
-                        'CR pool: Crossover Probability', obj.CR, ...
-                        'lp: learning period', num2str(obj.lp)};
+                        'CR pool: Crossover Probability', obj.CR};
         end
 
         function obj = setParameter(obj, parameter_cell)
             count = 1;
             obj.F = parameter_cell{count}; count = count + 1;
             obj.CR = parameter_cell{count}; count = count + 1;
-            obj.lp = str2double(parameter_cell{count}); count = count + 1;
         end
 
         function data = run(obj, Tasks, run_parameter_list)
