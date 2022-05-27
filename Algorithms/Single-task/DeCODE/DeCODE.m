@@ -2,7 +2,16 @@ classdef DeCODE < Algorithm
     % <Single> <Constrained>
 
     %------------------------------- Reference --------------------------------
-
+    % @Article{Wang2021DeCODE,
+    %   title    = {Decomposition-Based Multiobjective Optimization for Constrained Evolutionary Optimization},
+    %   author   = {Wang, Bing-Chuan and Li, Han-Xiong and Zhang, Qingfu and Wang, Yong},
+    %   journal  = {IEEE Transactions on Systems, Man, and Cybernetics: Systems},
+    %   year     = {2021},
+    %   number   = {1},
+    %   pages    = {574-587},
+    %   volume   = {51},
+    %   doi      = {10.1109/TSMC.2018.2876335},
+    % }
     %--------------------------------------------------------------------------
 
     %------------------------------- Copyright --------------------------------
