@@ -13,11 +13,11 @@ classdef Problem < handle
         name % problem's name
 
         % run parameter
-        sub_pop = 100 % each task population size
+        sub_pop = 50 % each task population size
         sub_eva % num of max evaluation for each task
 
         % special parameter
-        dims = 30 % for CMT, CEC17-CSO
+        dims = 50 % for CMT, CEC17-CSO
         task_num = 50 % for WCCI20_MaTSO
     end
 
