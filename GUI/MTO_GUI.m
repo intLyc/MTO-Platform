@@ -822,7 +822,14 @@ classdef MTO_GUI < matlab.apps.AppBase
                     p = 0;
                     if sum(isnan(x1)) == length(x1) || sum(isnan(x2)) == length(x2)
                         % all NaN
-                        app.Etable_view_test{row_i, algo} = '';
+                        % app.Etable_view_test{row_i, algo} = '';
+                        if sum(isnan(x1)) == length(x1) && sum(isnan(x2)) < length(x2)
+                            app.Etable_view_test{row_i, algo} = '-';
+                        elseif sum(isnan(x1)) < length(x1) && sum(isnan(x2)) == length(x2)
+                            app.Etable_view_test{row_i, algo} = '+';
+                        else
+                            app.Etable_view_test{row_i, algo} = '=';
+                        end
                     else
                         if strcmp(test_type, 'Rank sum test')
                             p = ranksum(x1, x2);
