@@ -38,9 +38,10 @@ classdef OperatorCORCO < Operator
                     offspring(i) = OperatorCORCO.mutate_current_to_rand(offspring(i), population(i), population(x1), population(x2), population(x3), F(randi(length(F))));
                 end
 
-                rand_rnvec = rand(1, Task.dims);
-                offspring(i).rnvec(offspring(i).rnvec > 1) = rand_rnvec(offspring(i).rnvec > 1);
-                offspring(i).rnvec(offspring(i).rnvec < 0) = rand_rnvec(offspring(i).rnvec < 0);
+                vio_low = find(offspring(i).rnvec < 0);
+                offspring(i).rnvec(vio_low) = (population(i).rnvec(vio_low) + 0) / 2;
+                vio_up = find(offspring(i).rnvec > 1);
+                offspring(i).rnvec(vio_up) = (population(i).rnvec(vio_up) + 1) / 2;
             end
             if callfun
                 [offspring, calls] = evaluate(offspring, Task, 1);

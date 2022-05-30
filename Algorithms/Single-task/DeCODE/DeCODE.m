@@ -79,14 +79,15 @@ classdef DeCODE < Algorithm
                         VAR = 0;
                     end
 
-                    population = population(randperm(length(population)));
-                    archive = archive(randperm(length(archive)));
+                    rand_idx = randperm(length(population));
+                    population = population(rand_idx);
+                    archive = archive(rand_idx);
 
                     if isempty(find([population.constraint_violation] < VAR, 1))
                         pmax = 1e-18;
                     end
 
-                    pr = max(1.e-18, pmax / (1 + exp(30 * (fnceval_calls / sub_eva - 0.75))));
+                    pr = max(1e-18, pmax / (1 + exp(30 * (fnceval_calls / sub_eva - 0.75))));
 
                     % diversity restart
                     if std([population.constraint_violation]) < 1e-6 && isempty(find([population.constraint_violation] == 0, 1))
