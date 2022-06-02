@@ -1,0 +1,5 @@
+GUI/MTO_Platform.mlapp filter=lfs diff=lfs merge=lfs -text
+Problems/Single-task/CEC17_CSO/Data filter=lfs diff=lfs merge=lfs -text
+Problems/Multi-task/CEC17_MTSO/Tasks filter=lfs diff=lfs merge=lfs -text
+Problems/Multi-task/WCCI20_MTSO/Tasks filter=lfs diff=lfs merge=lfs -text
+Problems/Many-task/WCCI20_MaTSO/Tasks filter=lfs diff=lfs merge=lfs -text
