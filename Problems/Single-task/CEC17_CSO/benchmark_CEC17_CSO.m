@@ -46,13 +46,13 @@ function Task = benchmark_CEC17_CSO(index, dim)
     else
         load([file_dir, 'ShiftAndRotation']);
     end
-    if dim == 10
+    if dim <= 10
         M = M_10;
-    elseif dim == 30
+    elseif dim <= 30
         M = M_30;
-    elseif dim == 50
+    elseif dim <= 50
         M = M_50;
-    elseif dim == 100
+    elseif dim <= 100
         M = M_100;
     end
     % fix
