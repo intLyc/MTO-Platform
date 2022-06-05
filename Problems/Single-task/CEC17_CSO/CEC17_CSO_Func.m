@@ -356,6 +356,6 @@ function [obj, con] = CEC17_CSO_Func(x, I_fno, o, M)
     g(g < 0) = 0;
     h = abs(h) - 1e-4;
     h(h < 0) = 0;
-    con = sum(g, 'all') + sum(h, 'all');
+    con = sum(g, 2) + sum(h, 2);
     obj = f;
 end
