@@ -73,7 +73,7 @@ classdef DeCODE < Algorithm
                     else
                         VAR = 0;
                     end
-                    X = X + fnceval_calls / sub_eva;
+                    X = X + sub_pop / sub_eva;
 
                     if length(find([population.constraint_violation] == 0)) > 0.85 * length(population)
                         VAR = 0;
