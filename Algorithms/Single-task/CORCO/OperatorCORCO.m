@@ -41,9 +41,9 @@ classdef OperatorCORCO < Operator
                 % boundary check
                 vio_low = find(offspring(i).rnvec < 0);
                 if rand() < 0.5
-                    offspring(i).rnvec(vio_low) = 2 * 0 - population(i).rnvec(vio_low);
+                    offspring(i).rnvec(vio_low) = 2 * 0 - offspring(i).rnvec(vio_low);
                     vio_temp = offspring(i).rnvec(vio_low) > 1;
-                    offspring(i).rnvec(vio_low(vio_temp)) = 1;
+                    offspring(i).rnvec(vio_low(vio_temp)) = 0;
                 else
                     if fnceval < 0.5 * eva_num
                         offspring(i).rnvec(vio_low) = 0;
@@ -53,9 +53,9 @@ classdef OperatorCORCO < Operator
                 end
                 vio_up = find(offspring(i).rnvec > 1);
                 if rand() < 0.7
-                    offspring(i).rnvec(vio_up) = 2 * 1 - population(i).rnvec(vio_up);
+                    offspring(i).rnvec(vio_up) = 2 * 1 - offspring(i).rnvec(vio_up);
                     vio_temp = offspring(i).rnvec(vio_up) < 0;
-                    offspring(i).rnvec(vio_up(vio_temp)) = 0;
+                    offspring(i).rnvec(vio_up(vio_temp)) = 1;
                 else
                     if fnceval < 0.5 * eva_num
                         offspring(i).rnvec(vio_up) = 1;

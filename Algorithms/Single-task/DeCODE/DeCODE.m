@@ -59,7 +59,7 @@ classdef DeCODE < Algorithm
                 converge_cv_temp(1) = bestCV;
 
                 archive = population;
-                VAR0 = min(10^(Tasks.dims / 2), max([population.constraint_violation]));
+                VAR0 = min(10^(Task.dims / 2), max([population.constraint_violation]));
                 cp = (-log(VAR0) - 6) / log(1 - 0.85);
                 pmax = 1;
                 X = 0;
@@ -83,20 +83,20 @@ classdef DeCODE < Algorithm
                     population = population(rand_idx);
                     archive = archive(rand_idx);
 
-                    if isempty(find([population.constraint_violation] < VAR, 1))
+                    if isempty(find([population.constraint_violation] < VAR))
                         pmax = 1e-18;
                     end
 
                     pr = max(1e-18, pmax / (1 + exp(30 * (fnceval_calls / sub_eva - 0.75))));
 
                     % diversity restart
-                    if std([population.constraint_violation]) < 1e-6 && isempty(find([population.constraint_violation] == 0, 1))
+                    if std([population.constraint_violation]) < 1e-6 && isempty(find([population.constraint_violation] == 0))
                         [population, calls] = initialize(Individual, sub_pop, Task, Task.dims);
                         fnceval_calls = fnceval_calls + calls;
                     end
 
                     weights = [0:pr / length(population):pr - pr / length(population)];
-                    weights = weights(randperm(length(weights)));
+                    weights(randperm(length(weights))) = weights;
 
                     % generation
                     [offspring, calls] = OperatorDeCODE.generate(1, population, Task, F_pool, CR_pool, weights, fnceval_calls, sub_eva);
