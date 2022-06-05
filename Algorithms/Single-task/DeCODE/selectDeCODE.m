@@ -9,8 +9,8 @@ function [population, bestobj, bestCV, bestX] = selectDeCODE(population, offspri
 
     Obj = [[population.factorial_costs], [offspring.factorial_costs]];
     CV = [[population.constraint_violation], [offspring.constraint_violation]];
-    normal_Obj = (Obj - min(Obj)) ./ (max(Obj) - min(Obj) + 1e-15);
-    normal_CV = (CV - min(CV)) ./ (max(CV) - min(CV) + 1e-15);
+    normal_Obj = (Obj - min(Obj)) ./ (std(Obj) + eps(0));
+    normal_CV = (CV - min(CV)) ./ (std(CV) + eps(0));
 
     normal_pop_obj = normal_Obj(1:length(population));
     normal_off_obj = normal_Obj(length(population) + 1:end);
@@ -25,7 +25,7 @@ function [population, bestobj, bestCV, bestX] = selectDeCODE(population, offspri
     population(replace) = offspring(replace);
 
     [bestobj_now, bestCV_now, best_idx] = min_FP([population.factorial_costs], [population.constraint_violation]);
-    if bestCV_now <= bestCV && bestobj_now <= bestobj
+    if bestCV_now < bestCV || (bestCV_now == bestCV && bestobj_now < bestobj)
         bestobj = bestobj_now;
         bestCV = bestCV_now;
         bestX = population(best_idx).rnvec;

@@ -99,7 +99,7 @@ classdef DeCODE < Algorithm
                     weights = weights(randperm(length(weights)));
 
                     % generation
-                    [offspring, calls] = OperatorDeCODE.generate(1, population, Task, F_pool, CR_pool, weights, fnceval_calls / sub_eva);
+                    [offspring, calls] = OperatorDeCODE.generate(1, population, Task, F_pool, CR_pool, weights, fnceval_calls, sub_eva);
                     fnceval_calls = fnceval_calls + calls;
 
                     % selection

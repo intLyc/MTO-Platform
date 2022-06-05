@@ -56,7 +56,7 @@ classdef GA < Algorithm
                     population = population(rank(1:sub_pop));
 
                     [bestobj_now, bestCV_now, best_idx] = min_FP([population.factorial_costs], [population.constraint_violation]);
-                    if bestCV_now <= bestCV && bestobj_now <= bestobj
+                    if bestCV_now < bestCV || (bestCV_now == bestCV && bestobj_now < bestobj)
                         bestobj = bestobj_now;
                         bestCV = bestCV_now;
                         bestX_temp = population(best_idx).rnvec;

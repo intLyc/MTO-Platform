@@ -8,7 +8,7 @@ classdef OperatorCORCO < Operator
     %--------------------------------------------------------------------------
 
     methods (Static)
-        function [offspring, calls] = generate(callfun, population, Task, F, CR, weights)
+        function [offspring, calls] = generate(callfun, population, Task, F, CR, weights, fnceval, eva_num)
             if isempty(population)
                 offspring = population;
                 calls = 0;
@@ -38,10 +38,31 @@ classdef OperatorCORCO < Operator
                     offspring(i) = OperatorCORCO.mutate_current_to_rand(offspring(i), population(i), population(x1), population(x2), population(x3), F(randi(length(F))));
                 end
 
+                % boundary check
                 vio_low = find(offspring(i).rnvec < 0);
-                offspring(i).rnvec(vio_low) = (population(i).rnvec(vio_low) + 0) / 2;
+                if rand() < 0.5
+                    offspring(i).rnvec(vio_low) = 2 * 0 - population(i).rnvec(vio_low);
+                    vio_temp = offspring(i).rnvec(vio_low) > 1;
+                    offspring(i).rnvec(vio_low(vio_temp)) = 1;
+                else
+                    if fnceval < 0.5 * eva_num
+                        offspring(i).rnvec(vio_low) = 0;
+                    else
+                        offspring(i).rnvec(vio_low) = 1;
+                    end
+                end
                 vio_up = find(offspring(i).rnvec > 1);
-                offspring(i).rnvec(vio_up) = (population(i).rnvec(vio_up) + 1) / 2;
+                if rand() < 0.7
+                    offspring(i).rnvec(vio_up) = 2 * 1 - population(i).rnvec(vio_up);
+                    vio_temp = offspring(i).rnvec(vio_up) < 0;
+                    offspring(i).rnvec(vio_up(vio_temp)) = 0;
+                else
+                    if fnceval < 0.5 * eva_num
+                        offspring(i).rnvec(vio_up) = 1;
+                    else
+                        offspring(i).rnvec(vio_up) = 0;
+                    end
+                end
             end
             if callfun
                 [offspring, calls] = evaluate(offspring, Task, 1);

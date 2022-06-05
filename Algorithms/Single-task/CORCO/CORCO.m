@@ -78,7 +78,7 @@ classdef CORCO < Algorithm
                     weights = WeightGenerator(length(population), [population.constraint_violation], [population.factorial_costs], X, cor_idx, div_delta, 1);
 
                     % generation
-                    [offspring, calls] = OperatorCORCO.generate(1, population, Task, F_pool, CR_pool, weights);
+                    [offspring, calls] = OperatorCORCO.generate(1, population, Task, F_pool, CR_pool, weights, fnceval_calls, sub_eva);
                     fnceval_calls = fnceval_calls + calls;
 
                     % selection
@@ -108,7 +108,7 @@ classdef CORCO < Algorithm
                     X = X + sub_pop / sub_eva;
 
                     % generation
-                    [offspring, calls] = OperatorCORCO.generate(1, population, Task, F_pool, CR_pool, weights);
+                    [offspring, calls] = OperatorCORCO.generate(1, population, Task, F_pool, CR_pool, weights, fnceval_calls, sub_eva);
                     fnceval_calls = fnceval_calls + calls;
 
                     % selection

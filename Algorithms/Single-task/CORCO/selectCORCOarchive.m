@@ -12,7 +12,7 @@ function [archive, bestobj, bestCV, bestX] = selectCORCOarchive(archive, offspri
         replace = [archive.constraint_violation] > [offspring.constraint_violation];
     else
         replace_cv = [archive.constraint_violation] > [offspring.constraint_violation];
-        equal_cv = [archive.constraint_violation] <= 0 & [offspring.constraint_violation] <= 0;
+        equal_cv = [archive.constraint_violation] == [offspring.constraint_violation];
         replace_obj = [archive.factorial_costs] > [offspring.factorial_costs];
         replace = (equal_cv & replace_obj) | replace_cv;
     end
@@ -20,7 +20,7 @@ function [archive, bestobj, bestCV, bestX] = selectCORCOarchive(archive, offspri
     archive(replace) = offspring(replace);
 
     [bestobj_now, bestCV_now, best_idx] = min_FP([archive.factorial_costs], [archive.constraint_violation]);
-    if bestCV_now <= bestCV && bestobj_now <= bestobj
+    if bestCV_now < bestCV || (bestCV_now == bestCV && bestobj_now < bestobj)
         bestobj = bestobj_now;
         bestCV = bestCV_now;
         bestX = archive(best_idx).rnvec;
