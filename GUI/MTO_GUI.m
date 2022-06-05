@@ -820,20 +820,22 @@ classdef MTO_GUI < matlab.apps.AppBase
                     end
                     
                     p = 0;
-                    if sum(isnan(x1)) == length(x1) || sum(isnan(x2)) == length(x2)
-                        % all NaN
-                        % app.Etable_view_test{row_i, algo} = '';
-                        if sum(isnan(x1)) == length(x1) && sum(isnan(x2)) < length(x2)
-                            app.Etable_view_test{row_i, algo} = '-';
-                            sign_p(2) = sign_p(2) + 1;
-                        elseif sum(isnan(x1)) < length(x1) && sum(isnan(x2)) == length(x2)
-                            app.Etable_view_test{row_i, algo} = '+';
-                            sign_p(1) = sign_p(1) + 1;
-                        else
-                            app.Etable_view_test{row_i, algo} = '=';
-                            sign_p(3) = sign_p(3) + 1;
-                        end
-                    else
+                    x1(isnan(x1)) = 1e5; % big number replace NaN
+                    x2(isnan(x2)) = 1e5; % big number replace NaN
+%                     if sum(isnan(x1)) == length(x1) || sum(isnan(x2)) == length(x2)
+%                         % all NaN
+%                         % app.Etable_view_test{row_i, algo} = '';
+%                         if sum(isnan(x1)) == length(x1) && sum(isnan(x2)) < length(x2)
+%                             app.Etable_view_test{row_i, algo} = '-';
+%                             sign_p(2) = sign_p(2) + 1;
+%                         elseif sum(isnan(x1)) < length(x1) && sum(isnan(x2)) == length(x2)
+%                             app.Etable_view_test{row_i, algo} = '+';
+%                             sign_p(1) = sign_p(1) + 1;
+%                         else
+%                             app.Etable_view_test{row_i, algo} = '=';
+%                             sign_p(3) = sign_p(3) + 1;
+%                         end
+%                     else
                         if strcmp(test_type, 'Rank sum test')
                             p = ranksum(x1, x2);
                         elseif strcmp(test_type, 'Signed rank test')
@@ -851,7 +853,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                             app.Etable_view_test{row_i, algo} = '=';
                             sign_p(3) = sign_p(3) + 1;
                         end
-                    end
+%                     end
                 end
                 app.Etable_view_test{size(app.Etable_data, 1)+1, algo} = sprintf('%d/%d/%d', sign_p);
             end
