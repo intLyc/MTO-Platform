@@ -26,7 +26,7 @@ function [population, bestobj, bestCV, bestX] = selectCMF(population, offspring,
             constraint_violation(i) = population(i).constraint_violation(t);
         end
         [bestobj_now, bestCV_now, best_idx] = min_FP(factorial_costs, constraint_violation);
-        if bestCV_now <= bestCV(t) && bestobj_now <= bestobj(t)
+        if bestCV_now < bestCV(t) || (bestCV_now == bestCV(t) && bestobj_now <= bestobj(t))
             bestobj(t) = bestobj_now;
             bestCV(t) = bestCV_now;
             bestX{t} = population(best_idx).rnvec;
