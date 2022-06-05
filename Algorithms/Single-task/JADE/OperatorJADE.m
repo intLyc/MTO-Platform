@@ -55,7 +55,7 @@ classdef OperatorJADE < Operator
 
         function object = crossover(object, current)
             replace = rand(1, length(object.rnvec)) > current.CR;
-            replace(randi(length(object.rnvec))) = true;
+            replace(randi(length(object.rnvec))) = false;
             object.rnvec(replace) = current.rnvec(replace);
         end
     end
