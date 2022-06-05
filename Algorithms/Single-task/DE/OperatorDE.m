@@ -14,7 +14,7 @@ classdef OperatorDE < Operator
 
         function object = crossover(object, x, CR)
             replace = rand(1, length(object.rnvec)) > CR;
-            replace(randi(length(object.rnvec))) = true;
+            replace(randi(length(object.rnvec))) = false;
             object.rnvec(replace) = x.rnvec(replace);
         end
 
