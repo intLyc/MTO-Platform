@@ -24,6 +24,7 @@ classdef CAL_SHADE < Algorithm
         H = 5;
         arc_rate = 1.4
         ep_top = 0.2
+        ep_tc = 0.8
         ep_cp = 5
     end
 
@@ -33,6 +34,7 @@ classdef CAL_SHADE < Algorithm
                         'H: success memory size', num2str(obj.H), ...
                         'arc_rate: arcive size rate', num2str(obj.arc_rate), ...
                         'ep_top', num2str(obj.ep_top), ...
+                        'ep_tc', num2str(obj.ep_tc), ...
                         'ep_cp', num2str(obj.ep_cp)};
         end
 
@@ -42,6 +44,7 @@ classdef CAL_SHADE < Algorithm
             obj.H = str2double(parameter_cell{count}); count = count + 1;
             obj.arc_rate = str2double(parameter_cell{count}); count = count + 1;
             obj.ep_top = str2double(parameter_cell{count}); count = count + 1;
+            obj.ep_tc = str2double(parameter_cell{count}); count = count + 1;
             obj.ep_cp = str2double(parameter_cell{count}); count = count + 1;
         end
 
@@ -100,8 +103,13 @@ classdef CAL_SHADE < Algorithm
                         population(i).CR(population(i).CR > 1) = 1;
                         population(i).CR(population(i).CR < 0) = 0;
                     end
+                    
                     % calculate epsilon
-                    Ep = ep0 * ((1 - fnceval_calls / sub_eva)^obj.ep_cp);
+                    if fnceval_calls < obj.tc * sub_eva
+                        Ep = ep0 * ((1 - fnceval_calls / (obj.tc * sub_eva))^obj.ep_cp);
+                    else
+                        Ep = 0;
+                    end
 
                     % generation
                     union = [population, arc];
