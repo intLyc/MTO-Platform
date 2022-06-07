@@ -95,10 +95,11 @@ classdef CORCO < Algorithm
                     converge_cv_temp(generation) = bestCV;
                 end
 
+                recordLength = length(betterRecord1);
                 betterLength1 = sum(betterRecord1 ~= 0);
                 betterLength2 = sum(betterRecord2 ~= 0);
                 betterLength = min(betterLength1, betterLength2);
-                cor_idx = betterLength / generation;
+                cor_idx = betterLength / recordLength;
                 div_delta = div_init - div_idx;
 
                 while fnceval_calls < sub_eva
