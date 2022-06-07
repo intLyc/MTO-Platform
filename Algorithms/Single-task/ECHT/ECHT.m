@@ -79,7 +79,6 @@ classdef ECHT < Algorithm
                 cv_temp = [population{3}.constraint_violation];
                 [~, idx] = sort(cv_temp);
                 ep0 = cv_temp(idx(n));
-                Tc = round(obj.ep_tc * sub_eva / sub_pop);
 
                 generation = 1;
                 while fnceval_calls < sub_eva
@@ -92,8 +91,8 @@ classdef ECHT < Algorithm
                     end
 
                     % pre calculate
-                    if generation <= Tc
-                        Ep = ep0 * ((1 - generation / Tc)^obj.ep_cp);
+                    if fnceval_calls < obj.tc * sub_eva
+                        Ep = ep0 * ((1 - fnceval_calls / (obj.ep_tc * sub_eva))^obj.ep_cp);
                     else
                         Ep = 0;
                     end
