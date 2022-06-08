@@ -763,15 +763,36 @@ classdef MTO_GUI < matlab.apps.AppBase
                 switch app.EDataTypeDropDown.Value
                     case 'Obj'
                         fitness_fr = sum((app.Efitness_cv == 0), 3) ./ size(app.Efitness_cv, 3);
+                        fitness_cv = mean(app.Efitness_cv, 3);
+                        fitness_obj = nanmean(app.Efitness, 3);
                     case 'min(Obj)'
                         fitness_fr = sum((app.Eminfitness_cv == 0), 3) ./ size(app.Eminfitness_cv, 3);
+                        fitness_cv = mean(app.Eminfitness_cv, 3);
+                        fitness_obj = nanmean(app.Eminfitness, 3);
                 end
                 for row_i = 1:size(app.Etable_data, 1)
+                    each_rank = [];
+                    % feasible rate
                     a = fitness_fr(row_i, :);
                     [~,ia,ic] = unique(a);
                     [~,b] = sort(a, 'descend');
                     b(b) = (1:numel(a))';
                     b = b(ia(ic));
+                    each_rank = [each_rank; b];
+%                     % cv
+%                     a = fitness_cv(row_i, :);
+%                     [~,ia,ic] = unique(a);
+%                     [~,b] = sort(a, 'descend');
+%                     b(b) = (1:numel(a))';
+%                     b = b(ia(ic));
+%                     each_rank = [each_rank; b];
+%                     % obj
+%                     a = fitness_obj(row_i, :);
+%                     [~,ia,ic] = unique(a);
+%                     [~,b] = sort(a, 'descend');
+%                     b(b) = (1:numel(a))';
+%                     b = b(ia(ic));
+%                     each_rank = [each_rank; b];
                     fr_rank(row_i, :) = b;
                     for algo = 1:size(app.Etable_data, 2)
                         app.Etable_view_test{row_i, algo} = ['(', num2str(fr_rank(row_i, algo)), ')'];
@@ -842,7 +863,11 @@ classdef MTO_GUI < matlab.apps.AppBase
                             p = signrank(x1, x2);
                         end
                         if p < 0.05
-                            if app.Etable_data(row_i, algo) < app.Etable_data(row_i, algo_selected)
+                            data1 = app.Etable_data(row_i, algo);
+                            data1(isnan(data1)) = 1e5;
+                            data2 = app.Etable_data(row_i, algo_selected);
+                            data2(isnan(data2)) = 1e5;
+                            if data1 < data2
                                 app.Etable_view_test{row_i, algo} = '+';
                                 sign_p(1) = sign_p(1) + 1;
                             else
