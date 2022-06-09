@@ -105,8 +105,8 @@ classdef CAL_SHADE < Algorithm
                     end
 
                     % calculate epsilon
-                    if fnceval_calls < obj.tc * sub_eva
-                        Ep = ep0 * ((1 - fnceval_calls / (obj.tc * sub_eva))^obj.ep_cp);
+                    if fnceval_calls < obj.ep_tc * sub_eva
+                        Ep = ep0 * ((1 - fnceval_calls / (obj.ep_tc * sub_eva))^obj.ep_cp);
                     else
                         Ep = 0;
                     end

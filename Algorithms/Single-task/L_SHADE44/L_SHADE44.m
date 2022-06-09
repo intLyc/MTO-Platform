@@ -22,7 +22,7 @@ classdef L_SHADE44 < Algorithm
     properties (SetAccess = private)
         p = 0.11
         H = 6
-        arc_rate = 1
+        arc_rate = 2.6
     end
 
     methods
@@ -66,8 +66,8 @@ classdef L_SHADE44 < Algorithm
                 Task = Tasks(sub_task);
 
                 % initialize
-                % pop_init = Task.dims * 18;
-                pop_init = sub_pop;
+                pop_init = Task.dims * 18;
+                % pop_init = sub_pop;
                 pop_min = 4;
                 [population, fnceval_calls] = initialize(IndividualSHADE44, pop_init, Task, Task.dims);
                 [bestobj, bestCV, best_idx] = min_FP([population.factorial_costs], [population.constraint_violation]);
