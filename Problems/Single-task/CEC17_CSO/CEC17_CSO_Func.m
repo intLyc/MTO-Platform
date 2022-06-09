@@ -353,9 +353,7 @@ function [obj, con] = CEC17_CSO_Func(x, I_fno, o, M)
     % hn = [0, 0, 1, 0, 0, 6, 2, 2, 2, 2, ...
     %         1, 0, 0, 1, 1, 1, 1, 1, 0, 0, ...
     %         0, 0, 1, 1, 1, 1, 1, 0];
-    g(g < 0) = 0;
     h = abs(h) - 1e-4;
-    h(h < 0) = 0;
-    con = sum(g, 2) + sum(h, 2);
+    con = sum(max(g, 0), 2) + sum(max(h, 0), 2);
     obj = f;
 end
