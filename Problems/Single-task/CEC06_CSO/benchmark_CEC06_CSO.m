@@ -23,7 +23,7 @@ function Task = benchmark_CEC06_CSO(index)
     aaa = [];
     switch index
         case 1
-            lb = zeros(1, 12);
+            lb = zeros(1, 13);
             ub = ones(1, 13);
             ub(10:12) = 100;
             D = 13;
