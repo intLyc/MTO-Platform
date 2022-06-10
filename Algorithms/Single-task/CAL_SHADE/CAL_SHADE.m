@@ -61,15 +61,15 @@ classdef CAL_SHADE < Algorithm
                 Task = Tasks(sub_task);
 
                 % initialize
-                % pop_init = Task.dims * 2;
-                pop_init = sub_pop;
+                pop_init = Task.dims * 2;
+                % pop_init = sub_pop;
                 pop_min = 4;
                 [population, fnceval_calls] = initialize(IndividualJADE, pop_init, Task, Task.dims);
                 [bestobj, bestCV, best_idx] = min_FP([population.factorial_costs], [population.constraint_violation]);
                 bestX_temp = population(best_idx).rnvec;
                 converge_temp(1) = bestobj;
                 converge_cv_temp(1) = bestCV;
-                eva_gen(1) = fnceval_calls;
+                eva_gen_temp(1) = fnceval_calls;
 
                 % initialize parameter
                 n = ceil(obj.ep_top * length(population));
@@ -162,12 +162,12 @@ classdef CAL_SHADE < Algorithm
                     end
                     converge_temp(generation) = bestobj;
                     converge_cv_temp(generation) = bestCV;
-                    eva_gen(generation) = fnceval_calls;
+                    eva_gen_temp(generation) = fnceval_calls;
                 end
-                convergence = [convergence; converge_temp];
-                convergence_cv = [convergence_cv; converge_cv_temp];
-                eva_gen = [eva_gen; eva_gen];
-                bestX = [bestX, bestX_temp];
+                convergence(sub_task, :) = converge_temp;
+                convergence_cv(sub_task, :) = converge_cv_temp;
+                eva_gen(sub_task, :) = eva_gen_temp;
+                bestX{sub_task} = bestX_temp;
             end
             data.convergence = gen2eva(convergence, eva_gen);
             data.convergence_cv = gen2eva(convergence_cv, eva_gen);

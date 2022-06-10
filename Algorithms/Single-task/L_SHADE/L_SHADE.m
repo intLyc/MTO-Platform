@@ -128,9 +128,9 @@ classdef L_SHADE < Algorithm
                     converge_temp(generation) = bestobj;
                     eva_gen_temp(generation) = fnceval_calls;
                 end
-                convergence = [convergence; converge_temp];
-                eva_gen = [eva_gen; eva_gen_temp];
-                bestX = [bestX, bestX_temp];
+                convergence(sub_task, :) = converge_temp;
+                eva_gen(sub_task, :) = eva_gen_temp;
+                bestX{sub_task} = bestX_temp;
             end
             data.convergence = gen2eva(convergence, eva_gen);
             data.bestX = uni2real(bestX, Tasks);

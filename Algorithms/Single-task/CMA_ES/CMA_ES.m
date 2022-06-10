@@ -108,8 +108,8 @@ classdef CMA_ES < Algorithm
                         C = V * max(E, 0) / V;
                     end
                 end
-                convergence = [convergence; converge_temp];
-                bestX = [bestX, bestX_temp];
+                convergence(sub_task, :) = converge_temp;
+                bestX{sub_task} = bestX_temp;
             end
             data.convergence = gen2eva(convergence);
             data.bestX = bestX;

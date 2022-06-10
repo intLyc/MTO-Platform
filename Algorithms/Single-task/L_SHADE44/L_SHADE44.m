@@ -174,10 +174,10 @@ classdef L_SHADE44 < Algorithm
                     converge_cv_temp(generation) = bestCV;
                     eva_gen_temp(generation) = fnceval_calls;
                 end
-                convergence = [convergence; converge_temp];
-                convergence_cv = [convergence_cv; converge_cv_temp];
-                eva_gen = [eva_gen; eva_gen_temp];
-                bestX = [bestX, bestX_temp];
+                convergence(sub_task, :) = converge_temp;
+                convergence_cv(sub_task, :) = converge_cv_temp;
+                eva_gen(sub_task, :) = eva_gen_temp;
+                bestX{sub_task} = bestX_temp;
             end
             data.convergence = gen2eva(convergence, eva_gen);
             data.convergence_cv = gen2eva(convergence_cv, eva_gen);

@@ -91,7 +91,7 @@ classdef ECHT < Algorithm
                     end
 
                     % pre calculate
-                    if fnceval_calls < obj.tc * sub_eva
+                    if fnceval_calls < obj.ep_tc * sub_eva
                         Ep = ep0 * ((1 - fnceval_calls / (obj.ep_tc * sub_eva))^obj.ep_cp);
                     else
                         Ep = 0;
@@ -134,9 +134,9 @@ classdef ECHT < Algorithm
                     converge_cv_temp(:, generation) = bestCV;
                 end
                 [~, ~, best_idx] = min_FP(converge_temp(:, end), converge_cv_temp(:, end));
-                convergence = [convergence; converge_temp(best_idx, :)];
-                convergence_cv = [convergence_cv; converge_cv_temp(best_idx, :)];
-                bestX = [bestX, bestX_temp{best_idx}];
+                convergence(sub_task, :) = converge_temp(best_idx, :);
+                convergence_cv(sub_task, :) = converge_cv_temp(best_idx, :);
+                bestX{sub_task} = bestX_temp{best_idx};
             end
             data.convergence = gen2eva(convergence);
             data.convergence_cv = gen2eva(convergence_cv);

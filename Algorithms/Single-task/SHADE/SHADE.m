@@ -114,8 +114,8 @@ classdef SHADE < Algorithm
                     end
                     converge_temp(generation) = bestobj;
                 end
-                convergence = [convergence; converge_temp];
-                bestX = [bestX, bestX_temp];
+                convergence(sub_task, :) = converge_temp;
+                bestX{sub_task} = bestX_temp;
             end
             data.convergence = gen2eva(convergence);
             data.bestX = uni2real(bestX, Tasks);

@@ -92,9 +92,9 @@ classdef MTV_DE < Algorithm
                     converge_temp(generation) = bestobj;
                     converge_cv_temp(generation) = bestCV;
                 end
-                convergence = [convergence; converge_temp];
-                convergence_cv = [convergence_cv; converge_cv_temp];
-                bestX = [bestX, bestX_temp];
+                convergence(sub_task, :) = converge_temp;
+                convergence_cv(sub_task, :) = converge_cv_temp;
+                bestX{sub_task} = bestX_temp;
             end
             data.convergence = gen2eva(convergence);
             data.convergence_cv = gen2eva(convergence_cv);
