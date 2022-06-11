@@ -1646,12 +1646,12 @@ classdef MTO_GUI < matlab.apps.AppBase
                             % check pause and stop
                             app.EcheckPauseStopStatus();
                             % run
-                            tStart = tic;
+                            t_temp = tic;
                             data = singleRun(app.EAlgorithmsTree.Children(algo).NodeData, app.EProblemsTree.Children(prob).NodeData);
                             if ~isfield(data, 'convergence_cv')
                                 data.convergence_cv = zeros(size(data.convergence));
                             end
-                            app.Edata.result(prob, algo).clock_time = app.Edata.result(prob, algo).clock_time + toc(tStart);
+                            app.Edata.result(prob, algo).clock_time = app.Edata.result(prob, algo).clock_time + toc(t_temp);
                             if app.Edata.result(prob, algo).convergence
                                 % convergence
                                 gen_old = size(app.Edata.result(prob, algo).convergence, 2);
