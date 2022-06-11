@@ -9,8 +9,8 @@ classdef CEC06_CSO17 < Problem
     %--------------------------------------------------------------------------
 
     methods
-        function obj = CEC06_CSO17(name)
-            obj = obj@Problem(name);
+        function obj = CEC06_CSO17(varargin)
+            obj = obj@Problem(varargin);
             obj.sub_eva = 500000;
         end
 

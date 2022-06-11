@@ -9,8 +9,8 @@ classdef MTSO4_PI_HS < Problem
     %--------------------------------------------------------------------------
 
     methods
-        function obj = MTSO4_PI_HS(name)
-            obj = obj@Problem(name);
+        function obj = MTSO4_PI_HS(varargin)
+            obj = obj@Problem(varargin);
             obj.sub_eva = 1000 * 50;
         end
 

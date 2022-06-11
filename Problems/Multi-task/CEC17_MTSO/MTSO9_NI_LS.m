@@ -9,8 +9,8 @@ classdef MTSO9_NI_LS < Problem
     %--------------------------------------------------------------------------
 
     methods
-        function obj = MTSO9_NI_LS(name)
-            obj = obj@Problem(name);
+        function obj = MTSO9_NI_LS(varargin)
+            obj = obj@Problem(varargin);
             obj.sub_eva = 1000 * 50;
         end
 

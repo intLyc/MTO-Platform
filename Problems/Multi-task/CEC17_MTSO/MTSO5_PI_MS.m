@@ -9,8 +9,8 @@ classdef MTSO5_PI_MS < Problem
     %--------------------------------------------------------------------------
 
     methods
-        function obj = MTSO5_PI_MS(name)
-            obj = obj@Problem(name);
+        function obj = MTSO5_PI_MS(varargin)
+            obj = obj@Problem(varargin);
             obj.sub_eva = 1000 * 50;
         end
 

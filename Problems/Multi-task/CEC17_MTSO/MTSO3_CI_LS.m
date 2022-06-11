@@ -9,8 +9,8 @@ classdef MTSO3_CI_LS < Problem
     %--------------------------------------------------------------------------
     
     methods
-        function obj = MTSO3_CI_LS(name)
-            obj = obj@Problem(name);
+        function obj = MTSO3_CI_LS(varargin)
+            obj = obj@Problem(varargin);
             obj.sub_eva = 1000 * 50;
         end
 

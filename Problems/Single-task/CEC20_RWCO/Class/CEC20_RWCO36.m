@@ -9,8 +9,8 @@ classdef CEC20_RWCO36 < Problem
     %--------------------------------------------------------------------------
 
     methods
-        function obj = CEC20_RWCO36(name)
-            obj = obj@Problem(name);
+        function obj = CEC20_RWCO36(varargin)
+            obj = obj@Problem(varargin);
             obj.sub_eva = eva_CEC20_RWCO(36);
         end
 

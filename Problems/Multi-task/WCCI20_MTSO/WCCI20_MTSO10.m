@@ -9,8 +9,8 @@ classdef WCCI20_MTSO10 < Problem
     %--------------------------------------------------------------------------
 
     methods
-        function obj = WCCI20_MTSO10(name)
-            obj = obj@Problem(name);
+        function obj = WCCI20_MTSO10(varargin)
+            obj = obj@Problem(varargin);
             obj.sub_eva = 1000 * 50;
         end
 

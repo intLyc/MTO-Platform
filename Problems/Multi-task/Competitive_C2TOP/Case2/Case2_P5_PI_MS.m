@@ -2,8 +2,8 @@ classdef Case2_P5_PI_MS < Problem
     % <Multi> <Competitive>
 
     methods
-        function obj = Case2_P5_PI_MS(name)
-            obj = obj@Problem(name);
+        function obj = Case2_P5_PI_MS(varargin)
+            obj = obj@Problem(varargin);
             obj.sub_eva = 1000 * 100;
         end
 

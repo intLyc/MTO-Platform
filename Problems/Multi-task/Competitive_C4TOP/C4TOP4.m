@@ -9,8 +9,8 @@ classdef C4TOP4 < Problem
     %--------------------------------------------------------------------------
     
     methods
-        function obj = C4TOP4(name)
-            obj = obj@Problem(name);
+        function obj = C4TOP4(varargin)
+            obj = obj@Problem(varargin);
             obj.sub_eva = 1000 * 50;
         end
 

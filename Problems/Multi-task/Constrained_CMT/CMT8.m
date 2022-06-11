@@ -20,8 +20,8 @@ classdef CMT8 < Problem
     %--------------------------------------------------------------------------s
 
     methods
-        function obj = CMT8(name)
-            obj = obj@Problem(name);
+        function obj = CMT8(varargin)
+            obj = obj@Problem(varargin);
             obj.sub_eva = 1000 * obj.dims;
         end
 

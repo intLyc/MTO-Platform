@@ -20,8 +20,8 @@ classdef CMT3 < Problem
     %--------------------------------------------------------------------------
 
     methods
-        function obj = CMT3(name)
-            obj = obj@Problem(name);
+        function obj = CMT3(varargin)
+            obj = obj@Problem(varargin);
             obj.sub_eva = 1000 * obj.dims;
         end
 

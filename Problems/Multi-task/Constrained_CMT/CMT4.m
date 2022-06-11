@@ -9,8 +9,8 @@ classdef CMT4 < Problem
     %--------------------------------------------------------------------------
 
     methods
-        function obj = CMT4(name)
-            obj = obj@Problem(name);
+        function obj = CMT4(varargin)
+            obj = obj@Problem(varargin);
             obj.sub_eva = 1000 * obj.dims;
         end
 
