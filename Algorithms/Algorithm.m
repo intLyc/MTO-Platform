@@ -14,9 +14,13 @@ classdef Algorithm < handle
     end
 
     methods
-        function obj = Algorithm(name)
+        function obj = Algorithm(varargin)
             % Algorithm constructor, cannot be changed
-            obj.name = name;
+            if length(varargin) >= 1
+                obj.name = varargin{1};
+            else
+                obj.name = 'algorithm';
+            end
         end
 
         function name = getName(obj)

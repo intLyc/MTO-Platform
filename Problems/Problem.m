@@ -22,9 +22,13 @@ classdef Problem < handle
     end
 
     methods
-        function obj = Problem(name)
+        function obj = Problem(varargin)
             % problem constructor, cannot be changed
-            obj.name = name;
+            if length(varargin) >= 1
+                obj.name = varargin{1};
+            else
+                obj.name = 'problem';
+            end
         end
 
         function name = getName(obj)
