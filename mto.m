@@ -1,7 +1,7 @@
 function mto(varargin)
     %% MTO Platform
-    % GUI: 'mto;'
-    % Command line: 'mto(algo_cell, prob_cell, reps, save_name, par_flag);'
+    % GUI: 'mto'
+    % Command line: 'mto(algo_cell, prob_cell, reps, save_name, par_flag)'
 
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
