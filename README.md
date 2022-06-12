@@ -34,28 +34,23 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 
 ### Run MTO Platform
 
-- GUI: 'mto;'
-- Command line: 'mto(algo_cell, prob_cell, reps, save_name);'
+- GUI: 'mto'
+- Command line: 'mto(algo_cell, prob_cell, reps, save_name, par_flag)'
 
-### Add your own algorithm
+### Add your algorithm
 
-- Inherit the **Algorithms/Algorithm.m** class from the Algorithms folder to implement a new algorithm class and put it in the Algorithms folder or its subfolders
-- Implement the inherited virtual functions according to the annotations of each virtual function in the Algorithm class.
-- Add label to the second line. <Single/Multi/Many> <None/Competitive/Constrained>
-- *Refer to the MFEA algorithm implementation*
+- Inherit the **Algorithm.m** class from the Algorithms folder to implement a new algorithm class and put it in the Algorithms folder or its subfolders
+- Implement the method function data = run(obj. parameter_cell).
+- Add labels to the second line. <Single/Multi/Many> <None/Competitive/Constrained>
+- *Refer to the MFEA or GA algorithm implementation*
 
-### Add your own problem
+### Add your problem
 
-- Inherit the **Problems/Problem.m** class from the Problem folder to implement a new problem class and put it in the Problem folder or its subfolders
-- Implement the inherited virtual functions according to the annotations of each virtual function in the Problem class.
-- Add label to the second line. <Single/Multi/Many> <None/Competitive/Constrained>
+- Inherit the **Problem.m** class from the Problem folder to implement a new problem class and put it in the Problem folder or its subfolders
+- Implement the construct function and set default obj.sub_eva
+- Implement the method function Tasks = getTasks(obj)
+- Add labels to the second line. <Single/Multi/Many> <None/Competitive/Constrained>
 - *Refer to the CEC17_MTSO problem implementation*
-
-### Use App Designer to modify the GUI interface
-
-- Open the **GUI/MTO_Platform.mlapp** project file with App Designer in matlab and modify the GUI interface.
-- Export to MTO_GUI.m file after modification
-
 
 ## Module
 
@@ -70,12 +65,12 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 2. Problem selection
     - Select a problem and display it in the Problem Tree
     - Open the Problem Node to display the problem parameter settings. *double click to modify it*
-3. The figure of the problem
-    - Select Tasks Figure in the upper right corner of the Axes area on the Test Module right.
-    - For each selected problem, draw the image of all the tasks of the problem independent variable in 1D. *To facilitate the observation of inter-task characteristics, the adaptation value of each task is normalized to show*
-4. Convergence graph
-    - Select Convergence in the upper right corner of the Axes area on the right
-    - After selecting the algorithm and task, click the Start button, the convergence image of the algorithm on each task of the problem will be plotted in the Axes area
+3. Run
+    - Click the Start button
+4. Check the figure
+    - Task Figure 1D (unified / real)
+    - Feasible Region 2D
+    - Objs convergence
 
 ### II. Experiment Module
 
@@ -107,14 +102,17 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
       - Score
       - min(Obj) (for Competitive-MTO)
       - Time Used
-    - Data type
+    - Data type (for Obj and min(Obj))
       - Mean
-      - Mean (Std)
+      - Mean&Std
+      - Mean&CV(mean constraint violation)
+      - Mean&CV&FR(feasible rate)
+      - Std
       - Median
-      - Median (Std)
-    - Precision
-      - %.2d
-      - %.4d
+      - Best
+      - Worst
+      - CV
+      - FR
     - Statistical test (for Fitness)
       - None
       - Rank sum test
@@ -130,6 +128,9 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
     - Problem type
       - Obj
       - min(Obj) (for Competitive-MTO)
+    - X-axis type
+      - Evaluation
+      - Generation
     - Y-axis type
       - log(Obj)
       - Obj
@@ -190,28 +191,24 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 
 ### 运行MTO Platform
 
-- GUI界面: 'mto;'
-- 命令行: 'mto(algo_cell, prob_cell, reps, save_name);'
+- GUI界面: 'mto'
+- 命令行: 'mto(algo_cell, prob_cell, reps, save_name, par_flag)'
 
 ### 加入自己的算法
 
-- 继承Algorithms文件夹下的**Algorithms/Algorithm.m**类实现新的算法类，并放入Algorithms文件夹或其子文件夹内
-- 按照Algorithm类中的各虚函数的注释实现继承的虚函数
+- 继承Algorithms文件夹下的**Algorithm.m**类实现新的算法类，并放入Algorithms文件夹或其子文件夹内
+- 实现 function data = run(obj, parameter_cell)
 - 在文件的第2行添加标签 <Single/Multi/Many> <None/Competitive/Constrained>
-- *可参考MFEA算法的实现*
+- *可参考MFEA、GA算法的实现*
 
 ### 加入自己的问题
 
-- 继承Problem文件夹下的**Problems/Problem.m**类实现新的问题类，并放入Problem文件夹或其子文件夹内
+- 继承Problem文件夹下的**Problem.m**类实现新的问题类，并放入Problem文件夹或其子文件夹内
+- 实现构造函数并为 obj.sub_eva 设置默认评价次数
+- 实现 function Tasks = getTasks(obj)
 - 按照Problem类中的各虚函数的注释实现继承的虚函数
 - 在文件的第2行添加标签 <Single/Multi/Many> <None/Competitive/Constrained>
 - *可参考CEC17_MTSO问题的实现*
-
-### 使用App Designer修改GUI界面
-
-- 使用matlab的App Designer打开**GUI/MTO_Platform.mlapp**工程文件，进行GUI界面的修改
-- 修改完后导出为**MTO_GUI.m**文件
-
 
 ## 功能
 
@@ -226,12 +223,12 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 2. 问题选择
     - 选取一个问题，显示在Problem Tree中
     - 打开Problem Node会显示问题参数设置。*双击修改*
-3. 问题图像
-    - 在右侧Axes区域右上角选择Tasks Figure
-    - 每选取一个问题，就绘制该问题自变量在1维上所有任务的图像。*为方便观察任务间特征，将每个任务的适应值归一化展示*
-4. 收敛图
-    - 在右侧Axes区域右上角选择Convergence
-    - 选取算法和任务后，点击Start按钮，会在Axes区域绘制该算法在该问题每个任务上的收敛图像
+3. 算法运行
+    - 点击Start按钮开始运行
+4. 查看图像
+    - 问题1维图像（归一化/原始）
+    - 可行域2维图像
+    - 收敛图，运行完后显示
 
 ### 二、实验模块
 
@@ -240,7 +237,7 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 
 1. 参数设置
     - Run Times: 独立运行次数
-    - Parallel: 并行执行
+    - Parallel: 是否开启并行
 
 2. 算法选择
     - 在Algorithms中选择算法后，点击Add按钮，会将算法添加到Selected Algorithms中，可以展开算法，双击修改参数或算法名称。*可多选，右键全选，可重复添加*
@@ -263,14 +260,17 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
       - Score 多任务分数
       - min(Obj) 任务组中的最小目标值 (Competitive-MTO 问题)
       - Time Used 运行时间
-    - 数据类型
-      - Mean 平均
-      - Mean (Std) 平均 (标准差)
-      - Median 中位数
-      - Median (Std) 中位数 (标准差)
-    - 精度
-      - %.2d
-      - %.4d
+    - 数据类型 (Obj / min(Obj))
+      - Mean 平均目标值
+      - Mean&Std 平均目标值 (标准差)
+      - Mean&CV 平均目标值 (平均约束违反度)
+      - Mean&CV&FR 平均目标值 / 平均约束违反度 / 可行解比例
+      - Std 目标值标准差
+      - Median 目标值中位数
+      - Best 最优目标值
+      - Worst 最差目标值
+      - CV 平均约束违反度
+      - FR 可行解比例
     - 统计测试 (Fitness)
       - None
       - Rank sum test 秩和检验
@@ -286,6 +286,9 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
     - 问题类型
       - Obj
       - min(Obj) (Competitive-MTO 问题)
+    - X轴类型
+      - 评价次数
+      - 迭代次数 (根据评价次数和种群大小设置来计算)
     - Y轴类型
       - log(Obj)
       - Obj

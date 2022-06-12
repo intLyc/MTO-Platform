@@ -2859,7 +2859,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create ETestTypeDropDown
             app.ETestTypeDropDown = uidropdown(app.EP3T1GridLayout);
-            app.ETestTypeDropDown.Items = {'None', 'Rank sum test', 'Signed rank test', 'FR rank'};
+            app.ETestTypeDropDown.Items = {'None', 'Rank sum test', 'Signed rank test'};
             app.ETestTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @ETestTypeDropDownValueChanged, true);
             app.ETestTypeDropDown.Tooltip = {'Statistical Analysis (Only for Objective value)'};
             app.ETestTypeDropDown.FontWeight = 'bold';
