@@ -56,7 +56,7 @@ classdef TLTLA < Algorithm
 
                 % Upper-level: Inter-task Knowledge Transfer
                 % generation
-                [offspring, calls] = OperatorMFEA.generate(1, population, Tasks, obj.rmp, obj.mu, obj.mum);
+                [offspring, calls] = OperatorTLTLA.generate(population, Tasks, obj.rmp, obj.mu, obj.mum);
                 fnceval_calls = fnceval_calls + calls;
                 % selection
                 [population, bestobj, bestX] = selectMF(population, offspring, Tasks, pop_size, bestobj, bestX);

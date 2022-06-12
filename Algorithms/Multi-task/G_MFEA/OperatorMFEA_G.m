@@ -8,12 +8,7 @@ classdef OperatorMFEA_G < Operator
     %--------------------------------------------------------------------------
 
     methods (Static)
-        function [offspring, calls] = generate(callfun, population, Tasks, rmp, mu, mum, transfer)
-            if isempty(population)
-                offspring = population;
-                calls = 0;
-                return;
-            end
+        function [offspring, calls] = generate(population, Tasks, rmp, mu, mum, transfer)
             Individual_class = class(population(1));
             indorder = randperm(length(population));
             count = 1;
@@ -56,7 +51,7 @@ classdef OperatorMFEA_G < Operator
                     p = [p1, p2];
                     for x = 1:2
                         % mutate
-                        offspring(count + x - 1) = OperatorGA.mutate(population(p(x)), max([Tasks.dims]), mum);
+                        offspring(count + x - 1) = OperatorMFEA_G.mutate(population(p(x)), max([Tasks.dims]), mum);
                         % imitate
                         offspring(count + x - 1).skill_factor = population(p(x)).skill_factor;
                     end
@@ -67,24 +62,40 @@ classdef OperatorMFEA_G < Operator
                 end
                 count = count + 2;
             end
-            if callfun
-                offspring_temp = feval(Individual_class).empty();
-                calls = 0;
-                for t = 1:length(Tasks)
-                    offspring_t = offspring([offspring.skill_factor] == t);
-                    [offspring_t, cal] = evaluate(offspring_t, Tasks(t), t);
-                    offspring_temp = [offspring_temp, offspring_t];
-                    calls = calls + cal;
-                end
-                offspring = offspring_temp;
-            else
-                calls = 0;
+
+            % Evaluation
+            offspring_temp = feval(Individual_class).empty();
+            calls = 0;
+            for t = 1:length(Tasks)
+                offspring_t = offspring([offspring.skill_factor] == t);
+                [offspring_t, cal] = evaluate(offspring_t, Tasks(t), t);
+                offspring_temp = [offspring_temp, offspring_t];
+                calls = calls + cal;
             end
+            offspring = offspring_temp;
         end
 
         function object = crossover(object, p1, p2, cf)
             % SBX - Simulated binary crossover
             object.rnvec = 0.5 * ((1 + cf) .* p1.Trnvec + (1 - cf) .* p2.Trnvec);
+        end
+
+        function object = mutate(object, dim, mum)
+            % Polynomial mutation
+            rnvec_temp = object.rnvec;
+            for i = 1:dim
+                if rand(1) < 1 / dim
+                    u = rand(1);
+                    if u <= 0.5
+                        del = (2 * u)^(1 / (1 + mum)) - 1;
+                        rnvec_temp(i) = object.rnvec(i) + del * (object.rnvec(i));
+                    else
+                        del = 1 - (2 * (1 - u))^(1 / (1 + mum));
+                        rnvec_temp(i) = object.rnvec(i) + del * (1 - object.rnvec(i));
+                    end
+                end
+            end
+            object.rnvec = rnvec_temp;
         end
     end
 end

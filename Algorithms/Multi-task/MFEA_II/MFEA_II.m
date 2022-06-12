@@ -65,7 +65,7 @@ classdef MFEA_II < Algorithm
                 RMP = learnRMP(subpops, [Tasks.dims]); % learning RMP matrix online at every generation.
 
                 % generation
-                [offspring, calls] = OperatorMFEA2.generate(1, population, Tasks, RMP, obj.mu, obj.mum, obj.probswap);
+                [offspring, calls] = OperatorMFEA2.generate(population, Tasks, RMP, obj.mu, obj.mum, obj.probswap);
                 fnceval_calls = fnceval_calls + calls;
 
                 % selection

@@ -1,4 +1,4 @@
-classdef OperatorMFDE < OperatorDE
+classdef OperatorMFDE < Operator
 
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
@@ -8,12 +8,7 @@ classdef OperatorMFDE < OperatorDE
     %--------------------------------------------------------------------------
 
     methods (Static)
-        function [offspring, calls] = generate(callfun, population, Tasks, rmp, F, CR)
-            if isempty(population)
-                offspring = population;
-                calls = 0;
-                return;
-            end
+        function [offspring, calls] = generate(population, Tasks, rmp, F, CR)
             Individual_class = class(population(1));
             for i = 1:length(population)
                 offspring(i) = feval(Individual_class);
@@ -46,25 +41,33 @@ classdef OperatorMFDE < OperatorDE
                     offspring(i).skill_factor = population(i).skill_factor;
                 end
 
-                offspring(i) = OperatorDE.mutate(offspring(i), population(x1), population(x2), population(x3), F);
-                offspring(i) = OperatorDE.crossover(offspring(i), population(i), CR);
+                offspring(i) = OperatorMFDE.mutate(offspring(i), population(x1), population(x2), population(x3), F);
+                offspring(i) = OperatorMFDE.crossover(offspring(i), population(i), CR);
 
                 offspring(i).rnvec(offspring(i).rnvec > 1) = 1;
                 offspring(i).rnvec(offspring(i).rnvec < 0) = 0;
             end
-            if callfun
-                offspring_temp = feval(Individual_class).empty();
-                calls = 0;
-                for t = 1:length(Tasks)
-                    offspring_t = offspring([offspring.skill_factor] == t);
-                    [offspring_t, cal] = evaluate(offspring_t, Tasks(t), t);
-                    offspring_temp = [offspring_temp, offspring_t];
-                    calls = calls + cal;
-                end
-                offspring = offspring_temp;
-            else
-                calls = 0;
+
+            % Evaluation
+            offspring_temp = feval(Individual_class).empty();
+            calls = 0;
+            for t = 1:length(Tasks)
+                offspring_t = offspring([offspring.skill_factor] == t);
+                [offspring_t, cal] = evaluate(offspring_t, Tasks(t), t);
+                offspring_temp = [offspring_temp, offspring_t];
+                calls = calls + cal;
             end
+            offspring = offspring_temp;
+        end
+
+        function object = mutate(object, x1, x2, x3, F)
+            object.rnvec = x1.rnvec + F * (x2.rnvec - x3.rnvec);
+        end
+
+        function object = crossover(object, x, CR)
+            replace = rand(1, length(object.rnvec)) > CR;
+            replace(randi(length(object.rnvec))) = false;
+            object.rnvec(replace) = x.rnvec(replace);
         end
     end
 end

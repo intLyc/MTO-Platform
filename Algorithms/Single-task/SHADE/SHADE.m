@@ -77,7 +77,7 @@ classdef SHADE < Algorithm
 
                     % generation
                     union = [population, arc];
-                    [offspring, calls] = OperatorSHADE.generate(1, Task, population, union, obj.p);
+                    [offspring, calls] = OperatorSHADE.generate(Task, population, union, obj.p);
                     fnceval_calls = fnceval_calls + calls;
 
                     % selection

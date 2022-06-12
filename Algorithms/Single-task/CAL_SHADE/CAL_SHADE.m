@@ -113,7 +113,7 @@ classdef CAL_SHADE < Algorithm
 
                     % generation
                     union = [population, arc];
-                    [offspring, calls] = OperatorSHADE_CAL.generate(1, Task, population, union, obj.p, Ep);
+                    [offspring, calls] = OperatorSHADE_CAL.generate(Task, population, union, obj.p, Ep);
                     fnceval_calls = fnceval_calls + calls;
 
                     % selection

@@ -56,7 +56,6 @@ classdef EMEA < Algorithm
         function data = run(obj, Tasks, run_parameter_list)
             sub_pop = run_parameter_list(1);
             sub_eva = run_parameter_list(2);
-            pop_size = sub_pop * length(Tasks);
             eva_num = sub_eva * length(Tasks);
 
             op_list = split(obj.Op, '/');
@@ -77,9 +76,9 @@ classdef EMEA < Algorithm
                     op = op_list{op_idx};
                     switch op
                         case 'GA'
-                            offspring = OperatorGA.generate(0, parent, Tasks(t), obj.GA_mu, obj.GA_mum);
+                            offspring = OperatorEMEA_GA.generate(parent, obj.GA_mu, obj.GA_mum);
                         case 'DE'
-                            offspring = OperatorDE.generate(0, parent, Tasks(t), obj.DE_F, obj.DE_CR);
+                            offspring = OperatorEMEA_DE.generate(parent, obj.DE_F, obj.DE_CR);
                     end
 
                     % Transfer

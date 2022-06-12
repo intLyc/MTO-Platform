@@ -63,7 +63,7 @@ classdef rank_jDE < Algorithm
                     generation = generation + 1;
 
                     % generation
-                    [offspring, calls] = OperatorjDE_rank.generate(1, population, Task, obj.t1, obj.t2);
+                    [offspring, calls] = OperatorjDE_rank.generate(population, Task, obj.t1, obj.t2);
                     fnceval_calls = fnceval_calls + calls;
 
                     % selection

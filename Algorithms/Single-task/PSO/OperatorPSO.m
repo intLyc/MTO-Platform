@@ -8,21 +8,13 @@ classdef OperatorPSO < Operator
     %--------------------------------------------------------------------------
 
     methods (Static)
-        function [population, calls] = generate(callfun, population, Task, w, c1, c2, gbest)
-            if isempty(population)
-                calls = 0;
-                return;
-            end
+        function [population, calls] = generate(population, Task, w, c1, c2, gbest)
             for i = 1:length(population)
                 population(i) = OperatorPSO.velocityUpdate(population(i), gbest, w, c1, c2);
                 population(i) = OperatorPSO.positionUpdate(population(i));
                 population(i) = OperatorPSO.pbestUpdate(population(i));
             end
-            if callfun
-                [population, calls] = evaluate(population, Task, 1);
-            else
-                calls = 0;
-            end
+            [population, calls] = evaluate(population, Task, 1);
         end
 
         function object = velocityUpdate(object, gbest, w, c1, c2)

@@ -1,4 +1,4 @@
-classdef OperatorDE < Operator
+classdef OperatorECHT < Operator
 
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
@@ -16,8 +16,8 @@ classdef OperatorDE < Operator
                 A = randperm(length(population), 4);
                 A(A == i) = []; x1 = A(1); x2 = A(2); x3 = A(3);
 
-                offspring(i) = OperatorDE.mutate(offspring(i), population(x1), population(x2), population(x3), F);
-                offspring(i) = OperatorDE.crossover(offspring(i), population(i), CR);
+                offspring(i) = OperatorECHT.mutate(offspring(i), population(x1), population(x2), population(x3), F);
+                offspring(i) = OperatorECHT.crossover(offspring(i), population(i), CR);
 
                 offspring(i).rnvec(offspring(i).rnvec > 1) = 1;
                 offspring(i).rnvec(offspring(i).rnvec < 0) = 0;

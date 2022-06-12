@@ -8,12 +8,7 @@ classdef OperatorSHADE_CAL < Operator
     %--------------------------------------------------------------------------
 
     methods (Static)
-        function [offspring, calls] = generate(callfun, Task, population, union, p, Ep)
-            if length(population) <= 3
-                offspring = population;
-                calls = 0;
-                return;
-            end
+        function [offspring, calls] = generate(Task, population, union, p, Ep)
             Individual_class = class(population(1));
 
             % get top 100p% individuals
@@ -33,19 +28,25 @@ classdef OperatorSHADE_CAL < Operator
                     x2 = randi(length(union));
                 end
 
-                offspring(i) = OperatorJADE.mutate(offspring(i), population(i), population(pbest), population(x1), union(x2));
-                offspring(i) = OperatorJADE.crossover(offspring(i), population(i));
+                offspring(i) = OperatorSHADE_CAL.mutate(offspring(i), population(i), population(pbest), population(x1), union(x2));
+                offspring(i) = OperatorSHADE_CAL.crossover(offspring(i), population(i));
 
                 vio_low = find(offspring(i).rnvec < 0);
                 offspring(i).rnvec(vio_low) = (population(i).rnvec(vio_low) + 0) / 2;
                 vio_up = find(offspring(i).rnvec > 1);
                 offspring(i).rnvec(vio_up) = (population(i).rnvec(vio_up) + 1) / 2;
             end
-            if callfun
-                [offspring, calls] = evaluate(offspring, Task, 1);
-            else
-                calls = 0;
-            end
+            [offspring, calls] = evaluate(offspring, Task, 1);
+        end
+
+        function object = mutate(object, current, pbest, x1, x2)
+            object.rnvec = current.rnvec + current.F * (pbest.rnvec - current.rnvec) + current.F * (x1.rnvec - x2.rnvec);
+        end
+
+        function object = crossover(object, current)
+            replace = rand(1, length(object.rnvec)) > current.CR;
+            replace(randi(length(object.rnvec))) = false;
+            object.rnvec(replace) = current.rnvec(replace);
         end
     end
 end

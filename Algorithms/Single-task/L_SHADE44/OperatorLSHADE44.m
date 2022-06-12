@@ -1,4 +1,4 @@
-classdef OperatorSHADE44 < Operator
+classdef OperatorLSHADE44 < Operator
 
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
@@ -8,12 +8,7 @@ classdef OperatorSHADE44 < Operator
     %--------------------------------------------------------------------------
 
     methods (Static)
-        function [offspring, calls] = generate(callfun, Task, population, union, p)
-            if length(population) <= 3
-                offspring = population;
-                calls = 0;
-                return;
-            end
+        function [offspring, calls] = generate(Task, population, union, p)
             Individual_class = class(population(1));
 
             % get top 100p% individuals
@@ -34,8 +29,8 @@ classdef OperatorSHADE44 < Operator
                         while x2 == i || x2 == x1 || x2 == pbest
                             x2 = randi(length(union));
                         end
-                        offspring(i) = OperatorJADE.mutate(offspring(i), population(i), population(pbest), population(x1), union(x2));
-                        offspring(i) = OperatorJADE.crossover(offspring(i), population(i));
+                        offspring(i) = OperatorLSHADE44.mutate_rand_to_pbest(offspring(i), population(i), population(pbest), population(x1), union(x2));
+                        offspring(i) = OperatorLSHADE44.crossover(offspring(i), population(i));
                     case 2 % pbest + exp
                         pbest = pop_pbest(randi(length(pop_pbest)));
                         x1 = randi(length(population));
@@ -46,8 +41,8 @@ classdef OperatorSHADE44 < Operator
                         while x2 == i || x2 == x1 || x2 == pbest
                             x2 = randi(length(union));
                         end
-                        offspring(i) = OperatorJADE.mutate(offspring(i), population(i), population(pbest), population(x1), union(x2));
-                        offspring(i) = OperatorSHADE44.crossoverExp(offspring(i), population(i));
+                        offspring(i) = OperatorLSHADE44.mutate_rand_to_pbest(offspring(i), population(i), population(pbest), population(x1), union(x2));
+                        offspring(i) = OperatorLSHADE44.crossoverExp(offspring(i), population(i));
                     case 3 % randrl + bin
                         A = randperm(length(population), 4);
                         A(A == i) = []; idx = A(1:3);
@@ -58,8 +53,8 @@ classdef OperatorSHADE44 < Operator
                         else
                             x3 = idx(rank_temp(3)); x2 = idx(rank_temp(2));
                         end
-                        offspring(i) = OperatorDE.mutate(offspring(i), population(x1), population(x2), population(x3), population(i).F);
-                        offspring(i) = OperatorJADE.crossover(offspring(i), population(i));
+                        offspring(i) = OperatorLSHADE44.mutate_rand(offspring(i), population(x1), population(x2), population(x3), population(i).F);
+                        offspring(i) = OperatorLSHADE44.crossover(offspring(i), population(i));
                     case 4 % randrl + exp
                         A = randperm(length(population), 4);
                         A(A == i) = []; idx = A(1:3);
@@ -70,8 +65,8 @@ classdef OperatorSHADE44 < Operator
                         else
                             x3 = idx(rank_temp(3)); x2 = idx(rank_temp(2));
                         end
-                        offspring(i) = OperatorDE.mutate(offspring(i), population(x1), population(x2), population(x3), population(i).F);
-                        offspring(i) = OperatorSHADE44.crossoverExp(offspring(i), population(i));
+                        offspring(i) = OperatorLSHADE44.mutate_rand(offspring(i), population(x1), population(x2), population(x3), population(i).F);
+                        offspring(i) = OperatorLSHADE44.crossoverExp(offspring(i), population(i));
                 end
 
                 vio_low = find(offspring(i).rnvec < 0);
@@ -79,11 +74,21 @@ classdef OperatorSHADE44 < Operator
                 vio_up = find(offspring(i).rnvec > 1);
                 offspring(i).rnvec(vio_up) = (population(i).rnvec(vio_up) + 1) / 2;
             end
-            if callfun
-                [offspring, calls] = evaluate(offspring, Task, 1);
-            else
-                calls = 0;
-            end
+            [offspring, calls] = evaluate(offspring, Task, 1);
+        end
+
+        function object = mutate_rand_to_pbest(object, current, pbest, x1, x2)
+            object.rnvec = current.rnvec + current.F * (pbest.rnvec - current.rnvec) + current.F * (x1.rnvec - x2.rnvec);
+        end
+
+        function object = mutate_rand(object, x1, x2, x3, F)
+            object.rnvec = x1.rnvec + F * (x2.rnvec - x3.rnvec);
+        end
+
+        function object = crossover(object, current)
+            replace = rand(1, length(object.rnvec)) > current.CR;
+            replace(randi(length(object.rnvec))) = false;
+            object.rnvec(replace) = current.rnvec(replace);
         end
 
         function object = crossoverExp(object, current)

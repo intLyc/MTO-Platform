@@ -8,35 +8,7 @@ classdef OperatorGA < Operator
     %--------------------------------------------------------------------------
 
     methods (Static)
-        function object = crossover(object, p1, p2, cf)
-            % SBX - Simulated binary crossover
-            object.rnvec = 0.5 * ((1 + cf) .* p1.rnvec + (1 - cf) .* p2.rnvec);
-        end
-
-        function object = mutate(object, dim, mum)
-            % Polynomial mutation
-            rnvec_temp = object.rnvec;
-            for i = 1:dim
-                if rand(1) < 1 / dim
-                    u = rand(1);
-                    if u <= 0.5
-                        del = (2 * u)^(1 / (1 + mum)) - 1;
-                        rnvec_temp(i) = object.rnvec(i) + del * (object.rnvec(i));
-                    else
-                        del = 1 - (2 * (1 - u))^(1 / (1 + mum));
-                        rnvec_temp(i) = object.rnvec(i) + del * (1 - object.rnvec(i));
-                    end
-                end
-            end
-            object.rnvec = rnvec_temp;
-        end
-
-        function [offspring, calls] = generate(callfun, population, Task, mu, mum)
-            if length(population) <= 2
-                offspring = population;
-                calls = 0;
-                return;
-            end
+        function [offspring, calls] = generate(population, Task, mu, mum)
             Individual_class = class(population(1));
             indorder = randperm(length(population));
             count = 1;
@@ -62,11 +34,30 @@ classdef OperatorGA < Operator
                 end
                 count = count + 2;
             end
-            if callfun
-                [offspring, calls] = evaluate(offspring, Task, 1);
-            else
-                calls = 0;
+            [offspring, calls] = evaluate(offspring, Task, 1);
+        end
+
+        function object = crossover(object, p1, p2, cf)
+            % SBX - Simulated binary crossover
+            object.rnvec = 0.5 * ((1 + cf) .* p1.rnvec + (1 - cf) .* p2.rnvec);
+        end
+
+        function object = mutate(object, dim, mum)
+            % Polynomial mutation
+            rnvec_temp = object.rnvec;
+            for i = 1:dim
+                if rand(1) < 1 / dim
+                    u = rand(1);
+                    if u <= 0.5
+                        del = (2 * u)^(1 / (1 + mum)) - 1;
+                        rnvec_temp(i) = object.rnvec(i) + del * (object.rnvec(i));
+                    else
+                        del = 1 - (2 * (1 - u))^(1 / (1 + mum));
+                        rnvec_temp(i) = object.rnvec(i) + del * (1 - object.rnvec(i));
+                    end
+                end
             end
+            object.rnvec = rnvec_temp;
         end
     end
 end

@@ -74,7 +74,7 @@ classdef JADE < Algorithm
 
                     % generation
                     union = [population, arc];
-                    [offspring, calls] = OperatorJADE.generate(1, Task, population, union, obj.p);
+                    [offspring, calls] = OperatorJADE.generate(Task, population, union, obj.p);
                     fnceval_calls = fnceval_calls + calls;
 
                     % selection

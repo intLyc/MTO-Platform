@@ -8,7 +8,7 @@ classdef OperatorMFEA_LDA < Operator
     %--------------------------------------------------------------------------
 
     methods (Static)
-        function [offspring, calls] = generate(callfun, population, Tasks, rmp, mu, mum, M)
+        function [offspring, calls] = generate(population, Tasks, rmp, mu, mum, M)
             Individual_class = class(population(1));
             indorder = randperm(length(population));
             count = 1;
@@ -28,11 +28,11 @@ classdef OperatorMFEA_LDA < Operator
 
                 if population(p1).skill_factor == population(p2).skill_factor || rand < rmp
                     % crossover
-                    offspring(count) = OperatorGA.crossover(offspring(count), population(p1), population(p2), cf);
-                    offspring(count + 1) = OperatorGA.crossover(offspring(count + 1), population(p2), population(p1), cf);
+                    offspring(count) = OperatorMFEA_LDA.crossover(offspring(count), population(p1), population(p2), cf);
+                    offspring(count + 1) = OperatorMFEA_LDA.crossover(offspring(count + 1), population(p2), population(p1), cf);
                     % mutate
-                    offspring(count) = OperatorGA.mutate(offspring(count), max([Tasks.dims]), mum);
-                    offspring(count + 1) = OperatorGA.mutate(offspring(count + 1), max([Tasks.dims]), mum);
+                    offspring(count) = OperatorMFEA_LDA.mutate(offspring(count), max([Tasks.dims]), mum);
+                    offspring(count + 1) = OperatorMFEA_LDA.mutate(offspring(count + 1), max([Tasks.dims]), mum);
                     % imitate
                     p = [p1, p2];
                     offspring(count).skill_factor = population(p(randi(2))).skill_factor;
@@ -61,11 +61,11 @@ classdef OperatorMFEA_LDA < Operator
                     [m1, m2] = OperatorMFEA_LDA.mapping(M{t1}, M{t2});
                     temp_offspring.rnvec = population(p1).rnvec * m1;
                     % crossover
-                    offspring(count) = OperatorGA.crossover(offspring(count), temp_offspring, population(p2), cf);
-                    offspring(count + 1) = OperatorGA.crossover(offspring(count + 1), population(p2), temp_offspring, cf);
+                    offspring(count) = OperatorMFEA_LDA.crossover(offspring(count), temp_offspring, population(p2), cf);
+                    offspring(count + 1) = OperatorMFEA_LDA.crossover(offspring(count + 1), population(p2), temp_offspring, cf);
                     % mutate
-                    offspring(count) = OperatorGA.mutate(offspring(count), max([Tasks.dims]), mum);
-                    offspring(count + 1) = OperatorGA.mutate(offspring(count + 1), max([Tasks.dims]), mum);
+                    offspring(count) = OperatorMFEA_LDA.mutate(offspring(count), max([Tasks.dims]), mum);
+                    offspring(count + 1) = OperatorMFEA_LDA.mutate(offspring(count + 1), max([Tasks.dims]), mum);
                     % imitate
                     p = [p1, p2];
                     rand_p = p(randi(2));
@@ -85,24 +85,45 @@ classdef OperatorMFEA_LDA < Operator
                 end
                 count = count + 2;
             end
-            if callfun
-                offspring_temp = feval(Individual_class).empty();
-                calls = 0;
-                for t = 1:length(Tasks)
-                    offspring_t = offspring([offspring.skill_factor] == t);
-                    [offspring_t, cal] = evaluate(offspring_t, Tasks(t), t);
-                    offspring_temp = [offspring_temp, offspring_t];
-                    calls = calls + cal;
-                end
-                offspring = offspring_temp;
-            else
-                calls = 0;
+
+            % Evaluation
+            offspring_temp = feval(Individual_class).empty();
+            calls = 0;
+            for t = 1:length(Tasks)
+                offspring_t = offspring([offspring.skill_factor] == t);
+                [offspring_t, cal] = evaluate(offspring_t, Tasks(t), t);
+                offspring_temp = [offspring_temp, offspring_t];
+                calls = calls + cal;
             end
+            offspring = offspring_temp;
         end
 
         function [m1, m2] = mapping(a, b)
             m1 = (inv(transpose(a) * a)) * (transpose(a) * b);
             m2 = transpose(m1) * (inv(m1 * transpose(m1)));
+        end
+
+        function object = crossover(object, p1, p2, cf)
+            % SBX - Simulated binary crossover
+            object.rnvec = 0.5 * ((1 + cf) .* p1.rnvec + (1 - cf) .* p2.rnvec);
+        end
+
+        function object = mutate(object, dim, mum)
+            % Polynomial mutation
+            rnvec_temp = object.rnvec;
+            for i = 1:dim
+                if rand(1) < 1 / dim
+                    u = rand(1);
+                    if u <= 0.5
+                        del = (2 * u)^(1 / (1 + mum)) - 1;
+                        rnvec_temp(i) = object.rnvec(i) + del * (object.rnvec(i));
+                    else
+                        del = 1 - (2 * (1 - u))^(1 / (1 + mum));
+                        rnvec_temp(i) = object.rnvec(i) + del * (1 - object.rnvec(i));
+                    end
+                end
+            end
+            object.rnvec = rnvec_temp;
         end
     end
 end

@@ -68,7 +68,7 @@ classdef MTV_DE < Algorithm
                     generation = generation + 1;
 
                     % generation
-                    [offspring, calls] = OperatorDE_MTV.generate(1, population, Task, obj.F, obj.CR, obj.no);
+                    [offspring, calls] = OperatorDE_MTV.generate(population, Task, obj.F, obj.CR, obj.no);
                     fnceval_calls = fnceval_calls + calls;
 
                     % selection

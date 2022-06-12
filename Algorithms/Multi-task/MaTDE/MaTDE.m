@@ -88,7 +88,7 @@ classdef MaTDE < Algorithm
                         CR = obj.LCR + (obj.UCR - obj.LCR) * rand;
 
                         % generation
-                        [offspring, calls] = OperatorDE.generate(1, population{t}, Tasks(t), F, CR, 'current_rand');
+                        [offspring, calls] = OperatorMaTDE.generate(population{t}, Tasks(t), F, CR);
                         fnceval_calls = fnceval_calls + calls;
 
                         % selection
@@ -109,7 +109,7 @@ classdef MaTDE < Algorithm
                             offspring(i) = Individual();
                             offspring(i).rnvec = population{t}(i).rnvec;
                             r1 = randi(length(Tasks(transfer_task)));
-                            offspring(i) = OperatorDE.crossover(offspring(i), population{transfer_task}(r1), CR);
+                            offspring(i) = OperatorMaTDE.crossover(offspring(i), population{transfer_task}(r1), CR);
                         end
                         [offspring, calls] = evaluate(offspring, Tasks(t), 1);
                         fnceval_calls = fnceval_calls + calls;

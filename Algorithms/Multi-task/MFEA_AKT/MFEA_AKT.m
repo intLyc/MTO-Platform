@@ -66,7 +66,7 @@ classdef MFEA_AKT < Algorithm
                 generation = generation + 1;
 
                 % generation
-                [offspring, calls] = OperatorMFEA_AKT.generate(1, population, Tasks, obj.rmp, obj.mu, obj.mum);
+                [offspring, calls] = OperatorMFEA_AKT.generate(population, Tasks, obj.rmp, obj.mu, obj.mum);
                 fnceval_calls = fnceval_calls + calls;
 
                 % calculate best cx_factor

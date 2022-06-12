@@ -60,7 +60,7 @@ classdef AT_MFEA < Algorithm
                 generation = generation + 1;
 
                 % generation
-                [offspring, calls] = OperatorMFEA_AT.generate(1, population, Tasks, obj.rmp, obj.mu, obj.mum, obj.probswap, mu_tasks, Sigma_tasks);
+                [offspring, calls] = OperatorMFEA_AT.generate(population, Tasks, obj.rmp, obj.mu, obj.mum, obj.probswap, mu_tasks, Sigma_tasks);
                 fnceval_calls = fnceval_calls + calls;
 
                 % selection

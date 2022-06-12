@@ -62,7 +62,7 @@ classdef jDE < Algorithm
                     generation = generation + 1;
 
                     % generation
-                    [offspring, calls] = OperatorjDE.generate(1, population, Task, obj.t1, obj.t2);
+                    [offspring, calls] = OperatorjDE.generate(population, Task, obj.t1, obj.t2);
                     fnceval_calls = fnceval_calls + calls;
 
                     % selection

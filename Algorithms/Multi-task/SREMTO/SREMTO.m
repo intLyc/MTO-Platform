@@ -100,7 +100,7 @@ classdef SREMTO < Algorithm
                     end
 
                     % generation
-                    [offspring, calls] = OperatorGA_SRE.generate(1, parent, Tasks, t, obj.mu, obj.mum);
+                    [offspring, calls] = OperatorSRE.generate(parent, Tasks, t, obj.mu, obj.mum);
                     fnceval_calls = fnceval_calls + calls;
                     int_population = [int_population, offspring];
                 end

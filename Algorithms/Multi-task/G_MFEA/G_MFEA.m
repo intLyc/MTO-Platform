@@ -99,7 +99,7 @@ classdef G_MFEA < Algorithm
                 generation = generation + 1;
 
                 % generation
-                [offspring, calls] = OperatorMFEA_G.generate(1, population, Tasks, obj.rmp, obj.mu, obj.mum, transfer);
+                [offspring, calls] = OperatorMFEA_G.generate(population, Tasks, obj.rmp, obj.mu, obj.mum, transfer);
                 fnceval_calls = fnceval_calls + calls;
 
                 for t = 1:length(Tasks) - 1

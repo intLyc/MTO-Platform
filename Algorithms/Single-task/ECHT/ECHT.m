@@ -86,7 +86,7 @@ classdef ECHT < Algorithm
 
                     for t = 1:length(population)
                         % generate constraint handling population
-                        [offspring{t}, calls] = OperatorDE.generate(1, population{t}, Task, obj.F, obj.CR);
+                        [offspring{t}, calls] = OperatorECHT.generate(population{t}, Task, obj.F, obj.CR);
                         fnceval_calls = fnceval_calls + calls;
                     end
 

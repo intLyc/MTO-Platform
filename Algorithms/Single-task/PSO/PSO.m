@@ -58,7 +58,7 @@ classdef PSO < Algorithm
                     w = obj.wmax - (obj.wmax - obj.wmin) * fnceval_calls / sub_eva;
 
                     % generation
-                    [population, calls] = OperatorPSO.generate(1, population, Task, w, obj.c1, obj.c2, bestX_temp);
+                    [population, calls] = OperatorPSO.generate(population, Task, w, obj.c1, obj.c2, bestX_temp);
                     fnceval_calls = fnceval_calls + calls;
 
                     % update best

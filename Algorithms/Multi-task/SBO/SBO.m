@@ -82,7 +82,7 @@ classdef SBO < Algorithm
                     t_idx = [population.skill_factor] == t;
                     find_idx = find(t_idx);
                     % generation
-                    offspring_t = OperatorGA.generate(0, population(t_idx), Tasks(t), obj.mu, obj.mum);
+                    offspring_t = OperatorSBO.generate(population(t_idx), obj.mu, obj.mum);
                     for i = 1:length(offspring_t)
                         offspring_t(i).skill_factor = t;
                         offspring_t(i).belonging_task = t;

@@ -96,7 +96,7 @@ classdef MFMP < Algorithm
                     end
 
                     % generation
-                    [offspring, calls, flag] = OperatorMFMP.generate(1, Tasks(t), population{t}, union, population{c_idx}, c_union, rmp(t, generation - 1), obj.p);
+                    [offspring, calls, flag] = OperatorMFMP.generate(Tasks(t), population{t}, union, population{c_idx}, c_union, rmp(t, generation - 1), obj.p);
                     fnceval_calls = fnceval_calls + calls;
 
                     % selection

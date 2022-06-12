@@ -57,7 +57,7 @@ classdef MFEA_DV < Algorithm
                 generation = generation + 1;
 
                 % generation
-                [offspring, calls] = OperatorMFEA_DV.generate(1, population, Tasks, obj.rmp, obj.mu, obj.mum, obj.p, sub_pop);
+                [offspring, calls] = OperatorMFEA_DV.generate(population, Tasks, obj.rmp, obj.mu, obj.mum, obj.p, sub_pop);
                 fnceval_calls = fnceval_calls + calls;
 
                 % selection

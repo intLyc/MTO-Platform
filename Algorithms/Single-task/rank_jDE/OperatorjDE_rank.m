@@ -8,13 +8,7 @@ classdef OperatorjDE_rank < Operator
     %--------------------------------------------------------------------------
 
     methods (Static)
-        function [offspring, calls] = generate(callfun, population, Task, t1, t2)
-            if length(population) <= 3
-                offspring = population;
-                calls = 0;
-                return;
-            end
-
+        function [offspring, calls] = generate(population, Task, t1, t2)
             % calculate rank
             for i = 1:length(population)
                 factorial_costs(i) = population(i).factorial_costs;
@@ -56,17 +50,23 @@ classdef OperatorjDE_rank < Operator
                     offspring(i).CR = rand;
                 end
 
-                offspring(i) = OperatorDE.mutate(offspring(i), population(x1), population(x2), population(x3), offspring(i).F);
-                offspring(i) = OperatorDE.crossover(offspring(i), population(i), offspring(i).CR);
+                offspring(i) = OperatorjDE_rank.mutate(offspring(i), population(x1), population(x2), population(x3), offspring(i).F);
+                offspring(i) = OperatorjDE_rank.crossover(offspring(i), population(i), offspring(i).CR);
 
                 offspring(i).rnvec(offspring(i).rnvec > 1) = 1;
                 offspring(i).rnvec(offspring(i).rnvec < 0) = 0;
             end
-            if callfun
-                [offspring, calls] = evaluate(offspring, Task, 1);
-            else
-                calls = 0;
-            end
+            [offspring, calls] = evaluate(offspring, Task, 1);
+        end
+
+        function object = mutate(object, x1, x2, x3, F)
+            object.rnvec = x1.rnvec + F * (x2.rnvec - x3.rnvec);
+        end
+
+        function object = crossover(object, x, CR)
+            replace = rand(1, length(object.rnvec)) > CR;
+            replace(randi(length(object.rnvec))) = false;
+            object.rnvec(replace) = x.rnvec(replace);
         end
     end
 end

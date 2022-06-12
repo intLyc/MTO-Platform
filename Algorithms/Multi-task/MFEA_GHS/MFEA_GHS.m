@@ -59,7 +59,7 @@ classdef MFEA_GHS < Algorithm
 
                 % generation
                 a = mod(generation, 2);
-                [offspring, calls] = OperatorMFEA_GHS.generate(1, population, Tasks, obj.rmp, obj.mu, obj.mum, a, max_T, min_T, M);
+                [offspring, calls] = OperatorMFEA_GHS.generate(population, Tasks, obj.rmp, obj.mu, obj.mum, a, max_T, min_T, M);
                 fnceval_calls = fnceval_calls + calls;
 
                 % selection

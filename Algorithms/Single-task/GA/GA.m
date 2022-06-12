@@ -47,7 +47,7 @@ classdef GA < Algorithm
                     generation = generation + 1;
 
                     % generation
-                    [offspring, calls] = OperatorGA.generate(1, population, Task, obj.mu, obj.mum);
+                    [offspring, calls] = OperatorGA.generate(population, Task, obj.mu, obj.mum);
                     fnceval_calls = fnceval_calls + calls;
 
                     % selection

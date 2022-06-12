@@ -8,12 +8,7 @@ classdef OperatorMFMP < Operator
     %--------------------------------------------------------------------------
 
     methods (Static)
-        function [offspring, calls, flag] = generate(callfun, Task, population, union, c_pop, c_union, rmp, p)
-            if isempty(population)
-                offspring = population;
-                calls = 0;
-                return;
-            end
+        function [offspring, calls, flag] = generate(Task, population, union, c_pop, c_union, rmp, p)
             Individual_class = class(population(1));
             % get top 100p% individuals
             factorial_costs = [];
@@ -45,8 +40,8 @@ classdef OperatorMFMP < Operator
                         x2 = randi(length(c_union));
                     end
 
-                    offspring(i) = OperatorJADE.mutate(offspring(i), population(i), c_pop(c_pbest), c_pop(x1), c_union(x2));
-                    offspring(i) = OperatorJADE.crossover(offspring(i), population(i));
+                    offspring(i) = OperatorMFMP.mutate(offspring(i), population(i), c_pop(c_pbest), c_pop(x1), c_union(x2));
+                    offspring(i) = OperatorMFMP.crossover(offspring(i), population(i));
                     flag(i) = 1;
                 else
                     pbest = pop_pbest(randi(length(pop_pbest)));
@@ -59,8 +54,8 @@ classdef OperatorMFMP < Operator
                         x2 = randi(length(union));
                     end
 
-                    offspring(i) = OperatorJADE.mutate(offspring(i), population(i), population(pbest), population(x1), union(x2));
-                    offspring(i) = OperatorJADE.crossover(offspring(i), population(i));
+                    offspring(i) = OperatorMFMP.mutate(offspring(i), population(i), population(pbest), population(x1), union(x2));
+                    offspring(i) = OperatorMFMP.crossover(offspring(i), population(i));
                 end
 
                 vio_low = find(offspring(i).rnvec < 0);
@@ -68,11 +63,17 @@ classdef OperatorMFMP < Operator
                 vio_up = find(offspring(i).rnvec > 1);
                 offspring(i).rnvec(vio_up) = (population(i).rnvec(vio_up) + 1) / 2;
             end
-            if callfun
-                [offspring, calls] = evaluate(offspring, Task, 1);
-            else
-                calls = 0;
-            end
+            [offspring, calls] = evaluate(offspring, Task, 1);
+        end
+
+        function object = mutate(object, current, pbest, x1, x2)
+            object.rnvec = current.rnvec + current.F * (pbest.rnvec - current.rnvec) + current.F * (x1.rnvec - x2.rnvec);
+        end
+
+        function object = crossover(object, current)
+            replace = rand(1, length(object.rnvec)) > current.CR;
+            replace(randi(length(object.rnvec))) = false;
+            object.rnvec(replace) = current.rnvec(replace);
         end
     end
 end

@@ -54,7 +54,7 @@ classdef MFDE < Algorithm
                 generation = generation + 1;
 
                 % generation
-                [offspring, calls] = OperatorMFDE.generate(1, population, Tasks, obj.rmp, obj.F, obj.CR);
+                [offspring, calls] = OperatorMFDE.generate(population, Tasks, obj.rmp, obj.F, obj.CR);
                 fnceval_calls = fnceval_calls + calls;
 
                 % selection

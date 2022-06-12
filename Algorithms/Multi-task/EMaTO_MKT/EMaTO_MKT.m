@@ -87,7 +87,7 @@ classdef EMaTO_MKT < Algorithm
                 [cluster_model, population] = obj.LEKT(population, length(Tasks), difference);
 
                 % generation
-                [offspring, calls] = OperatorMKT.generate(1, population, Tasks, amp, obj.mu, obj.mum, cluster_model);
+                [offspring, calls] = OperatorMKT.generate(population, Tasks, amp, obj.mu, obj.mum, cluster_model);
                 fnceval_calls = fnceval_calls + calls;
 
                 % selection

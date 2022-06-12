@@ -1,4 +1,4 @@
-classdef OperatorMFEA < Operator
+classdef OperatorTLTLA < Operator
 
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
@@ -29,8 +29,8 @@ classdef OperatorMFEA < Operator
 
                 if (population(p1).skill_factor == population(p2).skill_factor) || rand < rmp
                     % crossover
-                    offspring(count) = OperatorMFEA.crossover(offspring(count), population(p1), population(p2), cf);
-                    offspring(count + 1) = OperatorMFEA.crossover(offspring(count + 1), population(p2), population(p1), cf);
+                    offspring(count) = OperatorTLTLA.crossover(offspring(count), population(p1), population(p2), cf);
+                    offspring(count + 1) = OperatorTLTLA.crossover(offspring(count + 1), population(p2), population(p1), cf);
                     % imitate
                     p = [p1, p2];
                     offspring(count).skill_factor = population(p(randi(2))).skill_factor;
@@ -39,7 +39,7 @@ classdef OperatorMFEA < Operator
                     p = [p1, p2];
                     for x = 1:2
                         % mutate
-                        offspring(count + x - 1) = OperatorMFEA.mutate(population(p(x)), max([Tasks.dims]), mum);
+                        offspring(count + x - 1) = OperatorTLTLA.mutate(population(p(x)), max([Tasks.dims]), mum);
                         % imitate
                         offspring(count + x - 1).skill_factor = population(p(x)).skill_factor;
                     end

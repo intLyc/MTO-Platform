@@ -57,7 +57,7 @@ classdef MTEA_AD < Algorithm
 
                 for t = 1:length(Tasks)
                     % generation
-                    offspring = OperatorGA.generate(0, population{t}, Tasks(t), obj.mu, obj.mum);
+                    offspring = OperatorMTEA_AD.generate(population{t}, obj.mu, obj.mum);
 
                     % Knowledge Transfer
                     if rand < obj.TRP

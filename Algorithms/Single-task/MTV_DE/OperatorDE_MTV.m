@@ -8,12 +8,7 @@ classdef OperatorDE_MTV < Operator
     %--------------------------------------------------------------------------
 
     methods (Static)
-        function [offspring, calls] = generate(callfun, population, Task, F, CR, no)
-            if length(population) <= 3
-                offspring = population;
-                calls = 0;
-                return;
-            end
+        function [offspring, calls] = generate(population, Task, F, CR, no)
             calls = 0;
             Individual_class = class(population(1));
             for i = 1:length(population)
@@ -25,8 +20,8 @@ classdef OperatorDE_MTV < Operator
                     A = randperm(length(population), 4);
                     A(A == i) = []; x1 = A(1); x2 = A(2); x3 = A(3);
 
-                    offspring_temp = OperatorDE.mutate(offspring_temp, population(x1), population(x2), population(x3), F);
-                    offspring_temp = OperatorDE.crossover(offspring_temp, population(i), CR);
+                    offspring_temp = OperatorDE_MTV.mutate(offspring_temp, population(x1), population(x2), population(x3), F);
+                    offspring_temp = OperatorDE_MTV.crossover(offspring_temp, population(i), CR);
 
                     offspring_temp.rnvec(offspring_temp.rnvec > 1) = 1;
                     offspring_temp.rnvec(offspring_temp.rnvec < 0) = 0;
@@ -44,6 +39,16 @@ classdef OperatorDE_MTV < Operator
                     end
                 end
             end
+        end
+
+        function object = mutate(object, x1, x2, x3, F)
+            object.rnvec = x1.rnvec + F * (x2.rnvec - x3.rnvec);
+        end
+
+        function object = crossover(object, x, CR)
+            replace = rand(1, length(object.rnvec)) > CR;
+            replace(randi(length(object.rnvec))) = false;
+            object.rnvec(replace) = x.rnvec(replace);
         end
     end
 end

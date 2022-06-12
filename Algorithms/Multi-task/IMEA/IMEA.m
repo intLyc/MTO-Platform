@@ -82,7 +82,7 @@ classdef IMEA < Algorithm
                     end
 
                     % generation
-                    [offspring, calls] = OperatorGA.generate(1, parent, Tasks(t), obj.mu, obj.mum);
+                    [offspring, calls] = OperatorIMEA.generate(parent, Tasks(t), obj.mu, obj.mum);
                     fnceval_calls = fnceval_calls + calls;
 
                     % selection

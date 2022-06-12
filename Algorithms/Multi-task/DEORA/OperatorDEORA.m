@@ -8,12 +8,7 @@ classdef OperatorDEORA < Operator
     %--------------------------------------------------------------------------
 
     methods (Static)
-        function [offspring, r1_task, calls] = generate(callfun, population, Tasks, k, rmp, F, CR)
-            if isempty(population{k})
-                offspring = population{k};
-                calls = 0;
-                return;
-            end
+        function [offspring, r1_task, calls] = generate(population, Tasks, k, rmp, F, CR)
             Individual_class = class(population{k}(1));
 
             r1_task = zeros(1, length(population{k}));
@@ -31,19 +26,25 @@ classdef OperatorDEORA < Operator
                     end
                 end
 
-                offspring(i) = OperatorDE.mutate(offspring(i), population{r1_task(i)}(x1), population{k}(x2), population{k}(x3), F);
-                offspring(i) = OperatorDE.crossover(offspring(i), population{k}(i), CR);
+                offspring(i) = OperatorDEORA.mutate(offspring(i), population{r1_task(i)}(x1), population{k}(x2), population{k}(x3), F);
+                offspring(i) = OperatorDEORA.crossover(offspring(i), population{k}(i), CR);
 
                 vio_low = find(offspring(i).rnvec < 0);
                 offspring(i).rnvec(vio_low) = (population{k}(i).rnvec(vio_low) + 0) / 2;
                 vio_up = find(offspring(i).rnvec > 1);
                 offspring(i).rnvec(vio_up) = (population{k}(i).rnvec(vio_up) + 1) / 2;
             end
-            if callfun
-                [offspring, calls] = evaluate(offspring, Tasks(k), 1);
-            else
-                calls = 0;
-            end
+            [offspring, calls] = evaluate(offspring, Tasks(k), 1);
+        end
+
+        function object = mutate(object, x1, x2, x3, F)
+            object.rnvec = x1.rnvec + F * (x2.rnvec - x3.rnvec);
+        end
+
+        function object = crossover(object, x, CR)
+            replace = rand(1, length(object.rnvec)) > CR;
+            replace(randi(length(object.rnvec))) = false;
+            object.rnvec(replace) = x.rnvec(replace);
         end
     end
 end

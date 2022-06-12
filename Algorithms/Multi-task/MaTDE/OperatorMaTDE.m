@@ -1,4 +1,4 @@
-classdef OperatorDE < Operator
+classdef OperatorMaTDE < Operator
 
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
@@ -13,14 +13,18 @@ classdef OperatorDE < Operator
             for i = 1:length(population)
                 offspring(i) = feval(Individual_class);
 
-                A = randperm(length(population), 4);
-                A(A == i) = []; x1 = A(1); x2 = A(2); x3 = A(3);
+                r = randi(length(population));
+                while r == i
+                    r = randi(length(population));
+                end
+                x1 = i; x2 = r; x3 = i;
 
-                offspring(i) = OperatorDE.mutate(offspring(i), population(x1), population(x2), population(x3), F);
-                offspring(i) = OperatorDE.crossover(offspring(i), population(i), CR);
+                offspring(i) = OperatorMaTDE.mutate(offspring(i), population(x1), population(x2), population(x3), F);
+                offspring(i) = OperatorMaTDE.crossover(offspring(i), population(i), CR);
 
-                offspring(i).rnvec(offspring(i).rnvec > 1) = 1;
-                offspring(i).rnvec(offspring(i).rnvec < 0) = 0;
+                rand_rnvec = rand(1, Task.dims);
+                offspring(i).rnvec(offspring(i).rnvec > 1) = rand_rnvec(offspring(i).rnvec > 1);
+                offspring(i).rnvec(offspring(i).rnvec < 0) = rand_rnvec(offspring(i).rnvec < 0);
             end
             [offspring, calls] = evaluate(offspring, Task, 1);
         end

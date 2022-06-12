@@ -119,7 +119,7 @@ classdef L_SHADE44 < Algorithm
 
                     % generation
                     union = [population, arc];
-                    [offspring, calls] = OperatorSHADE44.generate(1, Task, population, union, obj.p);
+                    [offspring, calls] = OperatorLSHADE44.generate(Task, population, union, obj.p);
                     fnceval_calls = fnceval_calls + calls;
 
                     % selection

@@ -8,7 +8,7 @@ classdef OperatorMFEA_AKT < Operator
     %--------------------------------------------------------------------------
 
     methods (Static)
-        function [offspring, calls] = generate(callfun, population, Tasks, rmp, mu, mum)
+        function [offspring, calls] = generate(population, Tasks, rmp, mu, mum)
             Individual_class = class(population(1));
             indorder = randperm(length(population));
             count = 1;
@@ -30,8 +30,8 @@ classdef OperatorMFEA_AKT < Operator
                     % crossover
                     p = [p1, p2];
                     if population(p1).skill_factor == population(p2).skill_factor
-                        offspring(count) = OperatorGA.crossover(offspring(count), population(p1), population(p2), cf);
-                        offspring(count + 1) = OperatorGA.crossover(offspring(count + 1), population(p2), population(p1), cf);
+                        offspring(count) = OperatorMFEA_AKT.crossover(offspring(count), population(p1), population(p2), cf);
+                        offspring(count + 1) = OperatorMFEA_AKT.crossover(offspring(count + 1), population(p2), population(p1), cf);
                         offspring(count).cx_factor = population(p1).cx_factor;
                         offspring(count + 1).cx_factor = population(p2).cx_factor;
                         offspring(count).isTran = 0;
@@ -45,9 +45,6 @@ classdef OperatorMFEA_AKT < Operator
                         offspring(count).isTran = 1;
                         offspring(count + 1).isTran = 1;
                     end
-                    % % mutate
-                    % offspring(count) = OperatorGA.mutate(offspring(count), max([Tasks.dims]), mum);
-                    % offspring(count + 1) = OperatorGA.mutate(offspring(count + 1), max([Tasks.dims]), mum);
                     % imitate
                     rand_p = p(randi(2));
                     offspring(count).skill_factor = population(rand_p).skill_factor;
@@ -63,7 +60,7 @@ classdef OperatorMFEA_AKT < Operator
                     p = [p1, p2];
                     for x = 1:2
                         % mutate
-                        offspring(count + x - 1) = OperatorGA.mutate(population(p(x)), max([Tasks.dims]), mum);
+                        offspring(count + x - 1) = OperatorMFEA_AKT.mutate(population(p(x)), max([Tasks.dims]), mum);
                         % imitate
                         offspring(count + x - 1).skill_factor = population(p(x)).skill_factor;
                     end
@@ -74,19 +71,40 @@ classdef OperatorMFEA_AKT < Operator
                 end
                 count = count + 2;
             end
-            if callfun
-                offspring_temp = feval(Individual_class).empty();
-                calls = 0;
-                for t = 1:length(Tasks)
-                    offspring_t = offspring([offspring.skill_factor] == t);
-                    [offspring_t, cal] = evaluate(offspring_t, Tasks(t), t);
-                    offspring_temp = [offspring_temp, offspring_t];
-                    calls = calls + cal;
-                end
-                offspring = offspring_temp;
-            else
-                calls = 0;
+
+            % Evaluation
+            offspring_temp = feval(Individual_class).empty();
+            calls = 0;
+            for t = 1:length(Tasks)
+                offspring_t = offspring([offspring.skill_factor] == t);
+                [offspring_t, cal] = evaluate(offspring_t, Tasks(t), t);
+                offspring_temp = [offspring_temp, offspring_t];
+                calls = calls + cal;
             end
+            offspring = offspring_temp;
+        end
+
+        function object = crossover(object, p1, p2, cf)
+            % SBX - Simulated binary crossover
+            object.rnvec = 0.5 * ((1 + cf) .* p1.rnvec + (1 - cf) .* p2.rnvec);
+        end
+
+        function object = mutate(object, dim, mum)
+            % Polynomial mutation
+            rnvec_temp = object.rnvec;
+            for i = 1:dim
+                if rand(1) < 1 / dim
+                    u = rand(1);
+                    if u <= 0.5
+                        del = (2 * u)^(1 / (1 + mum)) - 1;
+                        rnvec_temp(i) = object.rnvec(i) + del * (object.rnvec(i));
+                    else
+                        del = 1 - (2 * (1 - u))^(1 / (1 + mum));
+                        rnvec_temp(i) = object.rnvec(i) + del * (1 - object.rnvec(i));
+                    end
+                end
+            end
+            object.rnvec = rnvec_temp;
         end
 
         function object = hyberCX(object, p1, p2, cf, alpha)
@@ -103,7 +121,7 @@ classdef OperatorMFEA_AKT < Operator
                     a = 0.3;
                     object = OperatorMFEA_AKT.blxacrossover(object, p1, p2, a);
                 case 6
-                    object = OperatorGA.crossover(object, p1, p2, cf);
+                    object = OperatorMFEA_AKT.crossover(object, p1, p2, cf);
             end
         end
 

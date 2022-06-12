@@ -1,5 +1,5 @@
 classdef MTDE < Algorithm
-    % <Multi> <None/Competitive>
+    % <Multi> <Competitive>
 
     %------------------------------- Reference --------------------------------
     % @Article{Li2022CompetitiveMTO,
@@ -63,7 +63,7 @@ classdef MTDE < Algorithm
 
                 for k = 1:length(Tasks)
                     % generate
-                    [offspring, r1_task, calls] = OperatorDEORA.generate(1, population, Tasks, k, rmp, obj.F, obj.CR);
+                    [offspring, r1_task, calls] = OperatorDEORA.generate(population, Tasks, k, rmp, obj.F, obj.CR);
                     fnceval_calls = fnceval_calls + calls;
 
                     % selection

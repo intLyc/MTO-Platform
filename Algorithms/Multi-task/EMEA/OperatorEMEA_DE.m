@@ -1,4 +1,4 @@
-classdef OperatorDE < Operator
+classdef OperatorEMEA_DE < Operator
 
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
@@ -8,7 +8,7 @@ classdef OperatorDE < Operator
     %--------------------------------------------------------------------------
 
     methods (Static)
-        function [offspring, calls] = generate(population, Task, F, CR)
+        function offspring = generate(population, F, CR)
             Individual_class = class(population(1));
             for i = 1:length(population)
                 offspring(i) = feval(Individual_class);
@@ -16,13 +16,12 @@ classdef OperatorDE < Operator
                 A = randperm(length(population), 4);
                 A(A == i) = []; x1 = A(1); x2 = A(2); x3 = A(3);
 
-                offspring(i) = OperatorDE.mutate(offspring(i), population(x1), population(x2), population(x3), F);
-                offspring(i) = OperatorDE.crossover(offspring(i), population(i), CR);
+                offspring(i) = OperatorEMEA_DE.mutate(offspring(i), population(x1), population(x2), population(x3), F);
+                offspring(i) = OperatorEMEA_DE.crossover(offspring(i), population(i), CR);
 
                 offspring(i).rnvec(offspring(i).rnvec > 1) = 1;
                 offspring(i).rnvec(offspring(i).rnvec < 0) = 0;
             end
-            [offspring, calls] = evaluate(offspring, Task, 1);
         end
 
         function object = mutate(object, x1, x2, x3, F)

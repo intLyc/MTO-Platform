@@ -8,12 +8,7 @@ classdef OperatorDeCODE < Operator
     %--------------------------------------------------------------------------
 
     methods (Static)
-        function [offspring, calls] = generate(callfun, population, Task, F, CR, weights, fnceval, eva_num)
-            if isempty(population)
-                offspring = population;
-                calls = 0;
-                return;
-            end
+        function [offspring, calls] = generate(population, Task, F, CR, weights, fnceval, eva_num)
             Individual_class = class(population(1));
 
             Obj = [population.factorial_costs];
@@ -32,7 +27,7 @@ classdef OperatorDeCODE < Operator
                     [~, best] = min(fit);
 
                     offspring(i) = OperatorDeCODE.mutate_rand_to_best(offspring(i), population(best), population(x1), population(x2), population(x3), F(randi(length(F))));
-                    offspring(i) = OperatorDE.crossover(offspring(i), population(i), CR(randi(length(CR))));
+                    offspring(i) = OperatorDeCODE.crossover(offspring(i), population(i), CR(randi(length(CR))));
                 else
                     % current-to-rand
                     offspring(i) = OperatorDeCODE.mutate_current_to_rand(offspring(i), population(i), population(x1), population(x2), population(x3), F(randi(length(F))));
@@ -64,11 +59,7 @@ classdef OperatorDeCODE < Operator
                     end
                 end
             end
-            if callfun
-                [offspring, calls] = evaluate(offspring, Task, 1);
-            else
-                calls = 0;
-            end
+            [offspring, calls] = evaluate(offspring, Task, 1);
         end
 
         function object = mutate_current_to_rand(object, current, x1, x2, x3, F)
@@ -77,6 +68,12 @@ classdef OperatorDeCODE < Operator
 
         function object = mutate_rand_to_best(object, best, x1, x2, x3, F)
             object.rnvec = x1.rnvec + F * (best.rnvec - x1.rnvec) + F * (x2.rnvec - x3.rnvec);
+        end
+
+        function object = crossover(object, x, CR)
+            replace = rand(1, length(object.rnvec)) > CR;
+            replace(randi(length(object.rnvec))) = false;
+            object.rnvec(replace) = x.rnvec(replace);
         end
     end
 end

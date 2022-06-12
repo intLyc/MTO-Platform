@@ -8,12 +8,7 @@ classdef OperatorMKT < Operator
     %--------------------------------------------------------------------------
 
     methods (Static)
-        function [offspring, calls] = generate(callfun, population, Tasks, amp, mu, mum, cluster_model)
-            if isempty(population)
-                offspring = population;
-                calls = 0;
-                return;
-            end
+        function [offspring, calls] = generate(population, Tasks, amp, mu, mum, cluster_model)
             Individual_class = class(population{1}(1));
             offspring = {};
             for t = 1:length(Tasks)
@@ -31,10 +26,10 @@ classdef OperatorMKT < Operator
                     cf(u > 0.5) = (2 * (1 - u(u > 0.5))).^(-1 / (mu + 1));
 
                     if rand < amp(t)
-                        offspring{t}(count) = OperatorGA.crossover(offspring{t}(count), population{t}(p1), population{t}(p2), cf);
-                        offspring{t}(count + 1) = OperatorGA.crossover(offspring{t}(count + 1), population{t}(p2), population{t}(p1), cf);
-                        offspring{t}(count) = OperatorGA.mutate(offspring{t}(count), max([Tasks.dims]), mum);
-                        offspring{t}(count + 1) = OperatorGA.mutate(offspring{t}(count + 1), max([Tasks.dims]), mum);
+                        offspring{t}(count) = OperatorMKT.crossover(offspring{t}(count), population{t}(p1), population{t}(p2), cf);
+                        offspring{t}(count + 1) = OperatorMKT.crossover(offspring{t}(count + 1), population{t}(p2), population{t}(p1), cf);
+                        offspring{t}(count) = OperatorMKT.mutate(offspring{t}(count), max([Tasks.dims]), mum);
+                        offspring{t}(count + 1) = OperatorMKT.mutate(offspring{t}(count + 1), max([Tasks.dims]), mum);
                     else
                         % knowledge tansfer
                         current_mean = cluster_model(t).Nich_mean(population{t}(p1).cluster_num, :);
@@ -50,15 +45,34 @@ classdef OperatorMKT < Operator
                     count = count + 2;
                 end
             end
-            if callfun
-                calls = 0;
-                for t = 1:length(Tasks)
-                    [offspring{t}, cal] = evaluate(offspring{t}, Tasks(t), 1);
-                    calls = calls + cal;
-                end
-            else
-                calls = 0;
+            calls = 0;
+            for t = 1:length(Tasks)
+                [offspring{t}, cal] = evaluate(offspring{t}, Tasks(t), 1);
+                calls = calls + cal;
             end
+        end
+
+        function object = crossover(object, p1, p2, cf)
+            % SBX - Simulated binary crossover
+            object.rnvec = 0.5 * ((1 + cf) .* p1.rnvec + (1 - cf) .* p2.rnvec);
+        end
+
+        function object = mutate(object, dim, mum)
+            % Polynomial mutation
+            rnvec_temp = object.rnvec;
+            for i = 1:dim
+                if rand(1) < 1 / dim
+                    u = rand(1);
+                    if u <= 0.5
+                        del = (2 * u)^(1 / (1 + mum)) - 1;
+                        rnvec_temp(i) = object.rnvec(i) + del * (object.rnvec(i));
+                    else
+                        del = 1 - (2 * (1 - u))^(1 / (1 + mum));
+                        rnvec_temp(i) = object.rnvec(i) + del * (1 - object.rnvec(i));
+                    end
+                end
+            end
+            object.rnvec = rnvec_temp;
         end
     end
 end

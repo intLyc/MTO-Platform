@@ -71,7 +71,7 @@ classdef MFPSO < Algorithm
                 w = obj.wmax - (obj.wmax - obj.wmin) * fnceval_calls / eva_num;
 
                 % generation
-                [population, calls] = OperatorMFPSO.generate(1, population, Tasks, obj.rmp, w, obj.c1, obj.c2, obj.c3, bestX);
+                [population, calls] = OperatorMFPSO.generate(population, Tasks, obj.rmp, w, obj.c1, obj.c2, obj.c3, bestX);
                 fnceval_calls = fnceval_calls + calls;
 
                 % update best

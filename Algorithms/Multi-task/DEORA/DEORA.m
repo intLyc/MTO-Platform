@@ -94,7 +94,7 @@ classdef DEORA < Algorithm
                 end
 
                 % generate for the selected task
-                [offspring, r1_task, calls] = OperatorDEORA.generate(1, population, Tasks, k, rmp, obj.F, obj.CR);
+                [offspring, r1_task, calls] = OperatorDEORA.generate(population, Tasks, k, rmp, obj.F, obj.CR);
                 fnceval_calls = fnceval_calls + calls;
 
                 % selection

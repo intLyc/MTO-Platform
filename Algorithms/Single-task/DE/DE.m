@@ -48,7 +48,7 @@ classdef DE < Algorithm
                     generation = generation + 1;
 
                     % generation
-                    [offspring, calls] = OperatorDE.generate(1, population, Task, obj.F, obj.CR);
+                    [offspring, calls] = OperatorDE.generate(population, Task, obj.F, obj.CR);
                     fnceval_calls = fnceval_calls + calls;
 
                     % selection
