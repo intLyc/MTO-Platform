@@ -1,4 +1,4 @@
-function MTO_commandline(algo_cell, prob_cell, reps, save_name, par_flag)
+function MTO_CMD(algo_cell, prob_cell, reps, save_name, par_flag)
     %% MTO Platform run with command line, save data in mat file
     % Input: algorithms char cell, problems char cell, reps, save file name, parallel flag
     % Output: none
@@ -30,12 +30,12 @@ function MTO_commandline(algo_cell, prob_cell, reps, save_name, par_flag)
     end
     algo_obj_cell = {};
     for algo = 1:length(algo_cell)
-        eval(['algo_obj = ', algo_cell{algo}, '("', strrep(algo_cell{algo}, '_', '-'), '"); ']);
+        eval(['algo_obj = ', algo_cell{algo}, '(''', strrep(algo_cell{algo}, '_', '-'), '''); ']);
         algo_obj_cell = [algo_obj_cell, {algo_obj}];
     end
     prob_obj_cell = {};
     for prob = 1:length(prob_cell)
-        eval(['prob_obj = ', prob_cell{prob}, '("', strrep(prob_cell{prob}, '_', '-'), '"); ']);
+        eval(['prob_obj = ', prob_cell{prob}, '(''', strrep(prob_cell{prob}, '_', '-'), '''); ']);
         prob_obj_cell = [prob_obj_cell, {prob_obj}];
     end
 

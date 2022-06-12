@@ -283,7 +283,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TAlgorithmTree.Children.delete;
             
             algo_name = app.TAlgorithmDropDown.Value;
-            eval(['algo_obj = ', algo_name, '("', strrep(algo_name, '_', '-'), '");']);
+            eval(['algo_obj = ', algo_name, '(''', strrep(algo_name, '_', '-'), ''');']);
             algo_node = uitreenode(app.TAlgorithmTree);
             algo_node.Text = algo_obj.getName();
             algo_node.NodeData = algo_obj;
@@ -310,7 +310,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TProblemTree.Children.delete;
             
             prob_name = app.TProblemDropDown.Value;
-            eval(['prob_obj = ', prob_name, '("', strrep(prob_name, '_', '-'), '");']);
+            eval(['prob_obj = ', prob_name, '(''', strrep(prob_name, '_', '-'), ''');']);
             prob_node = uitreenode(app.TProblemTree);
             prob_node.Text = prob_obj.getName();
             prob_node.NodeData = prob_obj;
@@ -1501,7 +1501,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             
             algo_selected = app.EAlgorithmsListBox.Value;
             for i= 1:length(algo_selected)
-                eval(['algo_obj = ', algo_selected{i}, '("', strrep(algo_selected{i}, '_', '-'), '");']);
+                eval(['algo_obj = ', algo_selected{i}, '(''', strrep(algo_selected{i}, '_', '-'), ''');']);
                 algo_node = uitreenode(app.EAlgorithmsTree);
                 algo_node.Text = algo_obj.getName();
                 algo_node.NodeData = algo_obj;
@@ -1543,7 +1543,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             
             prob_selected = app.EProblemsListBox.Value;
             for i= 1:length(prob_selected)
-                eval(['prob_obj = ', prob_selected{i}, '("', strrep(prob_selected{i}, '_', '-'), '");']);
+                eval(['prob_obj = ', prob_selected{i}, '(''', strrep(prob_selected{i}, '_', '-'), ''');']);
                 prob_node = uitreenode(app.EProblemsTree);
                 prob_node.Text = prob_obj.getName();
                 prob_node.NodeData = prob_obj;

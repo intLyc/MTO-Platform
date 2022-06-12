@@ -33,6 +33,6 @@ function mto(varargin)
         if length(varargin) >= 5
             par_flag = varargin{5};
         end
-        MTO_commandline(algo_cell, prob_cell, reps, save_name, par_flag);
+        MTO_CMD(algo_cell, prob_cell, reps, save_name, par_flag);
     end
 end

@@ -25,7 +25,7 @@ classdef Problem < handle
         function obj = Problem(varargin)
             % problem constructor, cannot be changed
             if length(varargin) >= 1
-                obj.name = varargin{1};
+                obj.name = char(varargin{1});
             else
                 obj.name = 'problem';
             end
