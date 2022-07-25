@@ -1,4 +1,4 @@
-classdef MTDE < Algorithm
+classdef DEORA_MTDE < Algorithm
     % <Multi> <Competitive>
 
     %------------------------------- Reference --------------------------------
