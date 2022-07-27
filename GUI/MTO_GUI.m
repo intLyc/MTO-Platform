@@ -1094,6 +1094,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             
             if strcmp(app.EYLimTypeDropDown.Value, 'log(Objective Value)')
                 for i = 1:length(y_cell)
+                    y_cell{i}(y_cell{i} < 0) = 0;
                     y_cell{i} = log(y_cell{i});
                 end
             end
@@ -2067,6 +2068,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                             switch app.EYLimTypeDropDown.Value
                                 case 'log(Objective Value)'
                                     for i = 1:length(y_cell)
+                                        y_cell{i}(y_cell{i} < 0) = 0;
                                         y_cell{i} = log(y_cell{i});
                                     end
                             end
@@ -2106,6 +2108,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                         switch app.EYLimTypeDropDown.Value
                             case 'log(Objective Value)'
                                 for i = 1:length(y_cell)
+                                    y_cell{i}(y_cell{i} < 0) = 0;
                                     y_cell{i} = log(y_cell{i});
                                 end
                         end
