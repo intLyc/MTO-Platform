@@ -1,5 +1,16 @@
 classdef Score < Metric
-    % <Metric>
+    % <Table>
+
+    % Multi-task Score
+
+    %------------------------------- Reference --------------------------------
+    % @Article{Da2017CEC2017-MTSO,
+    %   author     = {Da, Bingshui and Ong, Yew-Soon and Feng, Liang and Qin, A Kai and Gupta, Abhishek and Zhu, Zexuan and Ting, Chuan-Kang and Tang, Ke and Yao, Xin},
+    %   journal    = {arXiv preprint arXiv:1706.03470},
+    %   title      = {Evolutionary Multitasking for Single-objective Continuous Optimization: Benchmark Problems, Performance Metric, and Baseline Results},
+    %   year       = {2017},
+    % }
+    %--------------------------------------------------------------------------
 
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for

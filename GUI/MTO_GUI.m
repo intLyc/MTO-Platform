@@ -170,12 +170,21 @@ classdef MTO_GUI < matlab.apps.AppBase
             
             app.algo_load = app.readList('../Algorithms', label_str);
             app.prob_load = app.readList('../Problems', label_str);
-            app.metric_load = app.readList('../Metrics', {'Metric'});
             
             app.algo_load = sort_nat(app.algo_load);
             app.prob_load = sort_nat(app.prob_load);
-            app.metric_load = sort_nat(app.metric_load);
-            app.EDataTypeDropDown.Items = ['Reps', app.metric_load];
+        end
+        
+        function readMetric(app)
+            % load the metrics
+            
+            metric_table = app.readList('../Metrics', {'Table'});
+            metric_table = sort_nat(metric_table);
+            app.EDataTypeDropDown.Items = ['Reps', metric_table];
+            
+            % metric_figure = app.readList('../Metrics', {'Figure'});
+            % metric_figure = sort_nat(metric_figure);
+            % app.EDataTypeDropDown.Items = metric_figure;
         end
         
         function read_list = readList(app, folder_name, label_str)
@@ -1112,6 +1121,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TupdateProblem();
             app.TupdateUIAxes();
             app.EloadAlgoProb();
+            app.readMetric();
         end
 
         % Value changed function: TTaskTypeDropDown
@@ -2337,7 +2347,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create MTOPlatformUIFigure and hide until all components are created
             app.MTOPlatformUIFigure = uifigure('Visible', 'off');
             app.MTOPlatformUIFigure.Color = [1 1 1];
-            app.MTOPlatformUIFigure.Position = [100 100 1045 673];
+            app.MTOPlatformUIFigure.Position = [100 100 1041 669];
             app.MTOPlatformUIFigure.Name = 'MTO Platform';
             app.MTOPlatformUIFigure.WindowStyle = 'modal';
 
