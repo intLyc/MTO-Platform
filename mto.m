@@ -12,6 +12,7 @@ function mto(varargin)
 
     addpath(genpath('./Algorithms/'));
     addpath(genpath('./Problems/'));
+    addpath(genpath('./Metrics/'));
     addpath(genpath('./GUI/'));
 
     if isempty(varargin)
