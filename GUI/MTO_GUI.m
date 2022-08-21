@@ -53,12 +53,9 @@ classdef MTO_GUI < matlab.apps.AppBase
         EP3FGridLayout               matlab.ui.container.GridLayout
         EP3F1GridLayout              matlab.ui.container.GridLayout
         EProblemsDropDown            matlab.ui.control.DropDown
-        EYLimTypeDropDown            matlab.ui.control.DropDown
-        ESaveAllFigureButton         matlab.ui.control.Button
+        ESaveFigureButton            matlab.ui.control.Button
+        ESaveFigureTypeDropDown      matlab.ui.control.DropDown
         EFigureTypeDropDown          matlab.ui.control.DropDown
-        EMarkerIndicesEditField      matlab.ui.control.NumericEditField
-        EConvergenceTypeDropDown     matlab.ui.control.DropDown
-        EXLimTypeDropDown            matlab.ui.control.DropDown
         EConvergenceTrendUIAxes      matlab.ui.control.UIAxes
         EPanel1                      matlab.ui.container.Panel
         EP1GridLayout                matlab.ui.container.GridLayout
@@ -148,12 +145,8 @@ classdef MTO_GUI < matlab.apps.AppBase
         
         % Experiment Module
         Edata % data
+        Efigure_data
         Estop_flag % stop button clicked flag
-        Efitness % fitness calculated
-        Efitness_cv % constraint violation
-        Eminfitness % competitive fitness calculated
-        Eminfitness_cv
-        Etime_used % time_used calculated
         Etable_data % table data for calculate
         Etable_view % table data view
         Etable_view_test % table data view test
@@ -182,9 +175,9 @@ classdef MTO_GUI < matlab.apps.AppBase
             metric_table = sort_nat(metric_table);
             app.EDataTypeDropDown.Items = ['Reps', metric_table];
             
-            % metric_figure = app.readList('../Metrics', {'Figure'});
-            % metric_figure = sort_nat(metric_figure);
-            % app.EDataTypeDropDown.Items = metric_figure;
+            metric_figure = app.readList('../Metrics', {'Figure'});
+            metric_figure = sort_nat(metric_figure);
+            app.EFigureTypeDropDown.Items = metric_figure;
         end
         
         function read_list = readList(app, folder_name, label_str)
@@ -543,46 +536,6 @@ classdef MTO_GUI < matlab.apps.AppBase
             drawnow;
         end
         
-        function EcalculatePre(app)
-            % calculate fitness, std, time used
-            
-            if isempty(app.Edata)
-                return
-            end
-            
-            app.Efitness = [];
-            app.Efitness_cv = [];
-            app.Eminfitness = [];
-            app.Eminfitness_cv = [];
-            app.Etime_used = [];
-            % calculate fitness
-            for algo = 1:length(app.Edata.algo_cell)
-                row_i = 1;
-                for prob = 1:length(app.Edata.prob_cell)
-                    tasks_num = app.Edata.tasks_num_list(prob);
-                    temp_i = row_i;
-                    for task = 1:tasks_num
-                        convergence_task = app.Edata.result(prob, algo).convergence(task:tasks_num:end, :);
-                        if isfield(app.Edata.result(prob, algo), 'convergence_cv')
-                            convergence_cv_task = app.Edata.result(prob, algo).convergence_cv(task:tasks_num:end, :);
-                            convergence_task(convergence_cv_task > 0) = NaN;
-                        else
-                            convergence_cv_task = zeros(size(app.Edata.result(prob, algo).convergence(task:tasks_num:end, :)));
-                        end
-                        app.Efitness(row_i, algo, :) = convergence_task(:, end);
-                        app.Efitness_cv(row_i, algo, :) = convergence_cv_task(:, end);
-                        row_i = row_i + 1;
-                    end
-                    [app.Eminfitness(prob, algo, :), min_idx] = min(app.Efitness(temp_i:temp_i+tasks_num-1, algo, :), [], 1);
-                    min_cv_temp = app.Efitness_cv(temp_i:temp_i+tasks_num-1, algo, :);
-                    for i = 1:length(min_idx)
-                        app.Eminfitness_cv(prob, algo, i) = min_cv_temp(min_idx(i), i);
-                    end
-                    app.Etime_used(prob, algo) = app.Edata.result(prob, algo).clock_time;
-                end
-            end
-        end
-        
         function EupdateTableReps(app)
             % update table reps per run
             
@@ -590,7 +543,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             drawnow;
         end
         
-        function EupdateTableObjective(app, table_data)
+        function EupdateTableData(app, table_data)
             % update table fitness
             
             show_type = app.EShowTypeDropDown.Value;
@@ -768,7 +721,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                 otherwise
                     eval(['result = ', app.EDataTypeDropDown.Value, '.calculate(app.Edata);']);
                     app.EresetTable(result.RowName, result.ColumnName);
-                    app.EupdateTableObjective(result.TableData);
+                    app.EupdateTableData(result.TableData);
                     app.EupdateTableTest(result.TableData);
             end
             drawnow;
@@ -796,121 +749,49 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EDataFormatEditField.Value = format_str;
         end
         
-        function EresetConvergenceProblemsDropDown(app)
-            % reset convergence problems drop down in Experiment module
-            
-            switch app.EConvergenceTypeDropDown.Value
-                case 'Obj'
-                    prob_row_cell = {};
-                    prob_row_index = {};
-                    for prob = 1:length(app.Edata.prob_cell)
-                        for task = 1:app.Edata.tasks_num_list(prob)
-                            if app.Edata.tasks_num_list(prob) == 1
-                                prob_row_cell = [prob_row_cell, app.Edata.prob_cell{prob}];
-                            else
-                                prob_row_cell = [prob_row_cell, [app.Edata.prob_cell{prob}, '-T', num2str(task)]];
-                            end
-                            prob_row_index = [prob_row_index, [prob, task]];
-                        end
-                    end
-                    app.EProblemsDropDown.Items = prob_row_cell;
-                    app.EProblemsDropDown.ItemsData = prob_row_index;
-                    app.EProblemsDropDown.Value = [1 1];
-                case 'min(Obj)'
-                    app.EProblemsDropDown.Items = app.Edata.prob_cell;
-                    app.EProblemsDropDown.ItemsData = 1:length(app.Edata.prob_cell);
-                    app.EProblemsDropDown.Value = 1;
-            end
-        end
-        
-        function EupdateConvergenceAxes(app)
-            % update convergence axes
-            
-            % clear axes
+        function EresetFigureData(app)
             cla(app.EConvergenceTrendUIAxes, 'reset');
             
-            % check app.Edata
             if isempty(app.Edata)
+                app.Efigure_data = [];
                 return;
             end
             
-            % draw
-            value = app.EProblemsDropDown.Value;
+            eval(['app.Efigure_data = ', app.EFigureTypeDropDown.Value, '.calculate(app.Edata);']);
+            app.EProblemsDropDown.Items = app.Efigure_data.Problems;
+            app.EProblemsDropDown.ItemsData = 1:length(app.EProblemsDropDown.Items);
+            app.EupdateFigureAxes();
+        end
+        
+        function EupdateFigureAxes(app)
+            % update figure axes
+            
+            cla(app.EConvergenceTrendUIAxes, 'reset');
+            problem_index = app.EProblemsDropDown.Value;
             xlim_max = 0;
-            switch app.EConvergenceTypeDropDown.Value
-                case 'Obj'
-                    prob = value(1);
-                    task = value(2);
-                    tasks_num = app.Edata.tasks_num_list(prob);
-                    for algo = 1:length(app.Edata.algo_cell)
-                        convergence_task = app.Edata.result(prob, algo).convergence(task:tasks_num:end, :);
-                        if isfield(app.Edata.result(prob, algo), 'convergence_cv')
-                            convergence_cv_task = app.Edata.result(prob, algo).convergence_cv(task:tasks_num:end, :);
-                            convergence_task(convergence_cv_task>0) = NaN;
-                        end
-                        convergence = nanmean(convergence_task, 1);
-                        x_cell{algo} = 1:size(convergence,2);
-                        % xlabel
-                        if strcmp(app.EXLimTypeDropDown.Value, 'Evaluation')
-                            x_cell{algo} = x_cell{algo} / length(x_cell{algo}) * app.Edata.sub_eva(prob);
-                        elseif strcmp(app.EXLimTypeDropDown.Value, 'Generation')
-                            x_cell{algo} = x_cell{algo} / length(x_cell{algo}) * (app.Edata.sub_eva(prob) / app.Edata.sub_pop(prob));
-                        end
-                        xlim_max = max(xlim_max, x_cell{algo}(end));
-                        y_cell{algo} = convergence;
-                    end
-                case 'min(Obj)'
-                    prob = value;
-                    tasks_num = app.Edata.tasks_num_list(prob);
-                    for algo = 1:length(app.Edata.algo_cell)
-                        convergence_rep = [];
-                        for rep = 1:app.Edata.reps
-                            convergence_temp = app.Edata.result(prob, algo).convergence(1+(rep-1)*tasks_num:rep*tasks_num, :);
-                            if isfield(app.Edata.result(prob, algo), 'convergence_cv')
-                                convergence_cv_temp = app.Edata.result(prob, algo).convergence_cv(1+(rep-1)*tasks_num:rep*tasks_num, :);
-                                convergence_temp(convergence_cv_temp>0) = NaN;
-                            end
-                            convergence_rep(rep, :) = min(convergence_temp, [], 1);
-                        end
-                        convergence = nanmean(convergence_rep, 1);
-                        x_cell{algo} = 1:size(convergence,2);
-                        % xlabel
-                        if strcmp(app.EXLimTypeDropDown.Value, 'Evaluation')
-                            x_cell{algo} = x_cell{algo} / length(x_cell{algo}) * app.Edata.sub_eva(prob) * tasks_num;
-                        elseif strcmp(app.EXLimTypeDropDown.Value, 'Generation')
-                            x_cell{algo} = x_cell{algo} / length(x_cell{algo}) * (app.Edata.sub_eva(prob) / app.Edata.sub_pop(prob));
-                        end
-                        xlim_max = max(xlim_max, x_cell{algo}(end));
-                        y_cell{algo} = convergence;
-                    end
-            end
+            xdata = app.Efigure_data.XData(problem_index, :);
+            ydata = app.Efigure_data.YData(problem_index, :);
             
-            if strcmp(app.EYLimTypeDropDown.Value, 'log(Objective Value)')
-                for i = 1:length(y_cell)
-                    y_cell{i}(y_cell{i} < 0) = 0;
-                    y_cell{i} = log(y_cell{i});
-                end
-            end
-            
-            for i = 1:length(x_cell)
-                if i > length(app.marker_list)
+            for i = 1:length(xdata)
+                if i > length(app.Efigure_data.MarkerType)
                     marker = '';
                 else
-                    marker = app.marker_list{i};
+                    marker = app.Efigure_data.MarkerType{i};
                 end
-                p = plot(app.EConvergenceTrendUIAxes, x_cell{i}, y_cell{i}, ['-', marker]);
-                p.LineWidth = app.line_width;
-                indices = round(length(y_cell{i})/app.EMarkerIndicesEditField.Value);
-                p.MarkerIndices = indices:indices:length(y_cell{i})-round(indices/2);
-                p.MarkerSize = app.marker_size;
+                p = plot(app.EConvergenceTrendUIAxes, xdata{i}, ydata{i}, ['-', marker]);
+                p.LineWidth = app.Efigure_data.LineWidth;
+                indices = round(length(ydata{i})/app.Efigure_data.MarkerNum);
+                p.MarkerIndices = indices:indices:length(ydata{i})-round(indices/2);
+                p.MarkerSize = app.Efigure_data.MarkerSize;
                 hold(app.EConvergenceTrendUIAxes, 'on');
+                xlim_max = max(xlim_max, xdata{i}(end));
             end
             
             xlim(app.EConvergenceTrendUIAxes, [1, xlim_max]);
-            legend(app.EConvergenceTrendUIAxes, strrep(app.Edata.algo_cell, '_', '\_'));
-            xlabel(app.EConvergenceTrendUIAxes, app.EXLimTypeDropDown.Value);
-            ylabel(app.EConvergenceTrendUIAxes, app.EYLimTypeDropDown.Value);
-            grid(app.EConvergenceTrendUIAxes, 'on');
+            xlabel(app.EConvergenceTrendUIAxes, app.Efigure_data.XLabel);
+            ylabel(app.EConvergenceTrendUIAxes, app.Efigure_data.YLabel);
+            legend(app.EConvergenceTrendUIAxes, strrep(app.Efigure_data.Legend, '_', '\_'));
+            grid(app.EConvergenceTrendUIAxes, app.Efigure_data.GridType);
         end
         
         function result = DcheckSplitData(app)
@@ -1476,10 +1357,8 @@ classdef MTO_GUI < matlab.apps.AppBase
                         end
                     end
                     app.Edata.reps = rep;
-                    app.EcalculatePre();
                     app.EupdateTable();
-                    app.EresetConvergenceProblemsDropDown();
-                    app.EupdateConvergenceAxes();
+                    app.EresetFigureData();
                 end
             else
                 % start parallel
@@ -1533,9 +1412,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     end
                 end
                 app.Edata.reps = reps;
-                app.EcalculatePre();
-                app.EupdateTable();
-                app.EresetConvergenceProblemsDropDown();
+                app.EresetFigureData();
                 app.EupdateConvergenceAxes();
             end
             
@@ -1730,25 +1607,14 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EupdateTableHighlight();
         end
 
-        % Value changed function: EConvergenceTypeDropDown
-        function EConvergenceTypeDropDownValueChanged(app, event)
-            app.EresetConvergenceProblemsDropDown();
-            app.EupdateConvergenceAxes();
-        end
-
-        % Value changed function: EYLimTypeDropDown
-        function EYLimTypeDropDownValueChanged(app, event)
-            app.EupdateConvergenceAxes();
-        end
-
-        % Value changed function: EXLimTypeDropDown
-        function EXLimTypeDropDownValueChanged(app, event)
-            app.EupdateConvergenceAxes();
+        % Value changed function: EFigureTypeDropDown
+        function EFigureTypeDropDownValueChanged(app, event)
+            app.EresetFigureData();
         end
 
         % Value changed function: EProblemsDropDown
         function EProblemsDropDownValueChanged(app, event)
-            app.EupdateConvergenceAxes();
+            app.EupdateFigureAxes();
         end
 
         % Button pushed function: ELoadDataButton
@@ -1769,10 +1635,8 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.Edata = data_save;
             app.Etable_reps = app.Edata.reps * ones([length(app.Edata.prob_cell), length(app.Edata.algo_cell)]);
             app.EresetTableAlgorithmDropDown(app.Edata.algo_cell);
-            app.EcalculatePre();
             app.EupdateTable();
-            app.EresetConvergenceProblemsDropDown();
-            app.EupdateConvergenceAxes();
+            app.EresetFigureData();
         end
 
         % Button pushed function: ESaveTableButton
@@ -1823,12 +1687,12 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
         end
 
-        % Button pushed function: ESaveAllFigureButton
-        function ESaveAllFigureButtonPushed(app, event)
+        % Button pushed function: ESaveFigureButton
+        function ESaveFigureButtonPushed(app, event)
             % save figure to folder
             
             % check data
-            if isempty(app.Edata)
+            if isempty(app.Efigure_data)
                 return;
             end
             
@@ -1843,84 +1707,37 @@ classdef MTO_GUI < matlab.apps.AppBase
             fig_dir_name = [dir_name, '/Figure/'];
             mkdir(fig_dir_name);
             draw_obj = drawFigure;
-            switch app.EConvergenceTypeDropDown.Value
-                case 'Obj'
-                    for prob = 1:length(app.Edata.prob_cell)
-                        tasks_num = app.Edata.tasks_num_list(prob);
-                        for task = 1:tasks_num
-                            for algo = 1:length(app.Edata.algo_cell)
-                                convergence_task = app.Edata.result(prob, algo).convergence(task:tasks_num:end, :);
-                                if isfield(app.Edata.result(prob, algo), 'convergence_cv')
-                                    convergence_cv_task = app.Edata.result(prob, algo).convergence_cv(task:tasks_num:end, :);
-                                    convergence_task(convergence_cv_task>0)= NaN;
-                                end
-                                convergence = mean(convergence_task, 1);
-                                x_cell{algo} = 1:size(convergence,2);
-                                x_cell{algo} = x_cell{algo} / length(x_cell{algo}) * app.Edata.sub_eva(prob);
-                                y_cell{algo} = convergence;
-                            end
-                            switch app.EYLimTypeDropDown.Value
-                                case 'log(Objective Value)'
-                                    for i = 1:length(y_cell)
-                                        y_cell{i}(y_cell{i} < 0) = 0;
-                                        y_cell{i} = log(y_cell{i});
-                                    end
-                            end
-                            draw_obj.setXY(x_cell, y_cell);
-                            draw_obj.setXYlabel('Evaluation', app.EYLimTypeDropDown.Value);
-                            draw_obj.setLegend(app.Edata.algo_cell);
-                            if app.Edata.tasks_num_list(prob) == 1
-                                draw_obj.setTitle(app.Edata.prob_cell{prob});
-                            else
-                                draw_obj.setTitle([app.Edata.prob_cell{prob}, ' T', num2str(task)]);
-                            end
-                            draw_obj.setSaveDir(fig_dir_name);
-                            draw_obj.setFigureType(app.EFigureTypeDropDown.Value);
-                            draw_obj.setMarkerIndices(app.EMarkerIndicesEditField.Value);
-                            draw_obj.save();
-                        end
+            
+            for problem_index = 1:length(app.Efigure_data.Problems)
+                fig = figure('Visible', 'off');
+                xlim_max = 0;
+                xdata = app.Efigure_data.XData(problem_index, :);
+                ydata = app.Efigure_data.YData(problem_index, :);
+                
+                for i = 1:length(xdata)
+                    if i > length(app.Efigure_data.MarkerType)
+                        marker = '';
+                    else
+                        marker = app.Efigure_data.MarkerType{i};
                     end
-                    
-                case 'min(Obj)'
-                    for prob = 1:length(app.Edata.prob_cell)
-                        tasks_num = app.Edata.tasks_num_list(prob);
-                        for algo = 1:length(app.Edata.algo_cell)
-                            convergence_rep = [];
-                            for rep = 1:app.Edata.reps
-                                convergence_temp = app.Edata.result(prob, algo).convergence(1+(rep-1)*tasks_num:rep*tasks_num, :);
-                                if isfield(app.Edata.result(prob, algo), 'convergence_cv')
-                                    convergence_cv_temp = app.Edata.result(prob, algo).convergence_cv(1+(rep-1)*tasks_num:rep*tasks_num, :);
-                                    convergence_temp(convergence_cv_temp>0)= NaN;
-                                end
-                                convergence_rep(rep, :) = min(convergence_temp, [], 1);
-                            end
-                            convergence = mean(convergence_rep, 1);
-                            x_cell{algo} = 1:size(convergence,2);
-                            x_cell{algo} = x_cell{algo} / length(x_cell{algo}) * app.Edata.sub_eva(prob) * tasks_num;
-                            y_cell{algo} = convergence;
-                        end
-                        switch app.EYLimTypeDropDown.Value
-                            case 'log(Objective Value)'
-                                for i = 1:length(y_cell)
-                                    y_cell{i}(y_cell{i} < 0) = 0;
-                                    y_cell{i} = log(y_cell{i});
-                                end
-                        end
-                        draw_obj.setXY(x_cell, y_cell);
-                        draw_obj.setXYlabel('Evaluation', app.EYLimTypeDropDown.Value);
-                        draw_obj.setLegend(app.Edata.algo_cell);
-                        draw_obj.setTitle(app.Edata.prob_cell{prob});
-                        draw_obj.setSaveDir(fig_dir_name);
-                        draw_obj.setFigureType(app.EFigureTypeDropDown.Value);
-                        draw_obj.setMarkerIndices(app.EMarkerIndicesEditField.Value);
-                        draw_obj.save();
-                    end
+                    p = plot(xdata{i}, ydata{i}, ['-', marker]);
+                    p.LineWidth = app.Efigure_data.LineWidth;
+                    indices = round(length(ydata{i})/app.Efigure_data.MarkerNum);
+                    p.MarkerIndices = indices:indices:length(ydata{i})-round(indices/2);
+                    p.MarkerSize = app.Efigure_data.MarkerSize;
+                    hold on;
+                    xlim_max = max(xlim_max, xdata{i}(end));
+                end
+                
+                xlim([1, xlim_max]);
+                xlabel(app.Efigure_data.XLabel);
+                ylabel(app.Efigure_data.YLabel);
+                legend(strrep(app.Efigure_data.Legend, '_', '\_'));
+                grid(app.Efigure_data.GridType);
+                
+                file_name = [fig_dir_name, app.Efigure_data.Problems{problem_index}, '.', app.ESaveFigureTypeDropDown.Value];
+                exportgraphics(fig, file_name);
             end
-        end
-
-        % Value changed function: EMarkerIndicesEditField
-        function EMarkerIndicesEditFieldValueChanged(app, event)
-            app.EupdateConvergenceAxes()
         end
 
         % Context menu opening function: DDataContextMenu
@@ -2347,7 +2164,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create MTOPlatformUIFigure and hide until all components are created
             app.MTOPlatformUIFigure = uifigure('Visible', 'off');
             app.MTOPlatformUIFigure.Color = [1 1 1];
-            app.MTOPlatformUIFigure.Position = [100 100 1041 669];
+            app.MTOPlatformUIFigure.Position = [100 100 1034 666];
             app.MTOPlatformUIFigure.Name = 'MTO Platform';
             app.MTOPlatformUIFigure.WindowStyle = 'modal';
 
@@ -2749,7 +2566,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create EP3F1GridLayout
             app.EP3F1GridLayout = uigridlayout(app.EP3FGridLayout);
-            app.EP3F1GridLayout.ColumnWidth = {97, 55, '1x', 90, 90, 90, 90, 90};
+            app.EP3F1GridLayout.ColumnWidth = {90, 90, '1x', 150, 150};
             app.EP3F1GridLayout.RowHeight = {'fit'};
             app.EP3F1GridLayout.ColumnSpacing = 5;
             app.EP3F1GridLayout.Padding = [0 0 0 0];
@@ -2765,73 +2582,39 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EProblemsDropDown.FontWeight = 'bold';
             app.EProblemsDropDown.BackgroundColor = [1 1 1];
             app.EProblemsDropDown.Layout.Row = 1;
-            app.EProblemsDropDown.Layout.Column = 8;
+            app.EProblemsDropDown.Layout.Column = 5;
             app.EProblemsDropDown.Value = 'Problem ';
 
-            % Create EYLimTypeDropDown
-            app.EYLimTypeDropDown = uidropdown(app.EP3F1GridLayout);
-            app.EYLimTypeDropDown.Items = {'log(Objective Value)', 'Objective Value'};
-            app.EYLimTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EYLimTypeDropDownValueChanged, true);
-            app.EYLimTypeDropDown.Tooltip = {'YLim Type'};
-            app.EYLimTypeDropDown.FontWeight = 'bold';
-            app.EYLimTypeDropDown.BackgroundColor = [1 1 1];
-            app.EYLimTypeDropDown.Layout.Row = 1;
-            app.EYLimTypeDropDown.Layout.Column = 7;
-            app.EYLimTypeDropDown.Value = 'log(Objective Value)';
+            % Create ESaveFigureButton
+            app.ESaveFigureButton = uibutton(app.EP3F1GridLayout, 'push');
+            app.ESaveFigureButton.ButtonPushedFcn = createCallbackFcn(app, @ESaveFigureButtonPushed, true);
+            app.ESaveFigureButton.BackgroundColor = [0.702 1 0.702];
+            app.ESaveFigureButton.FontWeight = 'bold';
+            app.ESaveFigureButton.Tooltip = {'Select save dir and it will save all figures to ''dir/Figure/'''};
+            app.ESaveFigureButton.Layout.Row = 1;
+            app.ESaveFigureButton.Layout.Column = 1;
+            app.ESaveFigureButton.Text = 'Save';
 
-            % Create ESaveAllFigureButton
-            app.ESaveAllFigureButton = uibutton(app.EP3F1GridLayout, 'push');
-            app.ESaveAllFigureButton.ButtonPushedFcn = createCallbackFcn(app, @ESaveAllFigureButtonPushed, true);
-            app.ESaveAllFigureButton.BackgroundColor = [0.702 1 0.702];
-            app.ESaveAllFigureButton.FontWeight = 'bold';
-            app.ESaveAllFigureButton.Tooltip = {'Select save dir and it will save all figures to ''dir/Figure/'''};
-            app.ESaveAllFigureButton.Layout.Row = 1;
-            app.ESaveAllFigureButton.Layout.Column = 1;
-            app.ESaveAllFigureButton.Text = 'Save All Figure';
+            % Create ESaveFigureTypeDropDown
+            app.ESaveFigureTypeDropDown = uidropdown(app.EP3F1GridLayout);
+            app.ESaveFigureTypeDropDown.Items = {'eps', 'png', 'pdf'};
+            app.ESaveFigureTypeDropDown.Tooltip = {'Save Figure Type'};
+            app.ESaveFigureTypeDropDown.FontWeight = 'bold';
+            app.ESaveFigureTypeDropDown.BackgroundColor = [1 1 1];
+            app.ESaveFigureTypeDropDown.Layout.Row = 1;
+            app.ESaveFigureTypeDropDown.Layout.Column = 2;
+            app.ESaveFigureTypeDropDown.Value = 'eps';
 
             % Create EFigureTypeDropDown
             app.EFigureTypeDropDown = uidropdown(app.EP3F1GridLayout);
-            app.EFigureTypeDropDown.Items = {'eps', 'png', 'pdf'};
-            app.EFigureTypeDropDown.Tooltip = {'Save Figure Type'};
+            app.EFigureTypeDropDown.Items = {'Figure Type'};
+            app.EFigureTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EFigureTypeDropDownValueChanged, true);
+            app.EFigureTypeDropDown.Tooltip = {'Data Type'};
             app.EFigureTypeDropDown.FontWeight = 'bold';
             app.EFigureTypeDropDown.BackgroundColor = [1 1 1];
             app.EFigureTypeDropDown.Layout.Row = 1;
-            app.EFigureTypeDropDown.Layout.Column = 2;
-            app.EFigureTypeDropDown.Value = 'eps';
-
-            % Create EMarkerIndicesEditField
-            app.EMarkerIndicesEditField = uieditfield(app.EP3F1GridLayout, 'numeric');
-            app.EMarkerIndicesEditField.Limits = [0 Inf];
-            app.EMarkerIndicesEditField.RoundFractionalValues = 'on';
-            app.EMarkerIndicesEditField.ValueChangedFcn = createCallbackFcn(app, @EMarkerIndicesEditFieldValueChanged, true);
-            app.EMarkerIndicesEditField.HorizontalAlignment = 'center';
-            app.EMarkerIndicesEditField.FontWeight = 'bold';
-            app.EMarkerIndicesEditField.Tooltip = {'Marker Num'};
-            app.EMarkerIndicesEditField.Layout.Row = 1;
-            app.EMarkerIndicesEditField.Layout.Column = 4;
-            app.EMarkerIndicesEditField.Value = 10;
-
-            % Create EConvergenceTypeDropDown
-            app.EConvergenceTypeDropDown = uidropdown(app.EP3F1GridLayout);
-            app.EConvergenceTypeDropDown.Items = {'Obj', 'min(Obj)'};
-            app.EConvergenceTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EConvergenceTypeDropDownValueChanged, true);
-            app.EConvergenceTypeDropDown.Tooltip = {'Data Type'};
-            app.EConvergenceTypeDropDown.FontWeight = 'bold';
-            app.EConvergenceTypeDropDown.BackgroundColor = [1 1 1];
-            app.EConvergenceTypeDropDown.Layout.Row = 1;
-            app.EConvergenceTypeDropDown.Layout.Column = 5;
-            app.EConvergenceTypeDropDown.Value = 'Obj';
-
-            % Create EXLimTypeDropDown
-            app.EXLimTypeDropDown = uidropdown(app.EP3F1GridLayout);
-            app.EXLimTypeDropDown.Items = {'Evaluation', 'Generation'};
-            app.EXLimTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EXLimTypeDropDownValueChanged, true);
-            app.EXLimTypeDropDown.Tooltip = {'Data Type'};
-            app.EXLimTypeDropDown.FontWeight = 'bold';
-            app.EXLimTypeDropDown.BackgroundColor = [1 1 1];
-            app.EXLimTypeDropDown.Layout.Row = 1;
-            app.EXLimTypeDropDown.Layout.Column = 6;
-            app.EXLimTypeDropDown.Value = 'Evaluation';
+            app.EFigureTypeDropDown.Layout.Column = 4;
+            app.EFigureTypeDropDown.Value = 'Figure Type';
 
             % Create EConvergenceTrendUIAxes
             app.EConvergenceTrendUIAxes = uiaxes(app.EP3FGridLayout);
