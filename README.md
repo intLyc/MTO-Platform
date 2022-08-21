@@ -52,6 +52,13 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 - Add labels to the second line. <Single/Multi/Many> <None/Competitive/Constrained>
 - *Refer to the CEC17_MTSO problem implementation*
 
+### Add your metric
+
+- Inherit the **Metric.m** class from the Metric folder to implement a new metric class and put it in the Metric folder or its subfolders
+- Implement the method function result = calculate(data)
+- Add labels to the second line. <Table/Figure>
+- *Refer to the Obj.m and ConvergeObj.m metric implementation*
+
 ## Module
 
 ### I. Test Module
@@ -96,23 +103,14 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
   
 5. Table Statistics
     - Select Table on the right side to display the experimental data
-    - Display data
-      - Reps
-      - Obj
-      - Score
-      - min(Obj) (for Competitive-MTO)
-      - Time Used
+    - Display data with metric
     - Data type (for Obj and min(Obj))
       - Mean
       - Mean&Std
-      - Mean&CV(mean constraint violation)
-      - Mean&CV&FR(feasible rate)
       - Std
       - Median
       - Best
       - Worst
-      - CV
-      - FR
     - Statistical test (for Fitness)
       - None
       - Rank sum test
@@ -125,17 +123,9 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 
 6. Convergence graph
     - Select Figure on the right side to display the experimental convergence graph
-    - Problem type
-      - Obj
-      - min(Obj) (for Competitive-MTO)
-    - X-axis type
-      - Evaluation
-      - Generation
-    - Y-axis type
-      - log(Obj)
-      - Obj
-    - Problem selection, select a task of a problem, display the convergence graph of each algorithm of the task
-    - Save all data, select the save file type, click Save All Firuge button to save the convergence graphs of all tasks. *You can modify **drawFigure.m** in the GUI/Utils folder to adjust the drawing details*.
+    - Figure type with metric
+    - Problem selection, select a problem, display the graph of the problem
+    - Save figures, select the save file type, and click Save button to save the graphs of all problems.
 
 7. Read/Save Data
     - To save data, click the Save Data button to save the data of the currently running experiment
@@ -210,6 +200,13 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 - 在文件的第2行添加标签 <Single/Multi/Many> <None/Competitive/Constrained>
 - *可参考CEC17_MTSO问题的实现*
 
+### 加入自己的指标
+
+- 继承Metric文件夹下的**Metric.m**类实现新的指标类，并放入Metric文件夹或其子文件夹内
+- 实现 function result = calculate(data)
+- 在文件的第2行添加标签 <Table/Figure>，对应于列表数据展示和图像数据展示
+- *可参考Obj.m和ConvergeObj.m的实现*
+
 ## 功能
 
 ### 一、测试模块
@@ -254,23 +251,14 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
   
 5. 表格统计
     - 右侧选取Table，显示实验数据
-    - 显示数据
-      - Reps 独立运行次数
-      - Obj 目标值
-      - Score 多任务分数
-      - min(Obj) 任务组中的最小目标值 (Competitive-MTO 问题)
-      - Time Used 运行时间
-    - 数据类型 (Obj / min(Obj))
+    - 显示数据，由Metric.calculate()计算
+    - 数据类型
       - Mean 平均目标值
       - Mean&Std 平均目标值 (标准差)
-      - Mean&CV 平均目标值 (平均约束违反度)
-      - Mean&CV&FR 平均目标值 / 平均约束违反度 / 可行解比例
       - Std 目标值标准差
       - Median 目标值中位数
       - Best 最优目标值
       - Worst 最差目标值
-      - CV 平均约束违反度
-      - FR 可行解比例
     - 统计测试 (Fitness)
       - None
       - Rank sum test 秩和检验
@@ -283,17 +271,9 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 
 6. 收敛图
     - 右侧选取Figure，显示实验收敛图
-    - 问题类型
-      - Obj
-      - min(Obj) (Competitive-MTO 问题)
-    - X轴类型
-      - 评价次数
-      - 迭代次数 (根据评价次数和种群大小设置来计算)
-    - Y轴类型
-      - log(Obj)
-      - Obj
-    - 问题选择，选择某一问题的某个任务，显示该任务各算法的收敛图
-    - 保存所有数据，选取保存文件类型，点击Save All Firuge按钮保存所有任务的收敛图。*可修改GUI/Utils文件夹下的**drawFigure.m**调整绘制细节*
+    - 展示类型，由Metric.calculate()计算
+    - 问题选择，选择某一问题显示图像内容
+    - 保存所有数据，选取保存文件类型，点击Save按钮保存所有任务的图像
 
 7. 读取/保存数据
     - 保存数据，点击Save Data按钮，保存当前运行实验的数据
