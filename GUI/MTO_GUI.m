@@ -118,15 +118,15 @@ classdef MTO_GUI < matlab.apps.AppBase
         DPanel2                      matlab.ui.container.Panel
         DP2GridLayout                matlab.ui.container.GridLayout
         DDataTree                    matlab.ui.container.Tree
-        ESelectedAlgoContextMenu     matlab.ui.container.ContextMenu
+        SelectedAlgoContextMenu      matlab.ui.container.ContextMenu
         SelectedAlgoSelectAllMenu    matlab.ui.container.Menu
         DDataContextMenu             matlab.ui.container.ContextMenu
         SelectedAlgoSelectAllMenu_2  matlab.ui.container.Menu
-        ESelectedProbContextMenu     matlab.ui.container.ContextMenu
+        SelectedProbContextMenu      matlab.ui.container.ContextMenu
         SelectedProbSelectAllMenu    matlab.ui.container.Menu
-        EAlgorithmsContextMenu       matlab.ui.container.ContextMenu
+        AlgorithmsContextMenu        matlab.ui.container.ContextMenu
         AlgorithmsSelectAllMenu      matlab.ui.container.Menu
-        EProblemsContextMenu         matlab.ui.container.ContextMenu
+        ProblemsContextMenu          matlab.ui.container.ContextMenu
         ProblemsSelectAllMenu        matlab.ui.container.Menu
     end
 
@@ -292,7 +292,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             algo_node = uitreenode(app.TAlgorithmTree);
             algo_node.Text = algo_obj.getName();
             algo_node.NodeData = algo_obj;
-            algo_node.ContextMenu = app.ESelectedProbContextMenu;
+            algo_node.ContextMenu = app.SelectedProbContextMenu;
             
             % child parameter node
             parameter = algo_obj.getParameter();
@@ -300,10 +300,10 @@ classdef MTO_GUI < matlab.apps.AppBase
                 para_name_node = uitreenode(algo_node);
                 para_name_node.Text = ['[ ', parameter{p}, ' ]'];
                 para_name_node.NodeData = para_name_node.Text;
-                para_name_node.ContextMenu = app.ESelectedAlgoContextMenu;
+                para_name_node.ContextMenu = app.SelectedAlgoContextMenu;
                 para_value_node = uitreenode(algo_node);
                 para_value_node.Text = parameter{p+1};
-                para_value_node.ContextMenu = app.ESelectedAlgoContextMenu;
+                para_value_node.ContextMenu = app.SelectedAlgoContextMenu;
             end
             
             expand(algo_node);
@@ -319,8 +319,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             prob_node = uitreenode(app.TProblemTree);
             prob_node.Text = prob_obj.getName();
             prob_node.NodeData = prob_obj;
-            prob_node.ContextMenu = app.ESelectedProbContextMenu;
-            
+            prob_node.ContextMenu = app.SelectedProbContextMenu;
             
             % child parameter node
             parameter = prob_obj.getParameter();
@@ -328,10 +327,10 @@ classdef MTO_GUI < matlab.apps.AppBase
                 para_name_node = uitreenode(prob_node);
                 para_name_node.Text = ['[ ', parameter{p}, ' ]'];
                 para_name_node.NodeData = para_name_node.Text;
-                para_name_node.ContextMenu = app.ESelectedProbContextMenu;
+                para_name_node.ContextMenu = app.SelectedProbContextMenu;
                 para_value_node = uitreenode(prob_node);
                 para_value_node.Text = parameter{p+1};
-                para_value_node.ContextMenu = app.ESelectedProbContextMenu;
+                para_value_node.ContextMenu = app.SelectedProbContextMenu;
             end
             
             expand(prob_node);
@@ -466,7 +465,6 @@ classdef MTO_GUI < matlab.apps.AppBase
         function TupdateConvergence(app)
             % update convergence in Test module
             
-            % check app.Edata
             if isempty(app.Tdata)
                 return;
             end
@@ -475,7 +473,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             tasks_name = {};
             for task = 1:app.Tdata.tasks_num
                 convergence = app.Tdata.convergence(task, :);
-                if isfield(app.Tdata, 'convergence_cv');
+                if isfield(app.Tdata, 'convergence_cv')
                     convergence_cv = app.Tdata.convergence_cv(task, :);
                     convergence(convergence_cv > 0) = NaN;
                 end
@@ -490,7 +488,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                 
                 p = plot(app.TUIAxes, x, y, ['-', marker]);
                 p.LineWidth = app.line_width;
-                indices = round(length(y)/app.EMarkerIndicesEditField.Value);
+                indices = round(length(y)/10);
                 p.MarkerIndices = indices:indices:length(y)-round(indices/2);
                 p.MarkerSize = app.marker_size;
                 hold(app.TUIAxes, 'on');
@@ -1162,8 +1160,8 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EloadAlgoProb();
         end
 
-        % Context menu opening function: EAlgorithmsContextMenu
-        function EAlgorithmsContextMenuOpening(app, event)
+        % Context menu opening function: AlgorithmsContextMenu
+        function AlgorithmsContextMenuOpening(app, event)
             % select all algorithms
             
             if ~isempty(app.EAlgorithmsListBox.Items)
@@ -1181,7 +1179,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                 algo_node = uitreenode(app.EAlgorithmsTree);
                 algo_node.Text = algo_obj.getName();
                 algo_node.NodeData = algo_obj;
-                algo_node.ContextMenu = app.ESelectedAlgoContextMenu;
+                algo_node.ContextMenu = app.SelectedAlgoContextMenu;
                 
                 % child parameter node
                 parameter = algo_obj.getParameter();
@@ -1189,10 +1187,10 @@ classdef MTO_GUI < matlab.apps.AppBase
                     para_name_node = uitreenode(algo_node);
                     para_name_node.Text = ['[ ', parameter{p}, ' ]'];
                     para_name_node.NodeData = para_name_node.Text;
-                    para_name_node.ContextMenu = app.ESelectedAlgoContextMenu;
+                    para_name_node.ContextMenu = app.SelectedAlgoContextMenu;
                     para_value_node = uitreenode(algo_node);
                     para_value_node.Text = parameter{p+1};
-                    para_value_node.ContextMenu = app.ESelectedAlgoContextMenu;
+                    para_value_node.ContextMenu = app.SelectedAlgoContextMenu;
                 end
             end
             
@@ -1223,7 +1221,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                 prob_node = uitreenode(app.EProblemsTree);
                 prob_node.Text = prob_obj.getName();
                 prob_node.NodeData = prob_obj;
-                prob_node.ContextMenu = app.ESelectedProbContextMenu;
+                prob_node.ContextMenu = app.SelectedProbContextMenu;
                 
                 % child parameter node
                 parameter = prob_obj.getParameter();
@@ -1231,10 +1229,10 @@ classdef MTO_GUI < matlab.apps.AppBase
                     para_name_node = uitreenode(prob_node);
                     para_name_node.Text = ['[ ', parameter{p}, ' ]'];
                     para_name_node.NodeData = para_name_node.Text;
-                    para_name_node.ContextMenu = app.ESelectedProbContextMenu;
+                    para_name_node.ContextMenu = app.SelectedProbContextMenu;
                     para_value_node = uitreenode(prob_node);
                     para_value_node.Text = parameter{p+1};
-                    para_value_node.ContextMenu = app.ESelectedProbContextMenu;
+                    para_value_node.ContextMenu = app.SelectedProbContextMenu;
                 end
             end
             
@@ -1444,8 +1442,8 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.Estop_flag = true;
         end
 
-        % Context menu opening function: ESelectedAlgoContextMenu
-        function ESelectedAlgoContextMenuOpening(app, event)
+        % Context menu opening function: SelectedAlgoContextMenu
+        function SelectedAlgoContextMenuOpening(app, event)
             % select all selected algorithms
             
             if ~isempty(app.EAlgorithmsTree.Children)
@@ -3119,16 +3117,16 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.DDataTree.Layout.Row = 1;
             app.DDataTree.Layout.Column = 1;
 
-            % Create ESelectedAlgoContextMenu
-            app.ESelectedAlgoContextMenu = uicontextmenu(app.MTOPlatformUIFigure);
-            app.ESelectedAlgoContextMenu.ContextMenuOpeningFcn = createCallbackFcn(app, @ESelectedAlgoContextMenuOpening, true);
+            % Create SelectedAlgoContextMenu
+            app.SelectedAlgoContextMenu = uicontextmenu(app.MTOPlatformUIFigure);
+            app.SelectedAlgoContextMenu.ContextMenuOpeningFcn = createCallbackFcn(app, @SelectedAlgoContextMenuOpening, true);
             
-            % Assign app.ESelectedAlgoContextMenu
-            app.TAlgorithmTree.ContextMenu = app.ESelectedAlgoContextMenu;
-            app.EAlgorithmsTree.ContextMenu = app.ESelectedAlgoContextMenu;
+            % Assign app.SelectedAlgoContextMenu
+            app.TAlgorithmTree.ContextMenu = app.SelectedAlgoContextMenu;
+            app.EAlgorithmsTree.ContextMenu = app.SelectedAlgoContextMenu;
 
             % Create SelectedAlgoSelectAllMenu
-            app.SelectedAlgoSelectAllMenu = uimenu(app.ESelectedAlgoContextMenu);
+            app.SelectedAlgoSelectAllMenu = uimenu(app.SelectedAlgoContextMenu);
             app.SelectedAlgoSelectAllMenu.Text = 'Select All';
 
             % Create DDataContextMenu
@@ -3142,37 +3140,37 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.SelectedAlgoSelectAllMenu_2 = uimenu(app.DDataContextMenu);
             app.SelectedAlgoSelectAllMenu_2.Text = 'Select All';
 
-            % Create ESelectedProbContextMenu
-            app.ESelectedProbContextMenu = uicontextmenu(app.MTOPlatformUIFigure);
+            % Create SelectedProbContextMenu
+            app.SelectedProbContextMenu = uicontextmenu(app.MTOPlatformUIFigure);
             
-            % Assign app.ESelectedProbContextMenu
-            app.TProblemTree.ContextMenu = app.ESelectedProbContextMenu;
-            app.EProblemsTree.ContextMenu = app.ESelectedProbContextMenu;
+            % Assign app.SelectedProbContextMenu
+            app.TProblemTree.ContextMenu = app.SelectedProbContextMenu;
+            app.EProblemsTree.ContextMenu = app.SelectedProbContextMenu;
 
             % Create SelectedProbSelectAllMenu
-            app.SelectedProbSelectAllMenu = uimenu(app.ESelectedProbContextMenu);
+            app.SelectedProbSelectAllMenu = uimenu(app.SelectedProbContextMenu);
             app.SelectedProbSelectAllMenu.MenuSelectedFcn = createCallbackFcn(app, @ESelectedProbContextMenuOpening, true);
             app.SelectedProbSelectAllMenu.Text = 'Select All';
 
-            % Create EAlgorithmsContextMenu
-            app.EAlgorithmsContextMenu = uicontextmenu(app.MTOPlatformUIFigure);
-            app.EAlgorithmsContextMenu.ContextMenuOpeningFcn = createCallbackFcn(app, @EAlgorithmsContextMenuOpening, true);
+            % Create AlgorithmsContextMenu
+            app.AlgorithmsContextMenu = uicontextmenu(app.MTOPlatformUIFigure);
+            app.AlgorithmsContextMenu.ContextMenuOpeningFcn = createCallbackFcn(app, @AlgorithmsContextMenuOpening, true);
             
-            % Assign app.EAlgorithmsContextMenu
-            app.EAlgorithmsListBox.ContextMenu = app.EAlgorithmsContextMenu;
+            % Assign app.AlgorithmsContextMenu
+            app.EAlgorithmsListBox.ContextMenu = app.AlgorithmsContextMenu;
 
             % Create AlgorithmsSelectAllMenu
-            app.AlgorithmsSelectAllMenu = uimenu(app.EAlgorithmsContextMenu);
+            app.AlgorithmsSelectAllMenu = uimenu(app.AlgorithmsContextMenu);
             app.AlgorithmsSelectAllMenu.Text = 'Select All';
 
-            % Create EProblemsContextMenu
-            app.EProblemsContextMenu = uicontextmenu(app.MTOPlatformUIFigure);
+            % Create ProblemsContextMenu
+            app.ProblemsContextMenu = uicontextmenu(app.MTOPlatformUIFigure);
             
-            % Assign app.EProblemsContextMenu
-            app.EProblemsListBox.ContextMenu = app.EProblemsContextMenu;
+            % Assign app.ProblemsContextMenu
+            app.EProblemsListBox.ContextMenu = app.ProblemsContextMenu;
 
             % Create ProblemsSelectAllMenu
-            app.ProblemsSelectAllMenu = uimenu(app.EProblemsContextMenu);
+            app.ProblemsSelectAllMenu = uimenu(app.ProblemsContextMenu);
             app.ProblemsSelectAllMenu.MenuSelectedFcn = createCallbackFcn(app, @EProblemsContextMenuOpening, true);
             app.ProblemsSelectAllMenu.Text = 'Select All';
 
