@@ -1411,7 +1411,6 @@ classdef MTO_GUI < matlab.apps.AppBase
                 end
                 app.Edata.reps = reps;
                 app.EresetFigureData();
-                app.EupdateConvergenceAxes();
             end
             
             tEnd = toc(tStart);
