@@ -109,7 +109,7 @@ classdef CORCO < Algorithm
                     X = X + sub_pop / sub_eva;
 
                     % generation
-                    [offspring, calls] = OperatorCORCO.generate(population, Task, F_pool, CR_pool, weights, fnceval_calls, sub_eva);
+                    [offspring, calls] = OperatorCORCO.generate(population, Task, F_pool, CR_pool, weights);
                     fnceval_calls = fnceval_calls + calls;
 
                     % selection

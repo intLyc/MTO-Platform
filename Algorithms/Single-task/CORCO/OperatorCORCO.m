@@ -8,7 +8,7 @@ classdef OperatorCORCO < Operator
     %--------------------------------------------------------------------------
 
     methods (Static)
-        function [offspring, calls] = generate(population, Task, F, CR, weights, fnceval, eva_num)
+        function [offspring, calls] = generate(population, Task, F, CR, weights)
             Individual_class = class(population(1));
 
             Obj = [population.factorial_costs];
@@ -38,24 +38,24 @@ classdef OperatorCORCO < Operator
                 if rand() < 0.5
                     offspring(i).rnvec(vio_low) = 2 * 0 - offspring(i).rnvec(vio_low);
                     vio_temp = offspring(i).rnvec(vio_low) > 1;
-                    offspring(i).rnvec(vio_low(vio_temp)) = 0;
+                    offspring(i).rnvec(vio_low(vio_temp)) = 1;
                 else
-                    if fnceval < 0.5 * eva_num
+                    if rand() < 0.5
                         offspring(i).rnvec(vio_low) = 0;
                     else
                         offspring(i).rnvec(vio_low) = 1;
                     end
                 end
                 vio_up = find(offspring(i).rnvec > 1);
-                if rand() < 0.7
+                if rand() < 0.5
                     offspring(i).rnvec(vio_up) = 2 * 1 - offspring(i).rnvec(vio_up);
                     vio_temp = offspring(i).rnvec(vio_up) < 0;
                     offspring(i).rnvec(vio_up(vio_temp)) = 1;
                 else
-                    if fnceval < 0.5 * eva_num
-                        offspring(i).rnvec(vio_up) = 1;
-                    else
+                    if rand() < 0.5
                         offspring(i).rnvec(vio_up) = 0;
+                    else
+                        offspring(i).rnvec(vio_up) = 1;
                     end
                 end
             end
