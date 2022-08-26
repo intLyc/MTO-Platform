@@ -21,29 +21,14 @@ classdef DeCODE < Algorithm
     % or footnote "https://github.com/intLyc/MTO-Platform"
     %--------------------------------------------------------------------------
 
-    properties (SetAccess = private)
-        F = '0.6/0.8/1.0'
-        CR = '0.1/0.2/1.0'
-    end
-
     methods
-        function parameter = getParameter(obj)
-            parameter = {'F pool: Mutation Factor', obj.F, ...
-                        'CR pool: Crossover Probability', obj.CR};
-        end
-
-        function obj = setParameter(obj, parameter_cell)
-            count = 1;
-            obj.F = parameter_cell{count}; count = count + 1;
-            obj.CR = parameter_cell{count}; count = count + 1;
-        end
-
         function data = run(obj, Tasks, run_parameter_list)
             sub_pop = run_parameter_list(1);
             sub_eva = run_parameter_list(2);
 
-            F_pool = str2double(string(split(obj.F, '/')));
-            CR_pool = str2double(string(split(obj.CR, '/')));
+            F_pool = [0.6, 0.8, 1.0];
+            CR_pool = [0.1, 0.2, 1.0];
+
             convergence = [];
             convergence_cv = [];
             bestX = {};

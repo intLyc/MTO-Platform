@@ -22,22 +22,16 @@ classdef CORCO < Algorithm
     %--------------------------------------------------------------------------
 
     properties (SetAccess = private)
-        F = '0.6/0.8/1.0'
-        CR = '0.1/0.2/1.0'
         lp = 0.05
     end
 
     methods
         function parameter = getParameter(obj)
-            parameter = {'F pool: Mutation Factor', obj.F, ...
-                        'CR pool: Crossover Probability', obj.CR, ...
-                        'lp: learning period', num2str(obj.lp)};
+            parameter = {'lp: learning period', num2str(obj.lp)};
         end
 
         function obj = setParameter(obj, parameter_cell)
             count = 1;
-            obj.F = parameter_cell{count}; count = count + 1;
-            obj.CR = parameter_cell{count}; count = count + 1;
             obj.lp = str2double(parameter_cell{count}); count = count + 1;
         end
 
@@ -45,8 +39,9 @@ classdef CORCO < Algorithm
             sub_pop = run_parameter_list(1);
             sub_eva = run_parameter_list(2);
 
-            F_pool = str2double(string(split(obj.F, '/')));
-            CR_pool = str2double(string(split(obj.CR, '/')));
+            F_pool = [0.6, 0.8, 1.0];
+            CR_pool = [0.1, 0.2, 1.0];
+
             convergence = [];
             convergence_cv = [];
             bestX = {};
