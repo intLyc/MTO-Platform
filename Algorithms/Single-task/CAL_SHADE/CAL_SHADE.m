@@ -117,7 +117,7 @@ classdef CAL_SHADE < Algorithm
                     fnceval_calls = fnceval_calls + calls;
 
                     % selection
-                    replace_cv = [population.constraint_violation] > [offspring.constraint_violation];
+                    replace_cv = [population.constraint_violation] > [offspring.constraint_violation] & [population.constraint_violation] > Ep & [offspring.constraint_violation] > Ep;
                     equal_cv = [population.constraint_violation] <= Ep & [offspring.constraint_violation] <= Ep;
                     replace_obj = [population.factorial_costs] > [offspring.factorial_costs];
                     replace = (equal_cv & replace_obj) | replace_cv;

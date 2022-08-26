@@ -4,7 +4,7 @@ function [min_obj, min_cv, min_idx] = min_FP(obj, cv, varargin)
     n = numel(varargin);
     if n == 0
         ep = 0;
-    elseif n == 2
+    elseif n == 1
         ep = varargin{1};
     end
     cv(cv <= ep) = 0;
