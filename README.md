@@ -63,8 +63,8 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 
 ### I. Test Module
 
-![Test Module Tasks](./Doc/Readme_Figure/MTO-Platform%20Test%20Module.png)
-![Test Module Convergence](./Doc/Readme_Figure/MTO-Platform%20Test%20Module%202.png)
+![Test Module Tasks](./Doc/ReadmeFigure/MTO-Platform%20Test%20Module.png)
+![Test Module Convergence](./Doc/ReadmeFigure/MTO-Platform%20Test%20Module%202.png)
 
 1. Algorithm selection
     - Select an algorithm to be displayed in the Algorithm Tree
@@ -81,8 +81,8 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 
 ### II. Experiment Module
 
-![Experiment Module Table](./Doc/Readme_Figure/MTO-Platform%20Experiment%20Module.png)
-![Experiment Module Figure](./Doc/Readme_Figure/MTO-Platform%20Experiment%20Module%202.png)
+![Experiment Module Table](./Doc/ReadmeFigure/MTO-Platform%20Experiment%20Module.png)
+![Experiment Module Figure](./Doc/ReadmeFigure/MTO-Platform%20Experiment%20Module%202.png)
 
 1. parameter settings
     - Run Times: Number of independent runs
@@ -211,8 +211,8 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 
 ### 一、测试模块
 
-![Test Module Tasks](./Doc/Readme_Figure/MTO-Platform%20Test%20Module.png)
-![Test Module Convergence](./Doc/Readme_Figure/MTO-Platform%20Test%20Module%202.png)
+![Test Module Tasks](./Doc/ReadmeFigure/MTO-Platform%20Test%20Module.png)
+![Test Module Convergence](./Doc/ReadmeFigure/MTO-Platform%20Test%20Module%202.png)
 
 1. 算法选择
     - 选取一个算法，显示在Algorithm Tree中
@@ -229,8 +229,8 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 
 ### 二、实验模块
 
-![Experiment Module Table](./Doc/Readme_Figure/MTO-Platform%20Experiment%20Module.png)
-![Experiment Module Figure](./Doc/Readme_Figure/MTO-Platform%20Experiment%20Module%202.png)
+![Experiment Module Table](./Doc/ReadmeFigure/MTO-Platform%20Experiment%20Module.png)
+![Experiment Module Figure](./Doc/ReadmeFigure/MTO-Platform%20Experiment%20Module%202.png)
 
 1. 参数设置
     - Run Times: 独立运行次数
