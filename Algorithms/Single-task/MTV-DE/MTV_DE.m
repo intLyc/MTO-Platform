@@ -83,11 +83,11 @@ classdef MTV_DE < Algorithm
 
                     population(replace) = offspring(replace);
 
-                    [bestobj_now, bestCV_now, best_idx] = min_FP([population.factorial_costs], [population.constraint_violation]);
+                    [bestobj_now, bestCV_now, best_idx] = min_FP([offspring.factorial_costs], [offspring.constraint_violation]);
                     if bestCV_now < bestCV || (bestCV_now == bestCV && bestobj_now < bestobj)
                         bestobj = bestobj_now;
                         bestCV = bestCV_now;
-                        bestX_temp = population(best_idx).rnvec;
+                        bestX_temp = offspring(best_idx).rnvec;
                     end
                     converge_temp(generation) = bestobj;
                     converge_cv_temp(generation) = bestCV;
