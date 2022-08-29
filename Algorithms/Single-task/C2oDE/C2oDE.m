@@ -23,7 +23,7 @@ classdef C2oDE < Algorithm
     properties (SetAccess = private)
         beta = 6
         mu = 1e-8
-        p = 0.85
+        p = 0.5
     end
 
     methods
