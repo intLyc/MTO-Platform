@@ -76,7 +76,6 @@ classdef C2oDE < Algorithm
                         Ep = 0;
                     end
                     X = X + (sub_pop * 3) / sub_eva;
-                    Ep_record(generation) = Ep;
 
                     % diversity restart
                     if std([population.constraint_violation]) < obj.mu && isempty(find([population.constraint_violation] == 0))
@@ -112,7 +111,6 @@ classdef C2oDE < Algorithm
                     converge_temp(generation) = bestobj;
                     converge_cv_temp(generation) = bestCV;
                 end
-                plot(Ep_record)
                 convergence(sub_task, :) = converge_temp;
                 convergence_cv(sub_task, :) = converge_cv_temp;
                 bestX{sub_task} = bestX_temp;
