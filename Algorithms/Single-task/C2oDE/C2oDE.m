@@ -75,7 +75,7 @@ classdef C2oDE < Algorithm
                     else
                         Ep = 0;
                     end
-                    X = X + fnceval_calls / sub_eva;
+                    X = X + sub_pop / sub_eva;
 
                     % diversity restart
                     if std([population.constraint_violation]) < obj.mu && isempty(find([population.constraint_violation] == 0))

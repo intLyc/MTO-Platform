@@ -26,14 +26,14 @@ classdef OperatorC2oDE < Operator
 
                 % rand-to-best-modified
                 A = randperm(length(population), 5);
-                A(A == i + 1) = []; x1 = A(1); x2 = A(2); x3 = A(3); x4 = A(4);
+                A(A == i) = []; x1 = A(1); x2 = A(2); x3 = A(3); x4 = A(4);
                 [~, ~, best] = min_FP([population.factorial_costs], [population.constraint_violation]);
                 offspring(j + 1) = OperatorC2oDE.mutate_rand_to_best_modified(offspring(j + 1), population(best), population(x1), population(x2), population(x3), population(x4), F(randi(length(F))));
                 offspring(j + 1) = OperatorC2oDE.crossover(offspring(j + 1), population(i), CR(randi(length(CR))));
 
                 % current-to-rand
                 A = randperm(length(population), 4);
-                A(A == i + 2) = []; x1 = A(1); x2 = A(2); x3 = A(3);
+                A(A == i) = []; x1 = A(1); x2 = A(2); x3 = A(3);
                 offspring(j + 2) = OperatorC2oDE.mutate_current_to_rand(offspring(j + 2), population(i), population(x1), population(x2), population(x3), F(randi(length(F))));
 
                 % boundary check
