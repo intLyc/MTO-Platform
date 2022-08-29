@@ -17,7 +17,11 @@ classdef FR < Metric
             for prob = 1:length(data.prob_cell)
                 tasks_num = data.tasks_num_list(prob);
                 for task = 1:tasks_num
-                    result.RowName{row_i} = [data.prob_cell{prob}, '-T', num2str(task)];
+                    if task_num == 1
+                        result.RowName{row_i} = data.prob_cell{prob};
+                    else
+                        result.RowName{row_i} = [data.prob_cell{prob}, '-T', num2str(task)];
+                    end
                     row_i = row_i + 1;
                 end
             end
