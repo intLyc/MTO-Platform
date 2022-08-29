@@ -1,4 +1,4 @@
-function [archive, bestobj, bestCV, bestX] = selectCORCOarchive(archive, offspring, stage, bestobj, bestCV, bestX)
+function [archive] = selectCORCOarchive(archive, offspring, stage)
 
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
@@ -18,11 +18,4 @@ function [archive, bestobj, bestCV, bestX] = selectCORCOarchive(archive, offspri
     end
 
     archive(replace) = offspring(replace);
-
-    [bestobj_now, bestCV_now, best_idx] = min_FP([archive.factorial_costs], [archive.constraint_violation]);
-    if bestCV_now < bestCV || (bestCV_now == bestCV && bestobj_now < bestobj)
-        bestobj = bestobj_now;
-        bestCV = bestCV_now;
-        bestX = archive(best_idx).rnvec;
-    end
 end

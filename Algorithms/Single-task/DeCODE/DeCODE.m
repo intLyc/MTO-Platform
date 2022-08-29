@@ -112,8 +112,15 @@ classdef DeCODE < Algorithm
                     fnceval_calls = fnceval_calls + calls;
 
                     % selection
-                    [population, bestobj, bestCV, bestX_temp] = selectDeCODE(population, offspring, weights, bestobj, bestCV, bestX_temp);
-                    [archive, bestobj, bestCV, bestX_temp] = selectDeCODEarchive(archive, offspring, bestobj, bestCV, bestX_temp);
+                    [population] = selectDeCODE(population, offspring, weights);
+                    [archive] = selectDeCODEarchive(archive, offspring);
+
+                    [bestobj_now, bestCV_now, best_idx] = min_FP([offspring.factorial_costs], [offspring.constraint_violation]);
+                    if bestCV_now < bestCV || (bestCV_now == bestCV && bestobj_now < bestobj)
+                        bestobj = bestobj_now;
+                        bestCV = bestCV_now;
+                        bestX_temp = offspring(best_idx).rnvec;
+                    end
                     converge_temp(generation) = bestobj;
                     converge_cv_temp(generation) = bestCV;
                 end

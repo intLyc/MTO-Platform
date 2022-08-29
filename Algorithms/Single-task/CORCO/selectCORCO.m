@@ -1,4 +1,4 @@
-function [population, bestobj, bestCV, bestX] = selectCORCO(population, offspring, weights, bestobj, bestCV, bestX)
+function [population] = selectCORCO(population, offspring, weights)
 
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
@@ -23,11 +23,4 @@ function [population, bestobj, bestCV, bestX] = selectCORCO(population, offsprin
     replace = pop_fit > off_fit;
 
     population(replace) = offspring(replace);
-
-    [bestobj_now, bestCV_now, best_idx] = min_FP([population.factorial_costs], [population.constraint_violation]);
-    if bestCV_now < bestCV || (bestCV_now == bestCV && bestobj_now < bestobj)
-        bestobj = bestobj_now;
-        bestCV = bestCV_now;
-        bestX = population(best_idx).rnvec;
-    end
 end
