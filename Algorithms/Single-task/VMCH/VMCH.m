@@ -168,9 +168,9 @@ classdef VMCH < Algorithm
                     fnceval_calls = fnceval_calls + calls;
 
                     % vote-mechanism selection
-                    Q_p = 0; Q_o = 0;
                     replace = false(1, length(population));
                     for i = 1:length(population)
+                        Q_p = 0; Q_o = 0;
                         obj_pair = [population(i).factorial_costs, offspring(i).factorial_costs];
                         cv_pair = [population(i).constraint_violation, offspring(i).constraint_violation];
 
