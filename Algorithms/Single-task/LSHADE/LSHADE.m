@@ -49,7 +49,7 @@ classdef LSHADE < Algorithm
                 % initialize
                 pop_init = sub_pop * 2;
                 pop_min = 4;
-                [population, fnceval_calls, bestobj, bestX_temp] = initialize(IndividualJADE, pop_init, Task, Task.dims);
+                [population, fnceval_calls, bestobj, bestX_temp] = initialize(IndividualLSHADE, pop_init, Task, Task.dims);
                 converge_temp(1) = bestobj;
                 eva_gen_temp(1) = fnceval_calls;
 
@@ -57,7 +57,7 @@ classdef LSHADE < Algorithm
                 H_idx = 1;
                 MF = 0.5 .* ones(obj.H, 1);
                 MCR = 0.5 .* ones(obj.H, 1);
-                arc = IndividualJADE.empty();
+                arc = IndividualLSHADE.empty();
 
                 generation = 1;
                 while fnceval_calls < sub_eva

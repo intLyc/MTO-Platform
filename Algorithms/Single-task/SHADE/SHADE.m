@@ -46,14 +46,14 @@ classdef SHADE < Algorithm
                 Task = Tasks(sub_task);
 
                 % initialize
-                [population, fnceval_calls, bestobj, bestX_temp] = initialize(IndividualJADE, sub_pop, Task, Task.dims);
+                [population, fnceval_calls, bestobj, bestX_temp] = initialize(IndividualSHADE, sub_pop, Task, Task.dims);
                 converge_temp(1) = bestobj;
 
                 % initialize parameter
                 H_idx = 1;
                 MF = 0.5 .* ones(obj.H, 1);
                 MCR = 0.5 .* ones(obj.H, 1);
-                arc = IndividualJADE.empty();
+                arc = IndividualSHADE.empty();
 
                 generation = 1;
                 while fnceval_calls < sub_eva

@@ -1,4 +1,4 @@
-classdef IndividualSHADE44 < Individual
+classdef IndividualSHADE_CAL < Individual
 
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
@@ -8,8 +8,7 @@ classdef IndividualSHADE44 < Individual
     %--------------------------------------------------------------------------
 
     properties
-        F;
-        CR;
-        st;
+        F
+        CR
     end
 end

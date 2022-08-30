@@ -1,4 +1,4 @@
-classdef IndividualJADE < Individual
+classdef IndividualLSHADE44 < Individual
 
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
@@ -10,5 +10,6 @@ classdef IndividualJADE < Individual
     properties
         F
         CR
+        st
     end
 end
