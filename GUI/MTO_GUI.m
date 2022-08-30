@@ -598,9 +598,12 @@ classdef MTO_GUI < matlab.apps.AppBase
             
             if strcmp(test_type, 'None')
                 app.EUITable.Data = app.Etable_view;
+                app.EUITable.RowName{size(app.Etable_data, 1)+1} = [];
                 drawnow;
                 return;
             end
+            
+            app.EUITable.RowName{size(app.Etable_data, 1)+1} = '+/-/=';
             
             % Rank sum or Signed rank test
             for algo = 1:size(app.Etable_data, 2)
@@ -1411,6 +1414,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                 end
                 app.Edata.reps = reps;
                 app.EresetFigureData();
+                app.EupdateConvergenceAxes();
             end
             
             tEnd = toc(tStart);
