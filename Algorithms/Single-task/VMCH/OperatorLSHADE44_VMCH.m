@@ -1,4 +1,4 @@
-classdef OperatorVMCH < Operator
+classdef OperatorLSHADE44_VMCH < Operator
 
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
@@ -29,8 +29,8 @@ classdef OperatorVMCH < Operator
                         while x2 == i || x2 == x1 || x2 == pbest
                             x2 = randi(length(union));
                         end
-                        offspring(i) = OperatorVMCH.mutate_rand_to_pbest(offspring(i), population(i), population(pbest), population(x1), union(x2));
-                        offspring(i) = OperatorVMCH.crossover(offspring(i), population(i));
+                        offspring(i) = OperatorLSHADE44_VMCH.mutate_rand_to_pbest(offspring(i), population(i), population(pbest), population(x1), union(x2));
+                        offspring(i) = OperatorLSHADE44_VMCH.crossover(offspring(i), population(i));
                     case 2 % pbest + exp
                         pbest = pop_pbest(randi(length(pop_pbest)));
                         x1 = randi(length(population));
@@ -41,8 +41,8 @@ classdef OperatorVMCH < Operator
                         while x2 == i || x2 == x1 || x2 == pbest
                             x2 = randi(length(union));
                         end
-                        offspring(i) = OperatorVMCH.mutate_rand_to_pbest(offspring(i), population(i), population(pbest), population(x1), union(x2));
-                        offspring(i) = OperatorVMCH.crossoverExp(offspring(i), population(i));
+                        offspring(i) = OperatorLSHADE44_VMCH.mutate_rand_to_pbest(offspring(i), population(i), population(pbest), population(x1), union(x2));
+                        offspring(i) = OperatorLSHADE44_VMCH.crossoverExp(offspring(i), population(i));
                     case 3 % randrl + bin
                         A = randperm(length(population), 4);
                         A(A == i) = []; idx = A(1:3);
@@ -53,8 +53,8 @@ classdef OperatorVMCH < Operator
                         else
                             x3 = idx(rank_temp(3)); x2 = idx(rank_temp(2));
                         end
-                        offspring(i) = OperatorVMCH.mutate_rand(offspring(i), population(x1), population(x2), population(x3), population(i).F);
-                        offspring(i) = OperatorVMCH.crossover(offspring(i), population(i));
+                        offspring(i) = OperatorLSHADE44_VMCH.mutate_rand(offspring(i), population(x1), population(x2), population(x3), population(i).F);
+                        offspring(i) = OperatorLSHADE44_VMCH.crossover(offspring(i), population(i));
                     case 4 % randrl + exp
                         A = randperm(length(population), 4);
                         A(A == i) = []; idx = A(1:3);
@@ -65,8 +65,8 @@ classdef OperatorVMCH < Operator
                         else
                             x3 = idx(rank_temp(3)); x2 = idx(rank_temp(2));
                         end
-                        offspring(i) = OperatorVMCH.mutate_rand(offspring(i), population(x1), population(x2), population(x3), population(i).F);
-                        offspring(i) = OperatorVMCH.crossoverExp(offspring(i), population(i));
+                        offspring(i) = OperatorLSHADE44_VMCH.mutate_rand(offspring(i), population(x1), population(x2), population(x3), population(i).F);
+                        offspring(i) = OperatorLSHADE44_VMCH.crossoverExp(offspring(i), population(i));
                 end
 
                 offspring(i).rnvec(offspring(i).rnvec > 1) = 1;

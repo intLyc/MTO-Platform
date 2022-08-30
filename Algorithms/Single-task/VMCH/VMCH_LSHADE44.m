@@ -1,4 +1,4 @@
-classdef VMCH < Algorithm
+classdef VMCH_LSHADE44 < Algorithm
     % <Single> <Constrained>
 
     %------------------------------- Reference --------------------------------
@@ -164,7 +164,7 @@ classdef VMCH < Algorithm
 
                     % generation
                     union = [population, arc];
-                    [offspring, calls] = OperatorVMCH.generate(Task, population, union, obj.p);
+                    [offspring, calls] = OperatorLSHADE44_VMCH.generate(Task, population, union, obj.p);
                     fnceval_calls = fnceval_calls + calls;
 
                     % vote-mechanism selection
