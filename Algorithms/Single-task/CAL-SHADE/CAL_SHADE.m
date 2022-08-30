@@ -20,8 +20,8 @@ classdef CAL_SHADE < Algorithm
     %--------------------------------------------------------------------------
 
     properties (SetAccess = private)
-        p = 0.11
-        H = 5
+        p = 0.1
+        H = 10
         arc_rate = 1
         ep_top = 0.2
         ep_tc = 0.8
