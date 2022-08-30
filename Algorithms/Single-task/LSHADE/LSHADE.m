@@ -47,7 +47,7 @@ classdef LSHADE < Algorithm
                 Task = Tasks(sub_task);
 
                 % initialize
-                pop_init = sub_pop * 2;
+                pop_init = sub_pop;
                 pop_min = 4;
                 [population, fnceval_calls, bestobj, bestX_temp] = initialize(IndividualLSHADE, pop_init, Task, Task.dims);
                 converge_temp(1) = bestobj;

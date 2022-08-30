@@ -84,7 +84,7 @@ classdef VMCH_LSHADE44 < Algorithm
                 Task = Tasks(sub_task);
 
                 % initialize
-                pop_init = sub_pop * 2;
+                pop_init = sub_pop;
                 pop_min = 4;
                 [population, fnceval_calls] = initialize(IndividualVMCH, pop_init, Task, Task.dims);
                 [bestobj, bestCV, best_idx] = min_FP([population.factorial_costs], [population.constraint_violation]);
