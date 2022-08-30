@@ -1,9 +1,9 @@
-classdef L_SHADE < Algorithm
+classdef LSHADE < Algorithm
     % <Single> <None>
 
     %------------------------------- Reference --------------------------------
-    % @InProceedings{Tanabe2014L-SHADE,
-    %   title     = {Improving the search performance of SHADE using linear population size reduction},
+    % @InProceedings{Tanabe2014LSHADE,
+    %   title     = {Improving the Search Performance of Shade Using Linear Population Size Reduction},
     %   author    = {Tanabe, Ryoji and Fukunaga, Alex S.},
     %   booktitle = {2014 IEEE Congress on Evolutionary Computation (CEC)},
     %   year      = {2014},

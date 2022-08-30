@@ -1,4 +1,4 @@
-classdef ECHT < Algorithm
+classdef ECHT_DE < Algorithm
     % <Single> <Constrained>
 
     %------------------------------- Reference --------------------------------

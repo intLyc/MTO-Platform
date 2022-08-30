@@ -1,9 +1,9 @@
-classdef L_SHADE44 < Algorithm
+classdef LSHADE44 < Algorithm
     % <Single> <Constrained>
 
     %------------------------------- Reference --------------------------------
-    % @InProceedings{Polakova2017L-SHADE44,
-    %   title     = {L-SHADE with competing strategies applied to constrained optimization},
+    % @InProceedings{Polakova2017LSHADE44,
+    %   title     = {L-shade with Competing Strategies Applied to Constrained Optimization},
     %   author    = {Poláková, Radka},
     %   booktitle = {2017 IEEE Congress on Evolutionary Computation (CEC)},
     %   year      = {2017},
