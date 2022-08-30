@@ -66,8 +66,7 @@ classdef L_SHADE44 < Algorithm
                 Task = Tasks(sub_task);
 
                 % initialize
-                pop_init = Task.dims * 18;
-                % pop_init = sub_pop;
+                pop_init = sub_pop * 2;
                 pop_min = 4;
                 [population, fnceval_calls] = initialize(IndividualSHADE44, pop_init, Task, Task.dims);
                 [bestobj, bestCV, best_idx] = min_FP([population.factorial_costs], [population.constraint_violation]);
