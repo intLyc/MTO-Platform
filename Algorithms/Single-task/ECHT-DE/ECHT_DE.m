@@ -64,7 +64,7 @@ classdef ECHT_DE < Algorithm
             for sub_task = 1:length(Tasks)
                 Task = Tasks(sub_task);
 
-                ch_num = 3; % constraint handling techniques
+                ch_num = 4; % constraint handling techniques
 
                 % initialize
                 [population, fnceval_calls, bestobj, bestCV, bestX_temp] = initializeECHT(Individual, sub_pop, Task, ch_num);
@@ -117,7 +117,15 @@ classdef ECHT_DE < Algorithm
                                         flag = sort_SR(obj_pair, cv_pair, Sr);
                                     case 3 % Epsilon constraint
                                         flag = sort_EC(obj_pair, cv_pair, Ep);
-                                        % case 4 % Self-adaptive penalty
+                                    case 4 % Self-adaptive penalty
+                                        obj_temp = [[population{t}.factorial_costs], offspring_temp(i).factorial_costs];
+                                        cv_temp = [[population{t}.constraint_violation], offspring_temp(i).constraint_violation];
+                                        f = cal_SP(obj_temp, cv_temp, 1);
+                                        if f(i) > f(end)
+                                            flag = [2, 1];
+                                        else
+                                            flag = [1, 2];
+                                        end
                                 end
                                 replace(i) = (flag(1) ~= 1);
                             end
