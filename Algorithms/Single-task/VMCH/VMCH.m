@@ -37,7 +37,12 @@ classdef VMCH < Algorithm
         function parameter = getParameter(obj)
             parameter = {'p: 100p% top as pbest', num2str(obj.p), ...
                         'H: success memory size', num2str(obj.H), ...
-                        'arc_rate: arcive size rate', num2str(obj.arc_rate)};
+                        'arc_rate: arcive size rate', num2str(obj.arc_rate), ...
+                        'ep_top', num2str(obj.ep_top), ...
+                        'ep_alpha', num2str(obj.ep_alpha), ...
+                        'ep_cp', num2str(obj.ep_cp), ...
+                        'ep_tc', num2str(obj.ep_tc), ...
+                        'ep_tcc', num2str(obj.ep_tcc)};
         end
 
         function obj = setParameter(obj, parameter_cell)
@@ -45,6 +50,11 @@ classdef VMCH < Algorithm
             obj.p = str2double(parameter_cell{count}); count = count + 1;
             obj.H = str2double(parameter_cell{count}); count = count + 1;
             obj.arc_rate = str2double(parameter_cell{count}); count = count + 1;
+            obj.ep_top = str2double(parameter_cell{count}); count = count + 1;
+            obj.ep_alpha = str2double(parameter_cell{count}); count = count + 1;
+            obj.ep_cp = str2double(parameter_cell{count}); count = count + 1;
+            obj.ep_tc = str2double(parameter_cell{count}); count = count + 1;
+            obj.ep_tcc = str2double(parameter_cell{count}); count = count + 1;
         end
 
         function [res, p_min] = roulete(obj, cutpoints)

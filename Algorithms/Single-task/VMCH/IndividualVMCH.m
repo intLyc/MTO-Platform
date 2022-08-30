@@ -8,8 +8,8 @@ classdef IndividualVMCH < Individual
     %--------------------------------------------------------------------------
 
     properties
-        F;
-        CR;
-        st;
+        F
+        CR
+        st
     end
 end
