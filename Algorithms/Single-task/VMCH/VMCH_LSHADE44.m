@@ -253,11 +253,10 @@ classdef VMCH_LSHADE44 < Algorithm
                         k_idx = [population.st] == k;
                         SF = [population(replace & k_idx).F];
                         SCR = [population(replace & k_idx).CR];
-                        dif = abs([population(replace & k_idx).constraint_violation] - [offspring(replace & k_idx).constraint_violation]);
-                        dif_obj = abs([population(replace & k_idx).factorial_costs] - [offspring(replace & k_idx).factorial_costs]);
-                        zero_cv = [population(replace & k_idx).constraint_violation] <= 0 & ...
-                            [offspring(replace & k_idx).constraint_violation] <= 0;
-                        dif(zero_cv) = dif_obj(zero_cv);
+                        dif = [population(replace & k_idx).constraint_violation] - [offspring(replace & k_idx).constraint_violation];
+                        dif_obj = [population(replace & k_idx).factorial_costs] - [offspring(replace & k_idx).factorial_costs];
+                        dif_obj(dif_obj < 0) = 0;
+                        dif(dif <= 0) = dif_obj(dif <= 0);
                         dif = dif ./ sum(dif);
                         % update MF MCR
                         if ~isempty(SF)
