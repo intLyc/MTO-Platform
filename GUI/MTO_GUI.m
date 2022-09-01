@@ -632,9 +632,12 @@ classdef MTO_GUI < matlab.apps.AppBase
                         if data1 < data2
                             app.Etable_view_test{row_i, algo} = '+';
                             sign_p(1) = sign_p(1) + 1;
-                        else
+                        elseif data1 > data2
                             app.Etable_view_test{row_i, algo} = '-';
                             sign_p(2) = sign_p(2) + 1;
+                        else
+                            app.Etable_view_test{row_i, algo} = '=';
+                            sign_p(3) = sign_p(3) + 1;
                         end
                     else
                         app.Etable_view_test{row_i, algo} = '=';
