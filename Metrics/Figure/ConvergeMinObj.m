@@ -74,7 +74,7 @@ classdef ConvergeMinObj < Metric
 
                 if strcmp(ConvergeMinObj.y_type, 'log')
                     for i = 1:length(result.YData(prob, :))
-                        result.YData{row_i, i}(result.YData{row_i, i} <= 0) = 1e-10;
+                        result.YData{prob, i}(result.YData{prob, i} <= 0) = 1e-10;
                         result.YData{prob, i} = log(result.YData{prob, i});
                     end
                 end

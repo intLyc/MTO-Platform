@@ -46,7 +46,7 @@ classdef ConvergeObj < Metric
                     for algo = 1:length(data.algo_cell)
                         convergence_task = data.result(prob, algo).convergence(task:tasks_num:end, :);
                         if isfield(data.result(prob, algo), 'convergence_cv')
-                            convergence_cv_task = data.result(prob, algo).convergence(task:tasks_num:end, :);
+                            convergence_cv_task = data.result(prob, algo).convergence_cv(task:tasks_num:end, :);
                             convergence_task(convergence_cv_task > 0) = NaN;
                         end
                         convergence = mean(convergence_task, 1);
