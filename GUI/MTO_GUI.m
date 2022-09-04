@@ -1367,6 +1367,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             else
                 % start parallel
                 reps = app.ERepsEditField.Value;
+                app.Edata.reps = reps;
                 for prob = 1:prob_num
                     for algo = 1:algo_num
                         algo_obj = app.EAlgorithmsTree.Children(algo).NodeData;
@@ -1414,8 +1415,16 @@ classdef MTO_GUI < matlab.apps.AppBase
                         app.EupdateTableReps();
                         app.EcheckPauseStopStatus();
                     end
+                    
+                    % save temporary data
+                    data_save = app.Edata;
+                    data_save.prob_cell = data_save.prob_cell(1:prob);
+                    data_save.sub_pop = data_save.sub_pop(1:prob);
+                    data_save.sub_eva = data_save.sub_eva(1:prob);
+                    data_save.tasks_num_list = data_save.tasks_num_list(1:prob);
+                    data_save.result = data_save.result(1:prob,:);
+                    save('data_save_temp', 'data_save');
                 end
-                app.Edata.reps = reps;
                 app.EupdateTable();
                 app.EresetFigureData();
             end
@@ -1566,16 +1575,6 @@ classdef MTO_GUI < matlab.apps.AppBase
             
             % save data
             data_save = app.Edata;
-            
-            % fix convergence bug
-            for prob = 1:length(data_save.prob_cell)
-                for algo = 1:length(data_save.algo_cell)
-                    idx = 1:data_save.tasks_num_list(prob) * data_save.reps;
-                    data_save.result(prob, algo).convergence = data_save.result(prob, algo).convergence(idx, :);
-                    data_save.result(prob, algo).convergence_cv = data_save.result(prob, algo).convergence_cv(idx, :);
-                end
-            end
-            
             save([dir_name, file_name], 'data_save');
         end
 
@@ -2168,7 +2167,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create MTOPlatformUIFigure and hide until all components are created
             app.MTOPlatformUIFigure = uifigure('Visible', 'off');
             app.MTOPlatformUIFigure.Color = [1 1 1];
-            app.MTOPlatformUIFigure.Position = [100 100 1034 666];
+            app.MTOPlatformUIFigure.Position = [100 100 1038 666];
             app.MTOPlatformUIFigure.Name = 'MTO Platform';
             app.MTOPlatformUIFigure.WindowStyle = 'modal';
 
