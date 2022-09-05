@@ -339,17 +339,21 @@ classdef MTO_GUI < matlab.apps.AppBase
         function TupdateUIAxes(app)
             % update UI Axes in Test module
             
-            cla(app.TUIAxes, 'reset');
-            type = app.TShowTypeDropDown.Value;
-            switch type
-                case 1 % Tasks Figure (1D unified)
-                    app.TupdateTasksFigure();
-                case 2 % Tasks Figure (1D real)
-                    app.TupdateTasksFigure();
-                case 3 % Feasible Region (2D)
-                    app.TupdateFeasibleRegion();
-                case 4 % Convergence (Obj)
-                    app.TupdateConvergence();
+            try
+                cla(app.TUIAxes, 'reset');
+                type = app.TShowTypeDropDown.Value;
+                switch type
+                    case 1 % Tasks Figure (1D unified)
+                        app.TupdateTasksFigure();
+                    case 2 % Tasks Figure (1D real)
+                        app.TupdateTasksFigure();
+                    case 3 % Feasible Region (2D)
+                        app.TupdateFeasibleRegion();
+                    case 4 % Convergence (Obj)
+                        app.TupdateConvergence();
+                end
+            catch ME
+                return;
             end
         end
         
@@ -366,7 +370,6 @@ classdef MTO_GUI < matlab.apps.AppBase
             plot_handle = {};
             color = colororder;
             for no = 1:no_of_tasks
-                
                 for i = 1:length(x)
                     minrange = Tasks(no).Lb(1);
                     maxrange = Tasks(no).Ub(1);
@@ -2167,7 +2170,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create MTOPlatformUIFigure and hide until all components are created
             app.MTOPlatformUIFigure = uifigure('Visible', 'off');
             app.MTOPlatformUIFigure.Color = [1 1 1];
-            app.MTOPlatformUIFigure.Position = [100 100 1038 666];
+            app.MTOPlatformUIFigure.Position = [100 100 1031 645];
             app.MTOPlatformUIFigure.Name = 'MTO Platform';
             app.MTOPlatformUIFigure.WindowStyle = 'modal';
 
