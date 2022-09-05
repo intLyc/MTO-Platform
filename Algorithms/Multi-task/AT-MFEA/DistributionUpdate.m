@@ -19,8 +19,8 @@ function [mu, Sigma] = DistributionUpdate(mu_old, Sigma_old, population, no_of_t
         % fitness = [];
         for j = 1:length(population)
             if population(j).skill_factor == i
-                % fitness = [fitness; population(j).factorial_costs(i)];
-                individuals = [individuals; population(j).rnvec];
+                % fitness = [fitness; population(j).Obj(i)];
+                individuals = [individuals; population(j).Dec];
             end
         end
         mu{i} = (1 - c_mu) * mu_old{i} + c_mu * mean(individuals);

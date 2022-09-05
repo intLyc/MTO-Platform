@@ -48,7 +48,7 @@ classdef DeCODE < Algorithm
 
         function data = run(obj, Tasks, RunPara)
             sub_pop = RunPara(1); sub_eva = RunPara(2);
-            convergence = {}; convergence_cv = {}; bestX = {};
+            convergeObj = {}; convergeCV = {}; bestDec = {};
 
             F_pool = [0.6, 0.8, 1.0];
             CR_pool = [0.1, 0.2, 1.0];
@@ -57,14 +57,12 @@ classdef DeCODE < Algorithm
                 Task = Tasks(sub_task);
 
                 % initialize
-                [population, fnceval_calls] = initialize(Individual, sub_pop, Task, Task.dims);
-                [bestobj, bestCV, best_idx] = min_FP([population.factorial_costs], [population.constraint_violation]);
-                bestX_temp = population(best_idx).rnvec;
-                converge_temp(1) = bestobj;
-                converge_cv_temp(1) = bestCV;
+                [population, fnceval_calls, bestDec_temp, bestObj, bestCV] = initialize(Individual, sub_pop, Task, Task.Dim);
+                convergeObj_temp(1) = bestObj;
+                convergeCV_temp(1) = bestCV;
 
                 archive = population;
-                Ep0 = min(10^(Task.dims / 2), max([population.constraint_violation]));
+                Ep0 = min(10^(Task.Dim / 2), max([population.CV]));
                 cp = (-log(Ep0) - obj.beta) / log(1 - obj.p);
                 pmax = 1;
                 X = 0;
@@ -80,7 +78,7 @@ classdef DeCODE < Algorithm
                     end
                     X = X + sub_pop / sub_eva;
 
-                    if length(find([population.constraint_violation] == 0)) > obj.p * length(population)
+                    if length(find([population.CV] == 0)) > obj.p * length(population)
                         Ep = 0;
                     end
 
@@ -88,15 +86,15 @@ classdef DeCODE < Algorithm
                     population = population(rand_idx);
                     archive = archive(rand_idx);
 
-                    if isempty(find([population.constraint_violation] < Ep))
+                    if isempty(find([population.CV] < Ep))
                         pmax = 1e-18;
                     end
 
                     pr = max(1e-18, pmax / (1 + exp(obj.gama * (fnceval_calls / sub_eva - obj.alpha))));
 
                     % diversity restart
-                    if std([population.constraint_violation]) < obj.mu && isempty(find([population.constraint_violation] == 0))
-                        [population, calls] = initialize(Individual, sub_pop, Task, Task.dims);
+                    if std([population.CV]) < obj.mu && isempty(find([population.CV] == 0))
+                        [population, calls] = initialize(Individual, sub_pop, Task, Task.Dim);
                         fnceval_calls = fnceval_calls + calls;
                     end
 
@@ -111,22 +109,22 @@ classdef DeCODE < Algorithm
                     [population] = selectDeCODE(population, offspring, weights);
                     [archive] = selectDeCODEarchive(archive, offspring);
 
-                    [bestobj_now, bestCV_now, best_idx] = min_FP([offspring.factorial_costs], [offspring.constraint_violation]);
-                    if bestCV_now < bestCV || (bestCV_now == bestCV && bestobj_now < bestobj)
-                        bestobj = bestobj_now;
+                    [bestObj_now, bestCV_now, best_idx] = min_FP([offspring.Obj], [offspring.CV]);
+                    if bestCV_now < bestCV || (bestCV_now == bestCV && bestObj_now < bestObj)
+                        bestObj = bestObj_now;
                         bestCV = bestCV_now;
-                        bestX_temp = offspring(best_idx).rnvec;
+                        bestDec_temp = offspring(best_idx).Dec;
                     end
-                    converge_temp(generation) = bestobj;
-                    converge_cv_temp(generation) = bestCV;
+                    convergeObj_temp(generation) = bestObj;
+                    convergeCV_temp(generation) = bestCV;
                 end
-                convergence{sub_task} = converge_temp;
-                convergence_cv{sub_task} = converge_cv_temp;
-                bestX{sub_task} = bestX_temp;
+                convergeObj{sub_task} = convergeObj_temp;
+                convergeCV{sub_task} = convergeCV_temp;
+                bestDec{sub_task} = bestDec_temp;
             end
-            data.convergence = gen2eva(cell2matrix(convergence));
-            data.convergence_cv = gen2eva(cell2matrix(convergence_cv));
-            data.bestX = uni2real(bestX, Tasks);
+            data.convergeObj = gen2eva(cell2matrix(convergeObj));
+            data.convergeCV = gen2eva(cell2matrix(convergeCV));
+            data.bestDec = uni2real(bestDec, Tasks);
         end
     end
 end

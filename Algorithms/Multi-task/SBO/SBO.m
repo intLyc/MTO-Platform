@@ -58,11 +58,11 @@ classdef SBO < Algorithm
             AIJ = ones(length(Tasks), length(Tasks)); % harm and neutral
 
             % initialize
-            [population_temp, fnceval_calls, bestobj, bestX] = initializeMT(IndividualSBO, sub_pop, Tasks, max([Tasks.dims]) * ones(1, length(Tasks)));
-            convergence(:, 1) = bestobj;
+            [population_temp, fnceval_calls, bestDec, bestObj] = initializeMT(IndividualSBO, sub_pop, Tasks, max([Tasks.Dim]) * ones(1, length(Tasks)));
+            convergeObj(:, 1) = bestObj;
             population = IndividualSBO.empty();
             for t = 1:length(Tasks)
-                [~, rank] = sort([population_temp{t}.factorial_costs]);
+                [~, rank] = sort([population_temp{t}.Obj]);
                 for i = 1:length(population_temp{t})
                     population_temp{t}(rank(i)).rank_o = i;
                     population_temp{t}(rank(i)).skill_factor = t;
@@ -104,7 +104,7 @@ classdef SBO < Algorithm
                         this_pos = find(t_idx);
                         trans_pos = find([offspring.skill_factor] == transfer_task);
                         for i = 1:Si
-                            offspring(this_pos(ind1(i))).rnvec = offspring(trans_pos(ind2(i))).rnvec;
+                            offspring(this_pos(ind1(i))).Dec = offspring(trans_pos(ind2(i))).Dec;
                             offspring(this_pos(ind1(i))).belonging_task = transfer_task;
                         end
                     end
@@ -112,24 +112,24 @@ classdef SBO < Algorithm
                     [offspring(t_idx), calls] = evaluate(offspring(t_idx), Tasks(t), 1);
                     fnceval_calls = fnceval_calls + calls;
 
-                    [~, rank] = sort([offspring(t_idx).factorial_costs]);
+                    [~, rank] = sort([offspring(t_idx).Obj]);
                     for i = 1:length(rank)
                         offspring(find_idx(rank(i))).rank_c = i;
                     end
 
                     % selection
                     population_temp = [population(t_idx), offspring(t_idx)];
-                    [~, rank] = sort([population_temp.factorial_costs]);
+                    [~, rank] = sort([population_temp.Obj]);
                     population(t_idx) = population_temp(rank(1:sub_pop));
-                    [~, rank] = sort([population(t_idx).factorial_costs]);
+                    [~, rank] = sort([population(t_idx).Obj]);
                     for i = 1:length(rank)
                         population(find_idx(rank(i))).rank_o = i;
                     end
 
-                    [bestobj_temp, idx] = min([population(t_idx).factorial_costs]);
-                    if bestobj_temp < bestobj(t)
-                        bestobj(t) = bestobj_temp;
-                        bestX{t} = population(find_idx(idx)).rnvec;
+                    [bestObj_temp, idx] = min([population(t_idx).Obj]);
+                    if bestObj_temp < bestObj(t)
+                        bestObj(t) = bestObj_temp;
+                        bestDec{t} = population(find_idx(idx)).Dec;
                     end
                 end
 
@@ -164,10 +164,10 @@ classdef SBO < Algorithm
                 % update transfer rates
                 RIJ = (MIJ + OIJ + PIJ) ./ (MIJ + OIJ + PIJ + AIJ + CIJ + NIJ);
 
-                convergence(:, generation) = bestobj;
+                convergeObj(:, generation) = bestObj;
             end
-            data.convergence = gen2eva(convergence);
-            data.bestX = uni2real(bestX, Tasks);
+            data.convergeObj = gen2eva(convergeObj);
+            data.bestDec = uni2real(bestDec, Tasks);
         end
     end
 end

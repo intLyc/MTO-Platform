@@ -131,8 +131,8 @@ function Task = benchmark_CEC06_CSO(index)
     end
 
     %% Set Task
-    Task.dims = D; % dimensionality of Task 1
-    Task.fnc = @(x)CEC06_CSO_Func(x, index, aaa);
+    Task.Dim = D; % dimensionality of Task 1
+    Task.Fnc = @(x)CEC06_CSO_Func(x, index, aaa);
     Task.Lb = lb; % Upper bound of Task 1
     Task.Ub = ub; % Lower bound of Task 1
 end

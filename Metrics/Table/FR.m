@@ -15,9 +15,9 @@ classdef FR < Metric
             result.RowName = {};
             row_i = 1;
             for prob = 1:length(data.prob_cell)
-                tasks_num = data.tasks_num_list(prob);
-                for task = 1:tasks_num
-                    if tasks_num == 1
+                tnum = data.task_num(prob);
+                for task = 1:tnum
+                    if tnum == 1
                         result.RowName{row_i} = data.prob_cell{prob};
                     else
                         result.RowName{row_i} = [data.prob_cell{prob}, '-T', num2str(task)];
@@ -32,10 +32,10 @@ classdef FR < Metric
             for algo = 1:length(data.algo_cell)
                 row_i = 1;
                 for prob = 1:length(data.prob_cell)
-                    tasks_num = data.tasks_num_list(prob);
-                    for task = 1:tasks_num
-                        if isfield(data.result(prob, algo), 'convergence_cv')
-                            num_feasible = sum(data.result(prob, algo).convergence_cv(task:tasks_num:end, end) == 0);
+                    tnum = data.task_num(prob);
+                    for task = 1:tnum
+                        if isfield(data.result(prob, algo), 'convergeCV')
+                            num_feasible = sum(data.result(prob, algo).convergeCV(task:tnum:end, end) == 0);
                             result.TableData(row_i, algo, :) = num_feasible / data.reps;
                         else
                             result.TableData(row_i, algo, :) = 1;

@@ -6,7 +6,7 @@ function [M] = domain_ad(population, Tasks)
 
         N = unidrnd(length(Tasks));
         for i = 1:N
-            T = [T; population_t(i).rnvec];
+            T = [T; population_t(i).Dec];
         end
         mean_T = mean(T);
         M{t} = (mean_T + 1e-10) ./ (mean_T + 1e-10);

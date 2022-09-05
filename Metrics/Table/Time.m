@@ -18,7 +18,7 @@ classdef Time < Metric
 
             for prob = 1:length(data.prob_cell)
                 for algo = 1:length(data.algo_cell)
-                    result.TableData(prob, algo, :) = data.result(prob, algo).clock_time;
+                    result.TableData(prob, algo, :) = data.result(prob, algo).runTima;
                 end
             end
         end

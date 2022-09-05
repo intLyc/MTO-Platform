@@ -1,4 +1,4 @@
-function [obj, cv] = Weierstrass3(var, M, opt, opt_con)
+function [obj, con] = Weierstrass3(var, M, opt, opt_con)
     % WEIERSTASS function
     %   - var: design variable vector
     %   - M: rotation matrix
@@ -28,5 +28,5 @@ function [obj, cv] = Weierstrass3(var, M, opt, opt_con)
     g = [g1, g2];
 
     g(g < 0) = 0;
-    cv = g;
+    con = g;
 end

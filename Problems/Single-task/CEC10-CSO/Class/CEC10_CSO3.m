@@ -11,21 +11,21 @@ classdef CEC10_CSO3 < Problem
     methods
         function obj = CEC10_CSO3(varargin)
             obj = obj@Problem(varargin);
-            obj.sub_eva = 20000 * obj.dims;
+            obj.sub_eva = 20000 * obj.Dim;
         end
 
         function Parameter = getParameter(obj)
-            Parameter = {'Dims', num2str(obj.dims)};
+            Parameter = {'Dim', num2str(obj.Dim)};
             Parameter = [obj.getRunParameter(), Parameter];
         end
 
         function obj = setParameter(obj, Parameter)
             obj.setRunParameter(Parameter(1:2));
-            obj.dims = str2double(Parameter{3});
+            obj.Dim = str2double(Parameter{3});
         end
 
         function Tasks = getTasks(obj)
-            Tasks(1) = benchmark_CEC10_CSO(3, obj.dims);
+            Tasks(1) = benchmark_CEC10_CSO(3, obj.Dim);
         end
     end
 end

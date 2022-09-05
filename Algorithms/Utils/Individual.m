@@ -10,8 +10,8 @@ classdef Individual
     %% Individual Base Class
 
     properties
-        rnvec % gene
-        factorial_costs % object
-        constraint_violation % cv
+        Dec % decision variables
+        Obj % objective value
+        CV % constraint violation
     end
 end

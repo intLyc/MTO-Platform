@@ -18,8 +18,8 @@ function [mu_tasks, Sigma_tasks] = InitialDistribution(population, no_of_tasks)
         % fitness = [];
         for j = 1:length(population)
             if population(j).skill_factor == i
-                % fitness = [fitness; population(j).factorial_costs(i)];
-                individuals = [individuals; population(j).rnvec];
+                % fitness = [fitness; population(j).Obj(i)];
+                individuals = [individuals; population(j).Dec];
             end
         end
         mu_tasks{i} = mean(individuals);

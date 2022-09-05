@@ -7,8 +7,8 @@ function [population] = selectCORCO(population, offspring, weights)
     % or footnote "https://github.com/intLyc/MTO-Platform"
     %--------------------------------------------------------------------------
 
-    Obj = [[population.factorial_costs], [offspring.factorial_costs]];
-    CV = [[population.constraint_violation], [offspring.constraint_violation]];
+    Obj = [[population.Obj], [offspring.Obj]];
+    CV = [[population.CV], [offspring.CV]];
     normal_Obj = (Obj - min(Obj)) ./ (max(Obj) - min(Obj) + 1e-15);
     normal_CV = (CV - min(CV)) ./ (max(CV) - min(CV) + 1e-15);
 

@@ -37,7 +37,7 @@ classdef CORCO < Algorithm
 
         function data = run(obj, Tasks, RunPara)
             sub_pop = RunPara(1); sub_eva = RunPara(2);
-            convergence = {}; convergence_cv = {}; bestX = {};
+            convergeObj = {}; convergeCV = {}; bestDec = {};
 
             F_pool = [0.6, 0.8, 1.0];
             CR_pool = [0.1, 0.2, 1.0];
@@ -46,17 +46,15 @@ classdef CORCO < Algorithm
                 Task = Tasks(sub_task);
 
                 % initialize
-                [population, fnceval_calls] = initialize(Individual, sub_pop, Task, Task.dims);
-                [bestobj, bestCV, best_idx] = min_FP([population.factorial_costs], [population.constraint_violation]);
-                bestX_temp = population(best_idx).rnvec;
-                converge_temp(1) = bestobj;
-                converge_cv_temp(1) = bestCV;
+                [population, fnceval_calls, bestDec_temp, bestObj, bestCV] = initialize(Individual, sub_pop, Task, Task.Dim);
+                convergeObj_temp(1) = bestObj;
+                convergeCV_temp(1) = bestCV;
 
                 archive = population;
                 X = 0;
                 cor_idx = 0;
                 div_delta = 0;
-                p = reshape([population.rnvec], length(population(1).rnvec), length(population))';
+                p = reshape([population.Dec], length(population(1).Dec), length(population))';
                 div_init = sum(std(p)) / size(p, 2);
                 betterRecord1 = [];
                 betterRecord2 = [];
@@ -66,7 +64,7 @@ classdef CORCO < Algorithm
                     generation = generation + 1;
 
                     % learning stage
-                    weights = WeightGenerator(length(population), [population.constraint_violation], [population.factorial_costs], X, cor_idx, div_delta, 1);
+                    weights = WeightGenerator(length(population), [population.CV], [population.Obj], X, cor_idx, div_delta, 1);
 
                     % generation
                     [offspring, calls] = OperatorCORCO.generate(population, Task, F_pool, CR_pool, weights);
@@ -76,20 +74,20 @@ classdef CORCO < Algorithm
                     [population] = selectCORCO(population, offspring, weights);
                     [archive] = selectCORCOarchive(archive, offspring, 1);
 
-                    [con_obj_betterNum, obj_con_betterNum] = InterCompare([archive.factorial_costs], [archive.constraint_violation], [population.factorial_costs], [population.constraint_violation]);
-                    p = reshape([population.rnvec], length(population(1).rnvec), length(population))';
+                    [con_obj_betterNum, obj_con_betterNum] = InterCompare([archive.Obj], [archive.CV], [population.Obj], [population.CV]);
+                    p = reshape([population.Dec], length(population(1).Dec), length(population))';
                     div_idx = sum(std(p)) / size(p, 2);
                     betterRecord1 = [betterRecord1, con_obj_betterNum];
                     betterRecord2 = [betterRecord2, obj_con_betterNum];
 
-                    [bestobj_now, bestCV_now, best_idx] = min_FP([offspring.factorial_costs], [offspring.constraint_violation]);
-                    if bestCV_now < bestCV || (bestCV_now == bestCV && bestobj_now < bestobj)
-                        bestobj = bestobj_now;
+                    [bestObj_now, bestCV_now, best_idx] = min_FP([offspring.Obj], [offspring.CV]);
+                    if bestCV_now < bestCV || (bestCV_now == bestCV && bestObj_now < bestObj)
+                        bestObj = bestObj_now;
                         bestCV = bestCV_now;
-                        bestX_temp = offspring(best_idx).rnvec;
+                        bestDec_temp = offspring(best_idx).Dec;
                     end
-                    converge_temp(generation) = bestobj;
-                    converge_cv_temp(generation) = bestCV;
+                    convergeObj_temp(generation) = bestObj;
+                    convergeCV_temp(generation) = bestCV;
                 end
 
                 recordLength = length(betterRecord1);
@@ -102,7 +100,7 @@ classdef CORCO < Algorithm
                 while fnceval_calls < sub_eva
                     generation = generation + 1;
 
-                    weights = WeightGenerator(length(population), [population.constraint_violation], [population.factorial_costs], X, cor_idx, div_delta, 2);
+                    weights = WeightGenerator(length(population), [population.CV], [population.Obj], X, cor_idx, div_delta, 2);
                     X = X + sub_pop / sub_eva;
 
                     % generation
@@ -113,22 +111,22 @@ classdef CORCO < Algorithm
                     [population] = selectCORCO(population, offspring, weights);
                     [archive] = selectCORCOarchive(archive, offspring, 2);
 
-                    [bestobj_now, bestCV_now, best_idx] = min_FP([offspring.factorial_costs], [offspring.constraint_violation]);
-                    if bestCV_now < bestCV || (bestCV_now == bestCV && bestobj_now < bestobj)
-                        bestobj = bestobj_now;
+                    [bestObj_now, bestCV_now, best_idx] = min_FP([offspring.Obj], [offspring.CV]);
+                    if bestCV_now < bestCV || (bestCV_now == bestCV && bestObj_now < bestObj)
+                        bestObj = bestObj_now;
                         bestCV = bestCV_now;
-                        bestX_temp = offspring(best_idx).rnvec;
+                        bestDec_temp = offspring(best_idx).Dec;
                     end
-                    converge_temp(generation) = bestobj;
-                    converge_cv_temp(generation) = bestCV;
+                    convergeObj_temp(generation) = bestObj;
+                    convergeCV_temp(generation) = bestCV;
                 end
-                convergence{sub_task} = converge_temp;
-                convergence_cv{sub_task} = converge_cv_temp;
-                bestX{sub_task} = bestX_temp;
+                convergeObj{sub_task} = convergeObj_temp;
+                convergeCV{sub_task} = convergeCV_temp;
+                bestDec{sub_task} = bestDec_temp;
             end
-            data.convergence = gen2eva(cell2matrix(convergence));
-            data.convergence_cv = gen2eva(cell2matrix(convergence_cv));
-            data.bestX = uni2real(bestX, Tasks);
+            data.convergeObj = gen2eva(cell2matrix(convergeObj));
+            data.convergeCV = gen2eva(cell2matrix(convergeCV));
+            data.bestDec = uni2real(bestDec, Tasks);
         end
     end
 end

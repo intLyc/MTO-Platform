@@ -55,7 +55,7 @@ classdef ECHT_DE < Algorithm
 
         function data = run(obj, Tasks, RunPara)
             sub_pop = RunPara(1); sub_eva = RunPara(2);
-            convergence = []; convergence_cv = []; bestX = {};
+            convergeObj = []; convergeCV = []; bestDec = {};
 
             for sub_task = 1:length(Tasks)
                 Task = Tasks(sub_task);
@@ -63,16 +63,16 @@ classdef ECHT_DE < Algorithm
                 ch_num = 4; % constraint handling techniques
 
                 % initialize
-                [population, fnceval_calls, bestobj, bestCV, bestX_temp] = initializeECHT(Individual, sub_pop, Task, ch_num);
-                converge_temp(:, 1) = bestobj;
-                converge_cv_temp(:, 1) = bestCV;
+                [population, fnceval_calls, bestObj, bestCV, bestDec_temp] = initializeECHT(Individual, sub_pop, Task, ch_num);
+                convergeObj_temp(:, 1) = bestObj;
+                convergeCV_temp(:, 1) = bestCV;
 
                 % Stochastic Ranking
                 Sr = obj.sr_max;
                 dSr = (obj.sr_max - obj.sr_min) / (sub_eva / sub_pop);
                 % Epsilon
                 n = ceil(obj.ep_top * length(population{3}));
-                cv_temp = [population{3}.constraint_violation];
+                cv_temp = [population{3}.CV];
                 [~, idx] = sort(cv_temp);
                 ep0 = cv_temp(idx(n));
 
@@ -104,8 +104,8 @@ classdef ECHT_DE < Algorithm
                             end
                             replace = false(1, length(population{t}));
                             for i = 1:length(population{t})
-                                obj_pair = [population{t}(i).factorial_costs, offspring_temp(i).factorial_costs];
-                                cv_pair = [population{t}(i).constraint_violation, offspring_temp(i).constraint_violation];
+                                obj_pair = [population{t}(i).Obj, offspring_temp(i).Obj];
+                                cv_pair = [population{t}(i).CV, offspring_temp(i).CV];
                                 switch t
                                     case 1 % Superiority of feasible solutions
                                         flag = sort_FP(obj_pair, cv_pair);
@@ -114,8 +114,8 @@ classdef ECHT_DE < Algorithm
                                     case 3 % Epsilon constraint
                                         flag = sort_EC(obj_pair, cv_pair, Ep);
                                     case 4 % Self-adaptive penalty
-                                        obj_temp = [[population{t}.factorial_costs], offspring_temp(i).factorial_costs];
-                                        cv_temp = [[population{t}.constraint_violation], offspring_temp(i).constraint_violation];
+                                        obj_temp = [[population{t}.Obj], offspring_temp(i).Obj];
+                                        cv_temp = [[population{t}.CV], offspring_temp(i).CV];
                                         f = cal_SP(obj_temp, cv_temp, 1);
                                         if f(i) > f(end)
                                             flag = [2, 1];
@@ -127,24 +127,24 @@ classdef ECHT_DE < Algorithm
                             end
                             population{t}(replace) = offspring_temp(replace);
                         end
-                        [bestobj_now, bestCV_now, best_idx] = min_FP([offspring{t}.factorial_costs], [offspring{t}.constraint_violation]);
-                        if bestCV_now < bestCV(t) || (bestCV_now == bestCV(t) && bestobj_now < bestobj(t))
-                            bestobj(t) = bestobj_now;
+                        [bestObj_now, bestCV_now, best_idx] = min_FP([offspring{t}.Obj], [offspring{t}.CV]);
+                        if bestCV_now < bestCV(t) || (bestCV_now == bestCV(t) && bestObj_now < bestObj(t))
+                            bestObj(t) = bestObj_now;
                             bestCV(t) = bestCV_now;
-                            bestX_temp{t} = offspring{t}(best_idx).rnvec;
+                            bestDec_temp{t} = offspring{t}(best_idx).Dec;
                         end
                     end
-                    converge_temp(:, generation) = bestobj;
-                    converge_cv_temp(:, generation) = bestCV;
+                    convergeObj_temp(:, generation) = bestObj;
+                    convergeCV_temp(:, generation) = bestCV;
                 end
-                [~, ~, best_idx] = min_FP(converge_temp(:, end), converge_cv_temp(:, end));
-                convergence{sub_task} = converge_temp(best_idx, :);
-                convergence_cv{sub_task} = converge_cv_temp(best_idx, :);
-                bestX{sub_task} = bestX_temp{best_idx};
+                [~, ~, best_idx] = min_FP(convergeObj_temp(:, end), convergeCV_temp(:, end));
+                convergeObj{sub_task} = convergeObj_temp(best_idx, :);
+                convergeCV{sub_task} = convergeCV_temp(best_idx, :);
+                bestDec{sub_task} = bestDec_temp{best_idx};
             end
-            data.convergence = gen2eva(cell2matrix(convergence));
-            data.convergence_cv = gen2eva(cell2matrix(convergence_cv));
-            data.bestX = uni2real(bestX, Tasks);
+            data.convergeObj = gen2eva(cell2matrix(convergeObj));
+            data.convergeCV = gen2eva(cell2matrix(convergeCV));
+            data.bestDec = uni2real(bestDec, Tasks);
         end
     end
 end

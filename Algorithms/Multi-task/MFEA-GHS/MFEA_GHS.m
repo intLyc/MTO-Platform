@@ -44,12 +44,12 @@ classdef MFEA_GHS < Algorithm
             eva_num = sub_eva * length(Tasks);
 
             % initialize
-            [population, fnceval_calls, bestobj, bestX] = initializeMFone(IndividualMF, pop_size, Tasks, max([Tasks.dims]));
-            convergence(:, 1) = bestobj;
+            [population, fnceval_calls, bestDec, bestObj] = initializeMFone(IndividualMF, pop_size, Tasks, max([Tasks.Dim]));
+            convergeObj(:, 1) = bestObj;
             [max_T, min_T] = cal_max_min(population, Tasks);
             M = {};
             for t = 1:length(Tasks)
-                M{t} = ones(1, max(Tasks.dims));
+                M{t} = ones(1, max(Tasks.Dim));
             end
 
             generation = 1;
@@ -62,15 +62,15 @@ classdef MFEA_GHS < Algorithm
                 fnceval_calls = fnceval_calls + calls;
 
                 % selection
-                [population, bestobj, bestX] = selectMF(population, offspring, Tasks, pop_size, bestobj, bestX);
-                convergence(:, generation) = bestobj;
+                [population, bestDec, bestObj] = selectMF(population, offspring, Tasks, pop_size, bestDec, bestObj);
+                convergeObj(:, generation) = bestObj;
 
                 % update
                 [max_T, min_T] = cal_max_min(population, Tasks);
                 M = domain_ad(population, Tasks);
             end
-            data.convergence = gen2eva(convergence);
-            data.bestX = uni2real(bestX, Tasks);
+            data.convergeObj = gen2eva(convergeObj);
+            data.bestDec = uni2real(bestDec, Tasks);
         end
     end
 end

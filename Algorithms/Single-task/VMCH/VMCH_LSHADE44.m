@@ -73,7 +73,7 @@ classdef VMCH_LSHADE44 < Algorithm
 
         function data = run(obj, Tasks, RunPara)
             sub_pop = RunPara(1); sub_eva = RunPara(2);
-            convergence = {}; convergence_cv = {}; eva_gen = {}; bestX = {};
+            convergeObj = {}; convergeCV = {}; eva_gen = {}; bestDec = {};
 
             for sub_task = 1:length(Tasks)
                 Task = Tasks(sub_task);
@@ -81,15 +81,13 @@ classdef VMCH_LSHADE44 < Algorithm
                 % initialize
                 pop_init = sub_pop;
                 pop_min = 4;
-                [population, fnceval_calls] = initialize(IndividualVMCH, pop_init, Task, Task.dims);
-                [bestobj, bestCV, best_idx] = min_FP([population.factorial_costs], [population.constraint_violation]);
-                bestX_temp = population(best_idx).rnvec;
-                converge_temp(1) = bestobj;
-                converge_cv_temp(1) = bestCV;
+                [population, fnceval_calls, bestDec_temp, bestObj, bestCV] = initialize(IndividualVMCH, pop_init, Task, Task.Dim);
+                convergeObj_temp(1) = bestObj;
+                convergeCV_temp(1) = bestCV;
                 eva_gen_temp(1) = fnceval_calls;
 
                 n = ceil(obj.ep_top * length(population));
-                cv_temp = [population.constraint_violation];
+                cv_temp = [population.CV];
                 [~, idx] = sort(cv_temp);
                 Ep = cv_temp(idx(n));
                 % initialize Parameter
@@ -115,15 +113,15 @@ classdef VMCH_LSHADE44 < Algorithm
                     generation = generation + 1;
 
                     % update epsilon
-                    fea_percent = sum([population.constraint_violation] <= 0) / length(population);
+                    fea_percent = sum([population.CV] <= 0) / length(population);
                     if fea_percent < 1
-                        Ep = max([population.constraint_violation]);
+                        Ep = max([population.CV]);
                     end
                     if fnceval_calls / sub_eva < obj.ep_tc
                         if fea_percent < obj.ep_alpha
                             Ep = Ep * (1 - fnceval_calls / (sub_eva * obj.ep_tc))^obj.ep_cp;
                         else
-                            Ep = 1.1 * max([population.constraint_violation]);
+                            Ep = 1.1 * max([population.CV]);
                         end
                     else
                         Ep = 0;
@@ -166,8 +164,8 @@ classdef VMCH_LSHADE44 < Algorithm
                     replace = false(1, length(population));
                     for i = 1:length(population)
                         Q_p = 0; Q_o = 0;
-                        obj_pair = [population(i).factorial_costs, offspring(i).factorial_costs];
-                        cv_pair = [population(i).constraint_violation, offspring(i).constraint_violation];
+                        obj_pair = [population(i).Obj, offspring(i).Obj];
+                        cv_pair = [population(i).CV, offspring(i).CV];
 
                         % Superiority of feasible solutions
                         temp = sort_FP(obj_pair, cv_pair);
@@ -179,8 +177,8 @@ classdef VMCH_LSHADE44 < Algorithm
                         end
 
                         % Self-adaptive penalty 1
-                        obj_temp = [[population.factorial_costs], offspring(i).factorial_costs];
-                        cv_temp = [[population.constraint_violation], offspring(i).constraint_violation];
+                        obj_temp = [[population.Obj], offspring(i).Obj];
+                        cv_temp = [[population.CV], offspring(i).CV];
                         f = cal_SP(obj_temp, cv_temp, 1);
                         if f(i) > f(end)
                             flag(2) = true;
@@ -191,8 +189,8 @@ classdef VMCH_LSHADE44 < Algorithm
                         end
 
                         % Self-adaptive penalty 2
-                        obj_temp = [[population.factorial_costs], offspring(i).factorial_costs];
-                        cv_temp = [[population.constraint_violation], offspring(i).constraint_violation];
+                        obj_temp = [[population.Obj], offspring(i).Obj];
+                        cv_temp = [[population.CV], offspring(i).CV];
                         f = cal_SP(obj_temp, cv_temp, 2);
                         if f(i) > f(end)
                             flag(3) = true;
@@ -248,8 +246,8 @@ classdef VMCH_LSHADE44 < Algorithm
                         k_idx = [population.st] == k;
                         SF = [population(replace & k_idx).F];
                         SCR = [population(replace & k_idx).CR];
-                        dif = [population(replace & k_idx).constraint_violation] - [offspring(replace & k_idx).constraint_violation];
-                        dif_obj = [population(replace & k_idx).factorial_costs] - [offspring(replace & k_idx).factorial_costs];
+                        dif = [population(replace & k_idx).CV] - [offspring(replace & k_idx).CV];
+                        dif_obj = [population(replace & k_idx).Obj] - [offspring(replace & k_idx).Obj];
                         dif_obj(dif_obj < 0) = 0;
                         dif(dif <= 0) = dif_obj(dif <= 0);
                         dif = dif ./ sum(dif);
@@ -273,27 +271,27 @@ classdef VMCH_LSHADE44 < Algorithm
                     population(replace) = offspring(replace);
 
                     % Linear Population Size Reduction
-                    [~, rank] = sortrows([[population.constraint_violation]', [population.factorial_costs]'], [1, 2]);
+                    [~, rank] = sortrows([[population.CV]', [population.Obj]'], [1, 2]);
                     population = population(rank(1:pop_size));
 
-                    [bestobj_now, bestCV_now, best_idx] = min_FP([offspring.factorial_costs], [offspring.constraint_violation]);
-                    if bestCV_now < bestCV || (bestCV_now == bestCV && bestobj_now < bestobj)
-                        bestobj = bestobj_now;
+                    [bestObj_now, bestCV_now, best_idx] = min_FP([offspring.Obj], [offspring.CV]);
+                    if bestCV_now < bestCV || (bestCV_now == bestCV && bestObj_now < bestObj)
+                        bestObj = bestObj_now;
                         bestCV = bestCV_now;
-                        bestX_temp = offspring(best_idx).rnvec;
+                        bestDec_temp = offspring(best_idx).Dec;
                     end
-                    converge_temp(generation) = bestobj;
-                    converge_cv_temp(generation) = bestCV;
+                    convergeObj_temp(generation) = bestObj;
+                    convergeCV_temp(generation) = bestCV;
                     eva_gen_temp(generation) = fnceval_calls;
                 end
-                convergence{sub_task} = converge_temp;
-                convergence_cv{sub_task} = converge_cv_temp;
+                convergeObj{sub_task} = convergeObj_temp;
+                convergeCV{sub_task} = convergeCV_temp;
                 eva_gen{sub_task} = eva_gen_temp;
-                bestX{sub_task} = bestX_temp;
+                bestDec{sub_task} = bestDec_temp;
             end
-            data.convergence = gen2eva(cell2matrix(convergence), cell2matrix(eva_gen));
-            data.convergence_cv = gen2eva(cell2matrix(convergence_cv), cell2matrix(eva_gen));
-            data.bestX = uni2real(bestX, Tasks);
+            data.convergeObj = gen2eva(cell2matrix(convergeObj), cell2matrix(eva_gen));
+            data.convergeCV = gen2eva(cell2matrix(convergeCV), cell2matrix(eva_gen));
+            data.bestDec = uni2real(bestDec, Tasks);
         end
     end
 end

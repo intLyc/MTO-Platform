@@ -11,8 +11,8 @@ classdef OperatorCORCO < Operator
         function [offspring, calls] = generate(population, Task, F, CR, weights)
             Individual_class = class(population(1));
 
-            Obj = [population.factorial_costs];
-            CV = [population.constraint_violation];
+            Obj = [population.Obj];
+            CV = [population.CV];
             normal_Obj = (Obj - min(Obj)) ./ (max(Obj) - min(Obj) + 1e-15);
             normal_CV = (CV - min(CV)) ./ (max(CV) - min(CV) + 1e-15);
 
@@ -34,28 +34,28 @@ classdef OperatorCORCO < Operator
                 end
 
                 % boundary check
-                vio_low = find(offspring(i).rnvec < 0);
+                vio_low = find(offspring(i).Dec < 0);
                 if rand() < 0.5
-                    offspring(i).rnvec(vio_low) = 2 * 0 - offspring(i).rnvec(vio_low);
-                    vio_temp = offspring(i).rnvec(vio_low) > 1;
-                    offspring(i).rnvec(vio_low(vio_temp)) = 1;
+                    offspring(i).Dec(vio_low) = 2 * 0 - offspring(i).Dec(vio_low);
+                    vio_temp = offspring(i).Dec(vio_low) > 1;
+                    offspring(i).Dec(vio_low(vio_temp)) = 1;
                 else
                     if rand() < 0.5
-                        offspring(i).rnvec(vio_low) = 0;
+                        offspring(i).Dec(vio_low) = 0;
                     else
-                        offspring(i).rnvec(vio_low) = 1;
+                        offspring(i).Dec(vio_low) = 1;
                     end
                 end
-                vio_up = find(offspring(i).rnvec > 1);
+                vio_up = find(offspring(i).Dec > 1);
                 if rand() < 0.5
-                    offspring(i).rnvec(vio_up) = 2 * 1 - offspring(i).rnvec(vio_up);
-                    vio_temp = offspring(i).rnvec(vio_up) < 0;
-                    offspring(i).rnvec(vio_up(vio_temp)) = 1;
+                    offspring(i).Dec(vio_up) = 2 * 1 - offspring(i).Dec(vio_up);
+                    vio_temp = offspring(i).Dec(vio_up) < 0;
+                    offspring(i).Dec(vio_up(vio_temp)) = 1;
                 else
                     if rand() < 0.5
-                        offspring(i).rnvec(vio_up) = 0;
+                        offspring(i).Dec(vio_up) = 0;
                     else
-                        offspring(i).rnvec(vio_up) = 1;
+                        offspring(i).Dec(vio_up) = 1;
                     end
                 end
             end
@@ -63,17 +63,17 @@ classdef OperatorCORCO < Operator
         end
 
         function object = mutate_current_to_rand(object, current, x1, x2, x3, F)
-            object.rnvec = current.rnvec + rand() * (x1.rnvec - current.rnvec) + F * (x2.rnvec - x3.rnvec);
+            object.Dec = current.Dec + rand() * (x1.Dec - current.Dec) + F * (x2.Dec - x3.Dec);
         end
 
         function object = mutate_rand_to_best(object, best, x1, x2, x3, F)
-            object.rnvec = x1.rnvec + F * (best.rnvec - x1.rnvec) + F * (x2.rnvec - x3.rnvec);
+            object.Dec = x1.Dec + F * (best.Dec - x1.Dec) + F * (x2.Dec - x3.Dec);
         end
 
         function object = crossover(object, x, CR)
-            replace = rand(1, length(object.rnvec)) > CR;
-            replace(randi(length(object.rnvec))) = false;
-            object.rnvec(replace) = x.rnvec(replace);
+            replace = rand(1, length(object.Dec)) > CR;
+            replace(randi(length(object.Dec))) = false;
+            object.Dec(replace) = x.Dec(replace);
         end
     end
 end

@@ -17,14 +17,14 @@ classdef OperatorMFEA_GHS < Operator
                 p1 = indorder(i);
                 p2 = indorder(i + fix(length(population) / 2));
                 offspring(count) = feval(Individual_class);
-                offspring(count).factorial_costs = inf(1, length(Tasks));
-                offspring(count).constraint_violation = inf(1, length(Tasks));
+                offspring(count).Obj = inf(1, length(Tasks));
+                offspring(count).CV = inf(1, length(Tasks));
                 offspring(count + 1) = feval(Individual_class);
-                offspring(count + 1).factorial_costs = inf(1, length(Tasks));
-                offspring(count + 1).constraint_violation = inf(1, length(Tasks));
+                offspring(count + 1).Obj = inf(1, length(Tasks));
+                offspring(count + 1).CV = inf(1, length(Tasks));
 
-                u = rand(1, max([Tasks.dims]));
-                cf = zeros(1, max([Tasks.dims]));
+                u = rand(1, max([Tasks.Dim]));
+                cf = zeros(1, max([Tasks.Dim]));
                 cf(u <= 0.5) = (2 * u(u <= 0.5)).^(1 / (mu + 1));
                 cf(u > 0.5) = (2 * (1 - u(u > 0.5))).^(-1 / (mu + 1));
 
@@ -34,9 +34,9 @@ classdef OperatorMFEA_GHS < Operator
                     offspring(count) = OperatorMFEA_GHS.crossover(offspring(count), population(p1), population(p2), cf);
                     %
                     if rand > a
-                        offspring(count + 1).rnvec = 1 - offspring(count).rnvec;
+                        offspring(count + 1).Dec = 1 - offspring(count).Dec;
                     else
-                        offspring(count + 1).rnvec = k * (max_T{t} + min_T{t}) - offspring(count).rnvec;
+                        offspring(count + 1).Dec = k * (max_T{t} + min_T{t}) - offspring(count).Dec;
                     end
                     % imitate
                     offspring(count).skill_factor = t;
@@ -50,27 +50,27 @@ classdef OperatorMFEA_GHS < Operator
                     t2 = population(p(r2)).skill_factor;
                     if rand < 0.5
                         tmp = population(p(r1));
-                        tmp.rnvec = population(p(r1)).rnvec .* M{t1};
-                        tmp.rnvec(tmp.rnvec > 1) = 1;
-                        tmp.rnvec(tmp.rnvec < 0) = 0;
+                        tmp.Dec = population(p(r1)).Dec .* M{t1};
+                        tmp.Dec(tmp.Dec > 1) = 1;
+                        tmp.Dec(tmp.Dec < 0) = 0;
                         offspring(count) = OperatorMFEA_GHS.crossover(offspring(count), tmp, population(p(r2)), cf);
                         % OBL
                         if rand > a
-                            offspring(count + 1).rnvec = 1 - offspring(count).rnvec;
+                            offspring(count + 1).Dec = 1 - offspring(count).Dec;
                         else
-                            offspring(count + 1).rnvec = k * (max_T{t2} + min_T{t2}) - offspring(count).rnvec;
+                            offspring(count + 1).Dec = k * (max_T{t2} + min_T{t2}) - offspring(count).Dec;
                         end
                     else
                         tmp = population(p(r2));
-                        tmp.rnvec = population(p(r2)).rnvec .* M{t2};
-                        tmp.rnvec(tmp.rnvec > 1) = 1;
-                        tmp.rnvec(tmp.rnvec < 0) = 0;
+                        tmp.Dec = population(p(r2)).Dec .* M{t2};
+                        tmp.Dec(tmp.Dec > 1) = 1;
+                        tmp.Dec(tmp.Dec < 0) = 0;
                         offspring(count) = OperatorMFEA_GHS.crossover(offspring(count), population(p(r1)), tmp, cf);
                         % OBL
                         if rand > a
-                            offspring(count + 1).rnvec = 1 - offspring(count).rnvec;
+                            offspring(count + 1).Dec = 1 - offspring(count).Dec;
                         else
-                            offspring(count + 1).rnvec = k * (max_T{t1} + min_T{t1}) - offspring(count).rnvec;
+                            offspring(count + 1).Dec = k * (max_T{t1} + min_T{t1}) - offspring(count).Dec;
                         end
                     end
                     % imitate
@@ -80,14 +80,14 @@ classdef OperatorMFEA_GHS < Operator
                     p = [p1, p2];
                     for x = 1:2
                         % mutate
-                        offspring(count + x - 1) = OperatorMFEA_GHS.mutate(population(p(x)), max([Tasks.dims]), mum);
+                        offspring(count + x - 1) = OperatorMFEA_GHS.mutate(population(p(x)), max([Tasks.Dim]), mum);
                         % imitate
                         offspring(count + x - 1).skill_factor = population(p(x)).skill_factor;
                     end
                 end
                 for x = count:count + 1
-                    offspring(x).rnvec(offspring(x).rnvec > 1) = 1;
-                    offspring(x).rnvec(offspring(x).rnvec < 0) = 0;
+                    offspring(x).Dec(offspring(x).Dec > 1) = 1;
+                    offspring(x).Dec(offspring(x).Dec < 0) = 0;
                 end
                 count = count + 2;
             end
@@ -106,25 +106,25 @@ classdef OperatorMFEA_GHS < Operator
 
         function object = crossover(object, p1, p2, cf)
             % SBX - Simulated binary crossover
-            object.rnvec = 0.5 * ((1 + cf) .* p1.rnvec + (1 - cf) .* p2.rnvec);
+            object.Dec = 0.5 * ((1 + cf) .* p1.Dec + (1 - cf) .* p2.Dec);
         end
 
         function object = mutate(object, dim, mum)
             % Polynomial mutation
-            rnvec_temp = object.rnvec;
+            Dec_temp = object.Dec;
             for i = 1:dim
                 if rand(1) < 1 / dim
                     u = rand(1);
                     if u <= 0.5
                         del = (2 * u)^(1 / (1 + mum)) - 1;
-                        rnvec_temp(i) = object.rnvec(i) + del * (object.rnvec(i));
+                        Dec_temp(i) = object.Dec(i) + del * (object.Dec(i));
                     else
                         del = 1 - (2 * (1 - u))^(1 / (1 + mum));
-                        rnvec_temp(i) = object.rnvec(i) + del * (1 - object.rnvec(i));
+                        Dec_temp(i) = object.Dec(i) + del * (1 - object.Dec(i));
                     end
                 end
             end
-            object.rnvec = rnvec_temp;
+            object.Dec = Dec_temp;
         end
     end
 end

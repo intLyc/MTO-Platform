@@ -24,7 +24,7 @@ classdef FROFI < Algorithm
     methods
         function data = run(obj, Tasks, RunPara)
             sub_pop = RunPara(1); sub_eva = RunPara(2);
-            convergence = {}; convergence_cv = {}; bestX = {};
+            convergeObj = {}; convergeCV = {}; bestDec = {};
 
             F_pool = [0.6, 0.8, 1.0];
             CR_pool = [0.1, 0.2, 1.0];
@@ -33,11 +33,9 @@ classdef FROFI < Algorithm
                 Task = Tasks(sub_task);
 
                 % initialize
-                [population, fnceval_calls] = initialize(Individual, sub_pop, Task, Task.dims);
-                [bestobj, bestCV, best_idx] = min_FP([population.factorial_costs], [population.constraint_violation]);
-                bestX_temp = population(best_idx).rnvec;
-                converge_temp(1) = bestobj;
-                converge_cv_temp(1) = bestCV;
+                [population, fnceval_calls, bestDec_temp, bestObj, bestCV] = initialize(Individual, sub_pop, Task, Task.Dim);
+                convergeObj_temp(1) = bestObj;
+                convergeCV_temp(1) = bestCV;
 
                 generation = 1;
                 while fnceval_calls < sub_eva
@@ -48,19 +46,19 @@ classdef FROFI < Algorithm
                     fnceval_calls = fnceval_calls + calls;
 
                     % selection
-                    archive_idx = [offspring.constraint_violation] > [population.constraint_violation] & [offspring.factorial_costs] < [population.factorial_costs];
+                    archive_idx = [offspring.CV] > [population.CV] & [offspring.Obj] < [population.Obj];
                     archive = offspring(archive_idx);
 
-                    replace_cv = [population.constraint_violation] > [offspring.constraint_violation];
-                    equal_cv = [population.constraint_violation] == [offspring.constraint_violation];
-                    replace_obj = [population.factorial_costs] > [offspring.factorial_costs];
+                    replace_cv = [population.CV] > [offspring.CV];
+                    equal_cv = [population.CV] == [offspring.CV];
+                    replace_obj = [population.Obj] > [offspring.Obj];
                     replace = (equal_cv & replace_obj) | replace_cv;
                     population(replace) = offspring(replace);
 
                     % replace operator
                     N = round(max(5, length(population) / 2)); % the maximum number of vectors to be replaced
                     Nf = round(length(population) / N); % the number of parts to be divided
-                    [~, rank] = sort(- [population.factorial_costs]);
+                    [~, rank] = sort(- [population.Obj]);
                     population = population(rank);
                     for i = 1:floor(length(population) / Nf)
                         len = length(archive);
@@ -68,48 +66,48 @@ classdef FROFI < Algorithm
                             break;
                         end
                         current = (i - 1) * Nf + 1:i * Nf;
-                        [~, worst] = max([population(current).constraint_violation]);
-                        [~, best] = min([archive.constraint_violation]);
+                        [~, worst] = max([population(current).CV]);
+                        [~, best] = min([archive.CV]);
 
-                        if archive(best).factorial_costs < population(current(worst)).factorial_costs
+                        if archive(best).Obj < population(current(worst)).Obj
                             population(current(worst)) = archive(best);
                             archive(best) = [];
                         end
                     end
 
                     % mutate operator
-                    if min([population.constraint_violation]) > 0
-                        [~, worst] = max([population.constraint_violation]);
+                    if min([population.CV]) > 0
+                        [~, worst] = max([population.CV]);
 
                         temp = population(randi(end));
-                        k = randi(length(temp.rnvec));
-                        temp.rnvec(k) = rand();
+                        k = randi(length(temp.Dec));
+                        temp.Dec(k) = rand();
 
                         [temp, calls] = evaluate(temp, Task, 1);
                         fnceval_calls = fnceval_calls + calls;
 
-                        if population(worst).factorial_costs > temp.factorial_costs
+                        if population(worst).Obj > temp.Obj
                             population(worst) = temp;
                         end
                     end
 
                     % update best
-                    [bestobj_now, bestCV_now, best_idx] = min_FP([offspring.factorial_costs], [offspring.constraint_violation]);
-                    if bestCV_now < bestCV || (bestCV_now == bestCV && bestobj_now < bestobj)
-                        bestobj = bestobj_now;
+                    [bestObj_now, bestCV_now, best_idx] = min_FP([offspring.Obj], [offspring.CV]);
+                    if bestCV_now < bestCV || (bestCV_now == bestCV && bestObj_now < bestObj)
+                        bestObj = bestObj_now;
                         bestCV = bestCV_now;
-                        bestX_temp = offspring(best_idx).rnvec;
+                        bestDec_temp = offspring(best_idx).Dec;
                     end
-                    converge_temp(generation) = bestobj;
-                    converge_cv_temp(generation) = bestCV;
+                    convergeObj_temp(generation) = bestObj;
+                    convergeCV_temp(generation) = bestCV;
                 end
-                convergence{sub_task} = converge_temp;
-                convergence_cv{sub_task} = converge_cv_temp;
-                bestX{sub_task} = bestX_temp;
+                convergeObj{sub_task} = convergeObj_temp;
+                convergeCV{sub_task} = convergeCV_temp;
+                bestDec{sub_task} = bestDec_temp;
             end
-            data.convergence = gen2eva(cell2matrix(convergence));
-            data.convergence_cv = gen2eva(cell2matrix(convergence_cv));
-            data.bestX = uni2real(bestX, Tasks);
+            data.convergeObj = gen2eva(cell2matrix(convergeObj));
+            data.convergeCV = gen2eva(cell2matrix(convergeCV));
+            data.bestDec = uni2real(bestDec, Tasks);
         end
     end
 end

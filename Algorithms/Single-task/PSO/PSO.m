@@ -33,19 +33,19 @@ classdef PSO < Algorithm
 
         function data = run(obj, Tasks, RunPara)
             sub_pop = RunPara(1); sub_eva = RunPara(2);
-            convergence = {}; bestX = {};
+            convergeObj = {}; bestDec = {};
 
             for sub_task = 1:length(Tasks)
                 Task = Tasks(sub_task);
 
                 % initialize
-                [population, fnceval_calls, bestobj, bestX_temp] = initialize(IndividualPSO, sub_pop, Task, Task.dims);
-                converge_temp(1) = bestobj;
+                [population, fnceval_calls, bestDec_temp, bestObj] = initialize(IndividualPSO, sub_pop, Task, Task.Dim);
+                convergeObj_temp(1) = bestObj;
                 % initialize pso
                 for i = 1:sub_pop
-                    population(i).pbest = population(i).rnvec;
+                    population(i).pbest = population(i).Dec;
                     population(i).velocity = 0;
-                    population(i).pbestFitness = population(i).factorial_costs;
+                    population(i).pbestFitness = population(i).Obj;
                 end
 
                 generation = 1;
@@ -55,22 +55,22 @@ classdef PSO < Algorithm
                     w = obj.wmax - (obj.wmax - obj.wmin) * fnceval_calls / sub_eva;
 
                     % generation
-                    [population, calls] = OperatorPSO.generate(population, Task, w, obj.c1, obj.c2, bestX_temp);
+                    [population, calls] = OperatorPSO.generate(population, Task, w, obj.c1, obj.c2, bestDec_temp);
                     fnceval_calls = fnceval_calls + calls;
 
                     % update best
-                    [bestobj_offspring, idx] = min([population.factorial_costs]);
-                    if bestobj_offspring < bestobj
-                        bestobj = bestobj_offspring;
-                        bestX_temp = population(idx).rnvec;
+                    [bestObj_offspring, idx] = min([population.Obj]);
+                    if bestObj_offspring < bestObj
+                        bestObj = bestObj_offspring;
+                        bestDec_temp = population(idx).Dec;
                     end
-                    converge_temp(generation) = bestobj;
+                    convergeObj_temp(generation) = bestObj;
                 end
-                convergence{sub_task} = converge_temp;
-                bestX{sub_task} = bestX_temp;
+                convergeObj{sub_task} = convergeObj_temp;
+                bestDec{sub_task} = bestDec_temp;
             end
-            data.convergence = gen2eva(cell2matrix(convergence));
-            data.bestX = uni2real(bestX, Tasks);
+            data.convergeObj = gen2eva(cell2matrix(convergeObj));
+            data.bestDec = uni2real(bestDec, Tasks);
         end
     end
 end

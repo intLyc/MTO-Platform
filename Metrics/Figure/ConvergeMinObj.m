@@ -50,23 +50,23 @@ classdef ConvergeMinObj < Metric
             result.XData = {};
             result.YData = {};
             for prob = 1:length(data.prob_cell)
-                tasks_num = data.tasks_num_list(prob);
+                tnum = data.task_num(prob);
                 for algo = 1:length(data.algo_cell)
-                    convergence_rep = [];
+                    convergeObj_rep = [];
                     for rep = 1:data.reps
-                        convergence_temp = data.result(prob, algo).convergence(1 + (rep - 1) * tasks_num:rep * tasks_num, :);
-                        if isfield(data.result(prob, algo), 'convergence_cv')
-                            convergence_cv_temp = data.result(prob, algo).convergence_cv(1 + (rep - 1) * tasks_num:rep * tasks_num, :);
-                            convergence_temp(convergence_cv_temp > 0) = NaN;
+                        convergeObj_temp = data.result(prob, algo).convergeObj(1 + (rep - 1) * tnum:rep * tnum, :);
+                        if isfield(data.result(prob, algo), 'convergeCV')
+                            convergeCV_temp = data.result(prob, algo).convergeCV(1 + (rep - 1) * tnum:rep * tnum, :);
+                            convergeObj_temp(convergeCV_temp > 0) = NaN;
                         end
-                        convergence_rep(rep, :) = min(convergence_temp, [], 1);
+                        convergeObj_rep(rep, :) = min(convergeObj_temp, [], 1);
                     end
-                    convergence = mean(convergence_rep, 1);
-                    result.YData{prob, algo} = convergence;
-                    result.XData{prob, algo} = 1:size(convergence, 2);
+                    convergeObj = mean(convergeObj_rep, 1);
+                    result.YData{prob, algo} = convergeObj;
+                    result.XData{prob, algo} = 1:size(convergeObj, 2);
                     switch ConvergeMinObj.x_type
                         case 'evaluation'
-                            result.XData{prob, algo} = result.XData{prob, algo} / length(result.XData{prob, algo}) * data.sub_eva(prob) * tasks_num;
+                            result.XData{prob, algo} = result.XData{prob, algo} / length(result.XData{prob, algo}) * data.sub_eva(prob) * tnum;
                         case 'generation'
                             result.XData{prob, algo} = result.XData{prob, algo} / length(result.XData{prob, algo}) * (data.sub_eva(prob) / data.sub_pop(prob));
                     end

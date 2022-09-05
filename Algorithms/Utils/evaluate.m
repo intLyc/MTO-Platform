@@ -1,6 +1,6 @@
 function [population, calls] = evaluate(population, Task, task_idx, varargin)
     %% Evaluate population in a Task
-    % Input: population, Task (single task), task_idx (factorial_costs idx), gene_type
+    % Input: population, Task (single task), task_idx (Obj idx), gene_type
     % Output: population (evaluated), calls (function calls number)
 
     %------------------------------- Copyright --------------------------------
@@ -19,14 +19,14 @@ function [population, calls] = evaluate(population, Task, task_idx, varargin)
     for i = 1:length(population)
         switch gene_type
             case 'unified'
-                x = (Task.Ub - Task.Lb) .* population(i).rnvec(1:Task.dims) + Task.Lb;
+                x = (Task.Ub - Task.Lb) .* population(i).Dec(1:Task.Dim) + Task.Lb;
             case 'real'
-                x = population(i).rnvec(1:Task.dims);
+                x = population(i).Dec(1:Task.Dim);
         end
-        [obj, cv] = Task.fnc(x);
-        obj = sum(obj); cv = sum(cv);
-        population(i).factorial_costs(task_idx) = obj;
-        population(i).constraint_violation(task_idx) = cv;
+        [obj, con] = Task.Fnc(x);
+        Obj = obj; CV = sum(con);
+        population(i).Obj(task_idx) = Obj;
+        population(i).CV(task_idx) = CV;
     end
     calls = length(population);
 end

@@ -375,7 +375,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     maxrange = Tasks(no).Ub(1);
                     y = maxrange - minrange;
                     vars = y .* x(i) + minrange;
-                    [ff, con] = Tasks(no).fnc(vars);
+                    [ff, con] = Tasks(no).Fnc(vars);
                     if con > 0
                         f(i) = NaN;
                     else
@@ -442,7 +442,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     for j = 1:length(x)
                         vars1 = y .* x(i) + minrange;
                         vars2 = y .* x(j) + minrange;
-                        [ff, con] = Tasks(no).fnc([vars1, vars2]);
+                        [ff, con] = Tasks(no).Fnc([vars1, vars2]);
                         if con <= 0
                             x1 = [x1, x(i)];
                             x2 = [x2, x(j)];
@@ -474,15 +474,15 @@ classdef MTO_GUI < matlab.apps.AppBase
             
             % draw
             tasks_name = {};
-            for task = 1:app.Tdata.tasks_num
-                convergence = app.Tdata.convergence(task, :);
-                if isfield(app.Tdata, 'convergence_cv')
-                    convergence_cv = app.Tdata.convergence_cv(task, :);
-                    convergence(convergence_cv > 0) = NaN;
+            for task = 1:app.Tdata.tnum
+                convergeObj = app.Tdata.convergeObj(task, :);
+                if isfield(app.Tdata, 'convergeCV')
+                    convergeCV = app.Tdata.convergeCV(task, :);
+                    convergeObj(convergeCV > 0) = NaN;
                 end
-                x = 1:size(convergence,2);
+                x = 1:size(convergeObj,2);
                 x = x / length(x) * app.Tdata.sub_eva;
-                y = convergence;
+                y = convergeObj;
                 if task > length(app.marker_list)
                     marker = '';
                 else
@@ -545,7 +545,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         end
         
         function EupdateTableData(app, table_data)
-            % update table fitness
+            % update table data
             
             show_type = app.EShowTypeDropDown.Value;
             format_str = app.EDataFormatEditField.Value;
@@ -589,7 +589,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         end
         
         function EupdateTableTest(app, table_data)
-            % update table fitness test
+            % update table test
             
             if isempty(app.Edata)
                 return;
@@ -1120,7 +1120,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % read selected algorithms and problems
             algo_name = app.TAlgorithmTree.Children(1).Text;
             prob_name = app.TProblemTree.Children(1).Text;
-            tasks_num = length(app.TProblemTree.Children(1).NodeData.getTasks());
+            tnum = length(app.TProblemTree.Children(1).NodeData.getTasks());
             
             % run
             app.Tdata = singleRun(app.TAlgorithmTree.Children(1).NodeData, app.TProblemTree.Children(1).NodeData);
@@ -1128,11 +1128,11 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.Tdata.sub_eva = para(2);
             app.Tdata.algo_name = algo_name;
             app.Tdata.prob_name = prob_name;
-            app.Tdata.tasks_num = tasks_num;
+            app.Tdata.tnum = tnum;
             app.TupdateUIAxes();
-            best_obj_temp = app.Tdata.convergence(:, end)';
-            if isfield(app.Tdata, 'convergence_cv')
-                best_cv_temp = app.Tdata.convergence_cv(:, end)';
+            best_obj_temp = app.Tdata.convergeObj(:, end)';
+            if isfield(app.Tdata, 'convergeCV')
+                best_cv_temp = app.Tdata.convergeCV(:, end)';
                 best_obj_temp(best_cv_temp>0) = NaN;
             end
             best_obj = num2str(best_obj_temp,'%.2e, ');
@@ -1285,7 +1285,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             prob_cell = {};
             for prob = 1:prob_num
                 prob_cell{prob} = app.EProblemsTree.Children(prob).Text;
-                tasks_num_list(prob) = length(app.EProblemsTree.Children(prob).NodeData.getTasks());
+                task_num(prob) = length(app.EProblemsTree.Children(prob).NodeData.getTasks());
             end
             
             % clear the temporary data
@@ -1295,10 +1295,10 @@ classdef MTO_GUI < matlab.apps.AppBase
             % initialize data
             for algo = 1:algo_num
                 for prob = 1:prob_num
-                    app.Edata.result(prob, algo).clock_time = 0;
-                    app.Edata.result(prob, algo).convergence = [];
-                    app.Edata.result(prob, algo).convergence_cv = [];
-                    app.Edata.result(prob, algo).bestX = {};
+                    app.Edata.result(prob, algo).runTime = 0;
+                    app.Edata.result(prob, algo).convergeObj = [];
+                    app.Edata.result(prob, algo).convergeCV = [];
+                    app.Edata.result(prob, algo).bestDec = {};
                 end
             end
             app.Edata.reps = 0;
@@ -1311,7 +1311,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.Edata.sub_eva = app.Edata.sub_eva';
             app.Edata.algo_cell = algo_cell;
             app.Edata.prob_cell = prob_cell';
-            app.Edata.tasks_num_list = tasks_num_list';
+            app.Edata.task_num = task_num';
             
             % reset table and convergence
             app.Etable_reps = zeros(length(prob_cell), length(algo_cell));
@@ -1331,34 +1331,34 @@ classdef MTO_GUI < matlab.apps.AppBase
                             % run
                             t_temp = tic;
                             data = singleRun(app.EAlgorithmsTree.Children(algo).NodeData, app.EProblemsTree.Children(prob).NodeData);
-                            if ~isfield(data, 'convergence_cv')
-                                data.convergence_cv = zeros(size(data.convergence));
+                            if ~isfield(data, 'convergeCV')
+                                data.convergeCV = zeros(size(data.convergeObj));
                             end
-                            app.Edata.result(prob, algo).clock_time = app.Edata.result(prob, algo).clock_time + toc(t_temp);
-                            if app.Edata.result(prob, algo).convergence
+                            app.Edata.result(prob, algo).runTime = app.Edata.result(prob, algo).runTime + toc(t_temp);
+                            if app.Edata.result(prob, algo).convergeObj
                                 % convergence
-                                gen_old = size(app.Edata.result(prob, algo).convergence, 2);
-                                gen_new = size(data.convergence, 2);
+                                gen_old = size(app.Edata.result(prob, algo).convergeObj, 2);
+                                gen_new = size(data.convergeObj, 2);
                                 if gen_old < gen_new
-                                    app.Edata.result(prob, algo).convergence = [app.Edata.result(prob, algo).convergence, repmat(app.Edata.result(prob, algo).convergence(:, gen_old), 1, gen_new-gen_old)];
+                                    app.Edata.result(prob, algo).convergeObj = [app.Edata.result(prob, algo).convergeObj, repmat(app.Edata.result(prob, algo).convergeObj(:, gen_old), 1, gen_new-gen_old)];
                                 else
-                                    data.convergence = [data.convergence, repmat(data.convergence(:, gen_new), 1, gen_old-gen_new)];
+                                    data.convergeObj = [data.convergeObj, repmat(data.convergeObj(:, gen_new), 1, gen_old-gen_new)];
                                 end
-                                app.Edata.result(prob, algo).convergence = [app.Edata.result(prob, algo).convergence; data.convergence];
-                                % convergence_cv
-                                gen_old = size(app.Edata.result(prob, algo).convergence_cv, 2);
-                                gen_new = size(data.convergence_cv, 2);
+                                app.Edata.result(prob, algo).convergeObj = [app.Edata.result(prob, algo).convergeObj; data.convergeObj];
+                                % convergeCV
+                                gen_old = size(app.Edata.result(prob, algo).convergeCV, 2);
+                                gen_new = size(data.convergeCV, 2);
                                 if gen_old < gen_new
-                                    app.Edata.result(prob, algo).convergence_cv = [app.Edata.result(prob, algo).convergence_cv, repmat(app.Edata.result(prob, algo).convergence_cv(:, gen_old), 1, gen_new-gen_old)];
+                                    app.Edata.result(prob, algo).convergeCV = [app.Edata.result(prob, algo).convergeCV, repmat(app.Edata.result(prob, algo).convergeCV(:, gen_old), 1, gen_new-gen_old)];
                                 else
-                                    data.convergence_cv = [data.convergence_cv, repmat(data.convergence_cv(:, gen_new), 1, gen_old-gen_new)];
+                                    data.convergeCV = [data.convergeCV, repmat(data.convergeCV(:, gen_new), 1, gen_old-gen_new)];
                                 end
-                                app.Edata.result(prob, algo).convergence_cv = [app.Edata.result(prob, algo).convergence_cv; data.convergence_cv];
+                                app.Edata.result(prob, algo).convergeCV = [app.Edata.result(prob, algo).convergeCV; data.convergeCV];
                             else
-                                app.Edata.result(prob, algo).convergence = data.convergence;
-                                app.Edata.result(prob, algo).convergence_cv = data.convergence_cv;
+                                app.Edata.result(prob, algo).convergeObj = data.convergeObj;
+                                app.Edata.result(prob, algo).convergeCV = data.convergeCV;
                             end
-                            app.Edata.result(prob, algo).bestX = [app.Edata.result(prob, algo).bestX; data.bestX];
+                            app.Edata.result(prob, algo).bestDec = [app.Edata.result(prob, algo).bestDec; data.bestDec];
                             app.Etable_reps(prob, algo) = rep;
                             app.EupdateTableReps();
                         end
@@ -1375,45 +1375,45 @@ classdef MTO_GUI < matlab.apps.AppBase
                     for algo = 1:algo_num
                         algo_obj = app.EAlgorithmsTree.Children(algo).NodeData;
                         prob_obj = app.EProblemsTree.Children(prob).NodeData;
-                        convergence = {};
-                        convergence_cv = {};
-                        bestX = {};
+                        convergeObj = {};
+                        convergeCV = {};
+                        bestDec = {};
                         par_tool = Par(reps);
                         parfor rep = 1:reps
                             Par.tic
                             data = singleRun(algo_obj, prob_obj);
                             par_tool(rep) = Par.toc;
-                            convergence = [convergence; {data.convergence}];
-                            if ~isfield(data, 'convergence_cv')
-                                data.convergence_cv = zeros(size(data.convergence));
+                            convergeObj = [convergeObj; {data.convergeObj}];
+                            if ~isfield(data, 'convergeCV')
+                                data.convergeCV = zeros(size(data.convergeObj));
                             end
-                            convergence_cv = [convergence_cv; {data.convergence_cv}];
-                            bestX = [bestX; data.bestX];
+                            convergeCV = [convergeCV; {data.convergeCV}];
+                            bestDec = [bestDec; data.bestDec];
                         end
-                        app.Edata.result(prob, algo).convergence = convergence{1};
-                        app.Edata.result(prob, algo).convergence_cv = convergence_cv{1};
+                        app.Edata.result(prob, algo).convergeObj = convergeObj{1};
+                        app.Edata.result(prob, algo).convergeCV = convergeCV{1};
                         for rep = 2:reps
                             % convergence
-                            gen_old = size(app.Edata.result(prob, algo).convergence, 2);
-                            gen_new = size(convergence{rep}, 2);
+                            gen_old = size(app.Edata.result(prob, algo).convergeObj, 2);
+                            gen_new = size(convergeObj{rep}, 2);
                             if gen_old < gen_new
-                                app.Edata.result(prob, algo).convergence = [app.Edata.result(prob, algo).convergence, repmat(app.Edata.result(prob, algo).convergence(:, gen_old), 1, gen_new-gen_old)];
+                                app.Edata.result(prob, algo).convergeObj = [app.Edata.result(prob, algo).convergeObj, repmat(app.Edata.result(prob, algo).convergeObj(:, gen_old), 1, gen_new-gen_old)];
                             else
-                                convergence{rep} = [convergence{rep}, repmat(convergence{rep}(:, gen_new), 1, gen_old-gen_new)];
+                                convergeObj{rep} = [convergeObj{rep}, repmat(convergeObj{rep}(:, gen_new), 1, gen_old-gen_new)];
                             end
-                            app.Edata.result(prob, algo).convergence = [app.Edata.result(prob, algo).convergence; convergence{rep}];
-                            % convergence_cv
-                            gen_old = size(app.Edata.result(prob, algo).convergence_cv, 2);
-                            gen_new = size(convergence_cv{rep}, 2);
+                            app.Edata.result(prob, algo).convergeObj = [app.Edata.result(prob, algo).convergeObj; convergeObj{rep}];
+                            % convergeCV
+                            gen_old = size(app.Edata.result(prob, algo).convergeCV, 2);
+                            gen_new = size(convergeCV{rep}, 2);
                             if gen_old < gen_new
-                                app.Edata.result(prob, algo).convergence_cv = [app.Edata.result(prob, algo).convergence_cv, repmat(app.Edata.result(prob, algo).convergence_cv(:, gen_old), 1, gen_new-gen_old)];
+                                app.Edata.result(prob, algo).convergeCV = [app.Edata.result(prob, algo).convergeCV, repmat(app.Edata.result(prob, algo).convergeCV(:, gen_old), 1, gen_new-gen_old)];
                             else
-                                convergence_cv{rep} = [convergence_cv{rep}, repmat(convergence_cv{rep}(:, gen_new), 1, gen_old-gen_new)];
+                                convergeCV{rep} = [convergeCV{rep}, repmat(convergeCV{rep}(:, gen_new), 1, gen_old-gen_new)];
                             end
-                            app.Edata.result(prob, algo).convergence_cv = [app.Edata.result(prob, algo).convergence_cv; convergence_cv{rep}];
+                            app.Edata.result(prob, algo).convergeCV = [app.Edata.result(prob, algo).convergeCV; convergeCV{rep}];
                         end
-                        app.Edata.result(prob, algo).clock_time = sum([par_tool.ItStop]- [par_tool.ItStart]);
-                        app.Edata.result(prob, algo).bestX = bestX;
+                        app.Edata.result(prob, algo).runTime = sum([par_tool.ItStop]- [par_tool.ItStart]);
+                        app.Edata.result(prob, algo).bestDec = bestDec;
                         app.Etable_reps(prob, algo) = reps;
                         app.EupdateTableReps();
                         app.EcheckPauseStopStatus();
@@ -1424,7 +1424,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     data_save.prob_cell = data_save.prob_cell(1:prob);
                     data_save.sub_pop = data_save.sub_pop(1:prob);
                     data_save.sub_eva = data_save.sub_eva(1:prob);
-                    data_save.tasks_num_list = data_save.tasks_num_list(1:prob);
+                    data_save.task_num = data_save.task_num(1:prob);
                     data_save.result = data_save.result(1:prob,:);
                     save('data_save_temp', 'data_save');
                 end
@@ -1774,8 +1774,8 @@ classdef MTO_GUI < matlab.apps.AppBase
             for i = 1:length(file_name_list)
                 load([pathname, file_name_list{i}], 'data_save');
                 % extract necessary field
-                if isfield(data_save.result, 'bestX')
-                    data_save.result = rmfield(data_save.result, 'bestX');
+                if isfield(data_save.result, 'bestDec')
+                    data_save.result = rmfield(data_save.result, 'bestDec');
                 end
                 app.DputDataNode(file_name_list{i}(1:end-4), data_save);
                 drawnow;
@@ -1855,7 +1855,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                 end
                 for rep = 1:data_selected(i).NodeData.reps
                     data_save.reps = 0;
-                    data_save.tasks_num_list = data_selected(i).NodeData.tasks_num_list;
+                    data_save.task_num = data_selected(i).NodeData.task_num;
                     data_save.sub_pop = data_selected(i).NodeData.sub_pop;
                     data_save.sub_eva = data_selected(i).NodeData.sub_eva;
                     data_save.algo_cell = data_selected(i).NodeData.algo_cell;
@@ -1863,15 +1863,15 @@ classdef MTO_GUI < matlab.apps.AppBase
                     data_save.reps = 1;
                     data_save.result = [];
                     for prob = 1:length(data_save.prob_cell)
-                        task_num = data_selected(i).NodeData.tasks_num_list(prob);
+                        tnum = data_selected(i).NodeData.task_num(prob);
                         for algo = 1:length(data_save.algo_cell)
-                            data_save.result(prob, algo).clock_time = data_selected(i).NodeData.result(prob, algo).clock_time / data_selected(i).NodeData.reps;
-                            data_save.result(prob, algo).convergence = data_selected(i).NodeData.result(prob, algo).convergence((rep-1)*task_num+1 : rep*task_num, :);
-                            if isfield(data_selected(i).NodeData.result(prob, algo), 'convergence_cv')
-                                data_save.result(prob, algo).convergence_cv = data_selected(i).NodeData.result(prob, algo).convergence_cv((rep-1)*task_num+1 : rep*task_num, :);
+                            data_save.result(prob, algo).runTime = data_selected(i).NodeData.result(prob, algo).runTime / data_selected(i).NodeData.reps;
+                            data_save.result(prob, algo).convergeObj = data_selected(i).NodeData.result(prob, algo).convergeObj((rep-1)*tnum+1 : rep*tnum, :);
+                            if isfield(data_selected(i).NodeData.result(prob, algo), 'convergeCV')
+                                data_save.result(prob, algo).convergeCV = data_selected(i).NodeData.result(prob, algo).convergeCV((rep-1)*tnum+1 : rep*tnum, :);
                             end
-                            if isfield(data_selected(i).NodeData.result(prob, algo), 'bestX')
-                                data_save.result(prob, algo).bestX = data_selected(i).NodeData.result(prob, algo).bestX(rep, :);
+                            if isfield(data_selected(i).NodeData.result(prob, algo), 'bestDec')
+                                data_save.result(prob, algo).bestDec = data_selected(i).NodeData.result(prob, algo).bestDec(rep, :);
                             end
                         end
                     end
@@ -1901,7 +1901,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                 end
                 for algo = 1:length(data_selected(i).NodeData.algo_cell)
                     data_save.reps = data_selected(i).NodeData.reps;
-                    data_save.tasks_num_list = data_selected(i).NodeData.tasks_num_list;
+                    data_save.task_num = data_selected(i).NodeData.task_num;
                     data_save.sub_pop = data_selected(i).NodeData.sub_pop;
                     data_save.sub_eva = data_selected(i).NodeData.sub_eva;
                     data_save.prob_cell = data_selected(i).NodeData.prob_cell;
@@ -1938,7 +1938,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     data_save.sub_eva = [[], data_selected(i).NodeData.sub_eva(prob)];
                     data_save.algo_cell = data_selected(i).NodeData.algo_cell;
                     data_save.prob_cell = data_selected(i).NodeData.prob_cell(prob);
-                    data_save.tasks_num_list = [[], data_selected(i).NodeData.tasks_num_list(prob)];
+                    data_save.task_num = [[], data_selected(i).NodeData.task_num(prob)];
                     data_save.result = data_selected(i).NodeData.result(prob, :);
                     
                     app.DputDataNode([data_selected(i).Text, ' (Split Problem: ', data_save.prob_cell{1}, ')'], data_save);
@@ -1959,32 +1959,32 @@ classdef MTO_GUI < matlab.apps.AppBase
             data_selected = app.DDataTree.SelectedNodes;
             data_selected = data_selected(app.Ddata_mark == 1);
             data_save.reps = 0;
-            data_save.tasks_num_list = data_selected(1).NodeData.tasks_num_list;
+            data_save.task_num = data_selected(1).NodeData.task_num;
             data_save.sub_pop = data_selected(1).NodeData.sub_pop;
             data_save.sub_eva = data_selected(1).NodeData.sub_eva;
             data_save.algo_cell = data_selected(1).NodeData.algo_cell;
             data_save.prob_cell = data_selected(1).NodeData.prob_cell;
             for prob = 1:length(data_save.prob_cell)
                 for algo = 1:length(data_save.algo_cell)
-                    data_save.result(prob, algo).clock_time = 0;
-                    data_save.result(prob, algo).convergence = [];
-                    data_save.result(prob, algo).convergence_cv = [];
-                    data_save.result(prob, algo).bestX = {};
+                    data_save.result(prob, algo).runTime = 0;
+                    data_save.result(prob, algo).convergeObj = [];
+                    data_save.result(prob, algo).convergeCV = [];
+                    data_save.result(prob, algo).bestDec = {};
                 end
             end
             for i = 1:length(data_selected)
                 data_save.reps = data_save.reps + data_selected(i).NodeData.reps;
                 for prob = 1:length(data_save.prob_cell)
                     for algo = 1:length(data_save.algo_cell)
-                        data_save.result(prob, algo).clock_time = data_save.result(prob, algo).clock_time + data_selected(i).NodeData.result(prob, algo).clock_time;
-                        data_save.result(prob, algo).convergence = [data_save.result(prob, algo).convergence; data_selected(i).NodeData.result(prob, algo).convergence];
-                        if isfield(data_selected(i).NodeData.result(prob, algo), 'convergence_cv')
-                            data_save.result(prob, algo).convergence_cv = [data_save.result(prob, algo).convergence_cv; data_selected(i).NodeData.result(prob, algo).convergence_cv];
+                        data_save.result(prob, algo).runTime = data_save.result(prob, algo).runTime + data_selected(i).NodeData.result(prob, algo).runTime;
+                        data_save.result(prob, algo).convergeObj = [data_save.result(prob, algo).convergeObj; data_selected(i).NodeData.result(prob, algo).convergeObj];
+                        if isfield(data_selected(i).NodeData.result(prob, algo), 'convergeCV')
+                            data_save.result(prob, algo).convergeCV = [data_save.result(prob, algo).convergeCV; data_selected(i).NodeData.result(prob, algo).convergeCV];
                         else
-                            data_save.result(prob, algo).convergence_cv = [data_save.result(prob, algo).convergence_cv; zeros(size(data_selected(i).NodeData.result(prob, algo).convergence))];
+                            data_save.result(prob, algo).convergeCV = [data_save.result(prob, algo).convergeCV; zeros(size(data_selected(i).NodeData.result(prob, algo).convergeObj))];
                         end
-                        if isfield(data_selected(i).NodeData.result(prob, algo), 'bestX')
-                            data_save.result(prob, algo).bestX = [data_save.result(prob, algo).bestX; data_selected(i).NodeData.result(prob, algo).bestX];
+                        if isfield(data_selected(i).NodeData.result(prob, algo), 'bestDec')
+                            data_save.result(prob, algo).bestDec = [data_save.result(prob, algo).bestDec; data_selected(i).NodeData.result(prob, algo).bestDec];
                         end
                     end
                 end
@@ -2006,7 +2006,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             data_selected = app.DDataTree.SelectedNodes;
             data_selected = data_selected(app.Ddata_mark == 1);
             data_save.reps = data_selected(1).NodeData.reps;
-            data_save.tasks_num_list = data_selected(1).NodeData.tasks_num_list;
+            data_save.task_num = data_selected(1).NodeData.task_num;
             data_save.sub_pop = data_selected(1).NodeData.sub_pop;
             data_save.sub_eva = data_selected(1).NodeData.sub_eva;
             data_save.prob_cell = data_selected(1).NodeData.prob_cell;
@@ -2056,13 +2056,13 @@ classdef MTO_GUI < matlab.apps.AppBase
             data_save.reps = data_selected(1).NodeData.reps;
             data_save.algo_cell = data_selected(1).NodeData.algo_cell;
             data_save.prob_cell = {};
-            data_save.tasks_num_list = [];
+            data_save.task_num = [];
             data_save.sub_pop = [];
             data_save.sub_eva = [];
             for i = 1:length(data_selected)
                 data_save.sub_pop = [data_save.sub_pop; data_selected(i).NodeData.sub_pop];
                 data_save.sub_eva = [data_save.sub_eva; data_selected(i).NodeData.sub_eva];
-                data_save.tasks_num_list = [data_save.tasks_num_list; data_selected(i).NodeData.tasks_num_list];
+                data_save.task_num = [data_save.task_num; data_selected(i).NodeData.task_num];
                 prob_start = length(data_save.prob_cell) + 1;
                 data_save.prob_cell = [data_save.prob_cell; data_selected(i).NodeData.prob_cell];
                 prob_end = length(data_save.prob_cell);

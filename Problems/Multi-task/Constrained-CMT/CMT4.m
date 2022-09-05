@@ -25,29 +25,29 @@ classdef CMT4 < Problem
     methods
         function obj = CMT4(varargin)
             obj = obj@Problem(varargin);
-            obj.sub_eva = 1000 * obj.dims;
+            obj.sub_eva = 1000 * obj.Dim;
         end
 
         function Parameter = getParameter(obj)
-            Parameter = {'Dims', num2str(obj.dims)};
+            Parameter = {'Dim', num2str(obj.Dim)};
             Parameter = [obj.getRunParameter(), Parameter];
         end
 
         function obj = setParameter(obj, Parameter)
             obj.setRunParameter(Parameter(1:2));
-            obj.dims = str2double(Parameter{3});
+            obj.Dim = str2double(Parameter{3});
         end
 
         function Tasks = getTasks(obj)
-            Tasks(1).dims = obj.dims;
-            Tasks(1).fnc = @(x)Rastrigin1(x, 1, 0 * ones(1, obj.dims), -20 * ones(1, obj.dims));
-            Tasks(1).Lb = -50 * ones(1, obj.dims);
-            Tasks(1).Ub = 50 * ones(1, obj.dims);
+            Tasks(1).Dim = obj.Dim;
+            Tasks(1).Fnc = @(x)Rastrigin1(x, 1, 0 * ones(1, obj.Dim), -20 * ones(1, obj.Dim));
+            Tasks(1).Lb = -50 * ones(1, obj.Dim);
+            Tasks(1).Ub = 50 * ones(1, obj.Dim);
 
-            Tasks(2).dims = obj.dims;
-            Tasks(2).fnc = @(x)Sphere1(x, 1, 0 * ones(1, obj.dims), 30 * ones(1, obj.dims));
-            Tasks(2).Lb = -100 * ones(1, obj.dims);
-            Tasks(2).Ub = 100 * ones(1, obj.dims);
+            Tasks(2).Dim = obj.Dim;
+            Tasks(2).Fnc = @(x)Sphere1(x, 1, 0 * ones(1, obj.Dim), 30 * ones(1, obj.Dim));
+            Tasks(2).Lb = -100 * ones(1, obj.Dim);
+            Tasks(2).Ub = 100 * ones(1, obj.Dim);
         end
     end
 end

@@ -40,18 +40,18 @@ classdef ConvergeCV < Metric
             result.YData = {};
             row_i = 1;
             for prob = 1:length(data.prob_cell)
-                tasks_num = data.tasks_num_list(prob);
-                for task = 1:tasks_num
+                tnum = data.task_num(prob);
+                for task = 1:tnum
                     result.Problems{row_i} = [data.prob_cell{prob}, '-T', num2str(task)];
                     for algo = 1:length(data.algo_cell)
-                        if isfield(data.result(prob, algo), 'convergence_cv')
-                            convergence_task = data.result(prob, algo).convergence_cv(task:tasks_num:end, :);
+                        if isfield(data.result(prob, algo), 'convergeCV')
+                            convergence_task = data.result(prob, algo).convergeCV(task:tnum:end, :);
                         else
                             convergence_task = 0;
                         end
-                        convergence_cv = mean(convergence_task, 1);
-                        result.YData{row_i, algo} = convergence_cv;
-                        result.XData{row_i, algo} = 1:size(convergence_cv, 2);
+                        convergeCV = mean(convergence_task, 1);
+                        result.YData{row_i, algo} = convergeCV;
+                        result.XData{row_i, algo} = 1:size(convergeCV, 2);
                         switch ConvergeCV.x_type
                             case 'evaluation'
                                 result.XData{row_i, algo} = result.XData{row_i, algo} / length(result.XData{row_i, algo}) * data.sub_eva(prob);

@@ -1,4 +1,4 @@
-function [population, calls, bestobj, bestCV, bestX] = initializeECHT(Individual_class, pop_size, Task, task_num)
+function [population, calls, bestObj, bestCV, bestDec] = initializeECHT(Individual_class, pop_size, Task, task_num)
 
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
@@ -12,18 +12,18 @@ function [population, calls, bestobj, bestCV, bestX] = initializeECHT(Individual
 
     for i = 1:pop_size
         pop_temp(i) = Individual_class();
-        pop_temp(i).rnvec = rand(1, Task.dims);
+        pop_temp(i).Dec = rand(1, Task.Dim);
     end
     [pop_temp, cal] = evaluate(pop_temp, Task, 1);
     calls = calls + cal;
 
-    [bestobj_temp, bestCV_temp, best_idx] = min_FP([pop_temp.factorial_costs], [pop_temp.constraint_violation]);
-    bestX_temp = pop_temp(best_idx).rnvec;
+    [bestObj_temp, bestCV_temp, best_idx] = min_FP([pop_temp.Obj], [pop_temp.CV]);
+    bestDec_temp = pop_temp(best_idx).Dec;
 
     for t = 1:task_num
         population{t} = pop_temp;
-        bestobj(t) = bestobj_temp;
+        bestObj(t) = bestObj_temp;
         bestCV(t) = bestCV_temp;
-        bestX{t} = bestX_temp;
+        bestDec{t} = bestDec_temp;
     end
 end

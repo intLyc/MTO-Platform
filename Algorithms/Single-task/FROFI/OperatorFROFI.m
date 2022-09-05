@@ -19,7 +19,7 @@ classdef OperatorFROFI < Operator
 
                 if rand() < 0.5
                     % rand-to-best
-                    [~, best] = min([population.factorial_costs]);
+                    [~, best] = min([population.Obj]);
 
                     offspring(i) = OperatorFROFI.mutate_rand_to_best(offspring(i), population(best), population(x1), population(x2), population(x3), F(randi(length(F))));
                     offspring(i) = OperatorFROFI.crossover(offspring(i), population(i), CR(randi(length(CR))));
@@ -29,28 +29,28 @@ classdef OperatorFROFI < Operator
                 end
 
                 % boundary check
-                vio_low = find(offspring(i).rnvec < 0);
+                vio_low = find(offspring(i).Dec < 0);
                 if rand() < 0.5
-                    offspring(i).rnvec(vio_low) = 2 * 0 - offspring(i).rnvec(vio_low);
-                    vio_temp = offspring(i).rnvec(vio_low) > 1;
-                    offspring(i).rnvec(vio_low(vio_temp)) = 1;
+                    offspring(i).Dec(vio_low) = 2 * 0 - offspring(i).Dec(vio_low);
+                    vio_temp = offspring(i).Dec(vio_low) > 1;
+                    offspring(i).Dec(vio_low(vio_temp)) = 1;
                 else
                     if rand() < 0.5
-                        offspring(i).rnvec(vio_low) = 0;
+                        offspring(i).Dec(vio_low) = 0;
                     else
-                        offspring(i).rnvec(vio_low) = 1;
+                        offspring(i).Dec(vio_low) = 1;
                     end
                 end
-                vio_up = find(offspring(i).rnvec > 1);
+                vio_up = find(offspring(i).Dec > 1);
                 if rand() < 0.5
-                    offspring(i).rnvec(vio_up) = 2 * 1 - offspring(i).rnvec(vio_up);
-                    vio_temp = offspring(i).rnvec(vio_up) < 0;
-                    offspring(i).rnvec(vio_up(vio_temp)) = 1;
+                    offspring(i).Dec(vio_up) = 2 * 1 - offspring(i).Dec(vio_up);
+                    vio_temp = offspring(i).Dec(vio_up) < 0;
+                    offspring(i).Dec(vio_up(vio_temp)) = 1;
                 else
                     if rand() < 0.5
-                        offspring(i).rnvec(vio_up) = 0;
+                        offspring(i).Dec(vio_up) = 0;
                     else
-                        offspring(i).rnvec(vio_up) = 1;
+                        offspring(i).Dec(vio_up) = 1;
                     end
                 end
             end
@@ -58,17 +58,17 @@ classdef OperatorFROFI < Operator
         end
 
         function object = mutate_current_to_rand(object, current, x1, x2, x3, F)
-            object.rnvec = current.rnvec + rand() * (x1.rnvec - current.rnvec) + F * (x2.rnvec - x3.rnvec);
+            object.Dec = current.Dec + rand() * (x1.Dec - current.Dec) + F * (x2.Dec - x3.Dec);
         end
 
         function object = mutate_rand_to_best(object, best, x1, x2, x3, F)
-            object.rnvec = x1.rnvec + F * (best.rnvec - x1.rnvec) + F * (x2.rnvec - x3.rnvec);
+            object.Dec = x1.Dec + F * (best.Dec - x1.Dec) + F * (x2.Dec - x3.Dec);
         end
 
         function object = crossover(object, x, CR)
-            replace = rand(1, length(object.rnvec)) > CR;
-            replace(randi(length(object.rnvec))) = false;
-            object.rnvec(replace) = x.rnvec(replace);
+            replace = rand(1, length(object.Dec)) > CR;
+            replace(randi(length(object.Dec))) = false;
+            object.Dec(replace) = x.Dec(replace);
         end
     end
 end

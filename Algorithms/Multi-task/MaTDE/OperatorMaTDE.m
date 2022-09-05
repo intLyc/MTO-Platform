@@ -22,21 +22,21 @@ classdef OperatorMaTDE < Operator
                 offspring(i) = OperatorMaTDE.mutate(offspring(i), population(x1), population(x2), population(x3), F);
                 offspring(i) = OperatorMaTDE.crossover(offspring(i), population(i), CR);
 
-                rand_rnvec = rand(1, Task.dims);
-                offspring(i).rnvec(offspring(i).rnvec > 1) = rand_rnvec(offspring(i).rnvec > 1);
-                offspring(i).rnvec(offspring(i).rnvec < 0) = rand_rnvec(offspring(i).rnvec < 0);
+                rand_Dec = rand(1, Task.Dim);
+                offspring(i).Dec(offspring(i).Dec > 1) = rand_Dec(offspring(i).Dec > 1);
+                offspring(i).Dec(offspring(i).Dec < 0) = rand_Dec(offspring(i).Dec < 0);
             end
             [offspring, calls] = evaluate(offspring, Task, 1);
         end
 
         function object = mutate(object, x1, x2, x3, F)
-            object.rnvec = x1.rnvec + F * (x2.rnvec - x3.rnvec);
+            object.Dec = x1.Dec + F * (x2.Dec - x3.Dec);
         end
 
         function object = crossover(object, x, CR)
-            replace = rand(1, length(object.rnvec)) > CR;
-            replace(randi(length(object.rnvec))) = false;
-            object.rnvec(replace) = x.rnvec(replace);
+            replace = rand(1, length(object.Dec)) > CR;
+            replace(randi(length(object.Dec))) = false;
+            object.Dec(replace) = x.Dec(replace);
         end
     end
 end

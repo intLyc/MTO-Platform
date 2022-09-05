@@ -1,4 +1,4 @@
-function [obj, cv] = Schwefel2(var, M, opt, opt_con)
+function [obj, con] = Schwefel2(var, M, opt, opt_con)
     % Schwefel function
     %   - var: design variable vector
     %   - M: rotation matrix
@@ -19,5 +19,5 @@ function [obj, cv] = Schwefel2(var, M, opt, opt_con)
     g = sum(x.^2, 2) - 100 * dim;
 
     g(g < 0) = 0;
-    cv = g;
+    con = g;
 end

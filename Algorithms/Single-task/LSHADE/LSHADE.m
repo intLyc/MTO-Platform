@@ -38,7 +38,7 @@ classdef LSHADE < Algorithm
 
         function data = run(obj, Tasks, RunPara)
             sub_pop = RunPara(1); sub_eva = RunPara(2);
-            convergence = {}; eva_gen = {}; bestX = {};
+            convergeObj = {}; eva_gen = {}; bestDec = {};
 
             for sub_task = 1:length(Tasks)
                 Task = Tasks(sub_task);
@@ -46,8 +46,8 @@ classdef LSHADE < Algorithm
                 % initialize
                 pop_init = sub_pop;
                 pop_min = 4;
-                [population, fnceval_calls, bestobj, bestX_temp] = initialize(IndividualLSHADE, pop_init, Task, Task.dims);
-                converge_temp(1) = bestobj;
+                [population, fnceval_calls, bestDec_temp, bestObj] = initialize(IndividualLSHADE, pop_init, Task, Task.Dim);
+                convergeObj_temp(1) = bestObj;
                 eva_gen_temp(1) = fnceval_calls;
 
                 % initialize Parameter
@@ -85,12 +85,12 @@ classdef LSHADE < Algorithm
                     fnceval_calls = fnceval_calls + calls;
 
                     % selection
-                    replace = [population.factorial_costs] > [offspring.factorial_costs];
+                    replace = [population.Obj] > [offspring.Obj];
 
                     % calculate SF SCR
                     SF = [population(replace).F];
                     SCR = [population(replace).CR];
-                    dif = abs([population(replace).factorial_costs] - [offspring(replace).factorial_costs]);
+                    dif = abs([population(replace).Obj] - [offspring(replace).Obj]);
                     dif = dif ./ sum(dif);
 
                     % update MF MCR
@@ -113,24 +113,24 @@ classdef LSHADE < Algorithm
 
                     % Linear Population Size Reduction
                     if pop_size < length(population)
-                        [~, rank] = sort([population.factorial_costs]);
+                        [~, rank] = sort([population.Obj]);
                         population = population(rank(1:pop_size));
                     end
 
-                    [bestobj_now, idx] = min([population.factorial_costs]);
-                    if bestobj_now < bestobj
-                        bestobj = bestobj_now;
-                        bestX_temp = population(idx).rnvec;
+                    [bestObj_now, idx] = min([population.Obj]);
+                    if bestObj_now < bestObj
+                        bestObj = bestObj_now;
+                        bestDec_temp = population(idx).Dec;
                     end
-                    converge_temp(generation) = bestobj;
+                    convergeObj_temp(generation) = bestObj;
                     eva_gen_temp(generation) = fnceval_calls;
                 end
-                convergence{sub_task} = converge_temp;
+                convergeObj{sub_task} = convergeObj_temp;
                 eva_gen{sub_task} = eva_gen_temp;
-                bestX{sub_task} = bestX_temp;
+                bestDec{sub_task} = bestDec_temp;
             end
-            data.convergence = gen2eva(cell2matrix(convergence), cell2matrix(eva_gen));
-            data.bestX = uni2real(bestX, Tasks);
+            data.convergeObj = gen2eva(cell2matrix(convergeObj), cell2matrix(eva_gen));
+            data.bestDec = uni2real(bestDec, Tasks);
         end
     end
 end

@@ -1,4 +1,4 @@
-function [obj, cv] = Ackley1(var, M, opt, opt_con)
+function [obj, con] = Ackley1(var, M, opt, opt_con)
     % Ackley function
     %   - var: design variable vector
     %   - M: rotation matrix
@@ -22,5 +22,5 @@ function [obj, cv] = Ackley1(var, M, opt, opt_con)
     g = sum(x.^2 - 5000 .* cos(0.1 .* pi .* x) - 4000, 2);
 
     g(g < 0) = 0;
-    cv = g;
+    con = g;
 end

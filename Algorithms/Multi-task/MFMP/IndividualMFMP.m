@@ -1,5 +1,4 @@
-classdef ATF1 < Problem
-    % <Single> <Constrained>
+classdef IndividualMFMP < Individual
 
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
@@ -8,18 +7,8 @@ classdef ATF1 < Problem
     % or footnote "https://github.com/intLyc/MTO-Platform"
     %--------------------------------------------------------------------------
 
-    methods
-        function obj = ATF1(varargin)
-            obj = obj@Problem(varargin);
-            obj.sub_eva = 60 * 500;
-        end
-
-        function Tasks = getTasks(obj)
-            Task.Lb = [-10, -5];
-            Task.Ub = [5, 5];
-            Task.Dim = 2;
-            Task.Fnc = @(x)ATF_Func(x, 1);
-            Tasks(1) = Task;
-        end
+    properties
+        F
+        CR
     end
 end

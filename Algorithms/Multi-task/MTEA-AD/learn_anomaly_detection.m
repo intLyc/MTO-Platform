@@ -1,6 +1,6 @@
 function tfsol = learn_anomaly_detection(curr_pop, his_pop, NL)
     %% Learning anomaly detection model of task tn
-    % Input: curr_pop (rnvec matrix), his_pop (rnvec matrix), NL (anomaly detection parameter)
+    % Input: curr_pop (Dec matrix), his_pop (Dec matrix), NL (anomaly detection parameter)
     % Output: tfsol (candidate transferred solutions)
 
     % Sample, make sure that the fitted covariance is a square, symmetric, positive definite matrix.
@@ -14,8 +14,8 @@ function tfsol = learn_anomaly_detection(curr_pop, his_pop, NL)
     sstd = sstd1 + (10e-6) * eye(size(curr_pop, 2));
 
     % Calculate the scores
-    [rnvec, ~] = unique(his_pop, 'rows');
-    Y = mvnpdf(rnvec(:, 1:size(curr_pop, 2)), mmean, sstd);
+    [Dec, ~] = unique(his_pop, 'rows');
+    Y = mvnpdf(Dec(:, 1:size(curr_pop, 2)), mmean, sstd);
 
     % Select the candidate transferred solutions
     [~, ii] = sort(Y, 'descend');
@@ -27,5 +27,5 @@ function tfsol = learn_anomaly_detection(curr_pop, his_pop, NL)
 
     % Count the number of candidate transferred solutions
     tte = Y >= mm;
-    tfsol = rnvec(tte, :);
+    tfsol = Dec(tte, :);
 end

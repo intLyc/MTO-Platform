@@ -23,8 +23,8 @@ function Task = benchmark_CEC10_CSO(index, dim)
             100, 1000, 500, 1000, 1000, 10, 10, 50];
 
     %% Set Task
-    Task.dims = dim; % dimensionality of Task 1
-    Task.fnc = @(x)CEC10_CSO_Func(x, index);
+    Task.Dim = dim; % dimensionality of Task 1
+    Task.Fnc = @(x)CEC10_CSO_Func(x, index);
     Task.Lb = lb(index) * ones(1, dim); % Upper bound of Task 1
     Task.Ub = ub(index) * ones(1, dim); % Lower bound of Task 1
 end

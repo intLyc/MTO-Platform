@@ -38,14 +38,14 @@ classdef JADE < Algorithm
 
         function data = run(obj, Tasks, RunPara)
             sub_pop = RunPara(1); sub_eva = RunPara(2);
-            convergence = {}; bestX = {};
+            convergeObj = {}; bestDec = {};
 
             for sub_task = 1:length(Tasks)
                 Task = Tasks(sub_task);
 
                 % initialize
-                [population, fnceval_calls, bestobj, bestX_temp] = initialize(IndividualJADE, sub_pop, Task, Task.dims);
-                converge_temp(1) = bestobj;
+                [population, fnceval_calls, bestDec_temp, bestObj] = initialize(IndividualJADE, sub_pop, Task, Task.Dim);
+                convergeObj_temp(1) = bestObj;
 
                 % initialize Parameter
                 uF = 0.5;
@@ -75,7 +75,7 @@ classdef JADE < Algorithm
                     fnceval_calls = fnceval_calls + calls;
 
                     % selection
-                    replace = [population.factorial_costs] > [offspring.factorial_costs];
+                    replace = [population.Obj] > [offspring.Obj];
 
                     % update archive
                     arc = [arc, population(replace)];
@@ -96,18 +96,18 @@ classdef JADE < Algorithm
                     end
 
                     population(replace) = offspring(replace);
-                    [bestobj_now, idx] = min([population.factorial_costs]);
-                    if bestobj_now < bestobj
-                        bestobj = bestobj_now;
-                        bestX_temp = population(idx).rnvec;
+                    [bestObj_now, idx] = min([population.Obj]);
+                    if bestObj_now < bestObj
+                        bestObj = bestObj_now;
+                        bestDec_temp = population(idx).Dec;
                     end
-                    converge_temp(generation) = bestobj;
+                    convergeObj_temp(generation) = bestObj;
                 end
-                convergence{sub_task} = converge_temp;
-                bestX{sub_task} = bestX_temp;
+                convergeObj{sub_task} = convergeObj_temp;
+                bestDec{sub_task} = bestDec_temp;
             end
-            data.convergence = gen2eva(cell2matrix(convergence));
-            data.bestX = uni2real(bestX, Tasks);
+            data.convergeObj = gen2eva(cell2matrix(convergeObj));
+            data.bestDec = uni2real(bestDec, Tasks);
         end
     end
 end

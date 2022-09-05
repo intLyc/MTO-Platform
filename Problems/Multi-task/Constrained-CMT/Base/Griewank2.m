@@ -1,4 +1,4 @@
-function [obj, cv] = Griewank2(var, M, opt, opt_con)
+function [obj, con] = Griewank2(var, M, opt, opt_con)
     % GRIEWANK function
     %   - var: design variable vector
     %   - M: rotation matrix
@@ -20,5 +20,5 @@ function [obj, cv] = Griewank2(var, M, opt, opt_con)
     g = sum(x.^2, 2) - 100 * dim;
 
     g(g < 0) = 0;
-    cv = g;
+    con = g;
 end

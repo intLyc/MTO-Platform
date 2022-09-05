@@ -11,6 +11,6 @@ function X = uni2real(X, Tasks)
     %--------------------------------------------------------------------------
 
     for t = 1:length(Tasks)
-        X{t} = Tasks(t).Lb + X{t}(1:Tasks(t).dims) .* (Tasks(t).Ub - Tasks(t).Lb);
+        X{t} = Tasks(t).Lb + X{t}(1:Tasks(t).Dim) .* (Tasks(t).Ub - Tasks(t).Lb);
     end
 end

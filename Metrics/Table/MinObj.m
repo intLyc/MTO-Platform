@@ -31,12 +31,12 @@ classdef MinObj < Metric
             for algo = 1:length(data.algo_cell)
                 row_i = 1;
                 for prob = 1:length(data.prob_cell)
-                    tasks_num = data.tasks_num_list(prob);
+                    tnum = data.task_num(prob);
                     obj_matrix = [];
-                    for task = 1:tasks_num
-                        obj_temp = data.result(prob, algo).convergence(task:tasks_num:end, end);
-                        if isfield(data.result(prob, algo), 'convergence_cv')
-                            cv_temp = data.result(prob, algo).convergence_cv(task:tasks_num:end, end);
+                    for task = 1:tnum
+                        obj_temp = data.result(prob, algo).convergeObj(task:tnum:end, end);
+                        if isfield(data.result(prob, algo), 'convergeCV')
+                            cv_temp = data.result(prob, algo).convergeCV(task:tnum:end, end);
                             obj_temp(cv_temp > 0) = NaN;
                         end
                         obj_matrix(task, :) = obj_temp;

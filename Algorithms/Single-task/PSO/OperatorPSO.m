@@ -21,22 +21,22 @@ classdef OperatorPSO < Operator
             % Velocity update
             len = length(object.velocity);
             object.velocity = w * object.velocity + ...
-                c1 * rand(1, len) .* (object.pbest - object.rnvec) + ...
-                c2 * rand(1, len) .* (gbest - object.rnvec);
+                c1 * rand(1, len) .* (object.pbest - object.Dec) + ...
+                c2 * rand(1, len) .* (gbest - object.Dec);
         end
 
         function object = positionUpdate(object)
             % Position update
-            object.rnvec = object.rnvec + object.velocity;
-            object.rnvec(object.rnvec > 1) = 1;
-            object.rnvec(object.rnvec < 0) = 0;
+            object.Dec = object.Dec + object.velocity;
+            object.Dec(object.Dec > 1) = 1;
+            object.Dec(object.Dec < 0) = 0;
         end
 
         function object = pbestUpdate(object)
             % pbest update
-            if object.factorial_costs < object.pbestFitness
-                object.pbestFitness = object.factorial_costs;
-                object.pbest = object.rnvec;
+            if object.Obj < object.pbestFitness
+                object.pbestFitness = object.Obj;
+                object.pbest = object.Dec;
             end
         end
     end

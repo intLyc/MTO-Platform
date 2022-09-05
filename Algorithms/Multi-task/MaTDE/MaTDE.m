@@ -68,8 +68,8 @@ classdef MaTDE < Algorithm
             reward = ones(length(Tasks), length(Tasks));
 
             % initialize
-            [population, fnceval_calls, bestobj, bestX] = initializeMT(Individual, sub_pop, Tasks, max([Tasks.dims]) * ones(1, length(Tasks)));
-            convergence(:, 1) = bestobj;
+            [population, fnceval_calls, bestDec, bestObj] = initializeMT(Individual, sub_pop, Tasks, max([Tasks.Dim]) * ones(1, length(Tasks)));
+            convergeObj(:, 1) = bestObj;
             for t = 1:length(Tasks)
                 for i = 1:length(population{t})
                     archive = obj.putarchive(archive, t, population{t}(i), sub_pop);
@@ -90,12 +90,12 @@ classdef MaTDE < Algorithm
                         fnceval_calls = fnceval_calls + calls;
 
                         % selection
-                        replace = [population{t}.factorial_costs] > [offspring.factorial_costs];
+                        replace = [population{t}.Obj] > [offspring.Obj];
                         population{t}(replace) = offspring(replace);
-                        [bestobj_now, idx] = min([population{t}.factorial_costs]);
-                        if bestobj_now < bestobj(t)
-                            bestobj(t) = bestobj_now;
-                            bestX{t} = population{t}(idx).rnvec;
+                        [bestObj_now, idx] = min([population{t}.Obj]);
+                        if bestObj_now < bestObj(t)
+                            bestObj(t) = bestObj_now;
+                            bestDec{t} = population{t}(idx).Dec;
                         end
                     else
                         % Knowledge transfer
@@ -105,7 +105,7 @@ classdef MaTDE < Algorithm
                         CR = obj.LCR + (obj.UCR - obj.LCR) * rand;
                         for i = 1:length(population{t})
                             offspring(i) = Individual();
-                            offspring(i).rnvec = population{t}(i).rnvec;
+                            offspring(i).Dec = population{t}(i).Dec;
                             r1 = randi(length(Tasks(transfer_task)));
                             offspring(i) = OperatorMaTDE.crossover(offspring(i), population{transfer_task}(r1), CR);
                         end
@@ -113,14 +113,14 @@ classdef MaTDE < Algorithm
                         fnceval_calls = fnceval_calls + calls;
 
                         % selection
-                        replace = [population{t}.factorial_costs] > [offspring.factorial_costs];
+                        replace = [population{t}.Obj] > [offspring.Obj];
                         population{t}(replace) = offspring(replace);
 
-                        [bestobj_now, idx] = min([population{t}.factorial_costs]);
-                        if bestobj_now < bestobj(t)
+                        [bestObj_now, idx] = min([population{t}.Obj]);
+                        if bestObj_now < bestObj(t)
                             reward(t, transfer_task) = reward(t, transfer_task) / obj.shrink_rate;
-                            bestobj(t) = bestobj_now;
-                            bestX{t} = population{t}(idx).rnvec;
+                            bestObj(t) = bestObj_now;
+                            bestDec{t} = population{t}(idx).Dec;
                         else
                             reward(t, transfer_task) = reward(t, transfer_task) * obj.shrink_rate;
                         end
@@ -132,10 +132,10 @@ classdef MaTDE < Algorithm
                         end
                     end
                 end
-                convergence(:, generation) = bestobj;
+                convergeObj(:, generation) = bestObj;
             end
-            data.convergence = gen2eva(convergence);
-            data.bestX = uni2real(bestX, Tasks);
+            data.convergeObj = gen2eva(convergeObj);
+            data.bestDec = uni2real(bestDec, Tasks);
         end
 
         function [num, possibility] = adaptivechoose(obj, task_num, no_of_tasks, archive, reward, possibility, Tasks)
@@ -185,7 +185,7 @@ classdef MaTDE < Algorithm
             % Calculate similarity
             for i = 1:no_of_task
                 if task_num ~= i
-                    NVARS = min(Tasks(task_num).dims, Tasks(i).dims); % Unify dimensions to lower task
+                    NVARS = min(Tasks(task_num).Dim, Tasks(i).Dim); % Unify dimensions to lower task
                     cov0 = obj.getCov(task_num, archive, NVARS);
                     cov1 = obj.getCov(i, archive, NVARS);
                     cov0_det = det(cov0);
@@ -210,13 +210,13 @@ classdef MaTDE < Algorithm
         end
 
         function COV = getCov(obj, task_num, archive, NVARS)
-            % generate NVARS*NVARS dims cov matrix
+            % generate NVARS*NVARS Dim cov matrix
             cur_ar_size = size(archive{task_num}, 1);
-            pop_rnvec = zeros(cur_ar_size, NVARS);
+            pop_Dec = zeros(cur_ar_size, NVARS);
             for i = 1:cur_ar_size
-                pop_rnvec(i, :) = archive{task_num}(i).rnvec(1:NVARS);
+                pop_Dec(i, :) = archive{task_num}(i).Dec(1:NVARS);
             end
-            COV = cov(pop_rnvec);
+            COV = cov(pop_Dec);
         end
 
         function tr = getTrace(obj, inv_cov1, cov2)
@@ -231,16 +231,16 @@ classdef MaTDE < Algorithm
             pop1_archive = archive{t1};
             cur_ar_size0 = size(pop0_archive, 1);
             cur_ar_size1 = size(pop1_archive, 1);
-            pop0_rnvec = zeros(cur_ar_size0, NVARS);
-            pop1_rnvec = zeros(cur_ar_size1, NVARS);
+            pop0_Dec = zeros(cur_ar_size0, NVARS);
+            pop1_Dec = zeros(cur_ar_size1, NVARS);
             for i = 1:cur_ar_size0
-                pop0_rnvec(i, :) = pop0_archive(i).rnvec(1:NVARS);
+                pop0_Dec(i, :) = pop0_archive(i).Dec(1:NVARS);
             end
             for i = 1:cur_ar_size1
-                pop1_rnvec(i, :) = pop1_archive(i).rnvec(1:NVARS);
+                pop1_Dec(i, :) = pop1_archive(i).Dec(1:NVARS);
             end
-            u0 = mean(pop0_rnvec);
-            u1 = mean(pop1_rnvec);
+            u0 = mean(pop0_Dec);
+            u1 = mean(pop1_Dec);
             u = (u1 - u0) * invcov * (u1 - u0)';
         end
     end

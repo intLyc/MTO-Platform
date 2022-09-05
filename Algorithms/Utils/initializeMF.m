@@ -1,7 +1,7 @@
-function [population, calls, bestobj, bestX] = initializeMF(Individual_class, pop_size, Tasks, dim)
-    %% Multifactorial - Initialize and evaluate the population
+function [population, calls, bestDec, bestObj, bestCV] = initializeMF(Individual_class, pop_size, Tasks, dim)
+    %% Initialize and evaluate the population
     % Input: Individual_class, pop_size, Tasks, dim
-    % Output: population, calls (function calls number), bestobj, bestX
+    % Output: population, calls (function calls number), bestDec, bestObj, bestCV
 
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
@@ -12,9 +12,9 @@ function [population, calls, bestobj, bestX] = initializeMF(Individual_class, po
 
     for i = 1:pop_size
         population(i) = Individual_class();
-        population(i).rnvec = rand(1, dim);
-        population(i).factorial_costs = inf(1, length(Tasks));
-        population(i).constraint_violation = inf(1, length(Tasks));
+        population(i).Dec = rand(1, dim);
+        population(i).Obj = inf(1, length(Tasks));
+        population(i).CV = inf(1, length(Tasks));
     end
     calls = 0;
     for t = 1:length(Tasks)
@@ -23,15 +23,17 @@ function [population, calls, bestobj, bestX] = initializeMF(Individual_class, po
     end
 
     for t = 1:length(Tasks)
-        for i = 1:pop_size
-            factorial_costs(i) = population(i).factorial_costs(t);
+        for i = 1:length(population)
+            Obj(i) = population(i).Obj(t);
+            CV(i) = population(i).CV(t);
         end
-        [~, rank] = sort(factorial_costs);
-        for i = 1:pop_size
+        [bestObj(t), bestCV(t), best_idx] = min_FP(Obj, CV);
+        bestDec{t} = population(best_idx).Dec;
+
+        rank = sort_FP(Obj, CV);
+        for i = 1:length(population)
             population(rank(i)).factorial_ranks(t) = i;
         end
-        bestobj(t) = population(rank(1)).factorial_costs(t);
-        bestX{t} = population(rank(1)).rnvec;
     end
 
     % Calculate skill factor
@@ -40,7 +42,7 @@ function [population, calls, bestobj, bestX] = initializeMF(Individual_class, po
         min_idx = find(population(i).factorial_ranks == min_rank);
 
         population(i).skill_factor = min_idx(randi(length(min_idx)));
-        population(i).factorial_costs(1:population(i).skill_factor - 1) = inf;
-        population(i).factorial_costs(population(i).skill_factor + 1:end) = inf;
+        population(i).Obj(1:population(i).skill_factor - 1) = inf;
+        population(i).Obj(population(i).skill_factor + 1:end) = inf;
     end
 end

@@ -12,7 +12,7 @@ classdef OperatorLSHADE44 < Operator
             Individual_class = class(population(1));
 
             % get top 100p% individuals
-            rank = sort_FP([population.factorial_costs], [population.constraint_violation]);
+            rank = sort_FP([population.Obj], [population.CV]);
             pop_pbest = rank(1:max(round(p * length(population)), 1));
 
             for i = 1:length(population)
@@ -46,7 +46,7 @@ classdef OperatorLSHADE44 < Operator
                     case 3 % randrl + bin
                         A = randperm(length(population), 4);
                         A(A == i) = []; idx = A(1:3);
-                        rank_temp = sort_FP([population(idx).factorial_costs], [population(idx).constraint_violation]);
+                        rank_temp = sort_FP([population(idx).Obj], [population(idx).CV]);
                         x1 = idx(rank_temp(1));
                         if rand < 0.5
                             x2 = idx(rank_temp(2)); x3 = idx(rank_temp(3));
@@ -58,7 +58,7 @@ classdef OperatorLSHADE44 < Operator
                     case 4 % randrl + exp
                         A = randperm(length(population), 4);
                         A(A == i) = []; idx = A(1:3);
-                        rank_temp = sort_FP([population(idx).factorial_costs], [population(idx).constraint_violation]);
+                        rank_temp = sort_FP([population(idx).Obj], [population(idx).CV]);
                         x1 = idx(rank_temp(1));
                         if rand < 0.5
                             x2 = idx(rank_temp(2)); x3 = idx(rank_temp(3));
@@ -69,33 +69,33 @@ classdef OperatorLSHADE44 < Operator
                         offspring(i) = OperatorLSHADE44.crossoverExp(offspring(i), population(i));
                 end
 
-                offspring(i).rnvec(offspring(i).rnvec > 1) = 1;
-                offspring(i).rnvec(offspring(i).rnvec < 0) = 0;
-                % vio_low = find(offspring(i).rnvec < 0);
-                % offspring(i).rnvec(vio_low) = (population(i).rnvec(vio_low) + 0) / 2;
-                % vio_up = find(offspring(i).rnvec > 1);
-                % offspring(i).rnvec(vio_up) = (population(i).rnvec(vio_up) + 1) / 2;
+                offspring(i).Dec(offspring(i).Dec > 1) = 1;
+                offspring(i).Dec(offspring(i).Dec < 0) = 0;
+                % vio_low = find(offspring(i).Dec < 0);
+                % offspring(i).Dec(vio_low) = (population(i).Dec(vio_low) + 0) / 2;
+                % vio_up = find(offspring(i).Dec > 1);
+                % offspring(i).Dec(vio_up) = (population(i).Dec(vio_up) + 1) / 2;
             end
             [offspring, calls] = evaluate(offspring, Task, 1);
         end
 
         function object = mutate_rand_to_pbest(object, current, pbest, x1, x2)
-            object.rnvec = current.rnvec + current.F * (pbest.rnvec - current.rnvec) + current.F * (x1.rnvec - x2.rnvec);
+            object.Dec = current.Dec + current.F * (pbest.Dec - current.Dec) + current.F * (x1.Dec - x2.Dec);
         end
 
         function object = mutate_rand(object, x1, x2, x3, F)
-            object.rnvec = x1.rnvec + F * (x2.rnvec - x3.rnvec);
+            object.Dec = x1.Dec + F * (x2.Dec - x3.Dec);
         end
 
         function object = crossover(object, current)
-            replace = rand(1, length(object.rnvec)) > current.CR;
-            replace(randi(length(object.rnvec))) = false;
-            object.rnvec(replace) = current.rnvec(replace);
+            replace = rand(1, length(object.Dec)) > current.CR;
+            replace(randi(length(object.Dec))) = false;
+            object.Dec(replace) = current.Dec(replace);
         end
 
         function object = crossoverExp(object, current)
-            D = length(object.rnvec);
-            L = 1 + fix(length(object.rnvec) * rand());
+            D = length(object.Dec);
+            L = 1 + fix(length(object.Dec) * rand());
             replace = L;
             position = L;
             while rand() < current.CR && length(replace) < D
@@ -106,9 +106,9 @@ classdef OperatorLSHADE44 < Operator
                     replace(end + 1) = mod(position, D);
                 end
             end
-            rnvec_temp = current.rnvec;
-            rnvec_temp(replace) = object.rnvec(replace);
-            object.rnvec = rnvec_temp;
+            Dec_temp = current.Dec;
+            Dec_temp(replace) = object.Dec(replace);
+            object.Dec = Dec_temp;
         end
     end
 end

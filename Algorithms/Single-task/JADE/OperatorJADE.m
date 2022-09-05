@@ -13,9 +13,9 @@ classdef OperatorJADE < Operator
 
             % get top 100p% individuals
             for i = 1:length(population)
-                factorial_costs(i) = population(i).factorial_costs;
+                Obj(i) = population(i).Obj;
             end
-            [~, rank] = sort(factorial_costs);
+            [~, rank] = sort(Obj);
             pop_pbest = rank(1:round(p * length(population)));
 
             for i = 1:length(population)
@@ -34,20 +34,20 @@ classdef OperatorJADE < Operator
                 offspring(i) = OperatorJADE.mutate(offspring(i), population(i), population(pbest), population(x1), union(x2));
                 offspring(i) = OperatorJADE.crossover(offspring(i), population(i));
 
-                offspring(i).rnvec(offspring(i).rnvec > 1) = 1;
-                offspring(i).rnvec(offspring(i).rnvec < 0) = 0;
+                offspring(i).Dec(offspring(i).Dec > 1) = 1;
+                offspring(i).Dec(offspring(i).Dec < 0) = 0;
             end
             [offspring, calls] = evaluate(offspring, Task, 1);
         end
 
         function object = mutate(object, current, pbest, x1, x2)
-            object.rnvec = current.rnvec + current.F * (pbest.rnvec - current.rnvec) + current.F * (x1.rnvec - x2.rnvec);
+            object.Dec = current.Dec + current.F * (pbest.Dec - current.Dec) + current.F * (x1.Dec - x2.Dec);
         end
 
         function object = crossover(object, current)
-            replace = rand(1, length(object.rnvec)) > current.CR;
-            replace(randi(length(object.rnvec))) = false;
-            object.rnvec(replace) = current.rnvec(replace);
+            replace = rand(1, length(object.Dec)) > current.CR;
+            replace(randi(length(object.Dec))) = false;
+            object.Dec(replace) = current.Dec(replace);
         end
     end
 end

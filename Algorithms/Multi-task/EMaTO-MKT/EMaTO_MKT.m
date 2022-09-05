@@ -53,8 +53,8 @@ classdef EMaTO_MKT < Algorithm
             eva_num = sub_eva * length(Tasks);
 
             % initialize
-            [population, fnceval_calls, bestobj, bestX] = initializeMT(IndividualMKT, sub_pop, Tasks, max([Tasks.dims]) * ones(1, length(Tasks)));
-            convergence(:, 1) = bestobj;
+            [population, fnceval_calls, bestDec, bestObj] = initializeMT(IndividualMKT, sub_pop, Tasks, max([Tasks.Dim]) * ones(1, length(Tasks)));
+            convergeObj(:, 1) = bestObj;
 
             generation = 1;
             while fnceval_calls < eva_num
@@ -64,8 +64,8 @@ classdef EMaTO_MKT < Algorithm
                 if generation < 4
                     amp(1:length(Tasks)) = obj.amp0;
                 else
-                    temp1 = convergence(:, generation - 2)' - convergence(:, generation - 1)';
-                    temp2 = convergence(:, generation - 3)' - convergence(:, generation - 2)';
+                    temp1 = convergeObj(:, generation - 2)' - convergeObj(:, generation - 1)';
+                    temp2 = convergeObj(:, generation - 3)' - convergeObj(:, generation - 2)';
                     amp = temp1 ./ (temp1 + temp2);
                     amp(isnan(amp)) = obj.amp0;
                 end
@@ -73,10 +73,10 @@ classdef EMaTO_MKT < Algorithm
                 % calculate MMD
                 difference = inf .* ones(length(Tasks));
                 for t = 1:length(Tasks) - 1
-                    rnvec_t = reshape([population{t}.rnvec], length(population{t}(1).rnvec), length(population{t}));
+                    dec_t = reshape([population{t}.Dec], length(population{t}(1).Dec), length(population{t}));
                     for k = t + 1:length(Tasks)
-                        rnvec_k = reshape([population{k}.rnvec], length(population{k}(1).rnvec), length(population{k}));
-                        difference(t, k) = obj.mmd(rnvec_t, rnvec_k, obj.sigma);
+                        dec_k = reshape([population{k}.Dec], length(population{k}(1).Dec), length(population{k}));
+                        difference(t, k) = obj.mmd(dec_t, dec_k, obj.sigma);
                         difference(k, t) = difference(t, k);
                     end
                 end
@@ -91,18 +91,18 @@ classdef EMaTO_MKT < Algorithm
                 % selection
                 for t = 1:length(Tasks)
                     population{t} = [population{t}, offspring{t}];
-                    [~, rank] = sort([population{t}.factorial_costs]);
+                    [~, rank] = sort([population{t}.Obj]);
                     population{t} = population{t}(rank(1:sub_pop));
-                    [bestobj_now, idx] = min([population{t}.factorial_costs]);
-                    if bestobj_now < bestobj(t)
-                        bestobj(t) = bestobj_now;
-                        bestX{t} = population{t}(idx).rnvec;
+                    [bestObj_now, idx] = min([population{t}.Obj]);
+                    if bestObj_now < bestObj(t)
+                        bestObj(t) = bestObj_now;
+                        bestDec{t} = population{t}(idx).Dec;
                     end
                 end
-                convergence(:, generation) = bestobj;
+                convergeObj(:, generation) = bestObj;
             end
-            data.convergence = gen2eva(convergence);
-            data.bestX = uni2real(bestX, Tasks);
+            data.convergeObj = gen2eva(convergeObj);
+            data.bestDec = uni2real(bestDec, Tasks);
         end
 
         function [clusterModel, population] = LEKT(obj, population, task_num, difference)
@@ -110,18 +110,18 @@ classdef EMaTO_MKT < Algorithm
             K = obj.K; %cluster numbers
             knowledge_task_num = obj.ktn; %number of tasks involved in knowledge transfer
             TempPopulation = population;
-            dim = length(TempPopulation{1}(1).rnvec);
+            dim = length(TempPopulation{1}(1).Dec);
             for i = 1:task_num
                 clusterModel(i).Nich_mean = zeros(K, dim);
                 clusterModel(i).Nich_std = zeros(K, dim);
                 Subpop = TempPopulation{i};
-                SubpopRnvec = reshape([Subpop.rnvec], length(Subpop(1).rnvec), length(Subpop))';
+                SubpopRnvec = reshape([Subpop.Dec], length(Subpop(1).Dec), length(Subpop))';
                 temp_difference = difference(i, :);
                 [~, index] = sort(temp_difference);
                 %--------------Generate clusters by k-means--------------------------
                 for j = 1:knowledge_task_num
                     Selected_population = population{index(j)};
-                    Selected_matrix = reshape([Selected_population.rnvec], length(Selected_population(1).rnvec), length(Selected_population))';
+                    Selected_matrix = reshape([Selected_population.Dec], length(Selected_population(1).Dec), length(Selected_population))';
                     SubpopRnvec = [SubpopRnvec; Selected_matrix];
                 end
                 [idx, ~] = kmeans(SubpopRnvec, K, 'Distance', 'cityblock', 'MaxIter', 30);

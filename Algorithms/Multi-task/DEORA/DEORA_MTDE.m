@@ -53,8 +53,8 @@ classdef DEORA_MTDE < Algorithm
             rmp(logical(eye(size(rmp)))) = (1 - obj.rmp0);
 
             % initialize
-            [population, fnceval_calls, bestobj, bestX] = initializeMT(Individual, sub_pop, Tasks, max([Tasks.dims]) * ones(1, length(Tasks)));
-            convergence(:, 1) = bestobj;
+            [population, fnceval_calls, bestDec, bestObj] = initializeMT(Individual, sub_pop, Tasks, max([Tasks.Dim]) * ones(1, length(Tasks)));
+            convergeObj(:, 1) = bestObj;
 
             generation = 1;
             while fnceval_calls < eva_num
@@ -66,20 +66,20 @@ classdef DEORA_MTDE < Algorithm
                     fnceval_calls = fnceval_calls + calls;
 
                     % selection
-                    fit_old = [population{k}.factorial_costs];
-                    replace = [population{k}.factorial_costs] > [offspring.factorial_costs];
+                    fit_old = [population{k}.Obj];
+                    replace = [population{k}.Obj] > [offspring.Obj];
                     population{k}(replace) = offspring(replace);
-                    fit_new = [population{k}.factorial_costs];
+                    fit_new = [population{k}.Obj];
 
-                    [bestobj_now, idx] = min([population{k}.factorial_costs]);
-                    if bestobj_now < bestobj(k)
-                        bestobj(k) = bestobj_now;
-                        bestX{k} = population{k}(idx).rnvec;
+                    [bestObj_now, idx] = min([population{k}.Obj]);
+                    if bestObj_now < bestObj(k)
+                        bestObj(k) = bestObj_now;
+                        bestDec{k} = population{k}(idx).Dec;
                     end
 
                     % calculate the reward
                     R_p = max((fit_old - fit_new) ./ (fit_old), 0);
-                    R_b = max((bestobj(k) - min(fit_new)) / bestobj(k), 0);
+                    R_b = max((bestObj(k) - min(fit_new)) / bestObj(k), 0);
                     R = zeros(length(Tasks), 1);
                     for t = 1:length(Tasks)
                         if t == k %The main task
@@ -109,10 +109,10 @@ classdef DEORA_MTDE < Algorithm
                         end
                     end
                 end
-                convergence(:, generation) = bestobj;
+                convergeObj(:, generation) = bestObj;
             end
-            data.convergence = gen2eva(convergence);
-            data.bestX = uni2real(bestX, Tasks);
+            data.convergeObj = gen2eva(convergeObj);
+            data.bestDec = uni2real(bestDec, Tasks);
         end
     end
 end

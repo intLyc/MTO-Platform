@@ -57,13 +57,13 @@ classdef MFMP < Algorithm
             for t = 1:length(Tasks)
                 MF{t} = 0.5 .* ones(1, obj.H);
                 MCR{t} = 0.5 * ones(1, obj.H);
-                arc{t} = IndividualJADE.empty();
+                arc{t} = IndividualMFMP.empty();
             end
             reduce_flag = false;
 
             % initialize
-            [population, fnceval_calls, bestobj, bestX] = initializeMT(IndividualJADE, sub_pop, Tasks, max([Tasks.dims]) * ones(1, length(Tasks)));
-            convergence(:, 1) = bestobj;
+            [population, fnceval_calls, bestDec, bestObj] = initializeMT(IndividualMFMP, sub_pop, Tasks, max([Tasks.Dim]) * ones(1, length(Tasks)));
+            convergeObj(:, 1) = bestObj;
 
             generation = 1;
             while fnceval_calls < eva_num
@@ -99,7 +99,7 @@ classdef MFMP < Algorithm
                     fnceval_calls = fnceval_calls + calls;
 
                     % selection
-                    replace = [population{t}.factorial_costs] > [offspring.factorial_costs];
+                    replace = [population{t}.Obj] > [offspring.Obj];
 
                     % update archive
                     arc{t} = [arc{t}, population{t}(replace)];
@@ -110,7 +110,7 @@ classdef MFMP < Algorithm
                     % calculate SF SCR
                     SF = [population{t}(replace).F];
                     SCR = [population{t}(replace).CR];
-                    dif = abs([population{t}(replace).factorial_costs] - [offspring(replace).factorial_costs]);
+                    dif = abs([population{t}(replace).Obj] - [offspring(replace).Obj]);
                     dif = dif ./ sum(dif);
 
                     % update MF MCR
@@ -141,19 +141,19 @@ classdef MFMP < Algorithm
                     end
 
                     population{t}(replace) = offspring(replace);
-                    [bestobj_now, idx] = min([population{t}.factorial_costs]);
-                    if bestobj_now < bestobj(t)
-                        bestobj(t) = bestobj_now;
-                        bestX{t} = population{t}(idx).rnvec;
+                    [bestObj_now, idx] = min([population{t}.Obj]);
+                    if bestObj_now < bestObj(t)
+                        bestObj(t) = bestObj_now;
+                        bestDec{t} = population{t}(idx).Dec;
                     end
-                    convergence(t, generation) = bestobj(t);
+                    convergeObj(t, generation) = bestObj(t);
                 end
 
                 % population reduction
                 if ~reduce_flag && fnceval_calls >= eva_num * obj.alpha
                     pop_size = round(sub_pop / 2);
                     for t = 1:length(Tasks)
-                        [~, rank] = sort([population{t}.factorial_costs]);
+                        [~, rank] = sort([population{t}.Obj]);
 
                         % save to archive
                         arc{t} = [arc{t}, population{t}(rank(pop_size + 1:end))];
@@ -166,8 +166,8 @@ classdef MFMP < Algorithm
                     reduce_flag = true;
                 end
             end
-            data.convergence = gen2eva(convergence);
-            data.bestX = uni2real(bestX, Tasks);
+            data.convergeObj = gen2eva(convergeObj);
+            data.bestDec = uni2real(bestDec, Tasks);
         end
     end
 end

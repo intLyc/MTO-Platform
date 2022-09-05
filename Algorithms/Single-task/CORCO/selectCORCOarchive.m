@@ -9,11 +9,11 @@ function [archive] = selectCORCOarchive(archive, offspring, stage)
 
     if stage == 1
         % learning
-        replace = [archive.constraint_violation] > [offspring.constraint_violation];
+        replace = [archive.CV] > [offspring.CV];
     else
-        replace_cv = [archive.constraint_violation] > [offspring.constraint_violation];
-        equal_cv = [archive.constraint_violation] == [offspring.constraint_violation];
-        replace_obj = [archive.factorial_costs] > [offspring.factorial_costs];
+        replace_cv = [archive.CV] > [offspring.CV];
+        equal_cv = [archive.CV] == [offspring.CV];
+        replace_obj = [archive.Obj] > [offspring.Obj];
         replace = (equal_cv & replace_obj) | replace_cv;
     end
 

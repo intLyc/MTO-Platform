@@ -60,8 +60,8 @@ classdef EMEA < Algorithm
             op_list = split(obj.Op, '/');
 
             % initialize
-            [population, fnceval_calls, bestobj, bestX] = initializeMT(Individual, sub_pop, Tasks, [Tasks.dims]);
-            convergence(:, 1) = bestobj;
+            [population, fnceval_calls, bestDec, bestObj] = initializeMT(Individual, sub_pop, Tasks, [Tasks.Dim]);
+            convergeObj(:, 1) = bestObj;
 
             generation = 1;
             while fnceval_calls < eva_num
@@ -88,30 +88,30 @@ classdef EMEA < Algorithm
                             if t == tt
                                 continue;
                             end
-                            [~, curr_best_idx] = sort([population{t}.factorial_costs]);
+                            [~, curr_best_idx] = sort([population{t}.Obj]);
                             curr_pop = population{t}(curr_best_idx);
-                            curr_pop_rnvec = reshape([curr_pop.rnvec], length(curr_pop(1).rnvec), length(curr_pop))';
+                            curr_pop_dec = reshape([curr_pop.Dec], length(curr_pop(1).Dec), length(curr_pop))';
 
-                            [~, his_best_idx] = sort([population{tt}.factorial_costs]);
+                            [~, his_best_idx] = sort([population{tt}.Obj]);
                             his_pop = population{tt}(his_best_idx);
-                            his_pop_rnvec = reshape([his_pop.rnvec], length(his_pop(1).rnvec), length(his_pop))';
-                            his_best_rnvec = his_pop_rnvec(1:inject_num, :);
+                            his_pop_dec = reshape([his_pop.Dec], length(his_pop(1).Dec), length(his_pop))';
+                            his_best_dec = his_pop_dec(1:inject_num, :);
 
                             % map to original
-                            curr_pop_rnvec = (Tasks(t).Ub - Tasks(t).Lb) .* curr_pop_rnvec + Tasks(t).Lb;
-                            his_pop_rnvec = (Tasks(tt).Ub - Tasks(tt).Lb) .* his_pop_rnvec + Tasks(tt).Lb;
-                            his_best_rnvec = (Tasks(tt).Ub - Tasks(tt).Lb) .* his_best_rnvec + Tasks(tt).Lb;
+                            curr_pop_dec = (Tasks(t).Ub - Tasks(t).Lb) .* curr_pop_dec + Tasks(t).Lb;
+                            his_pop_dec = (Tasks(tt).Ub - Tasks(tt).Lb) .* his_pop_dec + Tasks(tt).Lb;
+                            his_best_dec = (Tasks(tt).Ub - Tasks(tt).Lb) .* his_best_dec + Tasks(tt).Lb;
 
-                            inject = mDA(curr_pop_rnvec, his_pop_rnvec, his_best_rnvec);
+                            inject = mDA(curr_pop_dec, his_pop_dec, his_best_dec);
 
                             % mat to [0,1]
                             inject = (inject - Tasks(t).Lb) ./ (Tasks(t).Ub - Tasks(t).Lb);
 
                             for i = 1:size(inject, 1)
                                 c = Individual();
-                                c.rnvec = inject(i, :);
-                                c.rnvec(c.rnvec > 1) = 1;
-                                c.rnvec(c.rnvec < 0) = 0;
+                                c.Dec = inject(i, :);
+                                c.Dec(c.Dec > 1) = 1;
+                                c.Dec(c.Dec < 0) = 0;
                                 inject_pop = [inject_pop, c];
                             end
                         end
@@ -122,27 +122,27 @@ classdef EMEA < Algorithm
                     [offspring, calls] = evaluate(offspring, Tasks(t), 1);
                     fnceval_calls = fnceval_calls + calls;
 
-                    [bestobj_offspring, idx] = min([offspring.factorial_costs]);
-                    if bestobj_offspring < bestobj(t)
-                        bestobj(t) = bestobj_offspring;
-                        bestX{t} = offspring(idx).rnvec;
+                    [bestObj_offspring, idx] = min([offspring.Obj]);
+                    if bestObj_offspring < bestObj(t)
+                        bestObj(t) = bestObj_offspring;
+                        bestDec{t} = offspring(idx).Dec;
                     end
-                    convergence(t, generation) = bestobj(t);
+                    convergeObj(t, generation) = bestObj(t);
 
                     % selection
                     switch op
                         case 'GA'
                             population{t} = [population{t}, offspring];
-                            [~, rank] = sort([population{t}.factorial_costs]);
+                            [~, rank] = sort([population{t}.Obj]);
                             population{t} = population{t}(rank(1:sub_pop));
                         case 'DE'
-                            replace = [population{t}.factorial_costs] > [offspring.factorial_costs];
+                            replace = [population{t}.Obj] > [offspring.Obj];
                             population{t}(replace) = offspring(replace);
                     end
                 end
             end
-            data.convergence = gen2eva(convergence);
-            data.bestX = uni2real(bestX, Tasks);
+            data.convergeObj = gen2eva(convergeObj);
+            data.bestDec = uni2real(bestDec, Tasks);
         end
     end
 end

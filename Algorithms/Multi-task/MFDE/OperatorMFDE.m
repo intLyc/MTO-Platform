@@ -12,8 +12,8 @@ classdef OperatorMFDE < Operator
             Individual_class = class(population(1));
             for i = 1:length(population)
                 offspring(i) = feval(Individual_class);
-                offspring(i).factorial_costs = inf(1, length(Tasks));
-                offspring(i).constraint_violation = inf(1, length(Tasks));
+                offspring(i).Obj = inf(1, length(Tasks));
+                offspring(i).CV = inf(1, length(Tasks));
 
                 x1 = randi(length(population));
                 while x1 == i || population(x1).skill_factor ~= population(i).skill_factor
@@ -44,8 +44,8 @@ classdef OperatorMFDE < Operator
                 offspring(i) = OperatorMFDE.mutate(offspring(i), population(x1), population(x2), population(x3), F);
                 offspring(i) = OperatorMFDE.crossover(offspring(i), population(i), CR);
 
-                offspring(i).rnvec(offspring(i).rnvec > 1) = 1;
-                offspring(i).rnvec(offspring(i).rnvec < 0) = 0;
+                offspring(i).Dec(offspring(i).Dec > 1) = 1;
+                offspring(i).Dec(offspring(i).Dec < 0) = 0;
             end
 
             % Evaluation
@@ -61,13 +61,13 @@ classdef OperatorMFDE < Operator
         end
 
         function object = mutate(object, x1, x2, x3, F)
-            object.rnvec = x1.rnvec + F * (x2.rnvec - x3.rnvec);
+            object.Dec = x1.Dec + F * (x2.Dec - x3.Dec);
         end
 
         function object = crossover(object, x, CR)
-            replace = rand(1, length(object.rnvec)) > CR;
-            replace(randi(length(object.rnvec))) = false;
-            object.rnvec(replace) = x.rnvec(replace);
+            replace = rand(1, length(object.Dec)) > CR;
+            replace(randi(length(object.Dec))) = false;
+            object.Dec(replace) = x.Dec(replace);
         end
     end
 end

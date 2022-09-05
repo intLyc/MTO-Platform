@@ -1,4 +1,4 @@
-function [obj, cv] = CEC10_CSO_Func(x, problem)
+function [obj, con] = CEC10_CSO_Func(x, problem)
 
     [ps, D] = size(x);
     g = zeros(ps, 1);
@@ -395,5 +395,5 @@ function [obj, cv] = CEC10_CSO_Func(x, problem)
     obj = f;
     g(g < 0) = 0;
     h(h < 0) = 0;
-    cv = [g, h];
+    con = [g, h];
 end

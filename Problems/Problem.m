@@ -17,7 +17,7 @@ classdef Problem < handle
         sub_eva % num of max evaluation for each task
 
         % special parameter
-        dims = 50 % for CMT, CEC10-CSO, CEC17-CSO
+        Dim = 50 % for CMT, CEC10-CSO, CEC17-CSO
         task_num = 50 % for WCCI20_MaTSO
     end
 

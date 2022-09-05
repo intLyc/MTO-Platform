@@ -1,4 +1,4 @@
-function [population, calls, bestobj, bestX] = initialize(Individual_class, pop_size, Task, dim, varargin)
+function [population, calls, bestDec, bestObj, bestCV] = initialize(Individual_class, pop_size, Task, dim, varargin)
     %% Initialize and evaluate the population
     % Input: Individual_class, pop_size, Task, dim
     % Output: population, calls (function calls number)
@@ -21,14 +21,14 @@ function [population, calls, bestobj, bestX] = initialize(Individual_class, pop_
         population(i) = Individual_class();
         switch gene_type
             case 'unified'
-                population(i).rnvec = rand(1, dim);
+                population(i).Dec = rand(1, dim);
             case 'real'
-                population(i).rnvec = (Task.Ub - Task.Lb) .* rand(1, dim) + Task.Lb;
+                population(i).Dec = (Task.Ub - Task.Lb) .* rand(1, dim) + Task.Lb;
         end
 
     end
     [population, calls] = evaluate(population, Task, 1, gene_type);
 
-    [bestobj, idx] = min([population.factorial_costs]);
-    bestX = population(idx).rnvec;
+    [bestObj, bestCV, idx] = min_FP([population.Obj], [population.CV]);
+    bestDec = population(idx).Dec;
 end

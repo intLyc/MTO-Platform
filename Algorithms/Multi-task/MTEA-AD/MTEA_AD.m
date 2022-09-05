@@ -46,8 +46,8 @@ classdef MTEA_AD < Algorithm
             epsilon = zeros(1, length(Tasks)); % Parameter of the anomaly detection model
 
             % initialize
-            [population, fnceval_calls, bestobj, bestX] = initializeMT(Individual, sub_pop, Tasks, [Tasks.dims]);
-            convergence(:, 1) = bestobj;
+            [population, fnceval_calls, bestDec, bestObj] = initializeMT(Individual, sub_pop, Tasks, [Tasks.Dim]);
+            convergeObj(:, 1) = bestObj;
 
             generation = 1;
             while fnceval_calls < eva_num
@@ -64,14 +64,14 @@ classdef MTEA_AD < Algorithm
                         else
                             NL = epsilon(t);
                         end
-                        curr_pop = reshape([offspring.rnvec], length(offspring(1).rnvec), length(offspring))';
-                        curr_pop = curr_pop(:, 1:Tasks(t).dims);
+                        curr_pop = reshape([offspring.Dec], length(offspring(1).Dec), length(offspring))';
+                        curr_pop = curr_pop(:, 1:Tasks(t).Dim);
                         his_pop = [];
                         for tt = 1:length(Tasks)
                             if tt ~= t
-                                his_pop_tt = reshape([population{tt}.rnvec], length(population{tt}(1).rnvec), length(population{tt}))';
-                                his_pop_tt = [his_pop_tt, rand(size(his_pop_tt, 1), max([Tasks.dims]) - Tasks(tt).dims)];
-                                his_pop = [his_pop; his_pop_tt(:, 1:Tasks(t).dims)];
+                                his_pop_tt = reshape([population{tt}.Dec], length(population{tt}(1).Dec), length(population{tt}))';
+                                his_pop_tt = [his_pop_tt, rand(size(his_pop_tt, 1), max([Tasks.Dim]) - Tasks(tt).Dim)];
+                                his_pop = [his_pop; his_pop_tt(:, 1:Tasks(t).Dim)];
                             end
                         end
 
@@ -80,9 +80,9 @@ classdef MTEA_AD < Algorithm
                         transfer_pop = Individual.empty();
                         for i = 1:size(tfsol, 1)
                             c = Individual();
-                            c.rnvec = tfsol(i, :);
-                            c.rnvec(c.rnvec > 1) = 1;
-                            c.rnvec(c.rnvec < 0) = 0;
+                            c.Dec = tfsol(i, :);
+                            c.Dec(c.Dec > 1) = 1;
+                            c.Dec(c.Dec < 0) = 0;
                             transfer_pop = [transfer_pop, c];
                         end
 
@@ -93,7 +93,7 @@ classdef MTEA_AD < Algorithm
                         fnceval_calls = fnceval_calls + calls;
 
                         population{t} = [population{t}, offspring, transfer_pop];
-                        [~, rank] = sort([population{t}.factorial_costs]);
+                        [~, rank] = sort([population{t}.Obj]);
                         population{t} = population{t}(rank(1:sub_pop));
 
                         succ_num = sum(rank(1:length(population{t})) > length(population{t}) + length(offspring));
@@ -105,20 +105,20 @@ classdef MTEA_AD < Algorithm
                         [offspring, calls] = evaluate(offspring, Tasks(t), 1);
                         fnceval_calls = fnceval_calls + calls;
                         population{t} = [population{t}, offspring];
-                        [~, rank] = sort([population{t}.factorial_costs]);
+                        [~, rank] = sort([population{t}.Obj]);
                         population{t} = population{t}(rank(1:sub_pop));
                     end
 
-                    [bestobj_temp, idx] = min([population{t}.factorial_costs]);
-                    if bestobj_temp < bestobj(t)
-                        bestobj(t) = bestobj_temp;
-                        bestX{t} = population{t}(idx).rnvec;
+                    [bestObj_temp, idx] = min([population{t}.Obj]);
+                    if bestObj_temp < bestObj(t)
+                        bestObj(t) = bestObj_temp;
+                        bestDec{t} = population{t}(idx).Dec;
                     end
-                    convergence(t, generation) = bestobj(t);
+                    convergeObj(t, generation) = bestObj(t);
                 end
             end
-            data.convergence = gen2eva(convergence);
-            data.bestX = uni2real(bestX, Tasks);
+            data.convergeObj = gen2eva(convergeObj);
+            data.bestDec = uni2real(bestDec, Tasks);
         end
     end
 end

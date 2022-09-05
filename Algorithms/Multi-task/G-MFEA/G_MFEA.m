@@ -56,36 +56,36 @@ classdef G_MFEA < Algorithm
             eva_num = sub_eva * length(Tasks);
 
             % initialize
-            [population, fnceval_calls, bestobj, bestX] = initializeMF(IndividualG, pop_size, Tasks, max([Tasks.dims]));
-            convergence(:, 1) = bestobj;
+            [population, fnceval_calls, bestDec, bestObj] = initializeMF(IndividualG, pop_size, Tasks, max([Tasks.Dim]));
+            convergeObj(:, 1) = bestObj;
 
-            midnum = 0.5 * ones(1, max([Tasks.dims]));
+            midnum = 0.5 * ones(1, max([Tasks.Dim]));
             alpha = 0;
             meanT = {};
             transfer = {};
             inorder = {};
             for t = 1:length(Tasks)
-                meanT{t} = zeros(1, max([Tasks.dims]));
+                meanT{t} = zeros(1, max([Tasks.Dim]));
             end
             for t = 1:length(Tasks)
                 population_t = population([population.skill_factor] == t);
-                pop_rnvec{t} = reshape([population_t.rnvec], length(population_t(1).rnvec), length(population_t))';
+                pop_Dec{t} = reshape([population_t.Dec], length(population_t(1).Dec), length(population_t))';
                 pop_fit{t} = [population_t.scalar_fitness];
             end
             for t = 1:length(Tasks) - 1
                 for k = (t + 1):length(Tasks)
-                    inorder{t, k} = randperm(max([Tasks.dims]));
-                    if Tasks(t).dims > Tasks(k).dims
+                    inorder{t, k} = randperm(max([Tasks.Dim]));
+                    if Tasks(t).Dim > Tasks(k).Dim
                         p1 = t; p2 = k;
                     else
                         p1 = k; p2 = t;
                     end
-                    index = randi(size(pop_rnvec{p1}, 1), [size(pop_rnvec{p2}, 1), 1]);
-                    intpop = pop_rnvec{p1}(index, :);
-                    intpop(:, inorder{t, k}(1:Tasks(p2).dims)) = pop_rnvec{p2}(:, 1:Tasks(p2).dims);
+                    index = randi(size(pop_Dec{p1}, 1), [size(pop_Dec{p2}, 1), 1]);
+                    intpop = pop_Dec{p1}(index, :);
+                    intpop(:, inorder{t, k}(1:Tasks(p2).Dim)) = pop_Dec{p2}(:, 1:Tasks(p2).Dim);
                     idx = 1;
                     for i = find([population.skill_factor] == p2)
-                        population(i).rnvec = intpop(idx, :);
+                        population(i).Dec = intpop(idx, :);
                         idx = idx + 1;
                     end
                     transfer{t, k} = alpha * meanT{p1};
@@ -104,32 +104,32 @@ classdef G_MFEA < Algorithm
                 for t = 1:length(Tasks) - 1
                     for k = (t + 1):length(Tasks)
                         % p2.dim <= p1.dim
-                        if Tasks(t).dims > Tasks(k).dims
+                        if Tasks(t).Dim > Tasks(k).Dim
                             p1 = t; p2 = k;
                         else
                             p1 = k; p2 = t;
                         end
                         for i = 1:length(population)
                             if population(i).skill_factor == p2
-                                population(i).rnvec(1:Tasks(p2).dims) = population(i).rnvec(inorder{t, k}(1:Tasks(p2).dims));
+                                population(i).Dec(1:Tasks(p2).Dim) = population(i).Dec(inorder{t, k}(1:Tasks(p2).Dim));
                             end
                             if offspring(i).skill_factor == p2
-                                offspring(i).rnvec(1:Tasks(p2).dims) = offspring(i).rnvec(inorder{t, k}(1:Tasks(p2).dims));
+                                offspring(i).Dec(1:Tasks(p2).Dim) = offspring(i).Dec(inorder{t, k}(1:Tasks(p2).Dim));
                             end
                         end
-                        meanT{p2}(1:Tasks(p2).dims) = meanT{p2}(inorder{t, k}(1:Tasks(p2).dims));
+                        meanT{p2}(1:Tasks(p2).Dim) = meanT{p2}(inorder{t, k}(1:Tasks(p2).Dim));
                     end
                 end
 
                 % selection
-                [population, bestobj, bestX] = selectMF(population, offspring, Tasks, pop_size, bestobj, bestX);
-                convergence(:, generation) = bestobj;
+                [population, bestDec, bestObj] = selectMF(population, offspring, Tasks, pop_size, bestDec, bestObj);
+                convergeObj(:, generation) = bestObj;
 
-                pop_rnvec = {};
+                pop_Dec = {};
                 pop_fit = {};
                 for t = 1:length(Tasks)
                     population_t = population([population.skill_factor] == t);
-                    pop_rnvec{t} = reshape([population_t.rnvec], length(population_t(1).rnvec), length(population_t))';
+                    pop_Dec{t} = reshape([population_t.Dec], length(population_t(1).Dec), length(population_t))';
                     pop_fit{t} = [population_t.scalar_fitness];
                 end
 
@@ -137,36 +137,36 @@ classdef G_MFEA < Algorithm
                     alpha = (fnceval_calls / eva_num)^2;
                     for t = 1:length(Tasks)
                         [~, y] = sort(-pop_fit{t});
-                        meanT{t} = mean(pop_rnvec{t}(y(1:round(obj.top * pop_size / length(Tasks))), :));
+                        meanT{t} = mean(pop_Dec{t}(y(1:round(obj.top * pop_size / length(Tasks))), :));
                     end
                 end
 
                 for t = 1:length(Tasks) - 1
                     for k = (t + 1):length(Tasks)
-                        inorder{t, k} = randperm(max([Tasks.dims]));
-                        if Tasks(t).dims > Tasks(k).dims
+                        inorder{t, k} = randperm(max([Tasks.Dim]));
+                        if Tasks(t).Dim > Tasks(k).Dim
                             % p2.dim <= p1.dim
                             p1 = t; p2 = k;
                         else
                             p1 = k; p2 = t;
                         end
-                        index = randi(size(pop_rnvec{p1}, 1), [size(pop_rnvec{p2}, 1), 1]);
-                        intpop = pop_rnvec{p1}(index, :);
-                        intpop(:, inorder{t, k}(1:Tasks(p2).dims)) = pop_rnvec{p2}(:, 1:Tasks(p2).dims);
+                        index = randi(size(pop_Dec{p1}, 1), [size(pop_Dec{p2}, 1), 1]);
+                        intpop = pop_Dec{p1}(index, :);
+                        intpop(:, inorder{t, k}(1:Tasks(p2).Dim)) = pop_Dec{p2}(:, 1:Tasks(p2).Dim);
                         idx = 1;
                         for i = find([population.skill_factor] == p2)
-                            population(i).rnvec = intpop(idx, :);
+                            population(i).Dec = intpop(idx, :);
                             idx = idx + 1;
                         end
                         intmean = meanT{p1};
-                        intmean(inorder{t, k}(1:Tasks(p2).dims)) = meanT{p2}(1:Tasks(p2).dims);
+                        intmean(inorder{t, k}(1:Tasks(p2).Dim)) = meanT{p2}(1:Tasks(p2).Dim);
                         transfer{p1, p2} = alpha * (midnum - meanT{p1});
                         transfer{p2, p1} = alpha * (midnum - intmean);
                     end
                 end
             end
-            data.convergence = gen2eva(convergence);
-            data.bestX = uni2real(bestX, Tasks);
+            data.convergeObj = gen2eva(convergeObj);
+            data.bestDec = uni2real(bestDec, Tasks);
         end
     end
 end

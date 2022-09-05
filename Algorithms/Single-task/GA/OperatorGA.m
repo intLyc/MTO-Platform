@@ -17,20 +17,20 @@ classdef OperatorGA < Operator
                 p2 = indorder(i + fix(length(population) / 2));
                 offspring(count) = feval(Individual_class);
                 offspring(count + 1) = feval(Individual_class);
-                u = rand(1, length(population(1).rnvec));
-                cf = zeros(1, length(population(1).rnvec));
+                u = rand(1, length(population(1).Dec));
+                cf = zeros(1, length(population(1).Dec));
                 cf(u <= 0.5) = (2 * u(u <= 0.5)).^(1 / (mu + 1));
                 cf(u > 0.5) = (2 * (1 - u(u > 0.5))).^(-1 / (mu + 1));
 
                 offspring(count) = OperatorGA.crossover(offspring(count), population(p1), population(p2), cf);
                 offspring(count + 1) = OperatorGA.crossover(offspring(count + 1), population(p2), population(p1), cf);
 
-                offspring(count) = OperatorGA.mutate(offspring(count), length(population(1).rnvec), mum);
-                offspring(count + 1) = OperatorGA.mutate(offspring(count + 1), length(population(1).rnvec), mum);
+                offspring(count) = OperatorGA.mutate(offspring(count), length(population(1).Dec), mum);
+                offspring(count + 1) = OperatorGA.mutate(offspring(count + 1), length(population(1).Dec), mum);
 
                 for x = count:count + 1
-                    offspring(x).rnvec(offspring(x).rnvec > 1) = 1;
-                    offspring(x).rnvec(offspring(x).rnvec < 0) = 0;
+                    offspring(x).Dec(offspring(x).Dec > 1) = 1;
+                    offspring(x).Dec(offspring(x).Dec < 0) = 0;
                 end
                 count = count + 2;
             end
@@ -39,25 +39,25 @@ classdef OperatorGA < Operator
 
         function object = crossover(object, p1, p2, cf)
             % SBX - Simulated binary crossover
-            object.rnvec = 0.5 * ((1 + cf) .* p1.rnvec + (1 - cf) .* p2.rnvec);
+            object.Dec = 0.5 * ((1 + cf) .* p1.Dec + (1 - cf) .* p2.Dec);
         end
 
         function object = mutate(object, dim, mum)
             % Polynomial mutation
-            rnvec_temp = object.rnvec;
+            Dec_temp = object.Dec;
             for i = 1:dim
                 if rand(1) < 1 / dim
                     u = rand(1);
                     if u <= 0.5
                         del = (2 * u)^(1 / (1 + mum)) - 1;
-                        rnvec_temp(i) = object.rnvec(i) + del * (object.rnvec(i));
+                        Dec_temp(i) = object.Dec(i) + del * (object.Dec(i));
                     else
                         del = 1 - (2 * (1 - u))^(1 / (1 + mum));
-                        rnvec_temp(i) = object.rnvec(i) + del * (1 - object.rnvec(i));
+                        Dec_temp(i) = object.Dec(i) + del * (1 - object.Dec(i));
                     end
                 end
             end
-            object.rnvec = rnvec_temp;
+            object.Dec = Dec_temp;
         end
     end
 end

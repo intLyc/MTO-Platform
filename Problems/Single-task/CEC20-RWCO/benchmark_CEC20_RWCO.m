@@ -170,8 +170,8 @@ function Task = benchmark_CEC20_RWCO(index)
     xmax57 = 10 .* ones(1, D(index));
 
     %% Set Task
-    Task.dims = D(index); % dimensionality of Task 1
+    Task.Dim = D(index); % dimensionality of Task 1
     eval(['Task.Lb=xmin', int2str(index), ';'])
     eval(['Task.Ub=xmax', int2str(index), ';'])
-    Task.fnc = @(x)CEC20_RWCO_Func(x, index, GBPQL);
+    Task.Fnc = @(x)CEC20_RWCO_Func(x, index, GBPQL);
 end

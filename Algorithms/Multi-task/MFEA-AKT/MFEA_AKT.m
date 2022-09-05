@@ -50,8 +50,8 @@ classdef MFEA_AKT < Algorithm
             eva_num = sub_eva * length(Tasks);
 
             % initialize
-            [population, fnceval_calls, bestobj, bestX] = initializeMF(IndividualAKT, pop_size, Tasks, max(Tasks.dims));
-            convergence(:, 1) = bestobj;
+            [population, fnceval_calls, bestDec, bestObj] = initializeMF(IndividualAKT, pop_size, Tasks, max(Tasks.Dim));
+            convergeObj(:, 1) = bestObj;
             % initialize akt
             cfb_record = [];
             for i = 1:pop_size
@@ -72,8 +72,8 @@ classdef MFEA_AKT < Algorithm
                 imp_num = zeros(1, 6);
                 for i = 1:length(offspring)
                     if offspring(i).parNum ~= 0
-                        cfc = offspring(i).factorial_costs(offspring(i).skill_factor);
-                        pfc = population(offspring(i).parNum).factorial_costs(population(offspring(i).parNum).skill_factor);
+                        cfc = offspring(i).Obj(offspring(i).skill_factor);
+                        pfc = population(offspring(i).parNum).Obj(population(offspring(i).parNum).skill_factor);
                         if (pfc - cfc) / pfc > imp_num(offspring(i).cx_factor)
                             imp_num(offspring(i).cx_factor) = (pfc - cfc) / pfc;
                         end
@@ -99,8 +99,8 @@ classdef MFEA_AKT < Algorithm
                 % adaptive cx_factor
                 for i = 1:length(offspring)
                     if offspring(i).parNum ~= 0
-                        cfc = offspring(i).factorial_costs(offspring(i).skill_factor);
-                        pfc = population(offspring(i).parNum).factorial_costs(population(offspring(i).parNum).skill_factor);
+                        cfc = offspring(i).Obj(offspring(i).skill_factor);
+                        pfc = population(offspring(i).parNum).Obj(population(offspring(i).parNum).skill_factor);
                         if (pfc - cfc) / pfc < 0
                             offspring(i).cx_factor = max_idx;
                         end
@@ -111,11 +111,11 @@ classdef MFEA_AKT < Algorithm
                 end
 
                 % selection
-                [population, bestobj, bestX] = selectMF(population, offspring, Tasks, pop_size, bestobj, bestX);
-                convergence(:, generation) = bestobj;
+                [population, bestDec, bestObj] = selectMF(population, offspring, Tasks, pop_size, bestDec, bestObj);
+                convergeObj(:, generation) = bestObj;
             end
-            data.convergence = gen2eva(convergence);
-            data.bestX = uni2real(bestX, Tasks);
+            data.convergeObj = gen2eva(convergeObj);
+            data.bestDec = uni2real(bestDec, Tasks);
         end
     end
 end

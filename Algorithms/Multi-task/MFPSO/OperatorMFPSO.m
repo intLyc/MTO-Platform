@@ -39,28 +39,28 @@ classdef OperatorMFPSO < Operator
                 end
 
                 object.velocity = w * object.velocity + ...
-                    c1 * rand(1, len) .* (object.pbest - object.rnvec) + ...
-                    c2 * rand(1, len) .* (gbest{object.skill_factor} - object.rnvec) + ...
-                    c3 * rand(1, len) .* (gbest{other_task} - object.rnvec);
+                    c1 * rand(1, len) .* (object.pbest - object.Dec) + ...
+                    c2 * rand(1, len) .* (gbest{object.skill_factor} - object.Dec) + ...
+                    c3 * rand(1, len) .* (gbest{other_task} - object.Dec);
             else
                 object.velocity = w * object.velocity + ...
-                    c1 * rand(1, len) .* (object.pbest - object.rnvec) + ...
-                    c2 * rand(1, len) .* (gbest{object.skill_factor} - object.rnvec);
+                    c1 * rand(1, len) .* (object.pbest - object.Dec) + ...
+                    c2 * rand(1, len) .* (gbest{object.skill_factor} - object.Dec);
             end
         end
 
         function object = positionUpdate(object)
             % Position update
-            object.rnvec = object.rnvec + object.velocity;
-            object.rnvec(object.rnvec > 1) = 1;
-            object.rnvec(object.rnvec < 0) = 0;
+            object.Dec = object.Dec + object.velocity;
+            object.Dec(object.Dec > 1) = 1;
+            object.Dec(object.Dec < 0) = 0;
         end
 
         function object = pbestUpdate(object)
             % pbest update
-            if object.factorial_costs(object.skill_factor) < object.pbestFitness
-                object.pbestFitness = object.factorial_costs(object.skill_factor);
-                object.pbest = object.rnvec;
+            if object.Obj(object.skill_factor) < object.pbestFitness
+                object.pbestFitness = object.Obj(object.skill_factor);
+                object.pbest = object.Dec;
             end
         end
     end

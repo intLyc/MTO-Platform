@@ -1,4 +1,4 @@
-function [obj, cv] = Rastrigin4(var, M, opt, opt_con)
+function [obj, con] = Rastrigin4(var, M, opt, opt_con)
     % Rastrigin function
     %   - var: design variable vector
     %   - M: rotation matrix
@@ -19,5 +19,5 @@ function [obj, cv] = Rastrigin4(var, M, opt, opt_con)
 
     h = abs(h) - 1e-4;
     h(h < 0) = 0;
-    cv = h;
+    con = h;
 end

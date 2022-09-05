@@ -48,8 +48,8 @@ classdef LDA_MFEA < Algorithm
             eva_num = sub_eva * length(Tasks);
 
             % initialize
-            [population, fnceval_calls, bestobj, bestX] = initializeMFone(IndividualMF, pop_size, Tasks, max([Tasks.dims]));
-            convergence(:, 1) = bestobj;
+            [population, fnceval_calls, bestDec, bestObj] = initializeMFone(IndividualMF, pop_size, Tasks, max([Tasks.Dim]));
+            convergeObj(:, 1) = bestObj;
 
             % initialize lda
             for t = 1:length(Tasks)
@@ -67,8 +67,8 @@ classdef LDA_MFEA < Algorithm
                     f(t).cost = [];
                 end
                 for i = 1:length(population)
-                    subpops(population(i).skill_factor).data = [subpops(population(i).skill_factor).data; population(i).rnvec];
-                    f(population(i).skill_factor).cost = [f(population(i).skill_factor).cost; population(i).factorial_costs(population(i).skill_factor)];
+                    subpops(population(i).skill_factor).data = [subpops(population(i).skill_factor).data; population(i).Dec];
+                    f(population(i).skill_factor).cost = [f(population(i).skill_factor).cost; population(i).Obj(population(i).skill_factor)];
                 end
 
                 for t = 1:length(Tasks)
@@ -77,9 +77,9 @@ classdef LDA_MFEA < Algorithm
                     end
                     % accumulate all historical points of t  and sort according to factorial cost
                     temp = [P{t}; [subpops(t).data, f(t).cost]];
-                    temp = sortrows(temp, max([Tasks.dims]) + 1);
+                    temp = sortrows(temp, max([Tasks.Dim]) + 1);
                     P{t} = temp;
-                    M{t} = temp(:, 1:end - 1); %extract chromosomes except the last column(factorial_costs), store into matrix
+                    M{t} = temp(:, 1:end - 1); %extract chromosomes except the last column(Obj), store into matrix
                 end
 
                 % generation
@@ -87,11 +87,11 @@ classdef LDA_MFEA < Algorithm
                 fnceval_calls = fnceval_calls + calls;
 
                 % selection
-                [population, bestobj, bestX] = selectMF(population, offspring, Tasks, pop_size, bestobj, bestX);
-                convergence(:, generation) = bestobj;
+                [population, bestDec, bestObj] = selectMF(population, offspring, Tasks, pop_size, bestDec, bestObj);
+                convergeObj(:, generation) = bestObj;
             end
-            data.convergence = gen2eva(convergence);
-            data.bestX = uni2real(bestX, Tasks);
+            data.convergeObj = gen2eva(convergeObj);
+            data.bestDec = uni2real(bestDec, Tasks);
         end
     end
 end

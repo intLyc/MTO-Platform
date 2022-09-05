@@ -58,8 +58,8 @@ classdef SREMTO < Algorithm
             fnceval_calls = 0;
             for i = 1:pop_size
                 population(i) = IndividualSRE();
-                population(i).rnvec = rand(1, max([Tasks.dims]));
-                population(i).factorial_costs = inf(1, length(Tasks));
+                population(i).Dec = rand(1, max([Tasks.Dim]));
+                population(i).Obj = inf(1, length(Tasks));
             end
             for t = 1:length(Tasks)
                 [population, cal] = evaluate(population, Tasks(t), t);
@@ -68,9 +68,9 @@ classdef SREMTO < Algorithm
 
             for t = 1:length(Tasks)
                 for i = 1:pop_size
-                    factorial_costs(i) = population(i).factorial_costs(t);
+                    Obj(i) = population(i).Obj(t);
                 end
-                [~, rank] = sort(factorial_costs);
+                [~, rank] = sort(Obj);
                 for i = 1:pop_size
                     population(rank(i)).factorial_ranks(t) = i;
                     % get ability vector
@@ -80,10 +80,10 @@ classdef SREMTO < Algorithm
                         population(rank(i)).ability_vector(t) = a2 * population(rank(i)).factorial_ranks(t) + b2;
                     end
                 end
-                bestobj(t) = population(rank(1)).factorial_costs(t);
-                bestX{t} = population(rank(1)).rnvec;
+                bestObj(t) = population(rank(1)).Obj(t);
+                bestDec{t} = population(rank(1)).Dec;
             end
-            convergence(:, 1) = bestobj;
+            convergeObj(:, 1) = bestObj;
 
             generation = 1;
             while fnceval_calls < eva_num
@@ -106,18 +106,18 @@ classdef SREMTO < Algorithm
 
                 % selection
                 population = IndividualSRE.empty();
-                factorial_costs = [];
+                Obj = [];
                 for t = 1:length(Tasks)
                     for i = 1:length(int_population)
-                        factorial_costs(i) = int_population(i).factorial_costs(t);
+                        Obj(i) = int_population(i).Obj(t);
                     end
-                    [bestobj_offspring, idx] = min(factorial_costs);
-                    if bestobj_offspring < bestobj(t)
-                        bestobj(t) = bestobj_offspring;
-                        bestX{t} = int_population(idx).rnvec;
+                    [bestObj_offspring, idx] = min(Obj);
+                    if bestObj_offspring < bestObj(t)
+                        bestObj(t) = bestObj_offspring;
+                        bestDec{t} = int_population(idx).Dec;
                     end
 
-                    [~, rank] = sort(factorial_costs);
+                    [~, rank] = sort(Obj);
                     for i = 1:length(int_population)
                         int_population(rank(i)).factorial_ranks(t) = i;
                     end
@@ -144,10 +144,10 @@ classdef SREMTO < Algorithm
                         end
                     end
                 end
-                convergence(:, generation) = bestobj;
+                convergeObj(:, generation) = bestObj;
             end
-            data.convergence = gen2eva(convergence);
-            data.bestX = uni2real(bestX, Tasks);
+            data.convergeObj = gen2eva(convergeObj);
+            data.bestDec = uni2real(bestDec, Tasks);
         end
     end
 end

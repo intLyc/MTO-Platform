@@ -12,7 +12,7 @@ classdef OperatorLSHADE < Operator
             Individual_class = class(population(1));
 
             % get top 100p% individuals
-            [~, rank] = sort([population.factorial_costs]);
+            [~, rank] = sort([population.Obj]);
             pop_pbest = rank(1:max(round(p * length(population)), 1));
 
             for i = 1:length(population)
@@ -31,22 +31,22 @@ classdef OperatorLSHADE < Operator
                 offspring(i) = OperatorLSHADE.mutate(offspring(i), population(i), population(pbest), population(x1), union(x2));
                 offspring(i) = OperatorLSHADE.crossover(offspring(i), population(i));
 
-                vio_low = find(offspring(i).rnvec < 0);
-                offspring(i).rnvec(vio_low) = (population(i).rnvec(vio_low) + 0) / 2;
-                vio_up = find(offspring(i).rnvec > 1);
-                offspring(i).rnvec(vio_up) = (population(i).rnvec(vio_up) + 1) / 2;
+                vio_low = find(offspring(i).Dec < 0);
+                offspring(i).Dec(vio_low) = (population(i).Dec(vio_low) + 0) / 2;
+                vio_up = find(offspring(i).Dec > 1);
+                offspring(i).Dec(vio_up) = (population(i).Dec(vio_up) + 1) / 2;
             end
             [offspring, calls] = evaluate(offspring, Task, 1);
         end
 
         function object = mutate(object, current, pbest, x1, x2)
-            object.rnvec = current.rnvec + current.F * (pbest.rnvec - current.rnvec) + current.F * (x1.rnvec - x2.rnvec);
+            object.Dec = current.Dec + current.F * (pbest.Dec - current.Dec) + current.F * (x1.Dec - x2.Dec);
         end
 
         function object = crossover(object, current)
-            replace = rand(1, length(object.rnvec)) > current.CR;
-            replace(randi(length(object.rnvec))) = false;
-            object.rnvec(replace) = current.rnvec(replace);
+            replace = rand(1, length(object.Dec)) > current.CR;
+            replace(randi(length(object.Dec))) = false;
+            object.Dec(replace) = current.Dec(replace);
         end
     end
 end

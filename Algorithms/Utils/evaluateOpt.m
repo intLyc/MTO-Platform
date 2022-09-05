@@ -1,6 +1,6 @@
 function [population, calls] = evaluateOpt(population, Task, task_idx, pil)
     %% Evaluate population in a Task with optimoptions
-    % Input: population, Task (single task), task_idx (factorial_costs idx)
+    % Input: population, Task (single task), task_idx (Obj idx)
     % Output: population (evaluated), calls (function calls number)
 
     %------------------------------- Copyright --------------------------------
@@ -14,29 +14,28 @@ function [population, calls] = evaluateOpt(population, Task, task_idx, pil)
 
     calls = 0;
     for i = 1:length(population)
-        x = (Task.Ub - Task.Lb) .* population(i).rnvec(1:Task.dims) + Task.Lb;
+        x = (Task.Ub - Task.Lb) .* population(i).Dec(1:Task.Dim) + Task.Lb;
         if rand < pil
-            con = population(i).constraint_violation(task_idx);
-            [x, obj, ~, out] = fminunc(Task.fnc, x, options);
-            rnvec = (x - Task.Lb) ./ (Task.Ub - Task.Lb);
-            temp = rnvec;
+            [x, ~, ~, out] = fminunc(Task.Fnc, x, options);
+            Dec = (x - Task.Lb) ./ (Task.Ub - Task.Lb);
+            temp = Dec;
             temp(temp < 0) = 0;
             temp(temp > 1) = 1;
-            population(i).rnvec(1:Task.dims) = temp;
-            if ~isempty(rnvec ~= temp)
+            population(i).Dec(1:Task.Dim) = temp;
+            if ~isempty(Dec ~= temp)
                 x = (Task.Ub - Task.Lb) .* temp + Task.Lb;
-                [obj, cv] = Task.fnc(x);
-                obj = sum(obj); cv = sum(cv);
+                [obj, con] = Task.Fnc(x);
+                Obj = obj; CV = sum(con);
                 calls = calls + 1;
             end
-            population(i).factorial_costs(task_idx) = obj;
-            population(i).constraint_violation(task_idx) = cv;
+            population(i).Obj(task_idx) = Obj;
+            population(i).CV(task_idx) = CV;
             calls = calls + out.funcCount;
         else
-            [obj, cv] = Task.fnc(x);
-            obj = sum(obj); cv = sum(cv);
-            population(i).factorial_costs(task_idx) = obj;
-            population(i).constraint_violation(task_idx) = cv;
+            [obj, con] = Task.Fnc(x);
+            Obj = obj; CV = sum(con);
+            population(i).Obj(task_idx) = Obj;
+            population(i).CV(task_idx) = CV;
             calls = calls + 1;
         end
     end

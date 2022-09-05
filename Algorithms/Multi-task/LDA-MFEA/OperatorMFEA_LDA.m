@@ -16,13 +16,15 @@ classdef OperatorMFEA_LDA < Operator
                 p1 = indorder(i);
                 p2 = indorder(i + fix(length(population) / 2));
                 offspring(count) = feval(Individual_class);
-                offspring(count).factorial_costs = inf(1, length(Tasks));
+                offspring(count).Obj = inf(1, length(Tasks));
+                offspring(count).CV = inf(1, length(Tasks));
                 offspring(count + 1) = feval(Individual_class);
-                offspring(count + 1).factorial_costs = inf(1, length(Tasks));
+                offspring(count + 1).Obj = inf(1, length(Tasks));
+                offspring(count + 1).CV = inf(1, length(Tasks));
                 temp_offspring = feval(Individual_class);
 
-                u = rand(1, max([Tasks.dims]));
-                cf = zeros(1, max([Tasks.dims]));
+                u = rand(1, max([Tasks.Dim]));
+                cf = zeros(1, max([Tasks.Dim]));
                 cf(u <= 0.5) = (2 * u(u <= 0.5)).^(1 / (mu + 1));
                 cf(u > 0.5) = (2 * (1 - u(u > 0.5))).^(-1 / (mu + 1));
 
@@ -31,8 +33,8 @@ classdef OperatorMFEA_LDA < Operator
                     offspring(count) = OperatorMFEA_LDA.crossover(offspring(count), population(p1), population(p2), cf);
                     offspring(count + 1) = OperatorMFEA_LDA.crossover(offspring(count + 1), population(p2), population(p1), cf);
                     % mutate
-                    offspring(count) = OperatorMFEA_LDA.mutate(offspring(count), max([Tasks.dims]), mum);
-                    offspring(count + 1) = OperatorMFEA_LDA.mutate(offspring(count + 1), max([Tasks.dims]), mum);
+                    offspring(count) = OperatorMFEA_LDA.mutate(offspring(count), max([Tasks.Dim]), mum);
+                    offspring(count + 1) = OperatorMFEA_LDA.mutate(offspring(count + 1), max([Tasks.Dim]), mum);
                     % imitate
                     p = [p1, p2];
                     offspring(count).skill_factor = population(p(randi(2))).skill_factor;
@@ -52,36 +54,36 @@ classdef OperatorMFEA_LDA < Operator
                     end
 
                     % find Linear Least square mapping between two tasks.
-                    if (Tasks(t1).dims > Tasks(t2).dims) % swap t1, t2, make t1.dims < t2.dims
+                    if (Tasks(t1).Dim > Tasks(t2).Dim) % swap t1, t2, make t1.Dim < t2.Dim
                         tt = t1; t1 = t2; t2 = tt;
                         pp = p1; p1 = p2; p2 = pp;
                     end
 
                     % map t1 to t2 (low to high dim)
                     [m1, m2] = OperatorMFEA_LDA.mapping(M{t1}, M{t2});
-                    temp_offspring.rnvec = population(p1).rnvec * m1;
+                    temp_offspring.Dec = population(p1).Dec * m1;
                     % crossover
                     offspring(count) = OperatorMFEA_LDA.crossover(offspring(count), temp_offspring, population(p2), cf);
                     offspring(count + 1) = OperatorMFEA_LDA.crossover(offspring(count + 1), population(p2), temp_offspring, cf);
                     % mutate
-                    offspring(count) = OperatorMFEA_LDA.mutate(offspring(count), max([Tasks.dims]), mum);
-                    offspring(count + 1) = OperatorMFEA_LDA.mutate(offspring(count + 1), max([Tasks.dims]), mum);
+                    offspring(count) = OperatorMFEA_LDA.mutate(offspring(count), max([Tasks.Dim]), mum);
+                    offspring(count + 1) = OperatorMFEA_LDA.mutate(offspring(count + 1), max([Tasks.Dim]), mum);
                     % imitate
                     p = [p1, p2];
                     rand_p = p(randi(2));
                     offspring(count).skill_factor = population(rand_p).skill_factor;
                     if offspring(count).skill_factor == t1
-                        offspring(count).rnvec = offspring(count).rnvec * m2;
+                        offspring(count).Dec = offspring(count).Dec * m2;
                     end
                     rand_p = p(randi(2));
                     offspring(count + 1).skill_factor = population(rand_p).skill_factor;
                     if offspring(count + 1).skill_factor == t1
-                        offspring(count + 1).rnvec = offspring(count + 1).rnvec * m2;
+                        offspring(count + 1).Dec = offspring(count + 1).Dec * m2;
                     end
                 end
                 for x = count:count + 1
-                    offspring(x).rnvec(offspring(x).rnvec > 1) = 1;
-                    offspring(x).rnvec(offspring(x).rnvec < 0) = 0;
+                    offspring(x).Dec(offspring(x).Dec > 1) = 1;
+                    offspring(x).Dec(offspring(x).Dec < 0) = 0;
                 end
                 count = count + 2;
             end
@@ -105,25 +107,25 @@ classdef OperatorMFEA_LDA < Operator
 
         function object = crossover(object, p1, p2, cf)
             % SBX - Simulated binary crossover
-            object.rnvec = 0.5 * ((1 + cf) .* p1.rnvec + (1 - cf) .* p2.rnvec);
+            object.Dec = 0.5 * ((1 + cf) .* p1.Dec + (1 - cf) .* p2.Dec);
         end
 
         function object = mutate(object, dim, mum)
             % Polynomial mutation
-            rnvec_temp = object.rnvec;
+            Dec_temp = object.Dec;
             for i = 1:dim
                 if rand(1) < 1 / dim
                     u = rand(1);
                     if u <= 0.5
                         del = (2 * u)^(1 / (1 + mum)) - 1;
-                        rnvec_temp(i) = object.rnvec(i) + del * (object.rnvec(i));
+                        Dec_temp(i) = object.Dec(i) + del * (object.Dec(i));
                     else
                         del = 1 - (2 * (1 - u))^(1 / (1 + mum));
-                        rnvec_temp(i) = object.rnvec(i) + del * (1 - object.rnvec(i));
+                        Dec_temp(i) = object.Dec(i) + del * (1 - object.Dec(i));
                     end
                 end
             end
-            object.rnvec = rnvec_temp;
+            object.Dec = Dec_temp;
         end
     end
 end

@@ -45,9 +45,9 @@ classdef MFDE < Algorithm
             eva_num = sub_eva * length(Tasks);
 
             % initialize
-            [population, fnceval_calls, bestobj, bestCV, bestX] = initializeCMF(IndividualMF, pop_size, Tasks, max([Tasks.dims]));
-            convergence(:, 1) = bestobj;
-            convergence_cv(:, 1) = bestCV;
+            [population, fnceval_calls, bestDec, bestObj, bestCV] = initializeMF(IndividualMF, pop_size, Tasks, max([Tasks.Dim]));
+            convergeObj(:, 1) = bestObj;
+            convergeCV(:, 1) = bestCV;
 
             generation = 1;
             while fnceval_calls < eva_num
@@ -58,13 +58,13 @@ classdef MFDE < Algorithm
                 fnceval_calls = fnceval_calls + calls;
 
                 % selection
-                [population, bestobj, bestCV, bestX] = selectCMF(population, offspring, Tasks, pop_size, bestobj, bestCV, bestX);
-                convergence(:, generation) = bestobj;
-                convergence_cv(:, generation) = bestCV;
+                [population, bestDec, bestObj, bestCV] = selectMF(population, offspring, Tasks, pop_size, bestDec, bestObj, bestCV);
+                convergeObj(:, generation) = bestObj;
+                convergeCV(:, generation) = bestCV;
             end
-            data.convergence = gen2eva(convergence);
-            data.convergence_cv = gen2eva(convergence_cv);
-            data.bestX = uni2real(bestX, Tasks);
+            data.convergeObj = gen2eva(convergeObj);
+            data.convergeCV = gen2eva(convergeCV);
+            data.bestDec = uni2real(bestDec, Tasks);
         end
     end
 end

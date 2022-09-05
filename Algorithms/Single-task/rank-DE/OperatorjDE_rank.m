@@ -11,9 +11,9 @@ classdef OperatorjDE_rank < Operator
         function [offspring, calls] = generate(population, Task, t1, t2)
             % calculate rank
             for i = 1:length(population)
-                factorial_costs(i) = population(i).factorial_costs;
+                Obj(i) = population(i).Obj;
             end
-            [~, rank] = sort(factorial_costs);
+            [~, rank] = sort(Obj);
             for i = 1:length(population)
                 population(rank(i)).ranking = i;
             end
@@ -53,20 +53,20 @@ classdef OperatorjDE_rank < Operator
                 offspring(i) = OperatorjDE_rank.mutate(offspring(i), population(x1), population(x2), population(x3), offspring(i).F);
                 offspring(i) = OperatorjDE_rank.crossover(offspring(i), population(i), offspring(i).CR);
 
-                offspring(i).rnvec(offspring(i).rnvec > 1) = 1;
-                offspring(i).rnvec(offspring(i).rnvec < 0) = 0;
+                offspring(i).Dec(offspring(i).Dec > 1) = 1;
+                offspring(i).Dec(offspring(i).Dec < 0) = 0;
             end
             [offspring, calls] = evaluate(offspring, Task, 1);
         end
 
         function object = mutate(object, x1, x2, x3, F)
-            object.rnvec = x1.rnvec + F * (x2.rnvec - x3.rnvec);
+            object.Dec = x1.Dec + F * (x2.Dec - x3.Dec);
         end
 
         function object = crossover(object, x, CR)
-            replace = rand(1, length(object.rnvec)) > CR;
-            replace(randi(length(object.rnvec))) = false;
-            object.rnvec(replace) = x.rnvec(replace);
+            replace = rand(1, length(object.Dec)) > CR;
+            replace(randi(length(object.Dec))) = false;
+            object.Dec(replace) = x.Dec(replace);
         end
     end
 end

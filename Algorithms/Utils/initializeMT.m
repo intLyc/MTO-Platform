@@ -1,7 +1,7 @@
-function [population, calls, bestobj, bestX] = initializeMT(Individual_class, sub_pop, Tasks, dims)
+function [population, calls, bestDec, bestObj, bestCV] = initializeMT(Individual_class, sub_pop, Tasks, Dim)
     %% Multi-task - Initialize and evaluate the population
-    % Input: Individual_class, sub_pop, Tasks, dims
-    % Output: population, calls (function calls number), bestobj, bestX
+    % Input: Individual_class, sub_pop, Tasks, Dim
+    % Output: population, calls (function calls number), bestDec, bestObj, bestCV
 
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
@@ -13,7 +13,7 @@ function [population, calls, bestobj, bestX] = initializeMT(Individual_class, su
     calls = 0;
     population = {};
     for t = 1:length(Tasks)
-        [population{t}, cal, bestobj(t), bestX{t}] = initialize(Individual_class, sub_pop, Tasks(t), dims(t));
+        [population{t}, cal, bestDec{t}, bestObj(t), bestCV(t)] = initialize(Individual_class, sub_pop, Tasks(t), Dim(t));
         calls = calls + cal;
     end
 end

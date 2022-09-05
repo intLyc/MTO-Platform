@@ -69,8 +69,8 @@ function Task = benchmark_CEC17_CSO(index, dim)
     end
 
     %% Set Task
-    Task.dims = dim; % dimensionality of Task 1
-    Task.fnc = @(x)CEC17_CSO_Func(x, index, o, M);
+    Task.Dim = dim; % dimensionality of Task 1
+    Task.Fnc = @(x)CEC17_CSO_Func(x, index, o, M);
     Task.Lb = -ub * ones(1, dim); % Upper bound of Task 1
     Task.Ub = ub * ones(1, dim); % Lower bound of Task 1
 end

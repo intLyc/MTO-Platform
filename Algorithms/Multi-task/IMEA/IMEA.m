@@ -53,8 +53,8 @@ classdef IMEA < Algorithm
             eva_num = sub_eva * length(Tasks);
 
             % initialize
-            [population, fnceval_calls, bestobj, bestX] = initializeMT(Individual, sub_pop, Tasks, max([Tasks.dims]) * ones(1, length(Tasks)));
-            convergence(:, 1) = bestobj;
+            [population, fnceval_calls, bestDec, bestObj] = initializeMT(Individual, sub_pop, Tasks, max([Tasks.Dim]) * ones(1, length(Tasks)));
+            convergeObj(:, 1) = bestObj;
 
             generation = 1;
             while fnceval_calls < eva_num
@@ -75,7 +75,7 @@ classdef IMEA < Algorithm
                             tmp_pop = population{tt}(transfer_idx);
                             transfer_pop = [transfer_pop, tmp_pop];
                         end
-                        [~, replace_idx] = sort(- [population{t}.factorial_costs]);
+                        [~, replace_idx] = sort(- [population{t}.Obj]);
                         parent(replace_idx(1:length(transfer_pop))) = transfer_pop;
                     end
 
@@ -85,18 +85,18 @@ classdef IMEA < Algorithm
 
                     % selection
                     population{t} = [population{t}, offspring];
-                    [~, rank] = sort([population{t}.factorial_costs]);
+                    [~, rank] = sort([population{t}.Obj]);
                     population{t} = population{t}(rank(1:sub_pop));
-                    [bestobj_now, idx] = min([population{t}.factorial_costs]);
-                    if bestobj_now < bestobj(t)
-                        bestobj(t) = bestobj_now;
-                        bestX{t} = population{t}(idx).rnvec;
+                    [bestObj_now, idx] = min([population{t}.Obj]);
+                    if bestObj_now < bestObj(t)
+                        bestObj(t) = bestObj_now;
+                        bestDec{t} = population{t}(idx).Dec;
                     end
-                    convergence(t, generation) = bestobj(t);
+                    convergeObj(t, generation) = bestObj(t);
                 end
             end
-            data.convergence = gen2eva(convergence);
-            data.bestX = uni2real(bestX, Tasks);
+            data.convergeObj = gen2eva(convergeObj);
+            data.bestDec = uni2real(bestDec, Tasks);
         end
     end
 end

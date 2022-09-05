@@ -46,8 +46,8 @@ classdef TLTLA < Algorithm
             eva_num = sub_eva * length(Tasks);
 
             % initialize
-            [population, fnceval_calls, bestobj, bestX] = initializeMF(IndividualMF, pop_size, Tasks, max([Tasks.dims]));
-            convergence(:, 1) = bestobj;
+            [population, fnceval_calls, bestDec, bestObj] = initializeMF(IndividualMF, pop_size, Tasks, max([Tasks.Dim]));
+            convergeObj(:, 1) = bestObj;
 
             generation = 1;
             while fnceval_calls < eva_num
@@ -58,64 +58,64 @@ classdef TLTLA < Algorithm
                 [offspring, calls] = OperatorTLTLA.generate(population, Tasks, obj.rmp, obj.mu, obj.mum);
                 fnceval_calls = fnceval_calls + calls;
                 % selection
-                [population, bestobj, bestX] = selectMF(population, offspring, Tasks, pop_size, bestobj, bestX);
+                [population, bestDec, bestObj] = selectMF(population, offspring, Tasks, pop_size, bestDec, bestObj);
 
                 % Lower-level: Intra-task Knowledge Transfer
                 parent = randi(length(population));
                 t = population(parent).skill_factor;
-                dimen = mod(generation - 2, max([Tasks.dims])) + 1; % start with 1 Dim
-                child_rnvec = zeros(size(population(parent)));
+                dimen = mod(generation - 2, max([Tasks.Dim])) + 1; % start with 1 Dim
+                child_Dec = zeros(size(population(parent)));
                 pool = population([population.skill_factor] == t);
-                for d = 1:max([Tasks.dims])
+                for d = 1:max([Tasks.Dim])
                     x = randperm(length(pool), min(3, length(pool)));
                     if length(pool) < 3
-                        child_rnvec(d) = pool(x(1)).rnvec(dimen);
+                        child_Dec(d) = pool(x(1)).Dec(dimen);
                         continue;
                     end
                     if rand > 0.5
-                        child_rnvec(d) = pool(x(1)).rnvec(dimen) + 0.5 * rand * (pool(x(2)).rnvec(dimen) - pool(x(3)).rnvec(dimen));
+                        child_Dec(d) = pool(x(1)).Dec(dimen) + 0.5 * rand * (pool(x(2)).Dec(dimen) - pool(x(3)).Dec(dimen));
                     else
-                        child_rnvec(d) = pool(x(1)).rnvec(dimen) + 0.5 * rand * (pool(x(3)).rnvec(dimen) - pool(x(2)).rnvec(dimen));
+                        child_Dec(d) = pool(x(1)).Dec(dimen) + 0.5 * rand * (pool(x(3)).Dec(dimen) - pool(x(2)).Dec(dimen));
                     end
                 end
-                child_rnvec(child_rnvec > 1) = 1;
-                child_rnvec(child_rnvec < 0) = 0;
+                child_Dec(child_Dec > 1) = 1;
+                child_Dec(child_Dec < 0) = 0;
 
                 if rand > 0.5
                     tmp_population = population(parent);
-                    for d = 1:max([Tasks.dims])
-                        tmp_population.rnvec(d) = child_rnvec(d);
+                    for d = 1:max([Tasks.Dim])
+                        tmp_population.Dec(d) = child_Dec(d);
                         [tmp_population, calls] = evaluate(tmp_population, Tasks(t), t);
                         fnceval_calls = fnceval_calls + calls;
 
-                        if tmp_population.factorial_costs(t) < population(parent).factorial_costs(t)
+                        if tmp_population.Obj(t) < population(parent).Obj(t)
                             population(parent) = tmp_population;
                             break;
                         end
                     end
                 else
-                    for d = 1:max([Tasks.dims])
+                    for d = 1:max([Tasks.Dim])
                         tmp_population = population(parent);
-                        tmp_population.rnvec(d) = child_rnvec(d);
+                        tmp_population.Dec(d) = child_Dec(d);
                         [tmp_population, calls] = evaluate(tmp_population, Tasks(t), t);
                         fnceval_calls = fnceval_calls + calls;
 
-                        if tmp_population.factorial_costs(t) < population(parent).factorial_costs(t)
+                        if tmp_population.Obj(t) < population(parent).Obj(t)
                             population(parent) = tmp_population;
                             break;
                         end
                     end
                 end
 
-                if population(parent).factorial_costs(t) < bestobj(t)
-                    bestobj(t) = population(parent).factorial_costs(t);
-                    bestX{t} = population(parent).rnvec;
+                if population(parent).Obj(t) < bestObj(t)
+                    bestObj(t) = population(parent).Obj(t);
+                    bestDec{t} = population(parent).Dec;
                 end
 
-                convergence(:, generation) = bestobj;
+                convergeObj(:, generation) = bestObj;
             end
-            data.convergence = gen2eva(convergence);
-            data.bestX = uni2real(bestX, Tasks);
+            data.convergeObj = gen2eva(convergeObj);
+            data.bestDec = uni2real(bestDec, Tasks);
         end
     end
 end

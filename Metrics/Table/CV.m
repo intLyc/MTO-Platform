@@ -15,9 +15,9 @@ classdef CV < Metric
             result.RowName = {};
             row_i = 1;
             for prob = 1:length(data.prob_cell)
-                tasks_num = data.tasks_num_list(prob);
-                for task = 1:tasks_num
-                    if tasks_num == 1
+                tnum = data.task_num(prob);
+                for task = 1:tnum
+                    if tnum == 1
                         result.RowName{row_i} = data.prob_cell{prob};
                     else
                         result.RowName{row_i} = [data.prob_cell{prob}, '-T', num2str(task)];
@@ -32,10 +32,10 @@ classdef CV < Metric
             for algo = 1:length(data.algo_cell)
                 row_i = 1;
                 for prob = 1:length(data.prob_cell)
-                    tasks_num = data.tasks_num_list(prob);
-                    for task = 1:tasks_num
-                        if isfield(data.result(prob, algo), 'convergence_cv')
-                            result.TableData(row_i, algo, :) = data.result(prob, algo).convergence_cv(task:tasks_num:end, end);
+                    tnum = data.task_num(prob);
+                    for task = 1:tnum
+                        if isfield(data.result(prob, algo), 'convergeCV')
+                            result.TableData(row_i, algo, :) = data.result(prob, algo).convergeCV(task:tnum:end, end);
                         else
                             result.TableData(row_i, algo, :) = 0;
                         end

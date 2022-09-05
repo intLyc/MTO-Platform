@@ -9,8 +9,8 @@ classdef IndividualMF < Individual
 
     properties
         % multifactorial parameter
-        factorial_ranks;
-        scalar_fitness;
-        skill_factor;
+        factorial_ranks
+        scalar_fitness
+        skill_factor
     end
 end

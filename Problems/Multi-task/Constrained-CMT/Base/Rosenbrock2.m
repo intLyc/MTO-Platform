@@ -1,4 +1,4 @@
-function [obj, cv] = Rosenbrock2(var, M, opt, opt_con)
+function [obj, con] = Rosenbrock2(var, M, opt, opt_con)
     % Rosenbrock function
     %   - var: design variable vector
     %   - M: rotation matrix
@@ -25,5 +25,5 @@ function [obj, cv] = Rosenbrock2(var, M, opt, opt_con)
     g = sum(x.^2, 2) - 100 * dim;
 
     g(g < 0) = 0;
-    cv = g;
+    con = g;
 end

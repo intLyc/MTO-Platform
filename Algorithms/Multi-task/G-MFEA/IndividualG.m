@@ -8,6 +8,6 @@ classdef IndividualG < IndividualMF
     %--------------------------------------------------------------------------
 
     properties
-        Trnvec
+        TDec
     end
 end

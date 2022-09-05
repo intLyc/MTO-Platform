@@ -17,8 +17,8 @@ classdef ATF2 < Problem
         function Tasks = getTasks(obj)
             Task.Lb = [-10, -5];
             Task.Ub = [5, 5];
-            Task.dims = 2;
-            Task.fnc = @(x)ATF_Func(x, 2);
+            Task.Dim = 2;
+            Task.Fnc = @(x)ATF_Func(x, 2);
             Tasks(1) = Task;
         end
     end

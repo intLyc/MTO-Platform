@@ -11,18 +11,18 @@ classdef OperatorMFMP < Operator
         function [offspring, calls, flag] = generate(Task, population, union, c_pop, c_union, rmp, p)
             Individual_class = class(population(1));
             % get top 100p% individuals
-            factorial_costs = [];
+            Obj = [];
             for i = 1:length(population)
-                factorial_costs(i) = population(i).factorial_costs;
+                Obj(i) = population(i).Obj;
             end
-            [~, rank] = sort(factorial_costs);
+            [~, rank] = sort(Obj);
             pop_pbest = rank(1:round(p * length(population)));
             % get top 100p% individuals in communicate population
-            factorial_costs = [];
+            Obj = [];
             for i = 1:length(c_pop)
-                factorial_costs(i) = c_pop(i).factorial_costs;
+                Obj(i) = c_pop(i).Obj;
             end
-            [~, rank] = sort(factorial_costs);
+            [~, rank] = sort(Obj);
             c_pop_pbest = rank(1:round(p * length(c_pop)));
 
             flag = zeros(1, length(population));
@@ -58,22 +58,22 @@ classdef OperatorMFMP < Operator
                     offspring(i) = OperatorMFMP.crossover(offspring(i), population(i));
                 end
 
-                vio_low = find(offspring(i).rnvec < 0);
-                offspring(i).rnvec(vio_low) = (population(i).rnvec(vio_low) + 0) / 2;
-                vio_up = find(offspring(i).rnvec > 1);
-                offspring(i).rnvec(vio_up) = (population(i).rnvec(vio_up) + 1) / 2;
+                vio_low = find(offspring(i).Dec < 0);
+                offspring(i).Dec(vio_low) = (population(i).Dec(vio_low) + 0) / 2;
+                vio_up = find(offspring(i).Dec > 1);
+                offspring(i).Dec(vio_up) = (population(i).Dec(vio_up) + 1) / 2;
             end
             [offspring, calls] = evaluate(offspring, Task, 1);
         end
 
         function object = mutate(object, current, pbest, x1, x2)
-            object.rnvec = current.rnvec + current.F * (pbest.rnvec - current.rnvec) + current.F * (x1.rnvec - x2.rnvec);
+            object.Dec = current.Dec + current.F * (pbest.Dec - current.Dec) + current.F * (x1.Dec - x2.Dec);
         end
 
         function object = crossover(object, current)
-            replace = rand(1, length(object.rnvec)) > current.CR;
-            replace(randi(length(object.rnvec))) = false;
-            object.rnvec(replace) = current.rnvec(replace);
+            replace = rand(1, length(object.Dec)) > current.CR;
+            replace(randi(length(object.Dec))) = false;
+            object.Dec(replace) = current.Dec(replace);
         end
     end
 end
