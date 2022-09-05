@@ -40,9 +40,10 @@ classdef LSHADE < Algorithm
             sub_pop = run_parameter_list(1);
             sub_eva = run_parameter_list(2);
 
-            convergence = [];
-            eva_gen = [];
+            convergence = {};
+            eva_gen = {};
             bestX = {};
+
             for sub_task = 1:length(Tasks)
                 Task = Tasks(sub_task);
 
@@ -128,11 +129,11 @@ classdef LSHADE < Algorithm
                     converge_temp(generation) = bestobj;
                     eva_gen_temp(generation) = fnceval_calls;
                 end
-                convergence(sub_task, :) = converge_temp;
-                eva_gen(sub_task, :) = eva_gen_temp;
+                convergence{sub_task} = converge_temp;
+                eva_gen{sub_task} = eva_gen_temp;
                 bestX{sub_task} = bestX_temp;
             end
-            data.convergence = gen2eva(convergence, eva_gen);
+            data.convergence = gen2eva(cell2matrix(convergence), cell2matrix(eva_gen));
             data.bestX = uni2real(bestX, Tasks);
         end
     end

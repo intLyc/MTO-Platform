@@ -142,12 +142,12 @@ classdef ECHT_DE < Algorithm
                     converge_cv_temp(:, generation) = bestCV;
                 end
                 [~, ~, best_idx] = min_FP(converge_temp(:, end), converge_cv_temp(:, end));
-                convergence(sub_task, :) = converge_temp(best_idx, :);
-                convergence_cv(sub_task, :) = converge_cv_temp(best_idx, :);
+                convergence{sub_task} = converge_temp(best_idx, :);
+                convergence_cv{sub_task} = converge_cv_temp(best_idx, :);
                 bestX{sub_task} = bestX_temp{best_idx};
             end
-            data.convergence = gen2eva(convergence);
-            data.convergence_cv = gen2eva(convergence_cv);
+            data.convergence = gen2eva(cell2matrix(convergence));
+            data.convergence_cv = gen2eva(cell2matrix(convergence_cv));
             data.bestX = uni2real(bestX, Tasks);
         end
     end

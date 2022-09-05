@@ -57,9 +57,9 @@ classdef LSHADE44 < Algorithm
             sub_pop = run_parameter_list(1);
             sub_eva = run_parameter_list(2);
 
-            convergence = [];
-            convergence_cv = [];
-            eva_gen = [];
+            convergence = {};
+            convergence_cv = {};
+            eva_gen = {};
             bestX = {};
 
             for sub_task = 1:length(Tasks)
@@ -172,13 +172,13 @@ classdef LSHADE44 < Algorithm
                     converge_cv_temp(generation) = bestCV;
                     eva_gen_temp(generation) = fnceval_calls;
                 end
-                convergence(sub_task, :) = converge_temp;
-                convergence_cv(sub_task, :) = converge_cv_temp;
-                eva_gen(sub_task, :) = eva_gen_temp;
+                convergence{sub_task} = converge_temp;
+                convergence_cv{sub_task} = converge_cv_temp;
+                eva_gen{sub_task} = eva_gen_temp;
                 bestX{sub_task} = bestX_temp;
             end
-            data.convergence = gen2eva(convergence, eva_gen);
-            data.convergence_cv = gen2eva(convergence_cv, eva_gen);
+            data.convergence = gen2eva(cell2matrix(convergence), cell2matrix(eva_gen));
+            data.convergence_cv = gen2eva(cell2matrix(convergence_cv), cell2matrix(eva_gen));
             data.bestX = uni2real(bestX, Tasks);
         end
     end

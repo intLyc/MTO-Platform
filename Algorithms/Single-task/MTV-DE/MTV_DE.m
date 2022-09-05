@@ -49,8 +49,8 @@ classdef MTV_DE < Algorithm
             sub_pop = run_parameter_list(1);
             sub_eva = run_parameter_list(2);
 
-            convergence = [];
-            convergence_cv = [];
+            convergence = {};
+            convergence_cv = {};
             bestX = {};
 
             for sub_task = 1:length(Tasks)
@@ -92,12 +92,12 @@ classdef MTV_DE < Algorithm
                     converge_temp(generation) = bestobj;
                     converge_cv_temp(generation) = bestCV;
                 end
-                convergence(sub_task, :) = converge_temp;
-                convergence_cv(sub_task, :) = converge_cv_temp;
+                convergence{sub_task} = converge_temp;
+                convergence_cv{sub_task} = converge_cv_temp;
                 bestX{sub_task} = bestX_temp;
             end
-            data.convergence = gen2eva(convergence);
-            data.convergence_cv = gen2eva(convergence_cv);
+            data.convergence = gen2eva(cell2matrix(convergence));
+            data.convergence_cv = gen2eva(cell2matrix(convergence_cv));
             data.bestX = uni2real(bestX, Tasks);
         end
     end

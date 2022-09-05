@@ -53,8 +53,8 @@ classdef DeCODE < Algorithm
             F_pool = [0.6, 0.8, 1.0];
             CR_pool = [0.1, 0.2, 1.0];
 
-            convergence = [];
-            convergence_cv = [];
+            convergence = {};
+            convergence_cv = {};
             bestX = {};
 
             for sub_task = 1:length(Tasks)
@@ -124,12 +124,12 @@ classdef DeCODE < Algorithm
                     converge_temp(generation) = bestobj;
                     converge_cv_temp(generation) = bestCV;
                 end
-                convergence(sub_task, :) = converge_temp;
-                convergence_cv(sub_task, :) = converge_cv_temp;
+                convergence{sub_task} = converge_temp;
+                convergence_cv{sub_task} = converge_cv_temp;
                 bestX{sub_task} = bestX_temp;
             end
-            data.convergence = gen2eva(convergence);
-            data.convergence_cv = gen2eva(convergence_cv);
+            data.convergence = gen2eva(cell2matrix(convergence));
+            data.convergence_cv = gen2eva(cell2matrix(convergence_cv));
             data.bestX = uni2real(bestX, Tasks);
         end
     end

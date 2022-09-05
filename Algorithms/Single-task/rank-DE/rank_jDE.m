@@ -42,7 +42,7 @@ classdef rank_jDE < Algorithm
             sub_pop = run_parameter_list(1);
             sub_eva = run_parameter_list(2);
 
-            convergence = [];
+            convergence = {};
             bestX = {};
 
             for sub_task = 1:length(Tasks)
@@ -76,10 +76,10 @@ classdef rank_jDE < Algorithm
                     end
                     converge_temp(generation) = bestobj;
                 end
-                convergence(sub_task, :) = converge_temp;
+                convergence{sub_task} = converge_temp;
                 bestX{sub_task} = bestX_temp;
             end
-            data.convergence = gen2eva(convergence);
+            data.convergence = gen2eva(cell2matrix(convergence));
             data.bestX = uni2real(bestX, Tasks);
         end
     end

@@ -26,7 +26,7 @@ classdef CMA_ES < Algorithm
             sub_pop = run_parameter_list(1);
             sub_eva = run_parameter_list(2);
 
-            convergence = [];
+            convergence = {};
             bestX = {};
 
             for sub_task = 1:length(Tasks)
@@ -108,10 +108,10 @@ classdef CMA_ES < Algorithm
                         C = V * max(E, 0) / V;
                     end
                 end
-                convergence(sub_task, :) = converge_temp;
+                convergence{sub_task} = converge_temp;
                 bestX{sub_task} = bestX_temp;
             end
-            data.convergence = gen2eva(convergence);
+            data.convergence = gen2eva(cell2matrix(convergence));
             data.bestX = bestX;
         end
     end
