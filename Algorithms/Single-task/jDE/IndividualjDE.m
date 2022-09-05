@@ -8,7 +8,7 @@ classdef IndividualjDE < Individual
     %--------------------------------------------------------------------------
 
     properties
-        F;
-        CR;
+        F
+        CR
     end
 end

@@ -44,7 +44,7 @@ classdef MFEA_GHS < Algorithm
             eva_num = sub_eva * length(Tasks);
 
             % initialize
-            [population, fnceval_calls, bestobj, bestX] = initializeMFone(Individual, pop_size, Tasks, max([Tasks.dims]));
+            [population, fnceval_calls, bestobj, bestX] = initializeMFone(IndividualMF, pop_size, Tasks, max([Tasks.dims]));
             convergence(:, 1) = bestobj;
             [max_T, min_T] = cal_max_min(population, Tasks);
             M = {};

@@ -34,8 +34,8 @@ classdef OperatorPSO < Operator
 
         function object = pbestUpdate(object)
             % pbest update
-            if object.factorial_costs(object.skill_factor) < object.pbestFitness
-                object.pbestFitness = object.factorial_costs(object.skill_factor);
+            if object.factorial_costs < object.pbestFitness
+                object.pbestFitness = object.factorial_costs;
                 object.pbest = object.rnvec;
             end
         end

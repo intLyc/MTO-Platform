@@ -15,7 +15,7 @@ classdef OperatorjDE_rank < Operator
             end
             [~, rank] = sort(factorial_costs);
             for i = 1:length(population)
-                population(rank(i)).factorial_ranks = i;
+                population(rank(i)).ranking = i;
             end
 
             Individual_class = class(population(1));
@@ -25,12 +25,12 @@ classdef OperatorjDE_rank < Operator
 
                 N = length(population);
                 idx = 1;
-                while rand > (N - population(A(idx)).factorial_ranks) / N || A(idx) == i
+                while rand > (N - population(A(idx)).ranking) / N || A(idx) == i
                     idx = mod(idx, length(A)) + 1;
                 end
                 x1 = A(idx);
 
-                while rand > (N - population(A(idx)).factorial_ranks) / N || A(idx) == x1 || A(idx) == i
+                while rand > (N - population(A(idx)).ranking) / N || A(idx) == x1 || A(idx) == i
                     idx = mod(idx, length(A)) + 1;
                 end
                 x2 = A(idx);

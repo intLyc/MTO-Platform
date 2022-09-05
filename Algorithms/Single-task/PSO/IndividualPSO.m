@@ -9,8 +9,8 @@ classdef IndividualPSO < Individual
     %--------------------------------------------------------------------------
 
     properties
-        pbest;
-        pbestFitness;
-        velocity;
+        pbest
+        pbestFitness
+        velocity
     end
 end

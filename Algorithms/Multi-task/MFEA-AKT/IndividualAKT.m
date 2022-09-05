@@ -1,4 +1,4 @@
-classdef IndividualAKT < Individual
+classdef IndividualAKT < IndividualMF
 
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
@@ -8,8 +8,8 @@ classdef IndividualAKT < Individual
     %--------------------------------------------------------------------------
 
     properties
-        cx_factor;
-        isTran;
-        parNum;
+        cx_factor
+        isTran
+        parNum
     end
 end

@@ -47,7 +47,7 @@ classdef MFEA_II < Algorithm
             eva_num = sub_eva * length(Tasks);
 
             % initialize
-            [population, fnceval_calls, bestobj, bestX] = initializeMF(Individual, pop_size, Tasks, max([Tasks.dims]));
+            [population, fnceval_calls, bestobj, bestX] = initializeMF(IndividualMF, pop_size, Tasks, max([Tasks.dims]));
             convergence(:, 1) = bestobj;
 
             generation = 1;

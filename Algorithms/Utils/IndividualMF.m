@@ -1,4 +1,4 @@
-classdef IndividualSBO < IndividualMF
+classdef IndividualMF < Individual
 
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
@@ -8,8 +8,9 @@ classdef IndividualSBO < IndividualMF
     %--------------------------------------------------------------------------
 
     properties
-        belonging_task
-        rank_c
-        rank_o
+        % multifactorial parameter
+        factorial_ranks;
+        scalar_fitness;
+        skill_factor;
     end
 end

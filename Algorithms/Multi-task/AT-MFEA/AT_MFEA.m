@@ -48,7 +48,7 @@ classdef AT_MFEA < Algorithm
             eva_num = sub_eva * length(Tasks);
 
             % initialize
-            [population, fnceval_calls, bestobj, bestCV, bestX] = initializeCMF(Individual, pop_size, Tasks, max([Tasks.dims]));
+            [population, fnceval_calls, bestobj, bestCV, bestX] = initializeCMF(IndividualMF, pop_size, Tasks, max([Tasks.dims]));
             convergence(:, 1) = bestobj;
             convergence_cv(:, 1) = bestCV;
             % initialize affine transformation

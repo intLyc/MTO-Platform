@@ -8,6 +8,6 @@ classdef IndividualMKT < Individual
     %--------------------------------------------------------------------------
     
     properties
-        cluster_num;
+        cluster_num
     end
 end

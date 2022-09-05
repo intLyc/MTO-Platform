@@ -46,7 +46,7 @@ classdef rank_jDE < Algorithm
                 Task = Tasks(sub_task);
 
                 % initialize
-                [population, fnceval_calls, bestobj, bestX_temp] = initialize(IndividualjDE, sub_pop, Task, Task.dims);
+                [population, fnceval_calls, bestobj, bestX_temp] = initialize(IndividualRank, sub_pop, Task, Task.dims);
                 converge_temp(1) = bestobj;
 
                 % initialize F and CR

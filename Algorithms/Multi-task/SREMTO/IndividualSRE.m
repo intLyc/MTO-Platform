@@ -1,4 +1,4 @@
-classdef IndividualSRE < Individual
+classdef IndividualSRE < IndividualMF
 
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
@@ -8,6 +8,6 @@ classdef IndividualSRE < Individual
     %--------------------------------------------------------------------------
 
     properties
-        ability_vector;
+        ability_vector
     end
 end

@@ -48,7 +48,7 @@ classdef LDA_MFEA < Algorithm
             eva_num = sub_eva * length(Tasks);
 
             % initialize
-            [population, fnceval_calls, bestobj, bestX] = initializeMFone(Individual, pop_size, Tasks, max([Tasks.dims]));
+            [population, fnceval_calls, bestobj, bestX] = initializeMFone(IndividualMF, pop_size, Tasks, max([Tasks.dims]));
             convergence(:, 1) = bestobj;
 
             % initialize lda

@@ -54,7 +54,7 @@ classdef MFPSO < Algorithm
             eva_num = sub_eva * length(Tasks);
 
             % initialize
-            [population, fnceval_calls, bestobj, bestX] = initializeMF(IndividualPSO, pop_size, Tasks, max([Tasks.dims]));
+            [population, fnceval_calls, bestobj, bestX] = initializeMF(IndividualMFPSO, pop_size, Tasks, max([Tasks.dims]));
             convergence(:, 1) = bestobj;
             % initialize pso
             for i = 1:pop_size
