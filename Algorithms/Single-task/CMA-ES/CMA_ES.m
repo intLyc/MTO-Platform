@@ -22,12 +22,9 @@ classdef CMA_ES < Algorithm
     %--------------------------------------------------------------------------
 
     methods
-        function data = run(obj, Tasks, run_parameter_list)
-            sub_pop = run_parameter_list(1);
-            sub_eva = run_parameter_list(2);
-
-            convergence = {};
-            bestX = {};
+        function data = run(obj, Tasks, RunPara)
+            sub_pop = RunPara(1); sub_eva = RunPara(2);
+            convergence = {}; bestX = {};
 
             for sub_task = 1:length(Tasks)
                 Task = Tasks(sub_task);

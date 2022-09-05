@@ -31,8 +31,8 @@ classdef G_MFEA < Algorithm
     end
 
     methods
-        function parameter = getParameter(obj)
-            parameter = {'rmp: Random Mating Probability', num2str(obj.rmp), ...
+        function Parameter = getParameter(obj)
+            Parameter = {'rmp: Random Mating Probability', num2str(obj.rmp), ...
                         'mu: index of Simulated Binary Crossover', num2str(obj.mu), ...
                         'mum: index of polynomial mutation', num2str(obj.mum), ...
                         'phi', num2str(obj.phi), ...
@@ -40,19 +40,18 @@ classdef G_MFEA < Algorithm
                         'top', num2str(obj.top)};
         end
 
-        function obj = setParameter(obj, parameter_cell)
-            count = 1;
-            obj.rmp = str2double(parameter_cell{count}); count = count + 1;
-            obj.mu = str2double(parameter_cell{count}); count = count + 1;
-            obj.mum = str2double(parameter_cell{count}); count = count + 1;
-            obj.phi = str2double(parameter_cell{count}); count = count + 1;
-            obj.theta = str2double(parameter_cell{count}); count = count + 1;
-            obj.top = str2double(parameter_cell{count}); count = count + 1;
+        function obj = setParameter(obj, Parameter)
+            i = 1;
+            obj.rmp = str2double(Parameter{i}); i = i + 1;
+            obj.mu = str2double(Parameter{i}); i = i + 1;
+            obj.mum = str2double(Parameter{i}); i = i + 1;
+            obj.phi = str2double(Parameter{i}); i = i + 1;
+            obj.theta = str2double(Parameter{i}); i = i + 1;
+            obj.top = str2double(Parameter{i}); i = i + 1;
         end
 
-        function data = run(obj, Tasks, run_parameter_list)
-            sub_pop = run_parameter_list(1);
-            sub_eva = run_parameter_list(2);
+        function data = run(obj, Tasks, RunPara)
+            sub_pop = RunPara(1); sub_eva = RunPara(2);
             pop_size = sub_pop * length(Tasks);
             eva_num = sub_eva * length(Tasks);
 

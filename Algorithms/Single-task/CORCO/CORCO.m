@@ -26,25 +26,21 @@ classdef CORCO < Algorithm
     end
 
     methods
-        function parameter = getParameter(obj)
-            parameter = {'lp: learning period', num2str(obj.lp)};
+        function Parameter = getParameter(obj)
+            Parameter = {'lp: learning period', num2str(obj.lp)};
         end
 
-        function obj = setParameter(obj, parameter_cell)
-            count = 1;
-            obj.lp = str2double(parameter_cell{count}); count = count + 1;
+        function obj = setParameter(obj, Parameter)
+            i = 1;
+            obj.lp = str2double(Parameter{i}); i = i + 1;
         end
 
-        function data = run(obj, Tasks, run_parameter_list)
-            sub_pop = run_parameter_list(1);
-            sub_eva = run_parameter_list(2);
+        function data = run(obj, Tasks, RunPara)
+            sub_pop = RunPara(1); sub_eva = RunPara(2);
+            convergence = {}; convergence_cv = {}; bestX = {};
 
             F_pool = [0.6, 0.8, 1.0];
             CR_pool = [0.1, 0.2, 1.0];
-
-            convergence = {};
-            convergence_cv = {};
-            bestX = {};
 
             for sub_task = 1:length(Tasks)
                 Task = Tasks(sub_task);

@@ -29,8 +29,8 @@ classdef MFPSO < Algorithm
     end
 
     methods
-        function parameter = getParameter(obj)
-            parameter = {'rmp: Random Mating Probability', num2str(obj.rmp), ...
+        function Parameter = getParameter(obj)
+            Parameter = {'rmp: Random Mating Probability', num2str(obj.rmp), ...
                         'wmax: Inertia Weight Max', num2str(obj.wmax), ...
                         'wmin: Inertia Weight Min', num2str(obj.wmin), ...
                         'c1', num2str(obj.c1), ...
@@ -38,19 +38,18 @@ classdef MFPSO < Algorithm
                         'c3', num2str(obj.c3)};
         end
 
-        function obj = setParameter(obj, parameter_cell)
-            count = 1;
-            obj.rmp = str2double(parameter_cell{count}); count = count + 1;
-            obj.wmax = str2double(parameter_cell{count}); count = count + 1;
-            obj.wmin = str2double(parameter_cell{count}); count = count + 1;
-            obj.c1 = str2double(parameter_cell{count}); count = count + 1;
-            obj.c2 = str2double(parameter_cell{count}); count = count + 1;
-            obj.c3 = str2double(parameter_cell{count}); count = count + 1;
+        function obj = setParameter(obj, Parameter)
+            i = 1;
+            obj.rmp = str2double(Parameter{i}); i = i + 1;
+            obj.wmax = str2double(Parameter{i}); i = i + 1;
+            obj.wmin = str2double(Parameter{i}); i = i + 1;
+            obj.c1 = str2double(Parameter{i}); i = i + 1;
+            obj.c2 = str2double(Parameter{i}); i = i + 1;
+            obj.c3 = str2double(Parameter{i}); i = i + 1;
         end
 
-        function data = run(obj, Tasks, run_parameter_list)
-            sub_pop = run_parameter_list(1);
-            sub_eva = run_parameter_list(2);
+        function data = run(obj, Tasks, RunPara)
+            sub_pop = RunPara(1); sub_eva = RunPara(2);
             pop_size = sub_pop * length(Tasks);
             eva_num = sub_eva * length(Tasks);
 

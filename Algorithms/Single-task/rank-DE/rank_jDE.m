@@ -27,23 +27,20 @@ classdef rank_jDE < Algorithm
     end
 
     methods
-        function parameter = getParameter(obj)
-            parameter = {'t1: probability of F change', num2str(obj.t1), ...
+        function Parameter = getParameter(obj)
+            Parameter = {'t1: probability of F change', num2str(obj.t1), ...
                         't2: probability of CR change', num2str(obj.t2)};
         end
 
-        function obj = setParameter(obj, parameter_cell)
-            count = 1;
-            obj.t1 = str2double(parameter_cell{count}); count = count + 1;
-            obj.t2 = str2double(parameter_cell{count}); count = count + 1;
+        function obj = setParameter(obj, Parameter)
+            i = 1;
+            obj.t1 = str2double(Parameter{i}); i = i + 1;
+            obj.t2 = str2double(Parameter{i}); i = i + 1;
         end
 
-        function data = run(obj, Tasks, run_parameter_list)
-            sub_pop = run_parameter_list(1);
-            sub_eva = run_parameter_list(2);
-
-            convergence = {};
-            bestX = {};
+        function data = run(obj, Tasks, RunPara)
+            sub_pop = RunPara(1); sub_eva = RunPara(2);
+            convergence = {}; bestX = {};
 
             for sub_task = 1:length(Tasks)
                 Task = Tasks(sub_task);

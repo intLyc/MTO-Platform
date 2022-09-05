@@ -30,8 +30,8 @@ classdef DEORA < Algorithm
     end
 
     methods
-        function parameter = getParameter(obj)
-            parameter = {'F: Mutation Factor', num2str(obj.F), ...
+        function Parameter = getParameter(obj)
+            Parameter = {'F: Mutation Factor', num2str(obj.F), ...
                         'CR: Crossover Probability', num2str(obj.CR), ...
                         'alpha', num2str(obj.alpha), ...
                         'beta', num2str(obj.beta), ...
@@ -40,21 +40,19 @@ classdef DEORA < Algorithm
                         'rmp0: Initial random mating probability', num2str(obj.rmp0)};
         end
 
-        function obj = setParameter(obj, parameter_cell)
-            count = 1;
-            obj.F = str2double(parameter_cell{count}); count = count + 1;
-            obj.CR = str2double(parameter_cell{count}); count = count + 1;
-            obj.alpha = str2double(parameter_cell{count}); count = count + 1;
-            obj.beta = str2double(parameter_cell{count}); count = count + 1;
-            obj.gama = str2double(parameter_cell{count}); count = count + 1;
-            obj.prob_min = str2double(parameter_cell{count}); count = count + 1;
-            obj.rmp0 = str2double(parameter_cell{count}); count = count + 1;
+        function obj = setParameter(obj, Parameter)
+            i = 1;
+            obj.F = str2double(Parameter{i}); i = i + 1;
+            obj.CR = str2double(Parameter{i}); i = i + 1;
+            obj.alpha = str2double(Parameter{i}); i = i + 1;
+            obj.beta = str2double(Parameter{i}); i = i + 1;
+            obj.gama = str2double(Parameter{i}); i = i + 1;
+            obj.prob_min = str2double(Parameter{i}); i = i + 1;
+            obj.rmp0 = str2double(Parameter{i}); i = i + 1;
         end
 
-        function data = run(obj, Tasks, run_parameter_list)
-            sub_pop = run_parameter_list(1);
-            sub_eva = run_parameter_list(2);
-            pop_size = sub_pop * length(Tasks);
+        function data = run(obj, Tasks, RunPara)
+            sub_pop = RunPara(1); sub_eva = RunPara(2);
             eva_num = sub_eva * length(Tasks);
 
             HR = []; % HR is used to store the historical rewards

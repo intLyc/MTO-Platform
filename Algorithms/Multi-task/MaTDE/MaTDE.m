@@ -34,8 +34,8 @@ classdef MaTDE < Algorithm
     end
 
     methods
-        function parameter = getParameter(obj)
-            parameter = {'alpha: Knowledge Transfer Rate', num2str(obj.alpha), ...
+        function Parameter = getParameter(obj)
+            Parameter = {'alpha: Knowledge Transfer Rate', num2str(obj.alpha), ...
                         'replace_rate: Archive Update Rate', num2str(obj.replace_rate), ...
                         'shrink_rate: Reward Shrink Rate', num2str(obj.shrink_rate), ...
                         'ro: Attenuation Coefficient', num2str(obj.ro), ...
@@ -46,23 +46,21 @@ classdef MaTDE < Algorithm
                         'UCR: CR Upper Bound', num2str(obj.UCR)};
         end
 
-        function obj = setParameter(obj, parameter_cell)
-            count = 1;
-            obj.alpha = str2double(parameter_cell{count}); count = count + 1;
-            obj.replace_rate = str2double(parameter_cell{count}); count = count + 1;
-            obj.shrink_rate = str2double(parameter_cell{count}); count = count + 1;
-            obj.ro = str2double(parameter_cell{count}); count = count + 1;
-            obj.archive_multiplier = str2double(parameter_cell{count}); count = count + 1;
-            obj.LF = str2double(parameter_cell{count}); count = count + 1;
-            obj.UF = str2double(parameter_cell{count}); count = count + 1;
-            obj.LCR = str2double(parameter_cell{count}); count = count + 1;
-            obj.UCR = str2double(parameter_cell{count}); count = count + 1;
+        function obj = setParameter(obj, Parameter)
+            i = 1;
+            obj.alpha = str2double(Parameter{i}); i = i + 1;
+            obj.replace_rate = str2double(Parameter{i}); i = i + 1;
+            obj.shrink_rate = str2double(Parameter{i}); i = i + 1;
+            obj.ro = str2double(Parameter{i}); i = i + 1;
+            obj.archive_multiplier = str2double(Parameter{i}); i = i + 1;
+            obj.LF = str2double(Parameter{i}); i = i + 1;
+            obj.UF = str2double(Parameter{i}); i = i + 1;
+            obj.LCR = str2double(Parameter{i}); i = i + 1;
+            obj.UCR = str2double(Parameter{i}); i = i + 1;
         end
 
-        function data = run(obj, Tasks, run_parameter_list)
-            sub_pop = run_parameter_list(1);
-            sub_eva = run_parameter_list(2);
-            pop_size = sub_pop * length(Tasks);
+        function data = run(obj, Tasks, RunPara)
+            sub_pop = RunPara(1); sub_eva = RunPara(2);
             eva_num = sub_eva * length(Tasks);
 
             archive = cell(1, length(Tasks));

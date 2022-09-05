@@ -14,14 +14,14 @@ classdef CEC17_CSO14 < Problem
             obj.sub_eva = 20000 * obj.dims;
         end
 
-        function parameter = getParameter(obj)
-            parameter = {'Dims', num2str(obj.dims)};
-            parameter = [obj.getRunParameter(), parameter];
+        function Parameter = getParameter(obj)
+            Parameter = {'Dims', num2str(obj.dims)};
+            Parameter = [obj.getRunParameter(), Parameter];
         end
 
-        function obj = setParameter(obj, parameter_cell)
-            obj.setRunParameter(parameter_cell(1:2));
-            obj.dims = str2double(parameter_cell{3});
+        function obj = setParameter(obj, Parameter)
+            obj.setRunParameter(Parameter(1:2));
+            obj.dims = str2double(Parameter{3});
         end
 
         function Tasks = getTasks(obj)

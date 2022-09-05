@@ -25,24 +25,20 @@ classdef LSHADE < Algorithm
     end
 
     methods
-        function parameter = getParameter(obj)
-            parameter = {'p: 100p% top as pbest', num2str(obj.p), ...
+        function Parameter = getParameter(obj)
+            Parameter = {'p: 100p% top as pbest', num2str(obj.p), ...
                         'H: success memory size', num2str(obj.H)};
         end
 
-        function obj = setParameter(obj, parameter_cell)
-            count = 1;
-            obj.p = str2double(parameter_cell{count}); count = count + 1;
-            obj.H = str2double(parameter_cell{count}); count = count + 1;
+        function obj = setParameter(obj, Parameter)
+            i = 1;
+            obj.p = str2double(Parameter{i}); i = i + 1;
+            obj.H = str2double(Parameter{i}); i = i + 1;
         end
 
-        function data = run(obj, Tasks, run_parameter_list)
-            sub_pop = run_parameter_list(1);
-            sub_eva = run_parameter_list(2);
-
-            convergence = {};
-            eva_gen = {};
-            bestX = {};
+        function data = run(obj, Tasks, RunPara)
+            sub_pop = RunPara(1); sub_eva = RunPara(2);
+            convergence = {}; eva_gen = {}; bestX = {};
 
             for sub_task = 1:length(Tasks)
                 Task = Tasks(sub_task);
@@ -54,7 +50,7 @@ classdef LSHADE < Algorithm
                 converge_temp(1) = bestobj;
                 eva_gen_temp(1) = fnceval_calls;
 
-                % initialize parameter
+                % initialize Parameter
                 H_idx = 1;
                 MF = 0.5 .* ones(obj.H, 1);
                 MCR = 0.5 .* ones(obj.H, 1);

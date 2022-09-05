@@ -32,8 +32,8 @@ classdef EMEA < Algorithm
     end
 
     methods
-        function parameter = getParameter(obj)
-            parameter = {'Op: Operator (Split with /)', obj.Op, ...
+        function Parameter = getParameter(obj)
+            Parameter = {'Op: Operator (Split with /)', obj.Op, ...
                         'S: Transfer num', num2str(obj.Snum), ...
                         'G: Transfer Gap', num2str(obj.Gap), ...
                         'mu: index of Simulated Binary Crossover', num2str(obj.GA_mu), ...
@@ -42,20 +42,19 @@ classdef EMEA < Algorithm
                         'CR: DE Crossover Probability', num2str(obj.DE_CR)};
         end
 
-        function obj = setParameter(obj, parameter_cell)
-            count = 1;
-            obj.Op = parameter_cell{count}; count = count + 1;
-            obj.Snum = str2double(parameter_cell{count}); count = count + 1;
-            obj.Gap = str2double(parameter_cell{count}); count = count + 1;
-            obj.GA_mu = str2double(parameter_cell{count}); count = count + 1;
-            obj.GA_mum = str2double(parameter_cell{count}); count = count + 1;
-            obj.DE_F = str2double(parameter_cell{count}); count = count + 1;
-            obj.DE_CR = str2double(parameter_cell{count}); count = count + 1;
+        function obj = setParameter(obj, Parameter)
+            i = 1;
+            obj.Op = Parameter{i}; i = i + 1;
+            obj.Snum = str2double(Parameter{i}); i = i + 1;
+            obj.Gap = str2double(Parameter{i}); i = i + 1;
+            obj.GA_mu = str2double(Parameter{i}); i = i + 1;
+            obj.GA_mum = str2double(Parameter{i}); i = i + 1;
+            obj.DE_F = str2double(Parameter{i}); i = i + 1;
+            obj.DE_CR = str2double(Parameter{i}); i = i + 1;
         end
 
-        function data = run(obj, Tasks, run_parameter_list)
-            sub_pop = run_parameter_list(1);
-            sub_eva = run_parameter_list(2);
+        function data = run(obj, Tasks, RunPara)
+            sub_pop = RunPara(1); sub_eva = RunPara(2);
             eva_num = sub_eva * length(Tasks);
 
             op_list = split(obj.Op, '/');

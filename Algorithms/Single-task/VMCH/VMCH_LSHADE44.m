@@ -34,8 +34,8 @@ classdef VMCH_LSHADE44 < Algorithm
     end
 
     methods
-        function parameter = getParameter(obj)
-            parameter = {'p: 100p% top as pbest', num2str(obj.p), ...
+        function Parameter = getParameter(obj)
+            Parameter = {'p: 100p% top as pbest', num2str(obj.p), ...
                         'H: success memory size', num2str(obj.H), ...
                         'arc_rate: arcive size rate', num2str(obj.arc_rate), ...
                         'ep_top', num2str(obj.ep_top), ...
@@ -45,16 +45,16 @@ classdef VMCH_LSHADE44 < Algorithm
                         'ep_tcc', num2str(obj.ep_tcc)};
         end
 
-        function obj = setParameter(obj, parameter_cell)
-            count = 1;
-            obj.p = str2double(parameter_cell{count}); count = count + 1;
-            obj.H = str2double(parameter_cell{count}); count = count + 1;
-            obj.arc_rate = str2double(parameter_cell{count}); count = count + 1;
-            obj.ep_top = str2double(parameter_cell{count}); count = count + 1;
-            obj.ep_alpha = str2double(parameter_cell{count}); count = count + 1;
-            obj.ep_cp = str2double(parameter_cell{count}); count = count + 1;
-            obj.ep_tc = str2double(parameter_cell{count}); count = count + 1;
-            obj.ep_tcc = str2double(parameter_cell{count}); count = count + 1;
+        function obj = setParameter(obj, Parameter)
+            i = 1;
+            obj.p = str2double(Parameter{i}); i = i + 1;
+            obj.H = str2double(Parameter{i}); i = i + 1;
+            obj.arc_rate = str2double(Parameter{i}); i = i + 1;
+            obj.ep_top = str2double(Parameter{i}); i = i + 1;
+            obj.ep_alpha = str2double(Parameter{i}); i = i + 1;
+            obj.ep_cp = str2double(Parameter{i}); i = i + 1;
+            obj.ep_tc = str2double(Parameter{i}); i = i + 1;
+            obj.ep_tcc = str2double(Parameter{i}); i = i + 1;
         end
 
         function [res, p_min] = roulete(obj, cutpoints)
@@ -71,14 +71,9 @@ classdef VMCH_LSHADE44 < Algorithm
             res = 1 + fix(sum(cp < rand(1)));
         end
 
-        function data = run(obj, Tasks, run_parameter_list)
-            sub_pop = run_parameter_list(1);
-            sub_eva = run_parameter_list(2);
-
-            convergence = {};
-            convergence_cv = {};
-            eva_gen = {};
-            bestX = {};
+        function data = run(obj, Tasks, RunPara)
+            sub_pop = RunPara(1); sub_eva = RunPara(2);
+            convergence = {}; convergence_cv = {}; eva_gen = {}; bestX = {};
 
             for sub_task = 1:length(Tasks)
                 Task = Tasks(sub_task);
@@ -97,7 +92,7 @@ classdef VMCH_LSHADE44 < Algorithm
                 cv_temp = [population.constraint_violation];
                 [~, idx] = sort(cv_temp);
                 Ep = cv_temp(idx(n));
-                % initialize parameter
+                % initialize Parameter
                 ch_num = 5;
                 u = 1 / ch_num * ones(1, ch_num);
                 correctCount = zeros(1, ch_num);

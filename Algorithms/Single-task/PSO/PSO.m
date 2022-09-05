@@ -16,27 +16,24 @@ classdef PSO < Algorithm
     end
 
     methods
-        function parameter = getParameter(obj)
-            parameter = {'wmax: Inertia Weight Max', num2str(obj.wmax), ...
+        function Parameter = getParameter(obj)
+            Parameter = {'wmax: Inertia Weight Max', num2str(obj.wmax), ...
                         'wmin: Inertia Weight Min', num2str(obj.wmin), ...
                         'c1', num2str(obj.c1), ...
                         'c2', num2str(obj.c2)};
         end
 
-        function obj = setParameter(obj, parameter_cell)
-            count = 1;
-            obj.wmax = str2double(parameter_cell{count}); count = count + 1;
-            obj.wmin = str2double(parameter_cell{count}); count = count + 1;
-            obj.c1 = str2double(parameter_cell{count}); count = count + 1;
-            obj.c2 = str2double(parameter_cell{count}); count = count + 1;
+        function obj = setParameter(obj, Parameter)
+            i = 1;
+            obj.wmax = str2double(Parameter{i}); i = i + 1;
+            obj.wmin = str2double(Parameter{i}); i = i + 1;
+            obj.c1 = str2double(Parameter{i}); i = i + 1;
+            obj.c2 = str2double(Parameter{i}); i = i + 1;
         end
 
-        function data = run(obj, Tasks, run_parameter_list)
-            sub_pop = run_parameter_list(1);
-            sub_eva = run_parameter_list(2);
-
-            convergence = {};
-            bestX = {};
+        function data = run(obj, Tasks, RunPara)
+            sub_pop = RunPara(1); sub_eva = RunPara(2);
+            convergence = {}; bestX = {};
 
             for sub_task = 1:length(Tasks)
                 Task = Tasks(sub_task);

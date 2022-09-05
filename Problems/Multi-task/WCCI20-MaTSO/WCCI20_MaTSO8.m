@@ -14,14 +14,14 @@ classdef WCCI20_MaTSO8 < Problem
             obj.sub_eva = 1000 * 50;
         end
 
-        function parameter = getParameter(obj)
-            parameter = {'Task Num', num2str(obj.task_num)};
-            parameter = [obj.getRunParameter(), parameter];
+        function Parameter = getParameter(obj)
+            Parameter = {'Task Num', num2str(obj.task_num)};
+            Parameter = [obj.getRunParameter(), Parameter];
         end
 
-        function obj = setParameter(obj, parameter_cell)
-            obj.setRunParameter(parameter_cell(1:2));
-            obj.task_num = str2double(parameter_cell{3});
+        function obj = setParameter(obj, Parameter)
+            obj.setRunParameter(Parameter(1:2));
+            obj.task_num = str2double(Parameter{3});
         end
 
         function Tasks = getTasks(obj)

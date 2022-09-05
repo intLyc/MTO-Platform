@@ -3,7 +3,7 @@ classdef CAL_SHADE < Algorithm
 
     %------------------------------- Reference --------------------------------
     % @InProceedings{Zamuda2017CAL-SHADE,
-    %   title     = {Adaptive Constraint Handling and Success History Differential Evolution for Cec 2017 Constrained Real-parameter Optimization},
+    %   title     = {Adaptive Constraint Handling and Success History Differential Evolution for Cec 2017 Constrained Real-Parameter Optimization},
     %   author    = {Zamuda, Aleš},
     %   booktitle = {2017 IEEE Congress on Evolutionary Computation (CEC)},
     %   year      = {2017},
@@ -29,8 +29,8 @@ classdef CAL_SHADE < Algorithm
     end
 
     methods
-        function parameter = getParameter(obj)
-            parameter = {'p: 100p% top as pbest', num2str(obj.p), ...
+        function Parameter = getParameter(obj)
+            Parameter = {'p: 100p% top as pbest', num2str(obj.p), ...
                         'H: success memory size', num2str(obj.H), ...
                         'arc_rate: arcive size rate', num2str(obj.arc_rate), ...
                         'ep_top', num2str(obj.ep_top), ...
@@ -38,24 +38,19 @@ classdef CAL_SHADE < Algorithm
                         'ep_cp', num2str(obj.ep_cp)};
         end
 
-        function obj = setParameter(obj, parameter_cell)
-            count = 1;
-            obj.p = str2double(parameter_cell{count}); count = count + 1;
-            obj.H = str2double(parameter_cell{count}); count = count + 1;
-            obj.arc_rate = str2double(parameter_cell{count}); count = count + 1;
-            obj.ep_top = str2double(parameter_cell{count}); count = count + 1;
-            obj.ep_tc = str2double(parameter_cell{count}); count = count + 1;
-            obj.ep_cp = str2double(parameter_cell{count}); count = count + 1;
+        function obj = setParameter(obj, Parameter)
+            i = 1;
+            obj.p = str2double(Parameter{i}); i = i + 1;
+            obj.H = str2double(Parameter{i}); i = i + 1;
+            obj.arc_rate = str2double(Parameter{i}); i = i + 1;
+            obj.ep_top = str2double(Parameter{i}); i = i + 1;
+            obj.ep_tc = str2double(Parameter{i}); i = i + 1;
+            obj.ep_cp = str2double(Parameter{i}); i = i + 1;
         end
 
-        function data = run(obj, Tasks, run_parameter_list)
-            sub_pop = run_parameter_list(1);
-            sub_eva = run_parameter_list(2);
-
-            convergence = {};
-            convergence_cv = {};
-            eva_gen = {};
-            bestX = {};
+        function data = run(obj, Tasks, RunPara)
+            sub_pop = RunPara(1); sub_eva = RunPara(2);
+            convergence = {}; convergence_cv = {}; eva_gen = {}; bestX = {};
 
             for sub_task = 1:length(Tasks)
                 Task = Tasks(sub_task);
@@ -70,7 +65,7 @@ classdef CAL_SHADE < Algorithm
                 converge_cv_temp(1) = bestCV;
                 eva_gen_temp(1) = fnceval_calls;
 
-                % initialize parameter
+                % initialize Parameter
                 n = ceil(obj.ep_top * length(population));
                 cv_temp = [population.constraint_violation];
                 [~, idx] = sort(cv_temp);

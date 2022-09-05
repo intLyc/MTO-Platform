@@ -41,33 +41,33 @@ classdef Problem < handle
             obj.name = name;
         end
 
-        function run_parameter = getRunParameter(obj)
-            % get run_parameter, cannot be changed
-            run_parameter = {'N: Each Task Population Size', num2str(obj.sub_pop), ...
-                        'E: Each Task Evaluation Max', num2str(obj.sub_eva)};
+        function RunPara = getRunParameter(obj)
+            % get RunPara, cannot be changed
+            RunPara = {'N: Each Task Population Size', num2str(obj.sub_pop), ...
+                    'E: Each Task Evaluation Max', num2str(obj.sub_eva)};
         end
 
-        function run_parameter_list = getRunParameterList(obj)
-            % get run_parameter_list, cannot be changed
-            run_parameter_list = [obj.sub_pop, obj.sub_eva];
+        function RunParaList = getRunParameterList(obj)
+            % get RunParaList, cannot be changed
+            RunParaList = [obj.sub_pop, obj.sub_eva];
         end
 
-        function obj = setRunParameter(obj, run_parameter)
-            % set run_parameter, cannot be changed
-            obj.sub_pop = str2double(run_parameter{1});
-            obj.sub_eva = str2double(run_parameter{2});
+        function obj = setRunParameter(obj, RunPara)
+            % set RunPara, cannot be changed
+            obj.sub_pop = str2double(RunPara{1});
+            obj.sub_eva = str2double(RunPara{2});
         end
 
-        function parameter = getParameter(obj)
+        function Parameter = getParameter(obj)
             % get problem's parameter
             % return parameter, contains {para1, value1, para2, value2, ...} (string)
-            parameter = obj.getRunParameter();
+            Parameter = obj.getRunParameter();
         end
 
-        function obj = setParameter(obj, parameter_cell)
+        function obj = setParameter(obj, Parameter)
             % set problem's parameter
-            % arg parameter_cell, contains {value1, value2, ...} (string)
-            obj.setRunParameter(parameter_cell);
+            % arg Parameter, contains {value1, value2, ...} (string)
+            obj.setRunParameter(Parameter);
         end
     end
 

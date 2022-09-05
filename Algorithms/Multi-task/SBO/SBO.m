@@ -30,25 +30,23 @@ classdef SBO < Algorithm
     end
 
     methods
-        function parameter = getParameter(obj)
-            parameter = {'benefit: Beneficial factor', num2str(obj.benefit), ...
+        function Parameter = getParameter(obj)
+            Parameter = {'benefit: Beneficial factor', num2str(obj.benefit), ...
                         'harm: Harmful factor', num2str(obj.harm), ...
                         'mu: index of Simulated Binary Crossover', num2str(obj.mu), ...
                         'mum: index of polynomial mutation', num2str(obj.mum)};
         end
 
-        function obj = setParameter(obj, parameter_cell)
-            count = 1;
-            obj.benefit = str2double(parameter_cell{count}); count = count + 1;
-            obj.harm = str2double(parameter_cell{count}); count = count + 1;
-            obj.mu = str2double(parameter_cell{count}); count = count + 1;
-            obj.mum = str2double(parameter_cell{count}); count = count + 1;
+        function obj = setParameter(obj, Parameter)
+            i = 1;
+            obj.benefit = str2double(Parameter{i}); i = i + 1;
+            obj.harm = str2double(Parameter{i}); i = i + 1;
+            obj.mu = str2double(Parameter{i}); i = i + 1;
+            obj.mum = str2double(Parameter{i}); i = i + 1;
         end
 
-        function data = run(obj, Tasks, run_parameter_list)
-            sub_pop = run_parameter_list(1);
-            sub_eva = run_parameter_list(2);
-            pop_size = sub_pop * length(Tasks);
+        function data = run(obj, Tasks, RunPara)
+            sub_pop = RunPara(1); sub_eva = RunPara(2);
             eva_num = sub_eva * length(Tasks);
 
             RIJ = 0.5 * ones(length(Tasks), length(Tasks)); % transfer rates

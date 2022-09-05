@@ -25,23 +25,20 @@ classdef JADE < Algorithm
     end
 
     methods
-        function parameter = getParameter(obj)
-            parameter = {'p: 100p% top as pbest', num2str(obj.p), ...
+        function Parameter = getParameter(obj)
+            Parameter = {'p: 100p% top as pbest', num2str(obj.p), ...
                         'c: life span of uF and uCR', num2str(obj.c)};
         end
 
-        function obj = setParameter(obj, parameter_cell)
-            count = 1;
-            obj.p = str2double(parameter_cell{count}); count = count + 1;
-            obj.c = str2double(parameter_cell{count}); count = count + 1;
+        function obj = setParameter(obj, Parameter)
+            i = 1;
+            obj.p = str2double(Parameter{i}); i = i + 1;
+            obj.c = str2double(Parameter{i}); i = i + 1;
         end
 
-        function data = run(obj, Tasks, run_parameter_list)
-            sub_pop = run_parameter_list(1);
-            sub_eva = run_parameter_list(2);
-
-            convergence = {};
-            bestX = {};
+        function data = run(obj, Tasks, RunPara)
+            sub_pop = RunPara(1); sub_eva = RunPara(2);
+            convergence = {}; bestX = {};
 
             for sub_task = 1:length(Tasks)
                 Task = Tasks(sub_task);
@@ -50,7 +47,7 @@ classdef JADE < Algorithm
                 [population, fnceval_calls, bestobj, bestX_temp] = initialize(IndividualJADE, sub_pop, Task, Task.dims);
                 converge_temp(1) = bestobj;
 
-                % initialize parameter
+                % initialize Parameter
                 uF = 0.5;
                 uCR = 0.5;
                 arc = IndividualJADE.empty();

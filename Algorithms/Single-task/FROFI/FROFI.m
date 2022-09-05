@@ -22,16 +22,12 @@ classdef FROFI < Algorithm
     %--------------------------------------------------------------------------
 
     methods
-        function data = run(obj, Tasks, run_parameter_list)
-            sub_pop = run_parameter_list(1);
-            sub_eva = run_parameter_list(2);
+        function data = run(obj, Tasks, RunPara)
+            sub_pop = RunPara(1); sub_eva = RunPara(2);
+            convergence = {}; convergence_cv = {}; bestX = {};
 
             F_pool = [0.6, 0.8, 1.0];
             CR_pool = [0.1, 0.2, 1.0];
-
-            convergence = {};
-            convergence_cv = {};
-            bestX = {};
 
             for sub_task = 1:length(Tasks)
                 Task = Tasks(sub_task);

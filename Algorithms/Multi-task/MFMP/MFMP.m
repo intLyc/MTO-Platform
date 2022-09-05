@@ -30,26 +30,25 @@ classdef MFMP < Algorithm
     end
 
     methods
-        function parameter = getParameter(obj)
-            parameter = {'theta', num2str(obj.theta), ...
+        function Parameter = getParameter(obj)
+            Parameter = {'theta', num2str(obj.theta), ...
                         'c', num2str(obj.c), ...
                         'alpha', num2str(obj.alpha), ...
                         'p: 100p% top as pbest', num2str(obj.p), ...
                         'H: success memory size', num2str(obj.H)};
         end
 
-        function obj = setParameter(obj, parameter_cell)
-            count = 1;
-            obj.theta = str2double(parameter_cell{count}); count = count + 1;
-            obj.c = str2double(parameter_cell{count}); count = count + 1;
-            obj.alpha = str2double(parameter_cell{count}); count = count + 1;
-            obj.p = str2double(parameter_cell{count}); count = count + 1;
-            obj.H = str2double(parameter_cell{count}); count = count + 1;
+        function obj = setParameter(obj, Parameter)
+            i = 1;
+            obj.theta = str2double(Parameter{i}); i = i + 1;
+            obj.c = str2double(Parameter{i}); i = i + 1;
+            obj.alpha = str2double(Parameter{i}); i = i + 1;
+            obj.p = str2double(Parameter{i}); i = i + 1;
+            obj.H = str2double(Parameter{i}); i = i + 1;
         end
 
-        function data = run(obj, Tasks, run_parameter_list)
-            sub_pop = run_parameter_list(1);
-            sub_eva = run_parameter_list(2);
+        function data = run(obj, Tasks, RunPara)
+            sub_pop = RunPara(1); sub_eva = RunPara(2);
             eva_num = sub_eva * length(Tasks);
 
             SR(:, 1) = ones(length(Tasks), 1);

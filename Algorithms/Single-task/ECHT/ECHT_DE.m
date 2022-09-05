@@ -32,8 +32,8 @@ classdef ECHT_DE < Algorithm
     end
 
     methods
-        function parameter = getParameter(obj)
-            parameter = {'F: Mutation Factor', num2str(obj.F), ...
+        function Parameter = getParameter(obj)
+            Parameter = {'F: Mutation Factor', num2str(obj.F), ...
                         'CR: Crossover Probability', num2str(obj.CR), ...
                         'sr_max', num2str(obj.sr_max), ...
                         'sr_min', num2str(obj.sr_min), ...
@@ -42,24 +42,20 @@ classdef ECHT_DE < Algorithm
                         'ep_cp', num2str(obj.ep_cp)};
         end
 
-        function obj = setParameter(obj, parameter_cell)
-            count = 1;
-            obj.F = str2double(parameter_cell{count}); count = count + 1;
-            obj.CR = str2double(parameter_cell{count}); count = count + 1;
-            obj.sr_max = str2double(parameter_cell{count}); count = count + 1;
-            obj.sr_min = str2double(parameter_cell{count}); count = count + 1;
-            obj.ep_top = str2double(parameter_cell{count}); count = count + 1;
-            obj.ep_tc = str2double(parameter_cell{count}); count = count + 1;
-            obj.ep_cp = str2double(parameter_cell{count}); count = count + 1;
+        function obj = setParameter(obj, Parameter)
+            i = 1;
+            obj.F = str2double(Parameter{i}); i = i + 1;
+            obj.CR = str2double(Parameter{i}); i = i + 1;
+            obj.sr_max = str2double(Parameter{i}); i = i + 1;
+            obj.sr_min = str2double(Parameter{i}); i = i + 1;
+            obj.ep_top = str2double(Parameter{i}); i = i + 1;
+            obj.ep_tc = str2double(Parameter{i}); i = i + 1;
+            obj.ep_cp = str2double(Parameter{i}); i = i + 1;
         end
 
-        function data = run(obj, Tasks, run_parameter_list)
-            sub_pop = run_parameter_list(1);
-            sub_eva = run_parameter_list(2);
-
-            convergence = [];
-            convergence_cv = [];
-            bestX = {};
+        function data = run(obj, Tasks, RunPara)
+            sub_pop = RunPara(1); sub_eva = RunPara(2);
+            convergence = []; convergence_cv = []; bestX = {};
 
             for sub_task = 1:length(Tasks)
                 Task = Tasks(sub_task);

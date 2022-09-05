@@ -33,20 +33,20 @@ classdef Algorithm < handle
             obj.name = name;
         end
 
-        function parameter = getParameter(obj)
+        function Parameter = getParameter(obj)
             % Get algorithm's parameter
             % return parameter, contains {para1, value1, para2, value2, ...} (string)
-            parameter = {};
+            Parameter = {};
         end
 
-        function obj = setParameter(obj, parameter_cell)
+        function obj = setParameter(obj, Parameter)
             % set algorithm's parameter
             % arg parameter_cell, contains {value1, value2, ...} (string)
         end
     end
 
     methods (Abstract)
-        run(obj, Tasks) % run this tasks with algorithm,
+        run(obj, Tasks, RunPara) % run this tasks with algorithm,
         % return data, contains data.clock_time, data.convergence
     end
 end
