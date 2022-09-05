@@ -1,4 +1,4 @@
-function [obj, con] = Ackley(var, M, opt, g)
+function [obj, cv] = Ackley(var, M, opt, g)
     % Ackley function
     %   - var: design variable vector
     %   - M: rotation matrix
@@ -12,7 +12,6 @@ function [obj, con] = Ackley(var, M, opt, g)
     % or footnote "https://github.com/intLyc/MTO-Platform"
     %--------------------------------------------------------------------------
 
-    con = 0;
     dim = length(var);
     var = (M * (var - opt)')';
     sum1 = 0; sum2 = 0;
@@ -27,4 +26,6 @@ function [obj, con] = Ackley(var, M, opt, g)
 
     obj = -20 * exp(-0.2 * sqrt(avgsum1)) - exp(avgsum2) + 20 + exp(1);
     obj = obj + g;
+
+    cv = 0;
 end

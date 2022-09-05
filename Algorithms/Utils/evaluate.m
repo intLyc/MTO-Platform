@@ -23,9 +23,10 @@ function [population, calls] = evaluate(population, Task, task_idx, varargin)
             case 'real'
                 x = population(i).rnvec(1:Task.dims);
         end
-        [obj, con] = Task.fnc(x);
+        [obj, cv] = Task.fnc(x);
+        obj = sum(obj); cv = sum(cv);
         population(i).factorial_costs(task_idx) = obj;
-        population(i).constraint_violation(task_idx) = con;
+        population(i).constraint_violation(task_idx) = cv;
     end
     calls = length(population);
 end

@@ -1,4 +1,4 @@
-function [obj, con] = Weierstrass(var, M, opt, g)
+function [obj, cv] = Weierstrass(var, M, opt, g)
     % WEIERSTASS function
     %   - var: design variable vector
     %   - M: rotation matrix
@@ -12,7 +12,6 @@ function [obj, con] = Weierstrass(var, M, opt, g)
     % or footnote "https://github.com/intLyc/MTO-Platform"
     %--------------------------------------------------------------------------
 
-    con = 0;
     D = length(var);
     var = (M * (var - opt)')';
     a = 0.5;
@@ -32,4 +31,6 @@ function [obj, con] = Weierstrass(var, M, opt, g)
         obj = obj - D * a^k * cos(2 * pi * b^k * 0.5);
     end
     obj = obj + g;
+
+    cv = 0;
 end

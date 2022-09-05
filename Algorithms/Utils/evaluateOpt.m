@@ -25,16 +25,18 @@ function [population, calls] = evaluateOpt(population, Task, task_idx, pil)
             population(i).rnvec(1:Task.dims) = temp;
             if ~isempty(rnvec ~= temp)
                 x = (Task.Ub - Task.Lb) .* temp + Task.Lb;
-                [obj, con] = Task.fnc(x);
+                [obj, cv] = Task.fnc(x);
+                obj = sum(obj); cv = sum(cv);
                 calls = calls + 1;
             end
             population(i).factorial_costs(task_idx) = obj;
-            population(i).constraint_violation(task_idx) = con;
+            population(i).constraint_violation(task_idx) = cv;
             calls = calls + out.funcCount;
         else
-            [obj, con] = Task.fnc(x);
+            [obj, cv] = Task.fnc(x);
+            obj = sum(obj); cv = sum(cv);
             population(i).factorial_costs(task_idx) = obj;
-            population(i).constraint_violation(task_idx) = con;
+            population(i).constraint_violation(task_idx) = cv;
             calls = calls + 1;
         end
     end

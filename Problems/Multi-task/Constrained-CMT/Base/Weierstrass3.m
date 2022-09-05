@@ -1,4 +1,4 @@
-function [obj, con] = Weierstrass3(var, M, opt, opt_con)
+function [obj, cv] = Weierstrass3(var, M, opt, opt_con)
     % WEIERSTASS function
     %   - var: design variable vector
     %   - M: rotation matrix
@@ -26,10 +26,7 @@ function [obj, con] = Weierstrass3(var, M, opt, opt_con)
     g1 = -sum(abs(x), 2) + 12 * dim;
     g2 = sum(x.^2, 2) - 500 * dim;
     g = [g1, g2];
-    h = 0;
 
     g(g < 0) = 0;
-    h = abs(h) - 1e-4;
-    h(h < 0) = 0;
-    con = sum(g) + sum(h);
+    cv = g;
 end

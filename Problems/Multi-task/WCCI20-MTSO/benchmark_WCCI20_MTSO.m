@@ -176,7 +176,7 @@ function Tasks = benchmark_WCCI20_MTSO(index)
     end
 end
 
-function [obj, con] = get_func(x, fnc, index, task_id)
+function [obj, cv] = get_func(x, fnc, index, task_id)
     obj = cec14_func(x', fnc, index, task_id);
-    con = 0;
+    cv = 0;
 end

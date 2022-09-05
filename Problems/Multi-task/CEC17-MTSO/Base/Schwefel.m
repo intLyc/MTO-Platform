@@ -1,4 +1,4 @@
-function [obj, con] = Schwefel(x, M, opt, g)
+function [obj, cv] = Schwefel(x, M, opt, g)
     % SCHWEFEL function
     %   - var: design variable vector
     %   - M: rotation matrix
@@ -12,7 +12,6 @@ function [obj, con] = Schwefel(x, M, opt, g)
     % or footnote "https://github.com/intLyc/MTO-Platform"
     %--------------------------------------------------------------------------
 
-    con = 0;
     var = x;
     dim = length(var);
     var = (M * (var - opt)')';
@@ -23,4 +22,6 @@ function [obj, con] = Schwefel(x, M, opt, g)
 
     obj = 418.9829 * dim - sum;
     obj = obj + g;
+
+    cv = 0;
 end

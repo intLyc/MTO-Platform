@@ -1,4 +1,4 @@
-function [obj, con] = Ackley2(var, M, opt, opt_con)
+function [obj, cv] = Ackley2(var, M, opt, opt_con)
     % Ackley function
     %   - var: design variable vector
     %   - M: rotation matrix
@@ -20,10 +20,7 @@ function [obj, con] = Ackley2(var, M, opt, opt_con)
     % constraint
     x = 2 * (var - opt_con(1:dim));
     g = sum(x.^2, 2) - 100 * dim;
-    h = 0;
 
     g(g < 0) = 0;
-    h = abs(h) - 1e-4;
-    h(h < 0) = 0;
-    con = sum(g) + sum(h);
+    cv = g;
 end

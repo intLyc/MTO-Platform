@@ -1,4 +1,4 @@
-function [obj, con] = ATF_Func(var, problem)
+function [obj, cv] = ATF_Func(var, problem)
 
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
@@ -14,8 +14,8 @@ function [obj, con] = ATF_Func(var, problem)
     end
     switch problem
         case 1
-            con = var(1)^2/4 + var(2)^2/9 -1;
+            cv = var(1)^2/4 + var(2)^2/9 -1;
         case 2
-            con = 3 * (var(1) + 9)^2 + var(2)^2 - 2;
+            cv = 3 * (var(1) + 9)^2 + var(2)^2 - 2;
     end
 end

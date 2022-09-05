@@ -1,4 +1,4 @@
-function [obj, con] = Rastrigin(var, M, opt, g)
+function [obj, cv] = Rastrigin(var, M, opt, g)
     % Rastrigin function
     %   - var: design variable vector
     %   - M: rotation matrix
@@ -12,7 +12,6 @@ function [obj, con] = Rastrigin(var, M, opt, g)
     % or footnote "https://github.com/intLyc/MTO-Platform"
     %--------------------------------------------------------------------------
 
-    con = 0;
     dim = length(var);
     var = (M * (var - opt)')';
     obj = 10 * dim;
@@ -21,4 +20,6 @@ function [obj, con] = Rastrigin(var, M, opt, g)
         obj = obj + (var(i)^2 - 10 * (cos(2 * pi * var(i))));
     end
     obj = obj + g;
+
+    cv = 0;
 end

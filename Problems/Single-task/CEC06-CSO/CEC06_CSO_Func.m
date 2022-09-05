@@ -1,4 +1,4 @@
-function [obj, con] = CEC06_CSO_Func(x, problem, aaa)
+function [obj, cv] = CEC06_CSO_Func(x, problem, aaa)
 
     ps = size(x, 1);
 
@@ -342,6 +342,7 @@ function [obj, con] = CEC06_CSO_Func(x, problem, aaa)
 
     end
 
-    con = sum(max(g, 0), 2);
     obj = f;
+    g(g < 0) = 0;
+    cv = g;
 end

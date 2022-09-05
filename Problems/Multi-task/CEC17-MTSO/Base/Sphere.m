@@ -1,4 +1,4 @@
-function [obj, con] = Sphere(x, M, opt, g)
+function [obj, cv] = Sphere(x, M, opt, g)
     % Sphere function
     %   - var: design variable vector
     %   - M: rotation matrix
@@ -12,7 +12,6 @@ function [obj, con] = Sphere(x, M, opt, g)
     % or footnote "https://github.com/intLyc/MTO-Platform"
     %--------------------------------------------------------------------------
 
-    con = 0;
     var = x;
     dim = length(var);
     var = (M * (var - opt)')';
@@ -22,4 +21,6 @@ function [obj, con] = Sphere(x, M, opt, g)
     end
     obj = sum;
     obj = obj + g;
+
+    cv = 0;
 end

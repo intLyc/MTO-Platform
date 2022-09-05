@@ -1,4 +1,4 @@
-function [obj, con] = Griewank(var, M, opt, g)
+function [obj, cv] = Griewank(var, M, opt, g)
     % GRIEWANK function
     %   - var: design variable vector
     %   - M: rotation matrix
@@ -12,7 +12,6 @@ function [obj, con] = Griewank(var, M, opt, g)
     % or footnote "https://github.com/intLyc/MTO-Platform"
     %--------------------------------------------------------------------------
 
-    con = 0;
     dim = length(var);
     var = (M * (var - opt)')'; %
     sum1 = 0; sum2 = 1;
@@ -24,4 +23,6 @@ function [obj, con] = Griewank(var, M, opt, g)
 
     obj = 1 + 1/4000 * sum1 - sum2;
     obj = obj + g;
+
+    cv = 0;
 end
