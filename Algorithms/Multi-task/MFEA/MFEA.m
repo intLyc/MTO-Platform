@@ -1,5 +1,5 @@
 classdef MFEA < Algorithm
-    % <Multi> <None>
+    % <Multi> <None/Constrained>
 
     %------------------------------- Reference --------------------------------
     % @Article{Gupta2016MFEA,
@@ -47,8 +47,9 @@ classdef MFEA < Algorithm
             eva_num = sub_eva * length(Tasks);
 
             % initialize
-            [population, fnceval_calls, bestobj, bestX] = initializeMF(Individual, pop_size, Tasks, max([Tasks.dims]));
+            [population, fnceval_calls, bestobj, bestCV, bestX] = initializeCMF(Individual, pop_size, Tasks, max([Tasks.dims]));
             convergence(:, 1) = bestobj;
+            convergence_cv(:, 1) = bestCV;
 
             generation = 1;
             while fnceval_calls < eva_num
@@ -59,10 +60,12 @@ classdef MFEA < Algorithm
                 fnceval_calls = fnceval_calls + calls;
 
                 % selection
-                [population, bestobj, bestX] = selectMF(population, offspring, Tasks, pop_size, bestobj, bestX);
+                [population, bestobj, bestCV, bestX] = selectCMF(population, offspring, Tasks, pop_size, bestobj, bestCV, bestX);
                 convergence(:, generation) = bestobj;
+                convergence_cv(:, generation) = bestCV;
             end
             data.convergence = gen2eva(convergence);
+            data.convergence_cv = gen2eva(convergence_cv);
             data.bestX = uni2real(bestX, Tasks);
         end
     end

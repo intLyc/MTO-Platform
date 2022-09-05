@@ -1,11 +1,11 @@
 classdef MFDE < Algorithm
-    % <Multi> <None>
+    % <Multi> <None/Constrained>
 
     %------------------------------- Reference --------------------------------
     % @InProceedings{Feng2017MFDE-MFPSO,
+    %   title      = {An Empirical Study of Multifactorial PSO and Multifactorial DE},
     %   author     = {Feng, L. and Zhou, W. and Zhou, L. and Jiang, S. W. and Zhong, J. H. and Da, B. S. and Zhu, Z. X. and Wang, Y.},
     %   booktitle  = {2017 IEEE Congress on Evolutionary Computation (CEC)},
-    %   title      = {An Empirical Study of Multifactorial PSO and Multifactorial DE},
     %   year       = {2017},
     %   pages      = {921-928},
     %   doi        = {10.1109/CEC.2017.7969407},
@@ -45,8 +45,9 @@ classdef MFDE < Algorithm
             eva_num = sub_eva * length(Tasks);
 
             % initialize
-            [population, fnceval_calls, bestobj, bestX] = initializeMF(Individual, pop_size, Tasks, max([Tasks.dims]));
+            [population, fnceval_calls, bestobj, bestCV, bestX] = initializeCMF(Individual, pop_size, Tasks, max([Tasks.dims]));
             convergence(:, 1) = bestobj;
+            convergence_cv(:, 1) = bestCV;
 
             generation = 1;
             while fnceval_calls < eva_num
@@ -57,10 +58,12 @@ classdef MFDE < Algorithm
                 fnceval_calls = fnceval_calls + calls;
 
                 % selection
-                [population, bestobj, bestX] = selectMF(population, offspring, Tasks, pop_size, bestobj, bestX);
+                [population, bestobj, bestCV, bestX] = selectCMF(population, offspring, Tasks, pop_size, bestobj, bestCV, bestX);
                 convergence(:, generation) = bestobj;
+                convergence_cv(:, generation) = bestCV;
             end
             data.convergence = gen2eva(convergence);
+            data.convergence_cv = gen2eva(convergence_cv);
             data.bestX = uni2real(bestX, Tasks);
         end
     end

@@ -1,14 +1,14 @@
 classdef AT_MFEA < Algorithm
-    % <Multi> <None>
+    % <Multi> <None/Constrained>
 
     %------------------------------- Reference --------------------------------
-    % @Article{Xue2020AT-MFEA,
-    %   author     = {Xue, Xiaoming and Zhang, Kai and Tan, Kay Chen and Feng, Liang and Wang, Jian and Chen, Guodong and Zhao, Xinggang and Zhang, Liming and Yao, Jun},
-    %   journal    = {IEEE Transactions on Cybernetics},
+    % @article{Xue2020AT-MFEA,
     %   title      = {Affine Transformation-Enhanced Multifactorial Optimization for Heterogeneous Problems},
-    %   year       = {2020},
-    %   pages      = {1-15},
+    %   author     = {Xue, Xiaoming and Zhang, Kai and Tan, Kay Chen and Feng, Liang and Wang, Jian and Chen, Guodong and Zhao, Xinggang and Zhang, Liming and Yao, Jun},
     %   doi        = {10.1109/TCYB.2020.3036393},
+    %   journal    = {IEEE Transactions on Cybernetics},
+    %   pages      = {1-15},
+    %   year       = {2020}
     % }
     %--------------------------------------------------------------------------
 
@@ -48,9 +48,9 @@ classdef AT_MFEA < Algorithm
             eva_num = sub_eva * length(Tasks);
 
             % initialize
-            [population, fnceval_calls, bestobj, bestX] = initializeMF(Individual, pop_size, Tasks, max([Tasks.dims]));
+            [population, fnceval_calls, bestobj, bestCV, bestX] = initializeCMF(Individual, pop_size, Tasks, max([Tasks.dims]));
             convergence(:, 1) = bestobj;
-
+            convergence_cv(:, 1) = bestCV;
             % initialize affine transformation
             [mu_tasks, Sigma_tasks] = InitialDistribution(population, length(Tasks));
 
@@ -63,13 +63,15 @@ classdef AT_MFEA < Algorithm
                 fnceval_calls = fnceval_calls + calls;
 
                 % selection
-                [population, bestobj, bestX] = selectMF(population, offspring, Tasks, pop_size, bestobj, bestX);
+                [population, bestobj, bestCV, bestX] = selectCMF(population, offspring, Tasks, pop_size, bestobj, bestCV, bestX);
                 convergence(:, generation) = bestobj;
+                convergence_cv(:, generation) = bestCV;
 
                 % Updates of the progresisonal representation models
                 [mu_tasks, Sigma_tasks] = DistributionUpdate(mu_tasks, Sigma_tasks, population, length(Tasks));
             end
             data.convergence = gen2eva(convergence);
+            data.convergence_cv = gen2eva(convergence_cv);
             data.bestX = uni2real(bestX, Tasks);
         end
     end
