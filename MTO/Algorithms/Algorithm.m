@@ -10,6 +10,8 @@ classdef Algorithm < handle
     %--------------------------------------------------------------------------s
 
     properties
+        Result_Num = 100 % Convergence Results Num
+
         Name % Algorithm's Name
         FE % Function evaluations
         Gen % Generations
@@ -51,8 +53,9 @@ classdef Algorithm < handle
         end
 
         function Result = getResult(obj, Prob)
-            Result = gen2eva(obj.Result, obj.FE_Gen);
+            Result = gen2eva(obj.Result, obj.FE_Gen, obj.);
             for t = 1:size(Result, 1)
+                % Reduce Data Size
                 for gen = 1:size(Result, 2) - 1
                     Result{t, gen}.Dec = [];
                 end
