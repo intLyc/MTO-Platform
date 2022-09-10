@@ -12,7 +12,7 @@ function Result = gen2eva(Result_Gen, FE_Gen, varargin)
 
     n = numel(varargin);
     if n == 0
-        maxGen = 1000;
+        maxGen = 100;
     elseif n == 1
         maxGen = varargin{1};
     end
