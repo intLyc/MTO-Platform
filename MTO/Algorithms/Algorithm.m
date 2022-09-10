@@ -53,7 +53,7 @@ classdef Algorithm < handle
         end
 
         function Result = getResult(obj, Prob)
-            Result = gen2eva(obj.Result, obj.FE_Gen, obj.);
+            Result = gen2eva(obj.Result, obj.FE_Gen, obj.Result_Num);
             for t = 1:size(Result, 1)
                 % Reduce Data Size
                 for gen = 1:size(Result, 2) - 1
