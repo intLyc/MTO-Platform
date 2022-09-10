@@ -102,7 +102,7 @@ classdef EMEA < Algorithm
 
                             for i = 1:size(inject, 1)
                                 c = Individual();
-                                c.Dec = inject(i, :);
+                                c.Dec = [inject(i, :), rand(1, max(Prob.D) - Prob.D(t))];
                                 c.Dec(c.Dec > 1) = 1;
                                 c.Dec(c.Dec < 0) = 0;
                                 inject_pop = [inject_pop, c];
