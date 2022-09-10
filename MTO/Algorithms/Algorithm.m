@@ -17,7 +17,7 @@ classdef Algorithm < handle
         Best % Best individual found
         Result % Result of run
 
-        Save_Dec = false % Save Dec Falg
+        Save_Dec = false % Save Dec Flag
         Result_Num = 100 % Convergence Results Num
         Result_Idx % Result Save Idx
     end
