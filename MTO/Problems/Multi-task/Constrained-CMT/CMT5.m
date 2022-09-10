@@ -3,9 +3,9 @@ classdef CMT5 < Problem
 
     %------------------------------- Reference --------------------------------
     % @InProceedings{Li2022CMT-Benchmark,
+    %   title     = {Evolutionary Constrained Multi-Task Optimization: Benchmark Problems and Preliminary Results},
     %   author    = {Li, Yanchi and Gong, Wenyin and Li, Shuijia},
     %   booktitle = {Proceedings of the Genetic and Evolutionary Computation Conference Companion},
-    %   title     = {Evolutionary Constrained Multi-Task Optimization: Benchmark Problems and Preliminary Results},
     %   year      = {2022},
     %   pages     = {443–446},
     %   publisher = {Association for Computing Machinery},

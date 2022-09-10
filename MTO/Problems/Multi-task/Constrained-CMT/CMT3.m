@@ -3,9 +3,9 @@ classdef CMT3 < Problem
 
     %------------------------------- Reference --------------------------------
     % @InProceedings{Li2022CMT-Benchmark,
+    %   title     = {Evolutionary Constrained Multi-Task Optimization: Benchmark Problems and Preliminary Results},
     %   author    = {Li, Yanchi and Gong, Wenyin and Li, Shuijia},
     %   booktitle = {Proceedings of the Genetic and Evolutionary Computation Conference Companion},
-    %   title     = {Evolutionary Constrained Multi-Task Optimization: Benchmark Problems and Preliminary Results},
     %   year      = {2022},
     %   pages     = {443–446},
     %   publisher = {Association for Computing Machinery},
@@ -41,6 +41,7 @@ classdef CMT3 < Problem
         function setTasks(obj)
             obj.T = 2;
             obj.D = ones(1, 2) * obj.defaultD;
+
             obj.Fnc{1} = @(x)Ackley2(x, 1, 42.096 * ones(1, obj.D(1)), 40 * ones(1, obj.D(1)));
             obj.Lb{1} = -50 * ones(1, obj.D(1));
             obj.Ub{1} = 50 * ones(1, obj.D(1));
