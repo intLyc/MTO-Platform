@@ -1139,7 +1139,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             
             % run
             app.TAlgorithmTree.Children(1).NodeData.run(app.TProblemTree.Children(1).NodeData);
-            app.TData.Results{1,1,1} = app.TAlgorithmTree.Children(1).NodeData.getResult();
+            app.TData.Results{1,1,1} = app.TAlgorithmTree.Children(1).NodeData.getResult(app.TProblemTree.Children(1).NodeData);
             best_data = app.TAlgorithmTree.Children(1).NodeData.Best;
             app.TAlgorithmTree.Children(1).NodeData.reset();
             
@@ -1340,7 +1340,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                         parfor rep = 1:MTOData.Reps
                             Par.tic
                             algo_obj.run(prob_obj);
-                            Results{prob, algo, rep} = algo_obj.getResult();
+                            Results{prob, algo, rep} = algo_obj.getResult(prob_obj);
                             algo_obj.reset();
                             par_tool(rep) = Par.toc;
                         end
@@ -1349,7 +1349,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                         t_temp = tic;
                         for rep = 1:MTOData.Reps
                             algo_obj.run(prob_obj);
-                            Results{prob, algo, rep} = algo_obj.getResult();
+                            Results{prob, algo, rep} = algo_obj.getResult(prob_obj);
                             algo_obj.reset();
                             
                             app.ETableReps(prob, algo) = rep;

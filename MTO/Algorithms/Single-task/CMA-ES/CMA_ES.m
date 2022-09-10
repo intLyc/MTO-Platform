@@ -42,11 +42,11 @@ classdef CMA_ES < Algorithm
                 cmu{t} = min(1 - c1, 2 * (mu_eff - 2 + 1 / mu_eff) / ((Prob.D(t) + 2)^2 + 2 * mu_eff / 2));
                 hth{t} = (1.4 + 2 / (Prob.D(t) + 1)) * ENN;
                 % Initialization
-                Mdec{t} = unifrnd(Prob.Lb{t}, Prob.Ub{t});
+                Mdec{t} = unifrnd();
                 ps{t} = zeros(1, Prob.D(t));
                 pc{t} = zeros(1, Prob.D(t));
                 C{t} = eye(Prob.D(t));
-                sigma{t} = 0.1 * (Prob.Ub{t} - Prob.Lb{t});
+                sigma{t} = 0.1;
             end
             for i = 1:Prob.N
                 population{t}(i) = Individual();
@@ -59,10 +59,10 @@ classdef CMA_ES < Algorithm
                     for i = 1:Prob.N
                         Pstep(i, :) = mvnrnd(zeros(1, Prob.D(t)), C{t});
                         population{t}(i).Dec = Mdec{t} + sigma{t} .* Pstep(i, :);
-                        population{t}(i).Dec(population{t}(i).Dec > Prob.Ub{t}) = Prob.Ub{t}(population{t}(i).Dec > Prob.Ub{t});
-                        population{t}(i).Dec(population{t}(i).Dec < Prob.Lb{t}) = Prob.Lb{t}(population{t}(i).Dec < Prob.Lb{t});
+                        population{t}(i).Dec(population{t}(i).Dec > 1) = 1;
+                        population{t}(i).Dec(population{t}(i).Dec < 0) = 0;
                     end
-                    population{t} = obj.Evaluation(population{t}, Prob, t, 'real');
+                    population{t} = obj.Evaluation(population{t}, Prob, t);
                     [~, rank] = sortrows([[population{t}.CV]', [population{t}.Obj]'], [1, 2]);
 
                     % Update mean

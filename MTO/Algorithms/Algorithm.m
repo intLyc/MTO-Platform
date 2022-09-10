@@ -50,31 +50,15 @@ classdef Algorithm < handle
             % arg parameter_cell, contains {value1, value2, ...} (string)
         end
 
-        function Result = getResult(obj, varargin)
-            n = length(varargin);
-            if n == 0
-                for i = 1:numel(obj.Result)
-                    obj.Result{i}.Dec = [];
-                end
-                Result = gen2eva(obj.Result, obj.FE_Gen);
-                return;
-            elseif n == 1
-                Prob = varargin{1};
-                gene_type = 'unified';
-            elseif n == 2
-                Prob = varargin{1};
-                gene_type = varargin{2};
-            end
-
-            for i = 1:numel(obj.Result)
-                switch gene_type
-                    case 'unified'
-                        obj.Result{i}.Dec = Prob.Lb{t} + obj.Result{n}.Dec(1:Prob.D(t)) .* (Prob.Ub{t} - Prob.Lb{t});
-                    case 'real'
-                        obj.Result{i}.Dec = obj.Result{n}.Dec(1:Prob.D(t));
-                end
-            end
+        function Result = getResult(obj, Prob)
             Result = gen2eva(obj.Result, obj.FE_Gen);
+            for t = 1:size(Result, 1)
+                for gen = 1:size(Result, 2) - 1
+                    Result{t, gen}.Dec = [];
+                end
+                % Map to original
+                Result{t, end}.Dec = Prob.Lb{t} + Result{t, end}.Dec(1:Prob.D(t)) .* (Prob.Ub{t} - Prob.Lb{t});
+            end
         end
 
         function flag = notTerminated(obj, Prob)
@@ -91,22 +75,9 @@ classdef Algorithm < handle
             obj.Gen = obj.Gen + 1;
         end
 
-        function [Pop, Flag] = Evaluation(obj, Pop, Prob, t, varargin)
-            n = numel(varargin);
-            if n == 0
-                gene_type = 'unified'; % unified [0, 1]
-            elseif n == 1
-                gene_type = varargin{1};
-            end
-
-            % Evaluation
+        function [Pop, Flag] = Evaluation(obj, Pop, Prob, t)
             for i = 1:length(Pop)
-                switch gene_type
-                    case 'unified'
-                        x = (Prob.Ub{t} - Prob.Lb{t}) .* Pop(i).Dec(1:Prob.D(t)) + Prob.Lb{t};
-                    case 'real'
-                        x = Pop(i).Dec(1:Prob.D(t));
-                end
+                x = (Prob.Ub{t} - Prob.Lb{t}) .* Pop(i).Dec(1:Prob.D(t)) + Prob.Lb{t};
                 [Obj, Con] = Prob.Fnc{t}(x);
                 CV = sum(Con);
                 Pop(i).Obj = Obj;

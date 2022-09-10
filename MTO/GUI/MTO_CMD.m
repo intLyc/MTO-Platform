@@ -64,7 +64,7 @@ function MTO_CMD(AlgoCell, ProbCell, Reps, ParFlag, SaveName)
                 parfor rep = 1:Reps
                     Par.tic
                     AlgoObject{algo}.run(ProbObject{prob});
-                    Results{prob, algo, rep} = AlgoObject{algo}.getResult();
+                    Results{prob, algo, rep} = AlgoObject{algo}.getResult(ProbObject{prob});
                     AlgoObject{algo}.reset();
                     par_tool(rep) = Par.toc;
                 end
@@ -73,7 +73,7 @@ function MTO_CMD(AlgoCell, ProbCell, Reps, ParFlag, SaveName)
                 t_temp = tic;
                 for rep = 1:Reps
                     AlgoObject{algo}.run(ProbObject{prob});
-                    Results{prob, algo, rep} = AlgoObject{algo}.getResult();
+                    Results{prob, algo, rep} = AlgoObject{algo}.getResult(ProbObject{prob});
                     AlgoObject{algo}.reset();
                 end
                 Data.RunTimes(prob, algo) = toc(t_temp);
