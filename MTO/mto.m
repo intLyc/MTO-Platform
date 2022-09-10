@@ -21,7 +21,7 @@ function mto(varargin)
     else
         % run with command line, save data in mat file
         Reps = 1;
-        ParFlag = 1;
+        ParFlag = 0;
         SaveName = 'MTOData';
         AlgoCell = varargin{1};
         ProbCell = varargin{2};
