@@ -80,13 +80,14 @@ function MTO_CMD(AlgoCell, ProbCell, Reps, ParFlag, SaveName)
             end
         end
         % save temporary data
-        Data.Results = MakeGenEqual(Results);
-        MTOData = Data;
-        MTOData.Problems = MTOData.Problems(1:prob);
-        save('MTOData_Temp', 'MTOData');
+        % Data.Results = MakeGenEqual(Results);
+        % MTOData = Data;
+        % MTOData.Problems = MTOData.Problems(1:prob);
+        % save('MTOData_Temp', 'MTOData');
     end
 
     % save mat file
+    Data.Results = MakeGenEqual(Results);
     MTOData = Data;
     save(SaveName, 'MTOData');
 end

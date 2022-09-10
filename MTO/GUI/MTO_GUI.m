@@ -1296,32 +1296,32 @@ classdef MTO_GUI < matlab.apps.AppBase
             
             % initialize data
             app.EData = [];
-            app.EData.Reps = app.ERepsEditField.Value;
-            app.EData.Problems = [];
+            MTOData.Reps = app.ERepsEditField.Value;
+            MTOData.Problems = [];
             for prob = 1:prob_num
-                app.EData.Problems(prob).Name = app.EProblemsTree.Children(prob).NodeData.Name;
-                app.EData.Problems(prob).T = app.EProblemsTree.Children(prob).NodeData.T;
-                app.EData.Problems(prob).M = app.EProblemsTree.Children(prob).NodeData.M;
-                app.EData.Problems(prob).D = app.EProblemsTree.Children(prob).NodeData.D;
-                app.EData.Problems(prob).N = app.EProblemsTree.Children(prob).NodeData.N;
-                app.EData.Problems(prob).Fnc = app.EProblemsTree.Children(prob).NodeData.Fnc;
-                app.EData.Problems(prob).Lb = app.EProblemsTree.Children(prob).NodeData.Lb;
-                app.EData.Problems(prob).Ub = app.EProblemsTree.Children(prob).NodeData.Ub;
-                app.EData.Problems(prob).maxFE = app.EProblemsTree.Children(prob).NodeData.maxFE;
+                MTOData.Problems(prob).Name = app.EProblemsTree.Children(prob).NodeData.Name;
+                MTOData.Problems(prob).T = app.EProblemsTree.Children(prob).NodeData.T;
+                MTOData.Problems(prob).M = app.EProblemsTree.Children(prob).NodeData.M;
+                MTOData.Problems(prob).D = app.EProblemsTree.Children(prob).NodeData.D;
+                MTOData.Problems(prob).N = app.EProblemsTree.Children(prob).NodeData.N;
+                MTOData.Problems(prob).Fnc = app.EProblemsTree.Children(prob).NodeData.Fnc;
+                MTOData.Problems(prob).Lb = app.EProblemsTree.Children(prob).NodeData.Lb;
+                MTOData.Problems(prob).Ub = app.EProblemsTree.Children(prob).NodeData.Ub;
+                MTOData.Problems(prob).maxFE = app.EProblemsTree.Children(prob).NodeData.maxFE;
             end
-            app.EData.Algorithms = [];
+            MTOData.Algorithms = [];
             for algo = 1:algo_num
-                app.EData.Algorithms(algo).Name = app.EAlgorithmsTree.Children(algo).NodeData.Name;
-                app.EData.Algorithms(algo).Para = app.EAlgorithmsTree.Children(algo).NodeData.getParameter();
+                MTOData.Algorithms(algo).Name = app.EAlgorithmsTree.Children(algo).NodeData.Name;
+                MTOData.Algorithms(algo).Para = app.EAlgorithmsTree.Children(algo).NodeData.getParameter();
             end
-            app.EData.Results = {};
-            app.EData.RunTimes = [];
+            MTOData.Results = {};
+            MTOData.RunTimes = [];
             
             % reset table and convergence
             app.ETableReps = zeros(prob_num, algo_num);
             app.EupdateTableReps();
-            app.EresetTable({app.EData.Problems.Name}, {app.EData.Algorithms.Name});
-            app.EresetTableAlgorithmDropDown({app.EData.Algorithms.Name});
+            app.EresetTable({MTOData.Problems.Name}, {MTOData.Algorithms.Name});
+            app.EresetTableAlgorithmDropDown({MTOData.Algorithms.Name});
             cla(app.EConvergenceTrendUIAxes, 'reset');
             
             % main experiment loop
@@ -1335,18 +1335,18 @@ classdef MTO_GUI < matlab.apps.AppBase
                     prob_obj = app.EProblemsTree.Children(prob).NodeData;
                     app.EcheckPauseStopStatus();
                     if app.EParallelDropDown.Value == 1
-                        par_tool = Par(app.EData.Reps);
-                        parfor rep = 1:app.EData.Reps
+                        par_tool = Par(MTOData.Reps);
+                        parfor rep = 1:MTOData.Reps
                             Par.tic
                             algo_obj.run(prob_obj);
                             Results{prob, algo, rep} = algo_obj.getResult();
                             algo_obj.reset();
                             par_tool(rep) = Par.toc;
                         end
-                        app.EData.RunTimes(prob, algo) = sum([par_tool.ItStop] - [par_tool.ItStart]);
+                        MTOData.RunTimes(prob, algo) = sum([par_tool.ItStop] - [par_tool.ItStart]);
                     else
                         t_temp = tic;
-                        for rep = 1:app.EData.Reps
+                        for rep = 1:MTOData.Reps
                             algo_obj.run(prob_obj);
                             Results{prob, algo, rep} = algo_obj.getResult();
                             algo_obj.reset();
@@ -1354,19 +1354,21 @@ classdef MTO_GUI < matlab.apps.AppBase
                             app.ETableReps(prob, algo) = rep;
                             app.EupdateTableReps();
                         end
-                        app.EData.RunTimes(prob, algo) = toc(t_temp);
+                        MTOData.RunTimes(prob, algo) = toc(t_temp);
                     end
-                    app.ETableReps(prob, algo) = app.EData.Reps;
+                    app.ETableReps(prob, algo) = MTOData.Reps;
                     app.EupdateTableReps();
                     app.EcheckPauseStopStatus();
                 end
                 
                 % save temporary data
-                app.EData.Results = MakeGenEqual(Results);
-                MTOData = app.EData;
-                MTOData.Problems = MTOData.Problems(1:prob);
-                save('MTOData_Temp', 'MTOData');
+                MTOData.Results = MakeGenEqual(Results);
+                app.EData = MTOData;
+                app.EData.Problems = MTOData.Problems(1:prob);
+                % save('MTOData_Temp', 'MTOData');
             end
+            save('MTOData_Temp', 'MTOData');
+            
             tEnd = toc(tStart);
             msg = ['All Use Time: ', char(duration([0, 0, tEnd]))];
             uiconfirm(app.MTOPlatformUIFigure, msg, 'success', 'Icon', 'success');
