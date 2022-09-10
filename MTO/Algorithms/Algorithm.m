@@ -53,7 +53,7 @@ classdef Algorithm < handle
         function Result = getResult(obj, varargin)
             n = length(varargin);
             if n == 0
-                for i = numel(obj.Result)
+                for i = 1:numel(obj.Result)
                     obj.Result{i}.Dec = [];
                 end
                 Result = gen2eva(obj.Result, obj.FE_Gen);
@@ -66,7 +66,7 @@ classdef Algorithm < handle
                 gene_type = varargin{2};
             end
 
-            for i = numel(obj.Result)
+            for i = 1:numel(obj.Result)
                 switch gene_type
                     case 'unified'
                         obj.Result{i}.Dec = Prob.Lb{t} + obj.Result{n}.Dec(1:Prob.D(t)) .* (Prob.Ub{t} - Prob.Lb{t});
