@@ -59,7 +59,6 @@ classdef Algorithm < handle
         function Result = getResult(obj, Prob)
             Result = gen2eva(obj.Result, obj.FE_Gen, obj.Result_Num);
             for t = 1:size(Result, 1)
-                % Reduce Data Size
                 for idx = 1:size(Result, 2)
                     if obj.Save_Dec
                         Result{t, idx}.Dec = Prob.Lb{t} + Result{t, idx}.Dec(1:Prob.D(t)) .* (Prob.Ub{t} - Prob.Lb{t});
@@ -78,18 +77,14 @@ classdef Algorithm < handle
 
             flag = obj.FE < Prob.maxFE;
 
-            if mod(obj.Gen, round(Prob.maxFE / Prob.T / Prob.N / obj.Result_Num)) == 0
-                for t = 1:Prob.T
-                    Struct = [];
-                    Struct(1).Obj = obj.Best{t}.Obj;
-                    Struct(1).CV = obj.Best{t}.CV;
-                    Struct(1).Dec = obj.Best{t}.Dec;
-                    obj.Result{t, obj.Result_Idx} = Struct;
-                end
-                obj.FE_Gen(obj.Result_Idx) = obj.FE;
-                obj.Result_Idx = obj.Result_Idx + 1;
+            for t = 1:Prob.T
+                Struct = [];
+                Struct(1).Obj = obj.Best{t}.Obj;
+                Struct(1).CV = obj.Best{t}.CV;
+                Struct(1).Dec = obj.Best{t}.Dec;
+                obj.Result{t, obj.Gen} = Struct;
             end
-
+            obj.FE_Gen(obj.Gen) = obj.FE;
             obj.Gen = obj.Gen + 1;
         end
 
