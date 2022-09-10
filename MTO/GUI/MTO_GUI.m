@@ -1309,6 +1309,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                 MTOData.Problems(prob).Ub = app.EProblemsTree.Children(prob).NodeData.Ub;
                 MTOData.Problems(prob).maxFE = app.EProblemsTree.Children(prob).NodeData.maxFE;
             end
+            problems_temp = MTOData.Problems;
             MTOData.Algorithms = [];
             for algo = 1:algo_num
                 MTOData.Algorithms(algo).Name = app.EAlgorithmsTree.Children(algo).NodeData.Name;
@@ -1363,9 +1364,9 @@ classdef MTO_GUI < matlab.apps.AppBase
                 
                 % save temporary data
                 MTOData.Results = MakeGenEqual(Results);
-                app.EData = MTOData;
-                app.EData.Problems = MTOData.Problems(1:prob);
+                MTOData.Problems = problems_temp(1:prob);
                 % save('MTOData_Temp', 'MTOData');
+                app.EData = MTOData;
             end
             save('MTOData_Temp', 'MTOData');
             
