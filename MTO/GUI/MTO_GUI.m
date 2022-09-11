@@ -484,6 +484,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             xdata = TFigureData.XData(:, 1);
             ydata = TFigureData.YData(:, 1);
             xlim_max = 0;
+            xlim_min = inf;
             tasks_name = {};
             for i = 1:length(xdata)
                 if i > length(TFigureData.MarkerType)
@@ -498,10 +499,11 @@ classdef MTO_GUI < matlab.apps.AppBase
                 p.MarkerSize = TFigureData.MarkerSize;
                 hold(app.TUIAxes, 'on');
                 xlim_max = max(xlim_max, xdata{i}(end));
+                xlim_min = min(xlim_min, xdata{i}(1));
                 tasks_name = [tasks_name, ['T', num2str(i)]];
             end
             
-            xlim(app.TUIAxes, [1, xlim_max]);
+            xlim(app.TUIAxes, [xlim_min, xlim_max]);
             xlabel(app.TUIAxes, TFigureData.XLabel);
             ylabel(app.TUIAxes, TFigureData.YLabel);
             if length(xdata) > 1
@@ -782,6 +784,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             cla(app.EConvergenceTrendUIAxes, 'reset');
             problem_index = app.EProblemsDropDown.Value;
             xlim_max = 0;
+            xlim_min = inf;
             xdata = app.EFigureData.XData(problem_index, :);
             ydata = app.EFigureData.YData(problem_index, :);
             
@@ -798,9 +801,10 @@ classdef MTO_GUI < matlab.apps.AppBase
                 p.MarkerSize = app.EFigureData.MarkerSize;
                 hold(app.EConvergenceTrendUIAxes, 'on');
                 xlim_max = max(xlim_max, xdata{i}(end));
+                xlim_min = min(xlim_min, xdata{i}(1));
             end
             
-            xlim(app.EConvergenceTrendUIAxes, [1, xlim_max]);
+            xlim(app.EConvergenceTrendUIAxes, [xlim_min, xlim_max]);
             xlabel(app.EConvergenceTrendUIAxes, app.EFigureData.XLabel);
             ylabel(app.EConvergenceTrendUIAxes, app.EFigureData.YLabel);
             legend(app.EConvergenceTrendUIAxes, strrep(app.EFigureData.Legend, '_', '\_'));
@@ -1680,6 +1684,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             for problem_index = 1:length(app.EFigureData.Problems)
                 fig = figure('Visible', 'off');
                 xlim_max = 0;
+                xlim_min = inf;
                 xdata = app.EFigureData.XData(problem_index, :);
                 ydata = app.EFigureData.YData(problem_index, :);
                 
@@ -1696,9 +1701,10 @@ classdef MTO_GUI < matlab.apps.AppBase
                     p.MarkerSize = app.EFigureData.MarkerSize;
                     hold on;
                     xlim_max = max(xlim_max, xdata{i}(end));
+                    xlim_min = min(xlim_min, xdata{i}(1));
                 end
                 
-                xlim([1, xlim_max]);
+                xlim([xlim_min, xlim_max]);
                 xlabel(app.EFigureData.XLabel);
                 ylabel(app.EFigureData.YLabel);
                 legend(strrep(app.EFigureData.Legend, '_', '\_'));
@@ -3035,8 +3041,8 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.SelectedProbContextMenu = uicontextmenu(app.MTOPlatformUIFigure);
             
             % Assign app.SelectedProbContextMenu
-            app.TProblemTree.ContextMenu = app.SelectedProbContextMenu;
             app.EProblemsTree.ContextMenu = app.SelectedProbContextMenu;
+            app.TProblemTree.ContextMenu = app.SelectedProbContextMenu;
 
             % Create SelectedProbSelectAllMenu
             app.SelectedProbSelectAllMenu = uimenu(app.SelectedProbContextMenu);
