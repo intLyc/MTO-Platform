@@ -19,11 +19,18 @@ function result = MT_Score(MTOData)
     % or footnote "https://github.com/intLyc/MTO-Platform"
     %--------------------------------------------------------------------------
 
+    result.RowName = {};
+    result.ColumnName = {};
+    result.TableData = [];
+    for prob = 1:length(MTOData.Problems)
+        if MTOData.Problems(prob).M ~= 1
+            return;
+        end
+    end
     result.RowName = {MTOData.Problems.Name};
     result.ColumnName = {MTOData.Algorithms.Name};
 
     % Calculate Objective
-    result.TableData = [];
     row_i = 1;
     for prob = 1:length(MTOData.Problems)
         for task = 1:MTOData.Problems(prob).T
@@ -31,8 +38,8 @@ function result = MT_Score(MTOData)
                 Obj = zeros(1, MTOData.Reps);
                 CV = zeros(1, MTOData.Reps);
                 for rep = 1:MTOData.Reps
-                    Obj(rep) = MTOData.Results{prob, algo, rep}{task, end}.Obj;
-                    CV(rep) = MTOData.Results{prob, algo, rep}{task, end}.CV;
+                    Obj(rep) = MTOData.Results{prob, algo, rep}(task, end).Obj;
+                    CV(rep) = MTOData.Results{prob, algo, rep}(task, end).CV;
                 end
                 Obj(CV > 0) = NaN;
                 obj_matrix(row_i, algo, :) = Obj;

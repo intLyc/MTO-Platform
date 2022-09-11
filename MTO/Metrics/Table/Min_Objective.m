@@ -21,16 +21,23 @@ function result = Min_Objective(MTOData)
     % or footnote "https://github.com/intLyc/MTO-Platform"
     %--------------------------------------------------------------------------
 
+    result.RowName = {};
+    result.ColumnName = {};
+    result.TableData = [];
+    for prob = 1:length(MTOData.Problems)
+        if MTOData.Problems(prob).M ~= 1
+            return;
+        end
+    end
     result.RowName = {MTOData.Problems.Name};
     result.ColumnName = {MTOData.Algorithms.Name};
 
     % Calculate Minimal Objective
-    result.TableData = [];
     for prob = 1:length(MTOData.Problems)
         for algo = 1:length(MTOData.Algorithms)
             MinObj = zeros(1, MTOData.Reps);
             for rep = 1:MTOData.Reps
-                temp = MTOData.Results{prob, algo, rep}{:, end};
+                temp = MTOData.Results{prob, algo, rep}(:, end);
                 Obj_temp = [temp.Obj];
                 CV_temp = [temp.CV];
                 Obj_temp(CV_temp > 0) = NaN;

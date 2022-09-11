@@ -11,8 +11,13 @@ function result = Feasible_Rate(MTOData)
     %--------------------------------------------------------------------------
 
     result.RowName = {};
+    result.ColumnName = {};
+    result.TableData = [];
     row_i = 1;
     for prob = 1:length(MTOData.Problems)
+        if MTOData.Problems(prob).M ~= 1
+            return;
+        end
         tnum = MTOData.Problems(prob).T;
         for task = 1:tnum
             if tnum == 1
@@ -26,14 +31,13 @@ function result = Feasible_Rate(MTOData)
     result.ColumnName = {MTOData.Algorithms.Name};
 
     % Calculate Feasible Rate
-    result.TableData = [];
     row_i = 1;
     for prob = 1:length(MTOData.Problems)
         for task = 1:MTOData.Problems(prob).T
             for algo = 1:length(MTOData.Algorithms)
                 CV = zeros(1, MTOData.Reps);
                 for rep = 1:MTOData.Reps
-                    CV(rep) = MTOData.Results{prob, algo, rep}{task, end}.CV;
+                    CV(rep) = MTOData.Results{prob, algo, rep}(task, end).CV;
                 end
                 result.TableData(row_i, algo, :) = sum(CV <= 0) / MTOData.Reps;
             end

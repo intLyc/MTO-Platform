@@ -33,7 +33,7 @@ classdef Algorithm < handle
             obj.Gen = 1;
             obj.FE_Gen = [];
             obj.Best = {};
-            obj.Result = {};
+            obj.Result = [];
         end
 
         function reset(obj)
@@ -42,7 +42,7 @@ classdef Algorithm < handle
             obj.Gen = 1;
             obj.FE_Gen = [];
             obj.Best = {};
-            obj.Result = {};
+            obj.Result = [];
         end
 
         function Parameter = getParameter(obj)
@@ -58,13 +58,15 @@ classdef Algorithm < handle
 
         function Result = getResult(obj, Prob)
             Result = gen2eva(obj.Result, obj.FE_Gen, obj.Result_Num);
-            for t = 1:size(Result, 1)
-                for idx = 1:size(Result, 2)
-                    if obj.Save_Dec
-                        Result{t, idx}.Dec = Prob.Lb{t} + Result{t, idx}.Dec(1:Prob.D(t)) .* (Prob.Ub{t} - Prob.Lb{t});
-                    else
-                        Result{t, idx} = rmfield(Result{t, idx}, 'Dec');
+            if Prob.M == 1
+                if obj.Save_Dec
+                    for t = 1:size(Result, 1)
+                        for idx = 1:size(Result, 2)
+                            Result(t, idx).Dec = Prob.Lb{t} + Result(t, idx).Dec(1:Prob.D(t)) .* (Prob.Ub{t} - Prob.Lb{t});
+                        end
                     end
+                else
+                    Result = rmfield(Result, 'Dec');
                 end
             end
         end
@@ -78,11 +80,11 @@ classdef Algorithm < handle
             flag = obj.FE < Prob.maxFE;
 
             for t = 1:Prob.T
-                Struct = [];
-                Struct(1).Obj = obj.Best{t}.Obj;
-                Struct(1).CV = obj.Best{t}.CV;
-                Struct(1).Dec = obj.Best{t}.Dec;
-                obj.Result{t, obj.Gen} = Struct;
+                if Prob.M == 1
+                    obj.Result(t, obj.Gen).Obj = obj.Best{t}.Obj;
+                    obj.Result(t, obj.Gen).CV = obj.Best{t}.CV;
+                    obj.Result(t, obj.Gen).Dec = obj.Best{t}.Dec;
+                end
             end
             obj.FE_Gen(obj.Gen) = obj.FE;
             obj.Gen = obj.Gen + 1;

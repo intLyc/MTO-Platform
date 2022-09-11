@@ -35,13 +35,16 @@ function result = Converge_Obj(MTOData)
     result.YData = {};
     row_i = 1;
     for prob = 1:length(MTOData.Problems)
+        if MTOData.Problems(prob).M ~= 1
+            return;
+        end
         tnum = MTOData.Problems(prob).T;
         for task = 1:tnum
             result.Problems{row_i} = [MTOData.Problems(prob).Name, '-T', num2str(task)];
             for algo = 1:length(MTOData.Algorithms)
                 convergeObj_temp = [];
                 for rep = 1:MTOData.Reps
-                    temp = [MTOData.Results{prob, algo, rep}{task, :}];
+                    temp = MTOData.Results{prob, algo, rep}(task, :);
                     temp_obj = [temp.Obj];
                     temp_cv = [temp.CV];
                     temp_obj(temp_cv > 0) = NaN;

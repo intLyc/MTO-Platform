@@ -11,8 +11,13 @@ function result = Objective(MTOData)
     %--------------------------------------------------------------------------
 
     result.RowName = {};
+    result.ColumnName = {};
+    result.TableData = [];
     row_i = 1;
     for prob = 1:length(MTOData.Problems)
+        if MTOData.Problems(prob).M ~= 1
+            return;
+        end
         tnum = MTOData.Problems(prob).T;
         for task = 1:tnum
             if tnum == 1
@@ -26,7 +31,6 @@ function result = Objective(MTOData)
     result.ColumnName = {MTOData.Algorithms.Name};
 
     % Calculate Objective
-    result.TableData = [];
     row_i = 1;
     for prob = 1:length(MTOData.Problems)
         for task = 1:MTOData.Problems(prob).T
@@ -34,8 +38,8 @@ function result = Objective(MTOData)
                 Obj = zeros(1, MTOData.Reps);
                 CV = zeros(1, MTOData.Reps);
                 for rep = 1:MTOData.Reps
-                    Obj(rep) = MTOData.Results{prob, algo, rep}{task, end}.Obj;
-                    CV(rep) = MTOData.Results{prob, algo, rep}{task, end}.CV;
+                    Obj(rep) = MTOData.Results{prob, algo, rep}(task, end).Obj;
+                    CV(rep) = MTOData.Results{prob, algo, rep}(task, end).CV;
                 end
                 Obj(CV > 0) = NaN;
                 result.TableData(row_i, algo, :) = Obj;

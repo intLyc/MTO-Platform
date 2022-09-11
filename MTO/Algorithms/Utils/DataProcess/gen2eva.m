@@ -21,14 +21,14 @@ function Result = gen2eva(Result_Gen, FE_Gen, varargin)
         maxGen = length(Result_Gen);
     end
 
-    Result = {};
+    Result = Result_Gen(:, 1:maxGen);
     for k = 1:size(Result_Gen, 1)
         Gap = FE_Gen(end) ./ (maxGen);
         idx = 1;
         i = 1;
         while i <= length(FE_Gen)
             if FE_Gen(i) >= ((idx) * Gap)
-                Result{k, idx} = Result_Gen{k, i};
+                Result(k, idx) = Result_Gen(k, i);
                 idx = idx + 1;
             else
                 i = i + 1;
@@ -37,10 +37,10 @@ function Result = gen2eva(Result_Gen, FE_Gen, varargin)
                 break;
             end
         end
-        Result{k, 1} = Result_Gen{k, 1};
-        Result{k, end} = Result_Gen{k, end};
+        Result(k, 1) = Result_Gen(k, 1);
+        Result(k, end) = Result_Gen(k, end);
         if idx - 1 < length(maxGen)
-            Result{k, idx - 1:end} = Result_Gen{k, end};
+            Result(k, idx - 1:end) = Result_Gen(k, end);
         end
     end
 end
