@@ -251,7 +251,7 @@ classdef VMCH_LSHADE44 < Algorithm
                     population{t}(replace) = offspring(replace);
 
                     % Linear Population Size Reduction
-                    if N < length(population{t})
+                    if length(population{t}) > N
                         [~, rank] = sortrows([[population{t}.CV]', [population{t}.Obj]'], [1, 2]);
                         population{t} = population{t}(rank(1:N));
                     end
