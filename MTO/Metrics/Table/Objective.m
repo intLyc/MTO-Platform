@@ -38,8 +38,8 @@ function result = Objective(MTOData)
                 Obj = zeros(1, MTOData.Reps);
                 CV = zeros(1, MTOData.Reps);
                 for rep = 1:MTOData.Reps
-                    Obj(rep) = MTOData.Results{prob, algo, rep}(task, end).Obj;
-                    CV(rep) = MTOData.Results{prob, algo, rep}(task, end).CV;
+                    Obj(rep) = MTOData.Results(prob, algo, rep).Obj(task, end);
+                    CV(rep) = MTOData.Results(prob, algo, rep).CV(task, end);
                 end
                 Obj(CV > 0) = NaN;
                 result.TableData(row_i, algo, :) = Obj;

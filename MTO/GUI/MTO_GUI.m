@@ -1134,12 +1134,18 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TData.Algorithms = [];
             app.TData.Algorithms(1).Name = app.TAlgorithmTree.Children(1).NodeData.Name;
             app.TData.Algorithms(1).Para = app.TAlgorithmTree.Children(1).NodeData.getParameter();
-            app.TData.Results = {};
+            app.TData.Results = [];
             app.TData.RunTimes = [];
             
             % run
             app.TAlgorithmTree.Children(1).NodeData.run(app.TProblemTree.Children(1).NodeData);
-            app.TData.Results{1,1,1} = app.TAlgorithmTree.Children(1).NodeData.getResult(app.TProblemTree.Children(1).NodeData);
+            tmp = app.TAlgorithmTree.Children(1).NodeData.getResult(app.TProblemTree.Children(1).NodeData);
+            for t = 1:size(tmp, 1)
+                for g = 1:size(tmp,2)
+                    app.TData.Results(1,1,1).Obj(t, g) = tmp(t, g).Obj;
+                    app.TData.Results(1,1,1).CV(t, g) = tmp(t, g).CV;
+                end
+            end
             best_data = app.TAlgorithmTree.Children(1).NodeData.Best;
             app.TAlgorithmTree.Children(1).NodeData.reset();
             
@@ -1315,7 +1321,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                 MTOData.Algorithms(algo).Name = app.EAlgorithmsTree.Children(algo).NodeData.Name;
                 MTOData.Algorithms(algo).Para = app.EAlgorithmsTree.Children(algo).NodeData.getParameter();
             end
-            MTOData.Results = {};
+            MTOData.Results = [];
             MTOData.RunTimes = [];
             
             % reset table and convergence
@@ -1327,7 +1333,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             
             % main experiment loop
             tStart = tic;
-            Results = {};
+            Results = [];
             % Run
             for prob = 1:prob_num
                 for algo = 1:algo_num
@@ -1340,7 +1346,16 @@ classdef MTO_GUI < matlab.apps.AppBase
                         parfor rep = 1:MTOData.Reps
                             Par.tic
                             algo_obj.run(prob_obj);
-                            Results{prob, algo, rep} = algo_obj.getResult(prob_obj);
+                            tmp = algo_obj.getResult(prob_obj);
+                            for t = 1:size(tmp, 1)
+                                for g = 1:size(tmp,2)
+                                    Results(prob, algo, rep).Obj(t, g) = tmp(t, g).Obj;
+                                    Results(prob, algo, rep).CV(t, g) = tmp(t, g).CV;
+                                    if isfield(tmp, 'Dec')
+                                        Results(prob, algo, rep).Dec(t, g, :) = tmp(t, g).Dec;
+                                    end
+                                end
+                            end
                             algo_obj.reset();
                             par_tool(rep) = Par.toc;
                         end
@@ -1349,7 +1364,16 @@ classdef MTO_GUI < matlab.apps.AppBase
                         t_temp = tic;
                         for rep = 1:MTOData.Reps
                             algo_obj.run(prob_obj);
-                            Results{prob, algo, rep} = algo_obj.getResult(prob_obj);
+                            tmp = algo_obj.getResult(prob_obj);
+                            for t = 1:size(tmp, 1)
+                                for g = 1:size(tmp,2)
+                                    Results(prob, algo, rep).Obj(t, g) = tmp(t, g).Obj;
+                                    Results(prob, algo, rep).CV(t, g) = tmp(t, g).CV;
+                                    if isfield(tmp, 'Dec')
+                                        Results(prob, algo, rep).Dec(t, g, :) = tmp(t, g).Dec;
+                                    end
+                                end
+                            end
                             algo_obj.reset();
                             
                             app.ETableReps(prob, algo) = rep;

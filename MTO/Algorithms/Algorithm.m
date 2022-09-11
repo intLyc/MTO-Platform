@@ -58,16 +58,14 @@ classdef Algorithm < handle
 
         function Result = getResult(obj, Prob)
             Result = gen2eva(obj.Result, obj.FE_Gen, obj.Result_Num);
-            if Prob.M == 1
-                if obj.Save_Dec
-                    for t = 1:size(Result, 1)
-                        for idx = 1:size(Result, 2)
-                            Result(t, idx).Dec = Prob.Lb{t} + Result(t, idx).Dec(1:Prob.D(t)) .* (Prob.Ub{t} - Prob.Lb{t});
-                        end
+            if obj.Save_Dec
+                for t = 1:size(Result, 1)
+                    for idx = 1:size(Result, 2)
+                        Result(t, idx).Dec = Prob.Lb{t} + Result(t, idx).Dec(1:Prob.D(t)) .* (Prob.Ub{t} - Prob.Lb{t});
                     end
-                else
-                    Result = rmfield(Result, 'Dec');
                 end
+            else
+                Result = rmfield(Result, 'Dec');
             end
         end
 
@@ -80,11 +78,9 @@ classdef Algorithm < handle
             flag = obj.FE < Prob.maxFE;
 
             for t = 1:Prob.T
-                if Prob.M == 1
-                    obj.Result(t, obj.Gen).Obj = obj.Best{t}.Obj;
-                    obj.Result(t, obj.Gen).CV = obj.Best{t}.CV;
-                    obj.Result(t, obj.Gen).Dec = obj.Best{t}.Dec;
-                end
+                obj.Result(t, obj.Gen).Obj = obj.Best{t}.Obj;
+                obj.Result(t, obj.Gen).CV = obj.Best{t}.CV;
+                obj.Result(t, obj.Gen).Dec = obj.Best{t}.Dec;
             end
             obj.FE_Gen(obj.Gen) = obj.FE;
             obj.Gen = obj.Gen + 1;

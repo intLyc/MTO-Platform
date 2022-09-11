@@ -44,9 +44,8 @@ function result = Converge_Obj(MTOData)
             for algo = 1:length(MTOData.Algorithms)
                 convergeObj_temp = [];
                 for rep = 1:MTOData.Reps
-                    temp = MTOData.Results{prob, algo, rep}(task, :);
-                    temp_obj = [temp.Obj];
-                    temp_cv = [temp.CV];
+                    temp_obj = MTOData.Results(prob, algo, rep).Obj(task, :);
+                    temp_cv = MTOData.Results(prob, algo, rep).CV(task, :);
                     temp_obj(temp_cv > 0) = NaN;
                     convergeObj_temp = [convergeObj_temp; temp_obj];
                 end

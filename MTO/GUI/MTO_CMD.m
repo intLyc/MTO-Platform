@@ -64,7 +64,16 @@ function MTO_CMD(AlgoCell, ProbCell, Reps, ParFlag, SaveName)
                 parfor rep = 1:Reps
                     Par.tic
                     AlgoObject{algo}.run(ProbObject{prob});
-                    Results{prob, algo, rep} = AlgoObject{algo}.getResult(ProbObject{prob});
+                    tmp = AlgoObject{algo}.getResult(ProbObject{prob});
+                    for t = 1:size(tmp, 1)
+                        for g = 1:size(tmp, 2)
+                            Results(prob, algo, rep).Obj(t, g) = tmp(t, g).Obj;
+                            Results(prob, algo, rep).CV(t, g) = tmp(t, g).CV;
+                            if isfield(tmp, 'Dec')
+                                Results(prob, algo, rep).Dec(t, g, :) = tmp(t, g).Dec;
+                            end
+                        end
+                    end
                     AlgoObject{algo}.reset();
                     par_tool(rep) = Par.toc;
                 end
@@ -73,7 +82,16 @@ function MTO_CMD(AlgoCell, ProbCell, Reps, ParFlag, SaveName)
                 t_temp = tic;
                 for rep = 1:Reps
                     AlgoObject{algo}.run(ProbObject{prob});
-                    Results{prob, algo, rep} = AlgoObject{algo}.getResult(ProbObject{prob});
+                    tmp = AlgoObject{algo}.getResult(ProbObject{prob});
+                    for t = 1:size(tmp, 1)
+                        for g = 1:size(tmp, 2)
+                            Results(prob, algo, rep).Obj(t, g) = tmp(t, g).Obj;
+                            Results(prob, algo, rep).CV(t, g) = tmp(t, g).CV;
+                            if isfield(tmp, 'Dec')
+                                Results(prob, algo, rep).Dec(t, g, :) = tmp(t, g).Dec;
+                            end
+                        end
+                    end
                     AlgoObject{algo}.reset();
                 end
                 Data.RunTimes(prob, algo) = toc(t_temp);

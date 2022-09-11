@@ -37,7 +37,7 @@ function result = Constraint_Violation(MTOData)
             for algo = 1:length(MTOData.Algorithms)
                 CV = zeros(1, MTOData.Reps);
                 for rep = 1:MTOData.Reps
-                    CV(rep) = MTOData.Results{prob, algo, rep}(task, end).CV;
+                    CV(rep) = MTOData.Results(prob, algo, rep).CV(task, end);
                 end
                 result.TableData(row_i, algo, :) = CV;
             end

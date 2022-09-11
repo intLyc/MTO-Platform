@@ -53,9 +53,8 @@ function result = Converge_Min_Obj(MTOData)
             for rep = 1:MTOData.Reps
                 temp_obj_task = [];
                 for task = 1:MTOData.Problems(prob).T
-                    temp = MTOData.Results{prob, algo, rep}(task, :);
-                    temp_obj = [temp.Obj];
-                    temp_cv = [temp.CV];
+                    temp_obj = MTOData.Results(prob, algo, rep).Obj(task, :);
+                    temp_cv = MTOData.Results(prob, algo, rep).CV(task, :);
                     temp_obj(temp_cv > 0) = NaN;
                     temp_obj_task = [temp_obj_task; temp_obj];
                 end

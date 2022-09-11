@@ -44,8 +44,7 @@ function result = Converge_CV(MTOData)
             for algo = 1:length(MTOData.Algorithms)
                 convergeCV_temp = [];
                 for rep = 1:MTOData.Reps
-                    temp = MTOData.Results{prob, algo, rep}(task, :);
-                    temp_cv = [temp.CV];
+                    temp_cv = MTOData.Results(prob, algo, rep).CV(task, :);
                     convergeCV_temp = [convergeCV_temp; temp_cv];
                 end
                 convergeCV = mean(convergeCV_temp, 1);

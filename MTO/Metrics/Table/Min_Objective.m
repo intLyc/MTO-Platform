@@ -37,9 +37,8 @@ function result = Min_Objective(MTOData)
         for algo = 1:length(MTOData.Algorithms)
             MinObj = zeros(1, MTOData.Reps);
             for rep = 1:MTOData.Reps
-                temp = MTOData.Results{prob, algo, rep}(:, end);
-                Obj_temp = [temp.Obj];
-                CV_temp = [temp.CV];
+                Obj_temp = MTOData.Results(prob, algo, rep).Obj(:, end);
+                CV_temp = MTOData.Results(prob, algo, rep).CV(:, end);
                 Obj_temp(CV_temp > 0) = NaN;
                 MinObj(rep) = min(Obj_temp);
             end
