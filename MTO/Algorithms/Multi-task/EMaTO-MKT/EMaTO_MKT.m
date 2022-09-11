@@ -57,11 +57,11 @@ classdef EMaTO_MKT < Algorithm
                 if obj.Gen < 4
                     AMP(1:Prob.T) = obj.AMP0;
                 else
-                    x1 = [obj.Result{:, obj.Gen - 1}];
-                    x2 = [obj.Result{:, obj.Gen - 2}];
-                    x3 = [obj.Result{:, obj.Gen - 3}];
-                    temp1 = [x2.Obj] - [x1.Obj];
-                    temp2 = [x3.Obj] - [x2.Obj];
+                    x1 = [obj.Result(:, obj.Gen - 1).Obj];
+                    x2 = [obj.Result(:, obj.Gen - 2).Obj];
+                    x3 = [obj.Result(:, obj.Gen - 3).Obj];
+                    temp1 = x2 - x1;
+                    temp2 = x3 - x2;
                     AMP = temp1 ./ (temp1 + temp2);
                     AMP(isnan(AMP)) = obj.AMP0;
                 end
