@@ -11,7 +11,7 @@ classdef C4TOP2 < Problem
     methods
         function obj = C4TOP2(varargin)
             obj = obj@Problem(varargin);
-            obj.maxFE = 1000 * 100;
+            obj.maxFE = 500 * 100 * 4;
         end
 
         function setTasks(obj)
