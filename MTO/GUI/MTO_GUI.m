@@ -1051,7 +1051,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             node = event.Node;
             if isa(node.Parent, 'matlab.ui.container.Tree')
                 % this is algorithm name node
-                node.NodeData.name = node.Text;
+                node.NodeData.Name = node.Text;
             else
                 % this is parameter node
                 parameter = {};
@@ -1090,7 +1090,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             node = event.Node;
             if isa(node.Parent, 'matlab.ui.container.Tree')
                 % this is problem node
-                node.NodeData.name = node.Text;
+                node.NodeData.Name = node.Text;
             else
                 % this is parameter node
                 parameter = {};
@@ -1461,7 +1461,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             node = event.Node;
             if isa(node.Parent, 'matlab.ui.container.Tree')
                 % this is algorithm name node
-                node.NodeData.name = node.Text;
+                node.NodeData.Name = node.Text;
             else
                 % this is parameter node
                 parameter = {};
@@ -1510,7 +1510,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             node = event.Node;
             if isa(node.Parent, 'matlab.ui.container.Tree')
                 % this is problem node
-                node.NodeData.name = node.Text;
+                node.NodeData.Name = node.Text;
             else
                 % this is parameter node
                 parameter = {};
@@ -1970,7 +1970,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             node = event.Node;
             if isa(node.Parent, 'matlab.ui.container.Tree')
                 % this is data text node
-                node.NodeData.name = node.Text;
+                node.NodeData.Name = node.Text;
             else
                 % this is data parameter node, can't change
                 node.Text = node.NodeData;
@@ -3041,8 +3041,8 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.SelectedProbContextMenu = uicontextmenu(app.MTOPlatformUIFigure);
             
             % Assign app.SelectedProbContextMenu
-            app.EProblemsTree.ContextMenu = app.SelectedProbContextMenu;
             app.TProblemTree.ContextMenu = app.SelectedProbContextMenu;
+            app.EProblemsTree.ContextMenu = app.SelectedProbContextMenu;
 
             % Create SelectedProbSelectAllMenu
             app.SelectedProbSelectAllMenu = uimenu(app.SelectedProbContextMenu);
