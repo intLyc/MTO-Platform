@@ -1676,7 +1676,6 @@ classdef MTO_GUI < matlab.apps.AppBase
             % save figure
             fig_dir_name = [dir_name, '/Figure/'];
             mkdir(fig_dir_name);
-            draw_obj = drawFigure;
             
             for problem_index = 1:length(app.EFigureData.Problems)
                 fig = figure('Visible', 'off');
