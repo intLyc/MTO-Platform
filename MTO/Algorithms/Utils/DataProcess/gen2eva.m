@@ -1,6 +1,6 @@
-function Result = gen2eva(Result_Gen, FE_Gen, varargin)
+function Result = gen2eva(Result_Gen, FE_Gen, maxGen)
     %% Map the convergence from generation to evaluation
-    % Input: Result_Gen
+    % Input: Result_Gen, FE_Gen, maxGen
     % Output: Result
 
     %------------------------------- Copyright --------------------------------
@@ -9,13 +9,6 @@ function Result = gen2eva(Result_Gen, FE_Gen, varargin)
     % in the platform should acknowledge the use of "MTO-Platform" and cite
     % or footnote "https://github.com/intLyc/MTO-Platform"
     %--------------------------------------------------------------------------
-
-    n = numel(varargin);
-    if n == 0
-        maxGen = 100;
-    elseif n == 1
-        maxGen = varargin{1};
-    end
 
     if length(Result_Gen) <= maxGen
         maxGen = length(Result_Gen);
