@@ -26,9 +26,9 @@ classdef ECHT_DE < Algorithm
         CR = 0.9
         maxSR = 0.475
         minSR = 0.025
-        TopEC = 0.05
-        TcEC = 0.2
-        CpEC = 5
+        EC_Top = 0.05
+        EC_Tc = 0.2
+        EC_Cp = 5
     end
 
     methods
@@ -37,9 +37,9 @@ classdef ECHT_DE < Algorithm
                         'CR: Crossover Probability', num2str(obj.CR), ...
                         'maxSR', num2str(obj.maxSR), ...
                         'minSR', num2str(obj.minSR), ...
-                        'TopEC', num2str(obj.TopEC), ...
-                        'TcEC', num2str(obj.TcEC), ...
-                        'CpEC', num2str(obj.CpEC)};
+                        'EC_Top', num2str(obj.EC_Top), ...
+                        'EC_Tc', num2str(obj.EC_Tc), ...
+                        'EC_Cp', num2str(obj.EC_Cp)};
         end
 
         function obj = setParameter(obj, Parameter)
@@ -48,9 +48,9 @@ classdef ECHT_DE < Algorithm
             obj.CR = str2double(Parameter{i}); i = i + 1;
             obj.maxSR = str2double(Parameter{i}); i = i + 1;
             obj.minSR = str2double(Parameter{i}); i = i + 1;
-            obj.TopEC = str2double(Parameter{i}); i = i + 1;
-            obj.TcEC = str2double(Parameter{i}); i = i + 1;
-            obj.CpEC = str2double(Parameter{i}); i = i + 1;
+            obj.EC_Top = str2double(Parameter{i}); i = i + 1;
+            obj.EC_Tc = str2double(Parameter{i}); i = i + 1;
+            obj.EC_Cp = str2double(Parameter{i}); i = i + 1;
         end
 
         function run(obj, Prob)
@@ -66,7 +66,7 @@ classdef ECHT_DE < Algorithm
                 Sr = obj.maxSR;
                 dSr = (obj.maxSR - obj.minSR) / (Prob.maxFE / Prob.T / Prob.N);
                 % Epsilon
-                n = ceil(obj.TopEC * length(population{t, 3}));
+                n = ceil(obj.EC_Top * length(population{t, 3}));
                 cv_temp = [population{t, 3}.CV];
                 [~, idx] = sort(cv_temp);
                 Ep0{t} = cv_temp(idx(n));
@@ -76,8 +76,8 @@ classdef ECHT_DE < Algorithm
                 % Pre Calculation
                 Sr = Sr - dSr;
                 for t = 1:Prob.T
-                    if obj.FE < obj.TcEC * Prob.maxFE / Prob.T
-                        Ep = Ep0{t} * ((1 - obj.FE / (obj.TcEC * Prob.maxFE / Prob.T))^obj.CpEC);
+                    if obj.FE < obj.EC_Tc * Prob.maxFE / Prob.T
+                        Ep = Ep0{t} * ((1 - obj.FE / (obj.EC_Tc * Prob.maxFE / Prob.T))^obj.EC_Cp);
                     else
                         Ep = 0;
                     end

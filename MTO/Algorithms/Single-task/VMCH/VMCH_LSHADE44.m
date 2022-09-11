@@ -25,33 +25,33 @@ classdef VMCH_LSHADE44 < Algorithm
         P = 0.2
         H = 10
 
-        TopEC = 0.2
-        AlphaEC = 0.8
-        CpEC = 2
-        TcEC = 0.8
-        TccEC = 5
+        EC_Top = 0.2
+        EC_Alpha = 0.8
+        EC_Cp = 2
+        EC_Tc = 0.8
+        EC_Tcc = 5
     end
 
     methods
         function Parameter = getParameter(obj)
             Parameter = {'P: 100p% top as pbest', num2str(obj.P), ...
                         'H: success memory size', num2str(obj.H), ...
-                        'TopEC', num2str(obj.TopEC), ...
-                        'AlphaEC', num2str(obj.AlphaEC), ...
-                        'CpEC', num2str(obj.CpEC), ...
-                        'TcEC', num2str(obj.TcEC), ...
-                        'TccEC', num2str(obj.TccEC)};
+                        'EC_Top', num2str(obj.EC_Top), ...
+                        'EC_Alpha', num2str(obj.EC_Alpha), ...
+                        'EC_Cp', num2str(obj.EC_Cp), ...
+                        'EC_Tc', num2str(obj.EC_Tc), ...
+                        'EC_Tcc', num2str(obj.EC_Tcc)};
         end
 
         function obj = setParameter(obj, Parameter)
             i = 1;
             obj.P = str2double(Parameter{i}); i = i + 1;
             obj.H = str2double(Parameter{i}); i = i + 1;
-            obj.TopEC = str2double(Parameter{i}); i = i + 1;
-            obj.AlphaEC = str2double(Parameter{i}); i = i + 1;
-            obj.CpEC = str2double(Parameter{i}); i = i + 1;
-            obj.TcEC = str2double(Parameter{i}); i = i + 1;
-            obj.TccEC = str2double(Parameter{i}); i = i + 1;
+            obj.EC_Top = str2double(Parameter{i}); i = i + 1;
+            obj.EC_Alpha = str2double(Parameter{i}); i = i + 1;
+            obj.EC_Cp = str2double(Parameter{i}); i = i + 1;
+            obj.EC_Tc = str2double(Parameter{i}); i = i + 1;
+            obj.EC_Tcc = str2double(Parameter{i}); i = i + 1;
         end
 
         function run(obj, Prob)
@@ -65,7 +65,7 @@ classdef VMCH_LSHADE44 < Algorithm
             delta = 1 / (5 * STnum);
             for t = 1:Prob.T
                 % initialize Parameter
-                n = ceil(obj.TopEC * length(population{t}));
+                n = ceil(obj.EC_Top * length(population{t}));
                 cv_temp = [population{t}.CV];
                 [~, idx] = sort(cv_temp);
                 Ep{t} = cv_temp(idx(n));
@@ -89,17 +89,17 @@ classdef VMCH_LSHADE44 < Algorithm
                     if fea_percent < 1
                         Ep{t} = max([population{t}.CV]);
                     end
-                    if obj.FE / (Prob.maxFE / Prob.T) < obj.TcEC
-                        if fea_percent < obj.AlphaEC
-                            Ep{t} = Ep{t} * (1 - obj.FE / ((Prob.maxFE / Prob.T) * obj.TcEC))^obj.CpEC;
+                    if obj.FE / (Prob.maxFE / Prob.T) < obj.EC_Tc
+                        if fea_percent < obj.EC_Alpha
+                            Ep{t} = Ep{t} * (1 - obj.FE / ((Prob.maxFE / Prob.T) * obj.EC_Tc))^obj.EC_Cp;
                         else
                             Ep{t} = 1.1 * max([population{t}.CV]);
                         end
                     else
                         Ep{t} = 0;
                     end
-                    if obj.Gen <= obj.TccEC
-                        Ep_t = Ep{t} * ((1 - obj.Gen / obj.TccEC)^obj.CpEC);
+                    if obj.Gen <= obj.EC_Tcc
+                        Ep_t = Ep{t} * ((1 - obj.Gen / obj.EC_Tcc)^obj.EC_Cp);
                     else
                         Ep_t = 0;
                     end
