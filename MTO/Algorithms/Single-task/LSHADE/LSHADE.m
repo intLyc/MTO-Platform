@@ -99,8 +99,10 @@ classdef LSHADE < Algorithm
                     population{t}(replace) = offspring(replace);
 
                     % Linear Population Size Reduction
-                    [~, rank] = sort([population{t}.Obj]);
-                    population{t} = population{t}(rank(1:N));
+                    if N < length(population{t})
+                        [~, rank] = sort([population{t}.Obj]);
+                        population{t} = population{t}(rank(1:N));
+                    end
                 end
             end
         end
