@@ -98,8 +98,10 @@ classdef CAL_SHADE < Algorithm
                     % calculate SF SCR
                     SF = [population{t}(replace).F];
                     SCR = [population{t}(replace).CR];
-                    dif = 1e10 * abs([population{t}(replace).CV] - [offspring(replace).CV]) + ...
-                        abs([population{t}(replace).Obj] - [offspring(replace).Obj]);
+                    dif = [population{t}(replace).CV] - [offspring(replace).CV];
+                    dif_obj = [population{t}(replace).Obj] - [offspring(replace).Obj];
+                    dif_obj(dif_obj < 0) = 0;
+                    dif(dif <= 0) = dif_obj(dif <= 0);
                     dif = dif ./ sum(dif);
                     % update MF MCR
                     if ~isempty(SF)
