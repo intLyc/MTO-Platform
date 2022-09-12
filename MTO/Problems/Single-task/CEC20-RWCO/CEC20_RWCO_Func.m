@@ -1486,6 +1486,7 @@ function [obj, con] = CEC20_RWCO_Func(x, prob_k, GBPQL)
     h = abs(h) - 1e-4;
     h(h < 0) = 0;
     con = [g, h];
+    con(isnan(con)) = Inf;
 end
 
 % Program to for Admittance And Impedance Bus Formation....
