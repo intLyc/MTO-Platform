@@ -26,8 +26,8 @@ classdef ECHT_DE < Algorithm
         CR = 0.9
         maxSR = 0.475
         minSR = 0.025
-        EC_Top = 0.05
-        EC_Tc = 0.2
+        EC_Top = 0.2
+        EC_Tc = 0.8
         EC_Cp = 5
     end
 
