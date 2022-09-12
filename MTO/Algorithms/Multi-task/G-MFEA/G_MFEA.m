@@ -1,5 +1,5 @@
 classdef G_MFEA < Algorithm
-    % <MT-SO> <None/Expensive>
+    % <MT-SO> <None>
 
     %------------------------------- Reference --------------------------------
     % @Article{Ding2019G-MFEA,
