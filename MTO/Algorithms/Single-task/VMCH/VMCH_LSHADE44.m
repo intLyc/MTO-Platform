@@ -89,9 +89,9 @@ classdef VMCH_LSHADE44 < Algorithm
                     if fea_percent < 1
                         Ep{t} = max([population{t}.CV]);
                     end
-                    if obj.FE / (Prob.maxFE / Prob.T) < obj.EC_Tc
+                    if obj.FE / Prob.maxFE < obj.EC_Tc
                         if fea_percent < obj.EC_Alpha
-                            Ep{t} = Ep{t} * (1 - obj.FE / ((Prob.maxFE / Prob.T) * obj.EC_Tc))^obj.EC_Cp;
+                            Ep{t} = Ep{t} * (1 - obj.FE / (Prob.maxFE * obj.EC_Tc))^obj.EC_Cp;
                         else
                             Ep{t} = 1.1 * max([population{t}.CV]);
                         end
