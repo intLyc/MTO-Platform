@@ -122,10 +122,12 @@ classdef CAL_SHADE < Algorithm
                     population{t}(replace) = offspring(replace);
 
                     % Linear Population Size Reduction
-                    CV = [population{t}.CV]; CV(CV < Ep) = 0;
-                    Obj = [population{t}.Obj];
-                    [~, rank] = sortrows([CV', Obj'], [1, 2]);
-                    population{t} = population{t}(rank(1:N));
+                    if length(population{t}) > N
+                        CV = [population{t}.CV]; CV(CV < Ep) = 0;
+                        Obj = [population{t}.Obj];
+                        [~, rank] = sortrows([CV', Obj'], [1, 2]);
+                        population{t} = population{t}(rank(1:N));
+                    end
                 end
             end
         end
