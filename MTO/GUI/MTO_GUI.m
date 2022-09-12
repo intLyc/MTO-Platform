@@ -1363,10 +1363,11 @@ classdef MTO_GUI < matlab.apps.AppBase
                             algo_obj.reset();
                             par_tool(rep) = Par.toc;
                         end
-                        MTOData.RunTimes(prob, algo) = sum([par_tool.ItStop] - [par_tool.ItStart]);
+                        MTOData.RunTimes(prob, algo, :) = [par_tool.ItStop] - [par_tool.ItStart];
                     else
-                        t_temp = tic;
+                        t_temp = [];
                         for rep = 1:MTOData.Reps
+                            tstart = tic;
                             algo_obj.run(prob_obj);
                             tmp = algo_obj.getResult(prob_obj);
                             for t = 1:size(tmp, 1)
@@ -1379,11 +1380,12 @@ classdef MTO_GUI < matlab.apps.AppBase
                                 end
                             end
                             algo_obj.reset();
+                            t_temp(rep) = toc(tstart);
                             
                             app.ETableReps(prob, algo) = rep;
                             app.EupdateTableReps();
                         end
-                        MTOData.RunTimes(prob, algo) = toc(t_temp);
+                        MTOData.RunTimes(prob, algo, :) = t_temp;
                     end
                     app.ETableReps(prob, algo) = MTOData.Reps;
                     app.EupdateTableReps();
@@ -1823,6 +1825,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     MTOData.Algorithms = data_selected(i).NodeData.Algorithms;
                     MTOData.Problems = data_selected(i).NodeData.Problems;
                     MTOData.Results(1:length(MTOData.Problems),1:length(MTOData.Algorithms),1) = data_selected(i).NodeData.Results(:,:,rep);
+                    MTOData.RunTimes(1:length(MTOData.Problems),1:length(MTOData.Algorithms),1) = data_selected(i).NodeData.RunTimes(:,:,rep);
                     app.DputDataNode([data_selected(i).Text, ' (Split Rep: ', num2str(rep), ')'], MTOData);
                     drawnow;
                 end
@@ -1852,6 +1855,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     MTOData.Algorithms(1) = data_selected(i).NodeData.Algorithms(algo);
                     MTOData.Problems = data_selected(i).NodeData.Problems;
                     MTOData.Results(1:length(MTOData.Problems),1,1:MTOData.Reps) = data_selected(i).NodeData.Results(:,algo,:);
+                    MTOData.RunTimes(1:length(MTOData.Problems),1,1:MTOData.Reps) = data_selected(i).NodeData.RunTimes(:,algo,:);
                     app.DputDataNode([data_selected(i).Text, ' (Split Algorithm: ', MTOData.Algorithms(1).Name, ')'], MTOData);
                     drawnow;
                 end
@@ -1881,6 +1885,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     MTOData.Algorithms = data_selected(i).NodeData.Algorithms;
                     MTOData.Problems(1) = data_selected(i).NodeData.Problems(prob);
                     MTOData.Results(1,1:length(MTOData.Algorithms),1:MTOData.Reps) = data_selected(i).NodeData.Results(prob,:,:);
+                    MTOData.RunTimes(1,1:length(MTOData.Algorithms),1:MTOData.Reps) = data_selected(i).NodeData.RunTimes(prob,:,:);
                     app.DputDataNode([data_selected(i).Text, ' (Split Problem: ', MTOData.Problems(1).Name, ')'], MTOData);
                     drawnow;
                 end
@@ -1904,6 +1909,8 @@ classdef MTO_GUI < matlab.apps.AppBase
             for i = 1:length(data_selected)
                 MTOData.Results(1:length(MTOData.Problems),1:length(MTOData.Algorithms),MTOData.Reps+1:MTOData.Reps+data_selected(i).NodeData.Reps) = ...
                     data_selected(i).NodeData.Results(:,:,:);
+                MTOData.RunTimes(1:length(MTOData.Problems),1:length(MTOData.Algorithms),MTOData.Reps+1:MTOData.Reps+data_selected(i).NodeData.Reps) = ...
+                    data_selected(i).NodeData.RunTimes(:,:,:);
                 MTOData.Reps = MTOData.Reps + data_selected(i).NodeData.Reps;
             end
             
@@ -1930,6 +1937,8 @@ classdef MTO_GUI < matlab.apps.AppBase
                     data_selected(i).NodeData.Algorithms;
                 MTOData.Results(1:length(MTOData.Problems),idx+1:idx+length(data_selected(i).NodeData.Algorithms),1:MTOData.Reps) = ...
                     data_selected(i).NodeData.Results(:,:,:);
+                MTOData.RunTimes(1:length(MTOData.Problems),idx+1:idx+length(data_selected(i).NodeData.Algorithms),1:MTOData.Reps) = ...
+                    data_selected(i).NodeData.RunTimes(:,:,:);
                 idx = idx + length(data_selected(i).NodeData.Algorithms);
             end
             
@@ -1956,6 +1965,8 @@ classdef MTO_GUI < matlab.apps.AppBase
                     data_selected(i).NodeData.Problems;
                 MTOData.Results(idx+1:idx+length(data_selected(i).NodeData.Problems),1:length(MTOData.Algorithms),1:MTOData.Reps) = ...
                     data_selected(i).NodeData.Results(:,:,:);
+                MTOData.RunTimes(idx+1:idx+length(data_selected(i).NodeData.Problems),1:length(MTOData.Algorithms),1:MTOData.Reps) = ...
+                    data_selected(i).NodeData.RunTimes(:,:,:);
                 idx = idx + length(data_selected(i).NodeData.Problems);
             end
             

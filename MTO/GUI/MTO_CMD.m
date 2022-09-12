@@ -77,10 +77,11 @@ function MTO_CMD(AlgoCell, ProbCell, Reps, ParFlag, SaveName)
                     AlgoObject{algo}.reset();
                     par_tool(rep) = Par.toc;
                 end
-                Data.RunTimes(prob, algo) = sum([par_tool.ItStop] - [par_tool.ItStart]);
+                Data.RunTimes(prob, algo, :) = [par_tool.ItStop] - [par_tool.ItStart];
             else
-                t_temp = tic;
+                t_temp = [];
                 for rep = 1:Reps
+                    tstart = tic;
                     AlgoObject{algo}.run(ProbObject{prob});
                     tmp = AlgoObject{algo}.getResult(ProbObject{prob});
                     for t = 1:size(tmp, 1)
@@ -93,8 +94,9 @@ function MTO_CMD(AlgoCell, ProbCell, Reps, ParFlag, SaveName)
                         end
                     end
                     AlgoObject{algo}.reset();
+                    t_temp(rep) = toc(tstart);
                 end
-                Data.RunTimes(prob, algo) = toc(t_temp);
+                Data.RunTimes(prob, algo, :) = t_temp;
             end
         end
         % save temporary data

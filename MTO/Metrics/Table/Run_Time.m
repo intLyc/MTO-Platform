@@ -12,5 +12,9 @@ function result = Run_Time(MTOData)
 
     result.RowName = {MTOData.Problems.Name};
     result.ColumnName = {MTOData.Algorithms.Name};
-    result.TableData = MTOData.RunTimes;
+    for prob = 1:length(MTOData.Problems)
+        for algo = 1:length(MTOData.Algorithms)
+            result.TableData(prob, algo, :) = MTOData.RunTimes(prob, algo, :);
+        end
+    end
 end
