@@ -22,27 +22,27 @@ classdef CAL_SHADE < Algorithm
     properties (SetAccess = private)
         P = 0.2
         H = 10
-        TopEC = 0.2
-        TcEC = 0.8
-        CpEC = 5
+        EC_Top = 0.2
+        EC_Tc = 0.8
+        EC_Cp = 5
     end
 
     methods
         function Parameter = getParameter(obj)
             Parameter = {'P: 100p% top as pbest', num2str(obj.P), ...
                         'H: success memory size', num2str(obj.H), ...
-                        'TopEC', num2str(obj.TopEC), ...
-                        'TcEC', num2str(obj.TcEC), ...
-                        'CpEC', num2str(obj.CpEC)};
+                        'EC_Top', num2str(obj.EC_Top), ...
+                        'EC_Tc', num2str(obj.EC_Tc), ...
+                        'EC_Cp', num2str(obj.EC_Cp)};
         end
 
         function obj = setParameter(obj, Parameter)
             i = 1;
             obj.P = str2double(Parameter{i}); i = i + 1;
             obj.H = str2double(Parameter{i}); i = i + 1;
-            obj.TopEC = str2double(Parameter{i}); i = i + 1;
-            obj.TcEC = str2double(Parameter{i}); i = i + 1;
-            obj.CpEC = str2double(Parameter{i}); i = i + 1;
+            obj.EC_Top = str2double(Parameter{i}); i = i + 1;
+            obj.EC_Tc = str2double(Parameter{i}); i = i + 1;
+            obj.EC_Cp = str2double(Parameter{i}); i = i + 1;
         end
 
         function run(obj, Prob)
@@ -51,7 +51,7 @@ classdef CAL_SHADE < Algorithm
             Nmin = 4;
             for t = 1:Prob.T
                 % initialize Parameter
-                n = ceil(obj.TopEC * length(population{t}));
+                n = ceil(obj.EC_Top * length(population{t}));
                 cv_temp = [population{t}.CV];
                 [~, idx] = sort(cv_temp);
                 Ep0{t} = cv_temp(idx(n));
@@ -81,8 +81,8 @@ classdef CAL_SHADE < Algorithm
                     end
 
                     % calculate epsilon
-                    if obj.FE < obj.TcEC * Prob.maxFE
-                        Ep = Ep0{t} * ((1 - obj.FE / (obj.TcEC * Prob.maxFE))^obj.CpEC);
+                    if obj.FE < obj.EC_Tc * Prob.maxFE
+                        Ep = Ep0{t} * ((1 - obj.FE / (obj.EC_Tc * Prob.maxFE))^obj.EC_Cp);
                     else
                         Ep = 0;
                     end

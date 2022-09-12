@@ -1,5 +1,5 @@
 classdef MFMP < Algorithm
-    % <MT-SO> <None>
+    % <MT-SO> <None/Constrained>
 
     %------------------------------- Reference --------------------------------
     % @Article{Li2020MFMP,
@@ -91,12 +91,15 @@ classdef MFMP < Algorithm
                     % Evaluation
                     offspring = obj.Evaluation(offspring, Prob, t);
                     % Selection
-                    replace = [population{t}.Obj] > [offspring.Obj];
+                    [~, replace] = Selection_Tournament(population{t}, offspring);
 
                     % calculate SF SCR
                     SF = [population{t}(replace).F];
                     SCR = [population{t}(replace).CR];
-                    dif = abs([population{t}(replace).Obj] - [offspring(replace).Obj]);
+                    dif = [population{t}(replace).CV] - [offspring(replace).CV];
+                    dif_obj = [population{t}(replace).Obj] - [offspring(replace).Obj];
+                    dif_obj(dif_obj < 0) = 0;
+                    dif(dif <= 0) = dif_obj(dif <= 0);
                     dif = dif ./ sum(dif);
                     % update MF MCR
                     if ~isempty(SF)
@@ -138,7 +141,7 @@ classdef MFMP < Algorithm
                 if ~reduce_flag && obj.FE >= Prob.maxFE * obj.Alpha
                     N = round(Prob.N / 2);
                     for t = 1:Prob.T
-                        [~, rank] = sort([population{t}.Obj]);
+                        [~, rank] = sortrows([[population{t}.CV]', [population{t}.Obj]'], [1, 2]);
                         % save to archive
                         archive{t} = [archive{t}, population{t}(rank(N + 1:end))];
                         if length(archive{t}) > Prob.N
@@ -154,9 +157,9 @@ classdef MFMP < Algorithm
 
         function [offspring, flag] = Generation(obj, population, union, c_pop, c_union, RMP)
             % get top 100p% individuals
-            [~, rank] = sort([population.Obj]);
+            [~, rank] = sortrows([[population.CV]', [population.Obj]'], [1, 2]);
             pop_pbest = rank(1:max(round(obj.P * length(population)), 1));
-            [~, rank] = sort([c_pop.Obj]);
+            [~, rank] = sortrows([[c_pop.CV]', [c_pop.Obj]'], [1, 2]);
             c_pop_pbest = rank(1:max(round(obj.P * length(c_pop)), 1));
 
             flag = zeros(1, length(population));
