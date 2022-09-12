@@ -1,4 +1,4 @@
-classdef rank_jDE < Algorithm
+classdef rank_DE < Algorithm
     % <ST-SO> <None/Constrained>
 
     %------------------------------- Reference --------------------------------
@@ -22,32 +22,25 @@ classdef rank_jDE < Algorithm
     %--------------------------------------------------------------------------
 
     properties (SetAccess = private)
-        T1 = 0.1
-        T2 = 0.1
+        F = 0.5
+        CR = 0.9
     end
 
     methods
         function Parameter = getParameter(obj)
-            Parameter = {'T1: probability of F change', num2str(obj.T1), ...
-                        'T2: probability of CR change', num2str(obj.T2)};
+            Parameter = {'F: Mutation Factor', num2str(obj.F), ...
+                        'CR: Crossover Rate', num2str(obj.CR)};
         end
 
         function obj = setParameter(obj, Parameter)
             i = 1;
-            obj.T1 = str2double(Parameter{i}); i = i + 1;
-            obj.T2 = str2double(Parameter{i}); i = i + 1;
+            obj.F = str2double(Parameter{i}); i = i + 1;
+            obj.CR = str2double(Parameter{i}); i = i + 1;
         end
 
         function run(obj, Prob)
             % Initialization
-            population = Initialization(obj, Prob, Individual_DE);
-            for t = 1:Prob.T
-                % initialize F and CR
-                for i = 1:length(population{t})
-                    population{t}(i).F = rand() * 0.9 + 0.1;
-                    population{t}(i).CR = rand();
-                end
-            end
+            population = Initialization(obj, Prob, Individual);
 
             while obj.notTerminated(Prob)
                 for t = 1:Prob.T
@@ -68,16 +61,6 @@ classdef rank_jDE < Algorithm
             for i = 1:length(population)
                 offspring(i) = population(i);
 
-                % parameter self-adaptation
-                offspring(i).F = population(i).F;
-                offspring(i).CR = population(i).CR;
-                if rand() < obj.T1
-                    offspring(i).F = rand() * 0.9 + 0.1;
-                end
-                if rand() < obj.T2
-                    offspring(i).CR = rand();
-                end
-
                 N = length(population);
                 x1 = randi(length(population));
                 while rand() > (N - rank(x1)) / N || x1 == i
@@ -92,8 +75,8 @@ classdef rank_jDE < Algorithm
                     x3 = randi(length(population));
                 end
 
-                offspring(i).Dec = population(x1).Dec + offspring(i).F * (population(x2).Dec - population(x3).Dec);
-                offspring(i).Dec = DE_Crossover(offspring(i).Dec, population(i).Dec, offspring(i).CR);
+                offspring(i).Dec = population(x1).Dec + obj.F * (population(x2).Dec - population(x3).Dec);
+                offspring(i).Dec = DE_Crossover(offspring(i).Dec, population(i).Dec, obj.CR);
 
                 offspring(i).Dec(offspring(i).Dec > 1) = 1;
                 offspring(i).Dec(offspring(i).Dec < 0) = 0;

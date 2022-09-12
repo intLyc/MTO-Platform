@@ -1,5 +1,5 @@
 classdef LSHADE < Algorithm
-    % <ST-SO> <None>
+    % <ST-SO> <None/Constrained>
 
     %------------------------------- Reference --------------------------------
     % @InProceedings{Tanabe2014LSHADE,
@@ -73,12 +73,15 @@ classdef LSHADE < Algorithm
                     % Evaluation
                     offspring = obj.Evaluation(offspring, Prob, t);
                     % Selection
-                    replace = [population{t}.Obj] > [offspring.Obj];
+                    [~, replace] = Selection_Tournament(population{t}, offspring);
 
                     % Calculate SF SCR
                     SF = [population{t}(replace).F];
                     SCR = [population{t}(replace).CR];
-                    dif = abs([population{t}(replace).Obj] - [offspring(replace).Obj]);
+                    dif = [population{t}(replace).CV] - [offspring(replace).CV];
+                    dif_obj = [population{t}(replace).Obj] - [offspring(replace).Obj];
+                    dif_obj(dif_obj < 0) = 0;
+                    dif(dif <= 0) = dif_obj(dif <= 0);
                     dif = dif ./ sum(dif);
                     % update MF MCR
                     if ~isempty(SF)
@@ -100,7 +103,7 @@ classdef LSHADE < Algorithm
 
                     % Linear Population Size Reduction
                     if length(population{t}) > N
-                        [~, rank] = sort([population{t}.Obj]);
+                        [~, rank] = sortrows([[population{t}.CV]', [population{t}.Obj]'], [1, 2]);
                         population{t} = population{t}(rank(1:N));
                     end
                 end
@@ -109,7 +112,7 @@ classdef LSHADE < Algorithm
 
         function offspring = Generation(obj, population, union)
             % get top 100p% individuals
-            [~, rank] = sort([population.Obj]);
+            [~, rank] = sortrows([[population.CV]', [population.Obj]'], [1, 2]);
             pop_pbest = rank(1:max(round(obj.P * length(population)), 1));
 
             for i = 1:length(population)
