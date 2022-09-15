@@ -29,7 +29,7 @@ classdef VMCH_LSHADE44 < Algorithm
         EC_Alpha = 0.8
         EC_Cp = 2
         EC_Tc = 0.8
-        EC_Tcc = 5
+        EC_Tc2 = 0.2
     end
 
     methods
@@ -40,7 +40,7 @@ classdef VMCH_LSHADE44 < Algorithm
                         'EC_Alpha', num2str(obj.EC_Alpha), ...
                         'EC_Cp', num2str(obj.EC_Cp), ...
                         'EC_Tc', num2str(obj.EC_Tc), ...
-                        'EC_Tcc', num2str(obj.EC_Tcc)};
+                        'EC_Tc2', num2str(obj.EC_Tc2)};
         end
 
         function obj = setParameter(obj, Parameter)
@@ -51,7 +51,7 @@ classdef VMCH_LSHADE44 < Algorithm
             obj.EC_Alpha = str2double(Parameter{i}); i = i + 1;
             obj.EC_Cp = str2double(Parameter{i}); i = i + 1;
             obj.EC_Tc = str2double(Parameter{i}); i = i + 1;
-            obj.EC_Tcc = str2double(Parameter{i}); i = i + 1;
+            obj.EC_Tc2 = str2double(Parameter{i}); i = i + 1;
         end
 
         function run(obj, Prob)
@@ -98,8 +98,8 @@ classdef VMCH_LSHADE44 < Algorithm
                     else
                         Ep{t} = 0;
                     end
-                    if obj.Gen <= obj.EC_Tcc
-                        Ep_t = Ep{t} * ((1 - obj.Gen / obj.EC_Tcc)^obj.EC_Cp);
+                    if obj.FE / Prob.maxFE <= obj.EC_Tc2
+                        Ep_t = Ep{t} * ((1 - obj.FE / (Prob.maxFE * obj.EC_Tc2))^obj.EC_Cp);
                     else
                         Ep_t = 0;
                     end
