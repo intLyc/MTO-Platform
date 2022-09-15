@@ -20,9 +20,14 @@ classdef WCCI20_MaTSO1 < Problem
         end
 
         function obj = setParameter(obj, Parameter)
-            obj.T = str2double(Parameter{3});
-            obj.maxFE = 1000 * 50 * obj.T;
-            obj.setRunParameter({Parameter{1}, num2str(obj.maxFE)});
+            T = str2double(Parameter{3});
+            if obj.T == T
+                obj.setRunParameter(Parameter(1:2));
+            else
+                obj.T = T;
+                obj.maxFE = 1000 * 50 * obj.T;
+                obj.setRunParameter({Parameter{1}, num2str(obj.maxFE)});
+            end
         end
 
         function setTasks(obj)
