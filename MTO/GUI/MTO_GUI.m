@@ -1064,6 +1064,11 @@ classdef MTO_GUI < matlab.apps.AppBase
                     parameter = [parameter, node.Parent.Children(x).Text];
                 end
                 node.Parent.NodeData.setParameter(parameter);
+                % update child parameter node
+                parameter = node.Parent.NodeData.getParameter();
+                for x = 2:2:length(node.Parent.Children)
+                    node.Parent.Children(x).Text = parameter{x};
+                end
             end
             app.TData = [];
             app.TupdateUIAxes();
@@ -1103,6 +1108,11 @@ classdef MTO_GUI < matlab.apps.AppBase
                     parameter = [parameter, node.Parent.Children(x).Text];
                 end
                 node.Parent.NodeData.setParameter(parameter);
+                % update child parameter node
+                parameter = node.Parent.NodeData.getParameter();
+                for x = 2:2:length(node.Parent.Children)
+                    node.Parent.Children(x).Text = parameter{x};
+                end
             end
             
             app.TData = [];
@@ -1476,6 +1486,11 @@ classdef MTO_GUI < matlab.apps.AppBase
                     parameter = [parameter, node.Parent.Children(x).Text];
                 end
                 node.Parent.NodeData.setParameter(parameter);
+                % update child parameter node
+                parameter = node.Parent.NodeData.getParameter();
+                for x = 2:2:length(node.Parent.Children)
+                    node.Parent.Children(x).Text = parameter{x};
+                end
             end
         end
 
@@ -1525,6 +1540,11 @@ classdef MTO_GUI < matlab.apps.AppBase
                     parameter = [parameter, node.Parent.Children(x).Text];
                 end
                 node.Parent.NodeData.setParameter(parameter);
+                % update child parameter node
+                parameter = node.Parent.NodeData.getParameter();
+                for x = 2:2:length(node.Parent.Children)
+                    node.Parent.Children(x).Text = parameter{x};
+                end
             end
         end
 

@@ -11,21 +11,28 @@ classdef WCCI20_MaTSO3 < Problem
     methods
         function obj = WCCI20_MaTSO3(varargin)
             obj = obj@Problem(varargin);
-            obj.maxFE = 1000 * 50 * obj.defaultT;
+            obj.maxFE = 1000 * 50 * obj.T;
         end
 
         function Parameter = getParameter(obj)
-            Parameter = {'Task Num', num2str(obj.defaultT)};
+            Parameter = {'Task Num', num2str(obj.T)};
             Parameter = [obj.getRunParameter(), Parameter];
         end
 
         function obj = setParameter(obj, Parameter)
-            obj.defaultT = str2double(Parameter{3});
-            obj.setRunParameter(Parameter(1:2));
+            obj.T = str2double(Parameter{3});
+            obj.maxFE = 1000 * 50 * obj.T;
+            obj.setRunParameter({Parameter{1}, num2str(obj.maxFE)});
         end
 
         function setTasks(obj)
-            Tasks = benchmark_WCCI20_MaTSO(3, obj.defaultT);
+            if ~isempty(obj.T)
+                T = obj.T;
+            else
+                T = obj.defaultT;
+                obj.T = obj.defaultT;
+            end
+            Tasks = benchmark_WCCI20_MaTSO(3, T);
             obj.T = length(Tasks);
             for t = 1:obj.T
                 obj.D(t) = Tasks(t).Dim;
