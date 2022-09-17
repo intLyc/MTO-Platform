@@ -91,12 +91,14 @@ classdef MaTDE < Algorithm
                         CR = obj.LCR + (obj.UCR - obj.LCR) * rand();
                         for i = 1:length(population{t})
                             offspring(i) = population{t}(i);
-                            r1 = randi(length(population{transfer_task}));
+                            r1 = randi(length(transfer_task));
                             offspring(i).Dec = DE_Crossover(offspring(i).Dec, population{transfer_task}(r1).Dec, CR);
                         end
 
                         % Evaluation
                         [offspring, flag] = obj.Evaluation(offspring, Prob, t);
+                        % Selection
+                        population{t} = Selection_Tournament(population{t}, offspring);
 
                         if flag % Best updated
                             reward(t, transfer_task) = reward(t, transfer_task) / obj.Shrink;
