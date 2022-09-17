@@ -25,22 +25,30 @@ classdef CMT8 < Problem
     methods
         function obj = CMT8(varargin)
             obj = obj@Problem(varargin);
-            obj.maxFE = 1000 * obj.defaultD * obj.T;
+            obj.maxFE = 1000 * mean(obj.D) * obj.T;
         end
 
         function Parameter = getParameter(obj)
-            Parameter = {'Dim', num2str(obj.defaultD)};
+            Parameter = {'Dim', num2str(mean(obj.D))};
             Parameter = [obj.getRunParameter(), Parameter];
         end
 
         function obj = setParameter(obj, Parameter)
-            obj.defaultD = str2double(Parameter{3}); obj.setTasks();
-            obj.setRunParameter(Parameter(1:2));
+            D = str2double(Parameter{3});
+            if mean(obj.D) == D
+                obj.setRunParameter(Parameter(1:2));
+            else
+                obj.D = ones(1, obj.T) * D;
+                obj.maxFE = 1000 * mean(obj.D) * obj.T;
+                obj.setRunParameter({Parameter{1}, num2str(obj.maxFE)});
+            end
         end
 
         function setTasks(obj)
             obj.T = 2;
-            obj.D = ones(1, 2) * obj.defaultD;
+            if isempty(obj.D)
+                obj.D = ones(1, obj.T) * obj.defaultD;
+            end
 
             obj.Fnc{1} = @(x)Griewank2(x, 1, 0 * ones(1, obj.D(1)), -30 * ones(1, obj.D(1)));
             obj.Lb{1} = -100 * ones(1, obj.D(1));
