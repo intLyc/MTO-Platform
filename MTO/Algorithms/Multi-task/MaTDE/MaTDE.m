@@ -91,7 +91,7 @@ classdef MaTDE < Algorithm
                         CR = obj.LCR + (obj.UCR - obj.LCR) * rand();
                         for i = 1:length(population{t})
                             offspring(i) = population{t}(i);
-                            r1 = randi(length(transfer_task));
+                            r1 = randi(length(population{transfer_task}));
                             offspring(i).Dec = DE_Crossover(offspring(i).Dec, population{transfer_task}(r1).Dec, CR);
                         end
 
@@ -125,30 +125,31 @@ classdef MaTDE < Algorithm
                 offspring(i).Dec = population(x1).Dec + F * (population(x2).Dec - population(x3).Dec);
                 offspring(i).Dec = DE_Crossover(offspring(i).Dec, population(i).Dec, CR);
 
-                offspring(i).Dec(offspring(i).Dec > 1) = 1;
-                offspring(i).Dec(offspring(i).Dec < 0) = 0;
+                rand_Dec = rand(1, length(offspring(i).Dec));
+                offspring(i).Dec(offspring(i).Dec > 1) = rand_Dec(offspring(i).Dec > 1);
+                offspring(i).Dec(offspring(i).Dec < 0) = rand_Dec(offspring(i).Dec < 0);
             end
         end
 
-        function [num, possibility] = adaptivechoose(obj, task_num, T, archive, reward, possibility, Dim)
+        function [num, possibility] = adaptivechoose(obj, task_idx, T, archive, reward, possibility, Dim)
             sum = 0;
-            sim = obj.calSIM(task_num, T, archive, Dim);
+            sim = obj.calSIM(task_idx, T, archive, Dim);
             % update possibility table
             for i = 1:T
-                if i == task_num
+                if i == task_idx
                     continue;
                 end
-                possibility(task_num, i) = obj.Ro * possibility(task_num, i) + reward(task_num, i) / (1 + log(1 + sim(i, 1)));
-                sum = sum + possibility(task_num, i);
+                possibility(task_idx, i) = obj.Ro * possibility(task_idx, i) + reward(task_idx, i) / (1 + log(1 + sim(i, 1)));
+                sum = sum + possibility(task_idx, i);
             end
 
             p = rand;
             s = 0;
             for i = 1:T
-                if i == task_num
+                if i == task_idx
                     continue;
                 end
-                s = s + possibility(task_num, i) / sum;
+                s = s + possibility(task_idx, i) / sum;
                 if s >= p
                     break;
                 end
@@ -156,12 +157,12 @@ classdef MaTDE < Algorithm
             num = i;
         end
 
-        function archive = putarchive(obj, archive, task_num, individual, N)
+        function archive = putarchive(obj, archive, task_idx, individual, N)
             max_size = obj.ArcMultip * N;
-            archive_size = size(archive{task_num}, 1);
+            archive_size = size(archive{task_idx}, 1);
             if archive_size < max_size
                 archive_size = archive_size + 1;
-                archive{task_num}(archive_size, 1) = individual;
+                archive{task_idx}(archive_size, 1) = individual;
             else
                 while 1
                     l = ceil(rand * max_size);
@@ -169,23 +170,23 @@ classdef MaTDE < Algorithm
                         break;
                     end
                 end
-                archive{task_num}(l, 1) = individual;
+                archive{task_idx}(l, 1) = individual;
             end
         end
 
-        function similarity = calSIM(obj, task_num, no_of_task, archive, Dim)
+        function similarity = calSIM(obj, task_idx, T, archive, Dim)
             % Calculate similarity
-            for i = 1:no_of_task
-                if task_num ~= i
-                    NVARS = min(Dim(task_num), Dim(i)); % Unify dimensions to lower task
-                    cov0 = obj.getCov(task_num, archive, NVARS);
+            for i = 1:T
+                if task_idx ~= i
+                    NVARS = min(Dim(task_idx), Dim(i)); % Unify dimensions to lower task
+                    cov0 = obj.getCov(task_idx, archive, NVARS);
                     cov1 = obj.getCov(i, archive, NVARS);
                     cov0_det = det(cov0);
                     Inv_cov0 = pinv(cov0);
                     cov1_det = det(cov1);
                     Inv_cov1 = pinv(cov1);
                     tr = obj.getTrace(Inv_cov1, cov0);
-                    u = obj.getMul(task_num, i, archive, NVARS, Inv_cov1);
+                    u = obj.getMul(task_idx, i, archive, NVARS, Inv_cov1);
                     if cov0_det < 1e-3
                         cov0_det = 0.001;
                     end
@@ -194,19 +195,19 @@ classdef MaTDE < Algorithm
                     end
                     s1 = abs(0.5 * (tr + u - NVARS + log(cov1_det / cov0_det)));
                     tr = obj.getTrace(Inv_cov0, cov1);
-                    u = obj.getMul(i, task_num, archive, NVARS, Inv_cov0);
+                    u = obj.getMul(i, task_idx, archive, NVARS, Inv_cov0);
                     s2 = abs(0.5 * (tr + u - NVARS + log(cov0_det / cov1_det)));
                     similarity(i, 1) = 0.5 * (s1 + s2);
                 end
             end
         end
 
-        function COV = getCov(obj, task_num, archive, NVARS)
+        function COV = getCov(obj, task_idx, archive, NVARS)
             % generate NVARS*NVARS Dim cov matrix
-            cur_ar_size = size(archive{task_num}, 1);
+            cur_ar_size = size(archive{task_idx}, 1);
             pop_Dec = zeros(cur_ar_size, NVARS);
             for i = 1:cur_ar_size
-                pop_Dec(i, :) = archive{task_num}(i).Dec(1:NVARS);
+                pop_Dec(i, :) = archive{task_idx}(i).Dec(1:NVARS);
             end
             COV = cov(pop_Dec);
         end
