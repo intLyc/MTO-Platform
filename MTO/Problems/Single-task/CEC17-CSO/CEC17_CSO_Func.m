@@ -352,4 +352,5 @@ function [obj, con] = CEC17_CSO_Func(x, I_fno, o, M)
     h = abs(h) - 1e-4;
     h(h < 0) = 0;
     con = [g, h];
+    con(isnan(con)) = Inf;
 end

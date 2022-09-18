@@ -396,4 +396,5 @@ function [obj, con] = CEC10_CSO_Func(x, problem)
     g(g < 0) = 0;
     h(h < 0) = 0;
     con = [g, h];
+    con(isnan(con)) = Inf;
 end
