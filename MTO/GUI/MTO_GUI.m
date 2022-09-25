@@ -628,8 +628,8 @@ classdef MTO_GUI < matlab.apps.AppBase
                     x2 = reshape(table_data(row_i, algo_selected, :), 1, length(table_data(row_i, algo_selected, :)));
                     
                     p = 0;
-                    x1(isnan(x1)) = 1e5; % big number replace NaN
-                    x2(isnan(x2)) = 1e5; % big number replace NaN
+                    x1(isnan(x1)) = 1e15; % big number replace NaN
+                    x2(isnan(x2)) = 1e15; % big number replace NaN
                     if strcmp(test_type, 'Rank sum test')
                         p = ranksum(x1, x2);
                     elseif strcmp(test_type, 'Signed rank test')
@@ -637,9 +637,9 @@ classdef MTO_GUI < matlab.apps.AppBase
                     end
                     if p < 0.05
                         data1 = app.ETableData(row_i, algo);
-                        data1(isnan(data1)) = 1e5;
+                        data1(isnan(data1)) = Inf;
                         data2 = app.ETableData(row_i, algo_selected);
-                        data2(isnan(data2)) = 1e5;
+                        data2(isnan(data2)) = Inf;
                         if data1 < data2
                             app.ETableTest{row_i, algo} = '+';
                             sign_p(1) = sign_p(1) + 1;
