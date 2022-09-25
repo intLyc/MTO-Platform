@@ -42,12 +42,12 @@ classdef LSHADE44 < Algorithm
             population = Initialization(obj, Prob, Individual_DE44);
             Nmin = 4;
             % initialize Parameter
-            STnum = 4;
+            STNum = 4;
             n0 = 2;
-            delta = 1 / (5 * STnum);
+            delta = 1 / (5 * STNum);
             for t = 1:Prob.T
-                STRecord{t} = zeros(1, STnum) + n0;
-                for k = 1:STnum
+                STRecord{t} = zeros(1, STNum) + n0;
+                for k = 1:STNum
                     Hidx{t, k} = 1;
                     MF{t, k} = 0.5 .* ones(obj.H, 1);
                     MCR{t, k} = 0.5 .* ones(obj.H, 1);
@@ -63,14 +63,14 @@ classdef LSHADE44 < Algorithm
                     for i = 1:length(population{t})
                         % Stragety Roulette Selection
                         r = rand();
-                        for k = 1:STnum
+                        for k = 1:STNum
                             if r <= sum(roulette(1:k))
                                 st = k;
                                 break;
                             end
                         end
                         if min(roulette) < delta
-                            STRecord{t} = zeros(1, STnum) + n0;
+                            STRecord{t} = zeros(1, STNum) + n0;
                             roulette = STRecord{t} / sum(STRecord{t});
                         end
                         population{t}(i).ST = st;
@@ -98,9 +98,9 @@ classdef LSHADE44 < Algorithm
                     [~, replace] = Selection_Tournament(population{t}, offspring);
 
                     % Calculate SF SCR
-                    is_used = hist([population{t}(replace).ST], 1:STnum);
+                    is_used = hist([population{t}(replace).ST], 1:STNum);
                     STRecord{t} = STRecord{t} + is_used;
-                    for k = 1:STnum
+                    for k = 1:STNum
                         k_idx = [population{t}.ST] == k;
                         SF = [population{t}(replace & k_idx).F];
                         SCR = [population{t}(replace & k_idx).CR];
