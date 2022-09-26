@@ -678,8 +678,6 @@ classdef MTO_GUI < matlab.apps.AppBase
         function EupdateTableHighlight(app)
             % update table highlight
             
-            highlight_type = app.EHighlightTypeDropDown.Value;
-            
             % highlight best value
             app.EUITable.removeStyle();
             high_color = uistyle('BackgroundColor', [0.67,0.95,0.67]);
@@ -690,22 +688,24 @@ classdef MTO_GUI < matlab.apps.AppBase
                 return;
             end
             for row_i = 1:size(app.ETableData, 1)
+                if strcmp(app.EHighlightTypeDropDown.Value, 'None')
+                    drawnow;
+                    return;
+                end
                 % best
-                if ~strcmp(highlight_type, 'None')
-                    if ~(sum(isnan(app.ETableData(row_i, :))) == size(app.ETableData, 2))
-                        temp_data = app.ETableData(row_i, :);
-                        min_data = min(temp_data);
-                        temp_idx = temp_data == min_data;
-                        x = 1:length(temp_idx);
-                        x = x(temp_idx);
-                        for xx = 1:length(x)
-                            app.EUITable.addStyle(high_color, 'cell', [row_i, x(xx)]);
-                            app.EUITable.addStyle(font_bold, 'cell', [row_i, x(xx)]);
-                        end
+                if ~(sum(isnan(app.ETableData(row_i, :))) == size(app.ETableData, 2))
+                    temp_data = app.ETableData(row_i, :);
+                    min_data = min(temp_data);
+                    temp_idx = temp_data == min_data;
+                    x = 1:length(temp_idx);
+                    x = x(temp_idx);
+                    for xx = 1:length(x)
+                        app.EUITable.addStyle(high_color, 'cell', [row_i, x(xx)]);
+                        app.EUITable.addStyle(font_bold, 'cell', [row_i, x(xx)]);
                     end
                 end
                 % worst
-                if strcmp(highlight_type, 'Best&Worst')
+                if strcmp(app.EHighlightTypeDropDown.Value, 'Best&Worst')
                     isnan_temp = isnan(app.ETableData(row_i, :));
                     if sum(isnan_temp)
                         x = 1:length(isnan_temp);
@@ -1648,15 +1648,17 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
             if contains(file_name, 'tex')
                 hl = zeros(size(app.EUITable.Data));
-                for row_i = 1:size(app.ETableData, 1)
-                    if ~(sum(isnan(app.ETableData(row_i, :))) == size(app.ETableData, 2))
-                        temp_data = app.ETableData(row_i, :);
-                        min_data = min(temp_data);
-                        temp_idx = temp_data == min_data;
-                        x = 1:length(temp_idx);
-                        x = x(temp_idx);
-                        for xx = 1:length(x)
-                            hl(row_i, x(xx)) = 1;
+                if ~strcmp(app.EHighlightTypeDropDown.Value, 'None')
+                    for row_i = 1:size(app.ETableData, 1)
+                        if ~(sum(isnan(app.ETableData(row_i, :))) == size(app.ETableData, 2))
+                            temp_data = app.ETableData(row_i, :);
+                            min_data = min(temp_data);
+                            temp_idx = temp_data == min_data;
+                            x = 1:length(temp_idx);
+                            x = x(temp_idx);
+                            for xx = 1:length(x)
+                                hl(row_i, x(xx)) = 1;
+                            end
                         end
                     end
                 end
