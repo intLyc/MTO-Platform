@@ -23,40 +23,40 @@ classdef CMT7 < Problem
     %--------------------------------------------------------------------------
 
     methods
-        function obj = CMT7(varargin)
-            obj = obj@Problem(varargin);
-            obj.maxFE = 1000 * mean(obj.D) * obj.T;
+        function Prob = CMT7(varargin)
+            Prob = Prob@Problem(varargin);
+            Prob.maxFE = 1000 * mean(Prob.D) * Prob.T;
         end
 
-        function Parameter = getParameter(obj)
-            Parameter = {'Dim', num2str(mean(obj.D))};
-            Parameter = [obj.getRunParameter(), Parameter];
+        function Parameter = getParameter(Prob)
+            Parameter = {'Dim', num2str(mean(Prob.D))};
+            Parameter = [Prob.getRunParameter(), Parameter];
         end
 
-        function obj = setParameter(obj, Parameter)
+        function Prob = setParameter(Prob, Parameter)
             D = str2double(Parameter{3});
-            if mean(obj.D) == D
-                obj.setRunParameter(Parameter(1:2));
+            if mean(Prob.D) == D
+                Prob.setRunParameter(Parameter(1:2));
             else
-                obj.D = ones(1, obj.T) * D;
-                obj.maxFE = 1000 * mean(obj.D) * obj.T;
-                obj.setRunParameter({Parameter{1}, num2str(obj.maxFE)});
+                Prob.D = ones(1, Prob.T) * D;
+                Prob.maxFE = 1000 * mean(Prob.D) * Prob.T;
+                Prob.setRunParameter({Parameter{1}, num2str(Prob.maxFE)});
             end
         end
 
-        function setTasks(obj)
-            obj.T = 2;
-            if isempty(obj.D)
-                obj.D = ones(1, obj.T) * obj.defaultD;
+        function setTasks(Prob)
+            Prob.T = 2;
+            if isempty(Prob.D)
+                Prob.D = ones(1, Prob.T) * Prob.defaultD;
             end
 
-            obj.Fnc{1} = @(x)Rosenbrock1(x, 1, -30 * ones(1, obj.D(1)), -35 * ones(1, obj.D(1)));
-            obj.Lb{1} = -50 * ones(1, obj.D(1));
-            obj.Ub{1} = 50 * ones(1, obj.D(1));
+            Prob.Fnc{1} = @(x)Rosenbrock1(x, 1, -30 * ones(1, Prob.D(1)), -35 * ones(1, Prob.D(1)));
+            Prob.Lb{1} = -50 * ones(1, Prob.D(1));
+            Prob.Ub{1} = 50 * ones(1, Prob.D(1));
 
-            obj.Fnc{2} = @(x)Rastrigin1(x, 1, 35 * ones(1, obj.D(2)), 40 * ones(1, obj.D(2)));
-            obj.Lb{2} = -50 * ones(1, obj.D(2));
-            obj.Ub{2} = 50 * ones(1, obj.D(2));
+            Prob.Fnc{2} = @(x)Rastrigin1(x, 1, 35 * ones(1, Prob.D(2)), 40 * ones(1, Prob.D(2)));
+            Prob.Lb{2} = -50 * ones(1, Prob.D(2));
+            Prob.Ub{2} = 50 * ones(1, Prob.D(2));
         end
     end
 end

@@ -30,61 +30,61 @@ classdef DEORA < Algorithm
     end
 
     methods
-        function Parameter = getParameter(obj)
-            Parameter = {'F: Mutation Factor', num2str(obj.F), ...
-                        'CR: Crossover Probability', num2str(obj.CR), ...
-                        'Alpha', num2str(obj.Alpha), ...
-                        'Beta', num2str(obj.Beta), ...
-                        'Gama', num2str(obj.Gama), ...
-                        'Pmin: Minimum selection probability', num2str(obj.Pmin), ...
-                        'RMP0: Initial random mating probability', num2str(obj.RMP0)};
+        function Parameter = getParameter(Algo)
+            Parameter = {'F: Mutation Factor', num2str(Algo.F), ...
+                        'CR: Crossover Probability', num2str(Algo.CR), ...
+                        'Alpha', num2str(Algo.Alpha), ...
+                        'Beta', num2str(Algo.Beta), ...
+                        'Gama', num2str(Algo.Gama), ...
+                        'Pmin: Minimum selection probability', num2str(Algo.Pmin), ...
+                        'RMP0: Initial random mating probability', num2str(Algo.RMP0)};
         end
 
-        function obj = setParameter(obj, Parameter)
+        function Algo = setParameter(Algo, Parameter)
             i = 1;
-            obj.F = str2double(Parameter{i}); i = i + 1;
-            obj.CR = str2double(Parameter{i}); i = i + 1;
-            obj.Alpha = str2double(Parameter{i}); i = i + 1;
-            obj.Beta = str2double(Parameter{i}); i = i + 1;
-            obj.Gama = str2double(Parameter{i}); i = i + 1;
-            obj.Pmin = str2double(Parameter{i}); i = i + 1;
-            obj.RMP0 = str2double(Parameter{i}); i = i + 1;
+            Algo.F = str2double(Parameter{i}); i = i + 1;
+            Algo.CR = str2double(Parameter{i}); i = i + 1;
+            Algo.Alpha = str2double(Parameter{i}); i = i + 1;
+            Algo.Beta = str2double(Parameter{i}); i = i + 1;
+            Algo.Gama = str2double(Parameter{i}); i = i + 1;
+            Algo.Pmin = str2double(Parameter{i}); i = i + 1;
+            Algo.RMP0 = str2double(Parameter{i}); i = i + 1;
         end
 
-        function run(obj, Prob)
+        function run(Algo, Prob)
             % Initialization
-            population = Initialization(obj, Prob, Individual);
+            population = Initialization(Algo, Prob, Individual);
             HR = []; % HR is used to store the historical rewards
             maxGen = (Prob.maxFE - Prob.N * Prob.T) / Prob.N + 1;
             delta_rmp = 1 / maxGen;
-            RMP = obj.RMP0 * ones(Prob.T, Prob.T) / (Prob.T - 1);
-            RMP(logical(eye(size(RMP)))) = (1 - obj.RMP0);
+            RMP = Algo.RMP0 * ones(Prob.T, Prob.T) / (Prob.T - 1);
+            RMP(logical(eye(size(RMP)))) = (1 - Algo.RMP0);
 
-            while obj.notTerminated(Prob)
+            while Algo.notTerminated(Prob)
                 % Select the k-th task to optimize
-                if obj.Gen <= obj.Beta * maxGen
+                if Algo.Gen <= Algo.Beta * maxGen
                     k = unidrnd(Prob.T);
                 else
-                    weights = obj.Gama.^(obj.Gen - 3:-1:0);
+                    weights = Algo.Gama.^(Algo.Gen - 3:-1:0);
                     sum_weights = sum(weights);
                     for t = 1:Prob.T
                         mean_R(t) = sum(weights .* HR(t, :)) / sum_weights;
                     end
                     % The selection probability
-                    prob(obj.Gen, :) = obj.Pmin / Prob.T + (1 - obj.Pmin) * mean_R ./ (sum(mean_R));
+                    prob(Algo.Gen, :) = Algo.Pmin / Prob.T + (1 - Algo.Pmin) * mean_R ./ (sum(mean_R));
                     % Determine the a task based on the selection probability using roulette wheel method
                     r = rand;
                     for t = 1:Prob.T
-                        if r <= sum(prob(obj.Gen, 1:t))
+                        if r <= sum(prob(Algo.Gen, 1:t))
                             k = t;
                             break;
                         end
                     end
                 end
 
-                [offspring, r1_task] = obj.Generation(population, RMP, k);
+                [offspring, r1_task] = Algo.Generation(population, RMP, k);
                 % Evaluation
-                offspring = obj.Evaluation(offspring, Prob, k);
+                offspring = Algo.Evaluation(offspring, Prob, k);
 
                 fit_old = [population{k}.Obj];
                 replace = [population{k}.Obj] > [offspring.Obj];
@@ -93,19 +93,19 @@ classdef DEORA < Algorithm
 
                 % calculate the reward
                 R_p = max((fit_old - fit_new) ./ (fit_old), 0);
-                best_g = [obj.Best{:}];
+                best_g = [Algo.Best{:}];
                 R_b = max((min([best_g.Obj]) - min(fit_new)) / min([best_g.Obj]), 0);
                 R = zeros(Prob.T, 1);
                 for t = 1:Prob.T
                     if t == k %The main task
-                        R(t) = obj.Alpha * R_b + (1 - obj.Alpha) * (sum(R_p) / length(R_p));
+                        R(t) = Algo.Alpha * R_b + (1 - Algo.Alpha) * (sum(R_p) / length(R_p));
                     else % The auxiliary task
                         index = find(r1_task == t);
                         if isempty(index)
                             R(t) = 0;
                         else
                             [~, minid] = min(fit_new);
-                            R(t) = obj.Alpha * (r1_task(minid) == t) * R_b + (1 - obj.Alpha) * (sum(R_p(index)) / length(index));
+                            R(t) = Algo.Alpha * (r1_task(minid) == t) * R_b + (1 - Algo.Alpha) * (sum(R_p(index)) / length(index));
                         end
                     end
                 end
@@ -127,7 +127,7 @@ classdef DEORA < Algorithm
             end
         end
 
-        function [offspring, r1_task] = Generation(obj, population, RMP, k)
+        function [offspring, r1_task] = Generation(Algo, population, RMP, k)
             r1_task = zeros(1, length(population{k}));
             for i = 1:length(population{k})
                 offspring(i) = population{k}(i);
@@ -142,8 +142,8 @@ classdef DEORA < Algorithm
                     end
                 end
 
-                offspring(i).Dec = population{r1_task(i)}(x1).Dec + obj.F * (population{k}(x2).Dec - population{k}(x3).Dec);
-                offspring(i).Dec = DE_Crossover(offspring(i).Dec, population{k}(i).Dec, obj.CR);
+                offspring(i).Dec = population{r1_task(i)}(x1).Dec + Algo.F * (population{k}(x2).Dec - population{k}(x3).Dec);
+                offspring(i).Dec = DE_Crossover(offspring(i).Dec, population{k}(i).Dec, Algo.CR);
 
                 % offspring(i).Dec(offspring(i).Dec > 1) = 1;
                 % offspring(i).Dec(offspring(i).Dec < 0) = 0;

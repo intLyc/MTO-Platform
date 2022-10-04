@@ -1,4 +1,4 @@
-function [obj, con] = CEC20_RWCO_Func(x, prob_k, GBPQL)
+function [Obj, Con] = CEC20_RWCO_Func(x, prob_k, GBPQL)
 
     % cec20_func Constrained Optimization Test Suite
     % Abhishek Kumar (email: abhishek.kumar.eee13@iitbhu.ac.in, Indian Institute of Technology (BHU), Varanasi)
@@ -1481,12 +1481,12 @@ function [obj, con] = CEC20_RWCO_Func(x, prob_k, GBPQL)
         g = zeros(ps, 1);
     end
 
-    obj = f;
+    Obj = f;
     g(g < 0) = 0;
     h = abs(h) - 1e-4;
     h(h < 0) = 0;
-    con = [g, h];
-    con(isnan(con)) = Inf;
+    Con = [g, h];
+    Con(isnan(Con)) = Inf;
 end
 
 % Program to for Admittance And Impedance Bus Formation....

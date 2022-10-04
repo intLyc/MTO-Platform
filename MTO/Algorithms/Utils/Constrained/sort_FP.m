@@ -1,5 +1,5 @@
-function rank = sort_FP(obj, cv, varargin)
+function rank = sort_FP(Obj, CV, varargin)
     %% Feasible Priority Sort
-    [~, rank] = sortrows([cv', obj'], [1, 2]);
+    [~, rank] = sortrows([CV', Obj'], [1, 2]);
     rank = rank';
 end

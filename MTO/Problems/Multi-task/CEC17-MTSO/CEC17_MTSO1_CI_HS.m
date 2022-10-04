@@ -9,19 +9,19 @@ classdef CEC17_MTSO1_CI_HS < Problem
     %--------------------------------------------------------------------------
 
     methods
-        function obj = CEC17_MTSO1_CI_HS(varargin)
-            obj = obj@Problem(varargin);
-            obj.maxFE = 1000 * 100;
+        function Prob = CEC17_MTSO1_CI_HS(varargin)
+            Prob = Prob@Problem(varargin);
+            Prob.maxFE = 1000 * 100;
         end
 
-        function setTasks(obj)
+        function setTasks(Prob)
             Tasks = benchmark_CEC17_MTSO(1);
-            obj.T = length(Tasks);
-            for t = 1:obj.T
-                obj.D(t) = Tasks(t).Dim;
-                obj.Fnc{t} = Tasks(t).Fnc;
-                obj.Lb{t} = Tasks(t).Lb;
-                obj.Ub{t} = Tasks(t).Ub;
+            Prob.T = length(Tasks);
+            for t = 1:Prob.T
+                Prob.D(t) = Tasks(t).Dim;
+                Prob.Fnc{t} = Tasks(t).Fnc;
+                Prob.Lb{t} = Tasks(t).Lb;
+                Prob.Ub{t} = Tasks(t).Ub;
             end
         end
     end

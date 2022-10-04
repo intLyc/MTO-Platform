@@ -1,9 +1,9 @@
-function [obj, cv] = Ackley(var, M, opt, g)
+function [Obj, Con] = Ackley(var, M, opt, g)
     % Ackley function
     %   - var: design variable vector
     %   - M: rotation matrix
     %   - opt: shift vector
-    %   - g: objective value move
+    %   - g: Objective value move
 
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
@@ -24,8 +24,8 @@ function [obj, cv] = Ackley(var, M, opt, g)
     avgsum1 = sum1 / dim;
     avgsum2 = sum2 / dim;
 
-    obj = -20 * exp(-0.2 * sqrt(avgsum1)) - exp(avgsum2) + 20 + exp(1);
-    obj = obj + g;
+    Obj = -20 * exp(-0.2 * sqrt(avgsum1)) - exp(avgsum2) + 20 + exp(1);
+    Obj = Obj + g;
 
-    cv = 0;
+    Con = 0;
 end

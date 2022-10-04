@@ -1,4 +1,4 @@
-function [obj, con] = CEC06_CSO_Func(x, problem, aaa)
+function [Obj, Con] = CEC06_CSO_Func(x, problem, aaa)
 
     ps = size(x, 1);
 
@@ -342,8 +342,8 @@ function [obj, con] = CEC06_CSO_Func(x, problem, aaa)
 
     end
 
-    obj = f;
+    Obj = f;
     g(g < 0) = 0;
-    con = g;
-    con(isnan(con)) = Inf;
+    Con = g;
+    Con(isnan(Con)) = Inf;
 end

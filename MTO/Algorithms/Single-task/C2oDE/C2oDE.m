@@ -28,36 +28,36 @@ classdef C2oDE < Algorithm
     end
 
     methods
-        function Parameter = getParameter(obj)
-            Parameter = {'Beta', num2str(obj.Beta), ...
-                        'Mu', num2str(obj.Mu), ...
-                        'P', num2str(obj.P)};
+        function Parameter = getParameter(Algo)
+            Parameter = {'Beta', num2str(Algo.Beta), ...
+                        'Mu', num2str(Algo.Mu), ...
+                        'P', num2str(Algo.P)};
         end
 
-        function obj = setParameter(obj, Parameter)
+        function Algo = setParameter(Algo, Parameter)
             i = 1;
-            obj.Beta = str2double(Parameter{i}); i = i + 1;
-            obj.Mu = str2double(Parameter{i}); i = i + 1;
-            obj.P = str2double(Parameter{i}); i = i + 1;
+            Algo.Beta = str2double(Parameter{i}); i = i + 1;
+            Algo.Mu = str2double(Parameter{i}); i = i + 1;
+            Algo.P = str2double(Parameter{i}); i = i + 1;
         end
 
-        function run(obj, Prob)
+        function run(Algo, Prob)
             F_pool = [0.6, 0.8, 1.0];
             CR_pool = [0.1, 0.2, 1.0];
 
             % Initialization
-            population = Initialization(obj, Prob, Individual);
+            population = Initialization(Algo, Prob, Individual);
 
             for t = 1:Prob.T
                 Ep0{t} = max([population{t}.CV]);
                 X{t} = 0;
             end
 
-            while obj.notTerminated(Prob)
+            while Algo.notTerminated(Prob)
                 for t = 1:Prob.T
-                    cp = (-log(Ep0{t}) - obj.Beta) / log(1 - obj.P);
+                    cp = (-log(Ep0{t}) - Algo.Beta) / log(1 - Algo.P);
                     % adjust the threshold
-                    if X{t} < obj.P
+                    if X{t} < Algo.P
                         Ep = Ep0{t} * (1 - X{t})^cp;
                     else
                         Ep = 0;
@@ -65,14 +65,14 @@ classdef C2oDE < Algorithm
                     X{t} = X{t} + (Prob.T * Prob.N * 3) / Prob.maxFE;
 
                     % diversity restart
-                    if std([population{t}.CV]) < obj.Mu && isempty(find([population{t}.CV] == 0, 1))
-                        population{t} = Initialization_One(obj, Prob, t, Individual);
+                    if std([population{t}.CV]) < Algo.Mu && isempty(find([population{t}.CV] == 0, 1))
+                        population{t} = Initialization_One(Algo, Prob, t, Individual);
                     end
 
                     % Generation
-                    offspring_temp = obj.Generation(population{t}, F_pool, CR_pool);
+                    offspring_temp = Algo.Generation(population{t}, F_pool, CR_pool);
                     % Evaluation
-                    offspring_temp = obj.Evaluation(offspring_temp, Prob, t);
+                    offspring_temp = Algo.Evaluation(offspring_temp, Prob, t);
                     % Pre Selection
                     for i = 1:length(population{t})
                         idx = (i - 1) * 3 + (1:3);
@@ -85,7 +85,7 @@ classdef C2oDE < Algorithm
             end
         end
 
-        function offspring = Generation(obj, population, F_pool, CR_pool)
+        function offspring = Generation(Algo, population, F_pool, CR_pool)
             for i = 1:length(population)
                 j = (i - 1) * 3 + 1;
                 offspring(j) = population(i);

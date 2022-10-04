@@ -1,4 +1,4 @@
-function [obj, con] = Rastrigin4(var, M, opt, opt_con)
+function [Obj, Con] = Rastrigin4(var, M, opt, opt_con)
     % Rastrigin function
     %   - var: design variable vector
     %   - M: rotation matrix
@@ -6,11 +6,11 @@ function [obj, con] = Rastrigin4(var, M, opt, opt_con)
     %   - opt_con: feasible region shift vector
     dim = length(var);
 
-    % object
+    % Object
     x = (M * (var - opt(1:dim))')';
-    obj = 10 * dim;
+    Obj = 10 * dim;
     for i = 1:dim
-        obj = obj + (x(i)^2 - 10 * (cos(2 * pi * x(i))));
+        Obj = Obj + (x(i)^2 - 10 * (cos(2 * pi * x(i))));
     end
 
     % constraint
@@ -19,5 +19,5 @@ function [obj, con] = Rastrigin4(var, M, opt, opt_con)
 
     h = abs(h) - 1e-4;
     h(h < 0) = 0;
-    con = h;
+    Con = h;
 end

@@ -1,9 +1,9 @@
-function [obj, cv] = Rastrigin(var, M, opt, g)
+function [Obj, Con] = Rastrigin(var, M, opt, g)
     % Rastrigin function
     %   - var: design variable vector
     %   - M: rotation matrix
     %   - opt: shift vector
-    %   - g: objective value move
+    %   - g: Objective value move
 
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
@@ -14,12 +14,12 @@ function [obj, cv] = Rastrigin(var, M, opt, g)
 
     dim = length(var);
     var = (M * (var - opt)')';
-    obj = 10 * dim;
+    Obj = 10 * dim;
 
     for i = 1:dim
-        obj = obj + (var(i)^2 - 10 * (cos(2 * pi * var(i))));
+        Obj = Obj + (var(i)^2 - 10 * (cos(2 * pi * var(i))));
     end
-    obj = obj + g;
+    Obj = Obj + g;
 
-    cv = 0;
+    Con = 0;
 end

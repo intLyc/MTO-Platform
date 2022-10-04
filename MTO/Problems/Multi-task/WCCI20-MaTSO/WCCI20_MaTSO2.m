@@ -9,41 +9,41 @@ classdef WCCI20_MaTSO2 < Problem
     %--------------------------------------------------------------------------
 
     methods
-        function obj = WCCI20_MaTSO2(varargin)
-            obj = obj@Problem(varargin);
-            obj.maxFE = 1000 * 50 * obj.T;
+        function Prob = WCCI20_MaTSO2(varargin)
+            Prob = Prob@Problem(varargin);
+            Prob.maxFE = 1000 * 50 * Prob.T;
         end
 
-        function Parameter = getParameter(obj)
-            Parameter = {'Task Num', num2str(obj.T)};
-            Parameter = [obj.getRunParameter(), Parameter];
+        function Parameter = getParameter(Prob)
+            Parameter = {'Task Num', num2str(Prob.T)};
+            Parameter = [Prob.getRunParameter(), Parameter];
         end
 
-        function obj = setParameter(obj, Parameter)
+        function Prob = setParameter(Prob, Parameter)
             T = str2double(Parameter{3});
-            if obj.T == T
-                obj.setRunParameter(Parameter(1:2));
+            if Prob.T == T
+                Prob.setRunParameter(Parameter(1:2));
             else
-                obj.T = T;
-                obj.maxFE = 1000 * 50 * obj.T;
-                obj.setRunParameter({Parameter{1}, num2str(obj.maxFE)});
+                Prob.T = T;
+                Prob.maxFE = 1000 * 50 * Prob.T;
+                Prob.setRunParameter({Parameter{1}, num2str(Prob.maxFE)});
             end
         end
 
-        function setTasks(obj)
-            if ~isempty(obj.T)
-                T = obj.T;
+        function setTasks(Prob)
+            if ~isempty(Prob.T)
+                T = Prob.T;
             else
-                T = obj.defaultT;
-                obj.T = obj.defaultT;
+                T = Prob.defaultT;
+                Prob.T = Prob.defaultT;
             end
             Tasks = benchmark_WCCI20_MaTSO(2, T);
-            obj.T = length(Tasks);
-            for t = 1:obj.T
-                obj.D(t) = Tasks(t).Dim;
-                obj.Fnc{t} = Tasks(t).Fnc;
-                obj.Lb{t} = Tasks(t).Lb;
-                obj.Ub{t} = Tasks(t).Ub;
+            Prob.T = length(Tasks);
+            for t = 1:Prob.T
+                Prob.D(t) = Tasks(t).Dim;
+                Prob.Fnc{t} = Tasks(t).Fnc;
+                Prob.Lb{t} = Tasks(t).Lb;
+                Prob.Ub{t} = Tasks(t).Ub;
             end
         end
     end

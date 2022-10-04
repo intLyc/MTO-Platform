@@ -25,21 +25,21 @@ classdef LSHADE44 < Algorithm
     end
 
     methods
-        function Parameter = getParameter(obj)
-            Parameter = {'P: 100p% top as pbest', num2str(obj.P), ...
-                        'H: success memory size', num2str(obj.H)};
+        function Parameter = getParameter(Algo)
+            Parameter = {'P: 100p% top as pbest', num2str(Algo.P), ...
+                        'H: success memory size', num2str(Algo.H)};
         end
 
-        function obj = setParameter(obj, Parameter)
+        function Algo = setParameter(Algo, Parameter)
             i = 1;
-            obj.P = str2double(Parameter{i}); i = i + 1;
-            obj.H = str2double(Parameter{i}); i = i + 1;
-            obj.arc_rate = str2double(Parameter{i}); i = i + 1;
+            Algo.P = str2double(Parameter{i}); i = i + 1;
+            Algo.H = str2double(Parameter{i}); i = i + 1;
+            Algo.arc_rate = str2double(Parameter{i}); i = i + 1;
         end
 
-        function run(obj, Prob)
+        function run(Algo, Prob)
             % Initialization
-            population = Initialization(obj, Prob, Individual_DE44);
+            population = Initialization(Algo, Prob, Individual_DE44);
             Nmin = 4;
             % initialize Parameter
             STNum = 4;
@@ -49,14 +49,14 @@ classdef LSHADE44 < Algorithm
                 STRecord{t} = zeros(1, STNum) + n0;
                 for k = 1:STNum
                     Hidx{t, k} = 1;
-                    MF{t, k} = 0.5 .* ones(obj.H, 1);
-                    MCR{t, k} = 0.5 .* ones(obj.H, 1);
+                    MF{t, k} = 0.5 .* ones(Algo.H, 1);
+                    MCR{t, k} = 0.5 .* ones(Algo.H, 1);
                 end
                 archive{t} = Individual_DE44.empty();
             end
 
-            while obj.notTerminated(Prob)
-                N = round((Nmin - Prob.N) / Prob.maxFE * obj.FE + Prob.N);
+            while Algo.notTerminated(Prob)
+                N = round((Nmin - Prob.N) / Prob.maxFE * Algo.FE + Prob.N);
                 for t = 1:Prob.T
                     % Calculate individual F and CR and ST
                     roulette = STRecord{t} / sum(STRecord{t});
@@ -75,7 +75,7 @@ classdef LSHADE44 < Algorithm
                         end
                         population{t}(i).ST = st;
 
-                        idx = randi(obj.H);
+                        idx = randi(Algo.H);
                         uF = MF{t, st}(idx);
                         population{t}(i).F = uF + 0.1 * tan(pi * (rand() - 0.5));
                         while (population{t}(i).F <= 0)
@@ -91,9 +91,9 @@ classdef LSHADE44 < Algorithm
 
                     % Generation
                     union = [population{t}, archive{t}];
-                    offspring = obj.Generation(population{t}, union);
+                    offspring = Algo.Generation(population{t}, union);
                     % Evaluation
-                    offspring = obj.Evaluation(offspring, Prob, t);
+                    offspring = Algo.Evaluation(offspring, Prob, t);
                     % Selection
                     [~, replace] = Selection_Tournament(population{t}, offspring);
 
@@ -114,10 +114,10 @@ classdef LSHADE44 < Algorithm
                             MF{t, k}(Hidx{t, k}) = sum(dif .* (SF.^2)) / sum(dif .* SF);
                             MCR{t, k}(Hidx{t, k}) = sum(dif .* SCR);
                         else
-                            MF{t, k}(Hidx{t, k}) = MF{t, k}(mod(Hidx{t, k} + obj.H - 2, obj.H) + 1);
-                            MCR{t, k}(Hidx{t, k}) = MCR{t, k}(mod(Hidx{t, k} + obj.H - 2, obj.H) + 1);
+                            MF{t, k}(Hidx{t, k}) = MF{t, k}(mod(Hidx{t, k} + Algo.H - 2, Algo.H) + 1);
+                            MCR{t, k}(Hidx{t, k}) = MCR{t, k}(mod(Hidx{t, k} + Algo.H - 2, Algo.H) + 1);
                         end
-                        Hidx{t, k} = mod(Hidx{t, k}, obj.H) + 1;
+                        Hidx{t, k} = mod(Hidx{t, k}, Algo.H) + 1;
                     end
 
                     archive{t} = [archive{t}, population{t}(replace)];
@@ -136,10 +136,10 @@ classdef LSHADE44 < Algorithm
             end
         end
 
-        function offspring = Generation(obj, population, union)
+        function offspring = Generation(Algo, population, union)
             % get top 100p% individuals
             [~, rank] = sortrows([[population.CV]', [population.Obj]'], [1, 2]);
-            pop_pbest = rank(1:max(round(obj.P * length(population)), 1));
+            pop_pbest = rank(1:max(round(Algo.P * length(population)), 1));
 
             for i = 1:length(population)
                 offspring(i) = population(i);

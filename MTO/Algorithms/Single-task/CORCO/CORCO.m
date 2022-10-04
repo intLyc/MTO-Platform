@@ -26,21 +26,21 @@ classdef CORCO < Algorithm
     end
 
     methods
-        function Parameter = getParameter(obj)
-            Parameter = {'LP: Learning Period', num2str(obj.LP)};
+        function Parameter = getParameter(Algo)
+            Parameter = {'LP: Learning Period', num2str(Algo.LP)};
         end
 
-        function obj = setParameter(obj, Parameter)
+        function Algo = setParameter(Algo, Parameter)
             i = 1;
-            obj.LP = str2double(Parameter{i}); i = i + 1;
+            Algo.LP = str2double(Parameter{i}); i = i + 1;
         end
 
-        function run(obj, Prob)
+        function run(Algo, Prob)
             F_pool = [0.6, 0.8, 1.0];
             CR_pool = [0.1, 0.2, 1.0];
 
             % Initialization
-            population = Initialization(obj, Prob, Individual);
+            population = Initialization(Algo, Prob, Individual);
             archive = population;
             for t = 1:Prob.T
                 X{t} = 0;
@@ -53,9 +53,9 @@ classdef CORCO < Algorithm
                 cor_flag{t} = false;
             end
 
-            while obj.notTerminated(Prob)
+            while Algo.notTerminated(Prob)
                 for t = 1:Prob.T
-                    if obj.FE < obj.LP * Prob.maxFE
+                    if Algo.FE < Algo.LP * Prob.maxFE
                         stage = 1;
                     else
                         stage = 2;
@@ -73,13 +73,13 @@ classdef CORCO < Algorithm
                     weights = WeightGenerator(length(population{t}), [population{t}.CV], [population{t}.Obj], X{t}, cor_idx{t}, div_delta{t}, stage);
 
                     % Generation
-                    offspring = obj.Generation(population{t}, F_pool, CR_pool, weights);
+                    offspring = Algo.Generation(population{t}, F_pool, CR_pool, weights);
                     % Evaluation
-                    offspring = obj.Evaluation(offspring, Prob, t);
+                    offspring = Algo.Evaluation(offspring, Prob, t);
 
                     % selection
-                    population{t} = obj.Selection(population{t}, offspring, weights);
-                    archive{t} = obj.SelectionArchive(archive{t}, offspring, stage);
+                    population{t} = Algo.Selection(population{t}, offspring, weights);
+                    archive{t} = Algo.SelectionArchive(archive{t}, offspring, stage);
 
                     [con_obj_betterNum, obj_con_betterNum] = InterCompare([archive{t}.Obj], [archive{t}.CV], [population{t}.Obj], [population{t}.CV]);
                     p = reshape([population{t}.Dec], length(population{t}(1).Dec), length(population{t}))';
@@ -90,7 +90,7 @@ classdef CORCO < Algorithm
             end
         end
 
-        function offspring = Generation(obj, population, F_pool, CR_pool, weights)
+        function offspring = Generation(Algo, population, F_pool, CR_pool, weights)
             Obj = [population.Obj]; CV = [population.CV];
             normal_Obj = (Obj - min(Obj)) ./ (max(Obj) - min(Obj) + 1e-15);
             normal_CV = (CV - min(CV)) ./ (max(CV) - min(CV) + 1e-15);
@@ -148,7 +148,7 @@ classdef CORCO < Algorithm
             end
         end
 
-        function population = Selection(obj, population, offspring, weights)
+        function population = Selection(Algo, population, offspring, weights)
             Obj = [[population.Obj], [offspring.Obj]];
             CV = [[population.CV], [offspring.CV]];
             normal_Obj = (Obj - min(Obj)) ./ (max(Obj) - min(Obj) + 1e-15);
@@ -166,7 +166,7 @@ classdef CORCO < Algorithm
             population(replace) = offspring(replace);
         end
 
-        function archive = SelectionArchive(obj, archive, offspring, stage)
+        function archive = SelectionArchive(Algo, archive, offspring, stage)
             if stage == 1
                 replace = [archive.CV] > [offspring.CV];
                 archive(replace) = offspring(replace);

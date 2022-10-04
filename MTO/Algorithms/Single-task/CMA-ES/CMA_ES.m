@@ -22,7 +22,7 @@ classdef CMA_ES < Algorithm
     %--------------------------------------------------------------------------
 
     methods
-        function run(obj, Prob)
+        function run(Algo, Prob)
             % The code implementation is referenced from PlatEMO.
             % Number of parents
             mu = round(Prob.N / 2);
@@ -52,7 +52,7 @@ classdef CMA_ES < Algorithm
                 end
             end
 
-            while obj.notTerminated(Prob)
+            while Algo.notTerminated(Prob)
                 for t = 1:Prob.T
                     % Sample solutions
                     Pstep = zeros(length(population{t}), Prob.D(t));
@@ -62,7 +62,7 @@ classdef CMA_ES < Algorithm
                         population{t}(i).Dec(population{t}(i).Dec > 1) = 1;
                         population{t}(i).Dec(population{t}(i).Dec < 0) = 0;
                     end
-                    population{t} = obj.Evaluation(population{t}, Prob, t);
+                    population{t} = Algo.Evaluation(population{t}, Prob, t);
                     [~, rank] = sortrows([[population{t}.CV]', [population{t}.Obj]'], [1, 2]);
 
                     % Update mean

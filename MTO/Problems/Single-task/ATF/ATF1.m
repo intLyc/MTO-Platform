@@ -9,17 +9,17 @@ classdef ATF1 < Problem
     %--------------------------------------------------------------------------
 
     methods
-        function obj = ATF1(varargin)
-            obj = obj@Problem(varargin);
-            obj.maxFE = 60 * 500;
+        function Prob = ATF1(varargin)
+            Prob = Prob@Problem(varargin);
+            Prob.maxFE = 60 * 500;
         end
 
-        function setTasks(obj)
-            obj.T = 1;
-            obj.D(1) = 2;
-            obj.Fnc{1} = @(x)ATF_Func(x, 1);
-            obj.Lb{1} = [-10, -5];
-            obj.Ub{1} = [5, 5];
+        function setTasks(Prob)
+            Prob.T = 1;
+            Prob.D(1) = 2;
+            Prob.Fnc{1} = @(x)ATF_Func(x, 1);
+            Prob.Lb{1} = [-10, -5];
+            Prob.Ub{1} = [5, 5];
         end
     end
 end

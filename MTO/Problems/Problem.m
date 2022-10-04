@@ -26,40 +26,40 @@ classdef Problem < handle
     end
 
     methods
-        function obj = Problem(varargin)
+        function Prob = Problem(varargin)
             if length(varargin) == 1
-                obj.Name = char(varargin{1});
+                Prob.Name = char(varargin{1});
             end
-            obj.M = 1;
-            obj.N = obj.defaultN;
-            obj.setTasks();
+            Prob.M = 1;
+            Prob.N = Prob.defaultN;
+            Prob.setTasks();
         end
 
-        function RunPara = getRunParameter(obj)
-            RunPara = {'N: Each Task Population Size', num2str(obj.N), ...
-                        'maxFE: All Task Maximum Evaluations', num2str(obj.maxFE)};
+        function RunPara = getRunParameter(Prob)
+            RunPara = {'N: Each Task Population Size', num2str(Prob.N), ...
+                        'maxFE: All Task Maximum Evaluations', num2str(Prob.maxFE)};
         end
 
-        function obj = setRunParameter(obj, RunPara)
-            obj.N = str2double(RunPara{1});
-            obj.maxFE = str2double(RunPara{2});
-            obj.setTasks();
+        function Prob = setRunParameter(Prob, RunPara)
+            Prob.N = str2double(RunPara{1});
+            Prob.maxFE = str2double(RunPara{2});
+            Prob.setTasks();
         end
 
-        function Parameter = getParameter(obj)
+        function Parameter = getParameter(Prob)
             % Default getParameter
             % return parameter, contains {para1, value1, para2, value2, ...} (string)
-            Parameter = obj.getRunParameter();
+            Parameter = Prob.getRunParameter();
         end
 
-        function obj = setParameter(obj, Parameter)
+        function Prob = setParameter(Prob, Parameter)
             % Default getParameter
             % arg Parameter, contains {value1, value2, ...} (string)
-            obj.setRunParameter(Parameter);
+            Prob.setRunParameter(Parameter);
         end
     end
 
     methods (Abstract)
-        setTasks(obj)
+        setTasks(Prob)
     end
 end

@@ -31,26 +31,26 @@ classdef SREMTO < Algorithm
     end
 
     methods
-        function Parameter = getParameter(obj)
-            Parameter = {'TH: two line segments point', num2str(obj.TH), ...
-                        'MuC: Simulated Binary Crossover', num2str(obj.MuC), ...
-                        'MuM: Polynomial Mutation', num2str(obj.MuM)};
+        function Parameter = getParameter(Algo)
+            Parameter = {'TH: two line segments point', num2str(Algo.TH), ...
+                        'MuC: Simulated Binary Crossover', num2str(Algo.MuC), ...
+                        'MuM: Polynomial Mutation', num2str(Algo.MuM)};
         end
 
-        function obj = setParameter(obj, Parameter)
+        function Algo = setParameter(Algo, Parameter)
             i = 1;
-            obj.TH = str2double(Parameter{i}); i = i + 1;
-            obj.MuC = str2double(Parameter{i}); i = i + 1;
-            obj.MuM = str2double(Parameter{i}); i = i + 1;
+            Algo.TH = str2double(Parameter{i}); i = i + 1;
+            Algo.MuC = str2double(Parameter{i}); i = i + 1;
+            Algo.MuM = str2double(Parameter{i}); i = i + 1;
         end
 
-        function run(obj, Prob)
+        function run(Algo, Prob)
             % Initialize
-            population = Initialization_MF(obj, Prob, Individual_SRE);
-            a1 = (obj.TH - 1) / (Prob.N - 1);
-            b1 = (Prob.N - obj.TH) / (Prob.N - 1);
-            a2 = (- obj.TH) / (Prob.N * (Prob.T - 1));
-            b2 = ((Prob.N * Prob.T) * obj.TH) ./ (Prob.N * (Prob.T - 1));
+            population = Initialization_MF(Algo, Prob, Individual_SRE);
+            a1 = (Algo.TH - 1) / (Prob.N - 1);
+            b1 = (Prob.N - Algo.TH) / (Prob.N - 1);
+            a2 = (- Algo.TH) / (Prob.N * (Prob.T - 1));
+            b2 = ((Prob.N * Prob.T) * Algo.TH) ./ (Prob.N * (Prob.T - 1));
 
             for t = 1:Prob.T
                 for i = 1:length(population)
@@ -63,7 +63,7 @@ classdef SREMTO < Algorithm
                 end
             end
 
-            while obj.notTerminated(Prob)
+            while Algo.notTerminated(Prob)
                 int_population = population;
                 for t = 1:Prob.T
                     parent = Individual_SRE.empty();
@@ -73,11 +73,11 @@ classdef SREMTO < Algorithm
                         end
                     end
 
-                    offspring = obj.Generation(parent);
+                    offspring = Algo.Generation(parent);
                     for i = 1:length(offspring)
                         for k = 1:Prob.T
                             if k == t || rand() < offspring(i).Ability(k)
-                                offspring(i) = obj.Evaluation(offspring(i), Prob, k);
+                                offspring(i) = Algo.Evaluation(offspring(i), Prob, k);
                                 offspring(i).MFObj(k) = offspring(i).Obj;
                                 offspring(i).MFCV(k) = offspring(i).CV;
                             else
@@ -124,7 +124,7 @@ classdef SREMTO < Algorithm
             end
         end
 
-        function offspring = Generation(obj, population)
+        function offspring = Generation(Algo, population)
             indorder = randperm(length(population));
             count = 1;
             for i = 1:ceil(length(population) / 2)
@@ -133,10 +133,10 @@ classdef SREMTO < Algorithm
                 offspring(count) = population(p1);
                 offspring(count + 1) = population(p2);
                 % crossover
-                [offspring(count).Dec, offspring(count + 1).Dec] = GA_Crossover(population(p1).Dec, population(p2).Dec, obj.MuC);
+                [offspring(count).Dec, offspring(count + 1).Dec] = GA_Crossover(population(p1).Dec, population(p2).Dec, Algo.MuC);
                 % mutation
-                offspring(count).Dec = GA_Mutation(population(p1).Dec, obj.MuM);
-                offspring(count + 1).Dec = GA_Mutation(population(p2).Dec, obj.MuM);
+                offspring(count).Dec = GA_Mutation(population(p1).Dec, Algo.MuM);
+                offspring(count + 1).Dec = GA_Mutation(population(p2).Dec, Algo.MuM);
                 % imitation
                 offspring(count).Ability = population(p1).Ability;
                 offspring(count + 1).Ability = population(p2).Ability;

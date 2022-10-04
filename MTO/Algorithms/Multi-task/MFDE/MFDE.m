@@ -26,31 +26,31 @@ classdef MFDE < Algorithm
     end
 
     methods
-        function Parameter = getParameter(obj)
-            Parameter = {'RMP: Random Mating Probability', num2str(obj.RMP), ...
-                        'F: Mutation Factor', num2str(obj.F), ...
-                        'CR: Crossover Rate', num2str(obj.CR)};
+        function Parameter = getParameter(Algo)
+            Parameter = {'RMP: Random Mating Probability', num2str(Algo.RMP), ...
+                        'F: Mutation Factor', num2str(Algo.F), ...
+                        'CR: Crossover Rate', num2str(Algo.CR)};
         end
 
-        function obj = setParameter(obj, Parameter)
+        function Algo = setParameter(Algo, Parameter)
             i = 1;
-            obj.RMP = str2double(Parameter{i}); i = i + 1;
-            obj.F = str2double(Parameter{i}); i = i + 1;
-            obj.CR = str2double(Parameter{i}); i = i + 1;
+            Algo.RMP = str2double(Parameter{i}); i = i + 1;
+            Algo.F = str2double(Parameter{i}); i = i + 1;
+            Algo.CR = str2double(Parameter{i}); i = i + 1;
         end
 
-        function run(obj, Prob)
+        function run(Algo, Prob)
             % Initialize
-            population = Initialization_MF(obj, Prob, Individual_MF);
+            population = Initialization_MF(Algo, Prob, Individual_MF);
 
-            while obj.notTerminated(Prob)
+            while Algo.notTerminated(Prob)
                 % Generation
-                offspring = obj.Generation(population);
+                offspring = Algo.Generation(population);
                 % Evaluation
                 offspring_temp = Individual_MF.empty();
                 for t = 1:Prob.T
                     offspring_t = offspring([offspring.MFFactor] == t);
-                    offspring_t = obj.Evaluation(offspring_t, Prob, t);
+                    offspring_t = Algo.Evaluation(offspring_t, Prob, t);
                     for i = 1:length(offspring_t)
                         offspring_t(i).MFObj = inf(1, Prob.T);
                         offspring_t(i).MFCV = inf(1, Prob.T);
@@ -65,7 +65,7 @@ classdef MFDE < Algorithm
             end
         end
 
-        function offspring = Generation(obj, population)
+        function offspring = Generation(Algo, population)
             for i = 1:length(population)
                 offspring(i) = population(i);
 
@@ -73,7 +73,7 @@ classdef MFDE < Algorithm
                 while x1 == i || population(x1).MFFactor ~= population(i).MFFactor
                     x1 = randi(length(population));
                 end
-                if rand() < obj.RMP
+                if rand() < Algo.RMP
                     x2 = randi(length(population));
                     while population(x2).MFFactor == population(i).MFFactor
                         x2 = randi(length(population));
@@ -95,8 +95,8 @@ classdef MFDE < Algorithm
                     offspring(i).MFFactor = population(i).MFFactor;
                 end
 
-                offspring(i).Dec = population(x1).Dec + obj.F * (population(x2).Dec - population(x3).Dec);
-                offspring(i).Dec = DE_Crossover(offspring(i).Dec, population(i).Dec, obj.CR);
+                offspring(i).Dec = population(x1).Dec + Algo.F * (population(x2).Dec - population(x3).Dec);
+                offspring(i).Dec = DE_Crossover(offspring(i).Dec, population(i).Dec, Algo.CR);
 
                 offspring(i).Dec(offspring(i).Dec > 1) = 1;
                 offspring(i).Dec(offspring(i).Dec < 0) = 0;

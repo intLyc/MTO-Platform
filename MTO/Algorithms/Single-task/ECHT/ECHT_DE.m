@@ -32,60 +32,60 @@ classdef ECHT_DE < Algorithm
     end
 
     methods
-        function Parameter = getParameter(obj)
-            Parameter = {'F: Mutation Factor', num2str(obj.F), ...
-                        'CR: Crossover Probability', num2str(obj.CR), ...
-                        'maxSR', num2str(obj.maxSR), ...
-                        'minSR', num2str(obj.minSR), ...
-                        'EC_Top', num2str(obj.EC_Top), ...
-                        'EC_Tc', num2str(obj.EC_Tc), ...
-                        'EC_Cp', num2str(obj.EC_Cp)};
+        function Parameter = getParameter(Algo)
+            Parameter = {'F: Mutation Factor', num2str(Algo.F), ...
+                        'CR: Crossover Probability', num2str(Algo.CR), ...
+                        'maxSR', num2str(Algo.maxSR), ...
+                        'minSR', num2str(Algo.minSR), ...
+                        'EC_Top', num2str(Algo.EC_Top), ...
+                        'EC_Tc', num2str(Algo.EC_Tc), ...
+                        'EC_Cp', num2str(Algo.EC_Cp)};
         end
 
-        function obj = setParameter(obj, Parameter)
+        function Algo = setParameter(Algo, Parameter)
             i = 1;
-            obj.F = str2double(Parameter{i}); i = i + 1;
-            obj.CR = str2double(Parameter{i}); i = i + 1;
-            obj.maxSR = str2double(Parameter{i}); i = i + 1;
-            obj.minSR = str2double(Parameter{i}); i = i + 1;
-            obj.EC_Top = str2double(Parameter{i}); i = i + 1;
-            obj.EC_Tc = str2double(Parameter{i}); i = i + 1;
-            obj.EC_Cp = str2double(Parameter{i}); i = i + 1;
+            Algo.F = str2double(Parameter{i}); i = i + 1;
+            Algo.CR = str2double(Parameter{i}); i = i + 1;
+            Algo.maxSR = str2double(Parameter{i}); i = i + 1;
+            Algo.minSR = str2double(Parameter{i}); i = i + 1;
+            Algo.EC_Top = str2double(Parameter{i}); i = i + 1;
+            Algo.EC_Tc = str2double(Parameter{i}); i = i + 1;
+            Algo.EC_Cp = str2double(Parameter{i}); i = i + 1;
         end
 
-        function run(obj, Prob)
+        function run(Algo, Prob)
             CHnum = 4;
             % Initialization
-            population_temp = Initialization(obj, Prob, Individual);
+            population_temp = Initialization(Algo, Prob, Individual);
             for ch = 1:CHnum
                 population(:, ch) = population_temp;
             end
 
             for t = 1:Prob.T
                 % Stochastic Ranking
-                Sr = obj.maxSR;
-                dSr = (obj.maxSR - obj.minSR) / (Prob.maxFE / Prob.T / Prob.N);
+                Sr = Algo.maxSR;
+                dSr = (Algo.maxSR - Algo.minSR) / (Prob.maxFE / Prob.T / Prob.N);
                 % Epsilon
-                n = ceil(obj.EC_Top * length(population{t, 3}));
+                n = ceil(Algo.EC_Top * length(population{t, 3}));
                 cv_temp = [population{t, 3}.CV];
                 [~, idx] = sort(cv_temp);
                 Ep0{t} = cv_temp(idx(n));
             end
 
-            while obj.notTerminated(Prob)
+            while Algo.notTerminated(Prob)
                 % Pre Calculation
                 Sr = Sr - dSr;
                 for t = 1:Prob.T
-                    if obj.FE < obj.EC_Tc * Prob.maxFE / Prob.T
-                        Ep = Ep0{t} * ((1 - obj.FE / (obj.EC_Tc * Prob.maxFE / Prob.T))^obj.EC_Cp);
+                    if Algo.FE < Algo.EC_Tc * Prob.maxFE / Prob.T
+                        Ep = Ep0{t} * ((1 - Algo.FE / (Algo.EC_Tc * Prob.maxFE / Prob.T))^Algo.EC_Cp);
                     else
                         Ep = 0;
                     end
 
                     % Generation and Evaluation
                     for ch = 1:CHnum
-                        offspring{ch} = obj.Generation(population{t, ch});
-                        offspring{ch} = obj.Evaluation(offspring{ch}, Prob, t);
+                        offspring{ch} = Algo.Generation(population{t, ch});
+                        offspring{ch} = Algo.Evaluation(offspring{ch}, Prob, t);
                     end
 
                     % Selection
@@ -127,14 +127,14 @@ classdef ECHT_DE < Algorithm
             end
         end
 
-        function offspring = Generation(obj, population)
+        function offspring = Generation(Algo, population)
             for i = 1:length(population)
                 offspring(i) = population(i);
                 A = randperm(length(population), 4);
                 A(A == i) = []; x1 = A(1); x2 = A(2); x3 = A(3);
 
-                offspring(i).Dec = population(x1).Dec + obj.F * (population(x2).Dec - population(x3).Dec);
-                offspring(i).Dec = DE_Crossover(offspring(i).Dec, population(i).Dec, obj.CR);
+                offspring(i).Dec = population(x1).Dec + Algo.F * (population(x2).Dec - population(x3).Dec);
+                offspring(i).Dec = DE_Crossover(offspring(i).Dec, population(i).Dec, Algo.CR);
 
                 offspring(i).Dec(offspring(i).Dec > 1) = 1;
                 offspring(i).Dec(offspring(i).Dec < 0) = 0;

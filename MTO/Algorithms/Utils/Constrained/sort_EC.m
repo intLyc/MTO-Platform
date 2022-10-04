@@ -1,6 +1,6 @@
-function rank = sort_EC(obj, cv, ep)
+function rank = sort_EC(Obj, CV, ep)
     %% Epsilon Constraint Sort
-    cv(cv <= ep) = 0;
-    [~, rank] = sortrows([cv', obj'], [1, 2]);
+    CV(CV <= ep) = 0;
+    [~, rank] = sortrows([CV', Obj'], [1, 2]);
     rank = rank';
 end

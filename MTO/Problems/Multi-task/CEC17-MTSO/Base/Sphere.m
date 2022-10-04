@@ -1,9 +1,9 @@
-function [obj, cv] = Sphere(x, M, opt, g)
+function [Obj, Con] = Sphere(x, M, opt, g)
     % Sphere function
     %   - var: design variable vector
     %   - M: rotation matrix
     %   - opt: shift vector
-    %   - g: objective value move
+    %   - g: Objective value move
 
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
@@ -19,8 +19,8 @@ function [obj, cv] = Sphere(x, M, opt, g)
     for i = 1:dim
         sum = sum + var(i) * var(i);
     end
-    obj = sum;
-    obj = obj + g;
+    Obj = sum;
+    Obj = Obj + g;
 
-    cv = 0;
+    Con = 0;
 end

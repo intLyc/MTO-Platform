@@ -29,28 +29,28 @@ classdef MFPSO < Algorithm
     end
 
     methods
-        function Parameter = getParameter(obj)
-            Parameter = {'RMP: Random Mating Probability', num2str(obj.RMP), ...
-                        'maxW', num2str(obj.maxW), ...
-                        'minW', num2str(obj.minW), ...
-                        'C1', num2str(obj.C1), ...
-                        'C2', num2str(obj.C2), ...
-                        'C3', num2str(obj.C3)};
+        function Parameter = getParameter(Algo)
+            Parameter = {'RMP: Random Mating Probability', num2str(Algo.RMP), ...
+                        'maxW', num2str(Algo.maxW), ...
+                        'minW', num2str(Algo.minW), ...
+                        'C1', num2str(Algo.C1), ...
+                        'C2', num2str(Algo.C2), ...
+                        'C3', num2str(Algo.C3)};
         end
 
-        function obj = setParameter(obj, Parameter)
+        function Algo = setParameter(Algo, Parameter)
             i = 1;
-            obj.RMP = str2double(Parameter{i}); i = i + 1;
-            obj.maxW = str2double(Parameter{i}); i = i + 1;
-            obj.minW = str2double(Parameter{i}); i = i + 1;
-            obj.C1 = str2double(Parameter{i}); i = i + 1;
-            obj.C2 = str2double(Parameter{i}); i = i + 1;
-            obj.C3 = str2double(Parameter{i}); i = i + 1;
+            Algo.RMP = str2double(Parameter{i}); i = i + 1;
+            Algo.maxW = str2double(Parameter{i}); i = i + 1;
+            Algo.minW = str2double(Parameter{i}); i = i + 1;
+            Algo.C1 = str2double(Parameter{i}); i = i + 1;
+            Algo.C2 = str2double(Parameter{i}); i = i + 1;
+            Algo.C3 = str2double(Parameter{i}); i = i + 1;
         end
 
-        function run(obj, Prob)
+        function run(Algo, Prob)
             % Initialize
-            population = Initialization_MF(obj, Prob, Individual_MFPSO);
+            population = Initialization_MF(Algo, Prob, Individual_MFPSO);
 
             % Initialize PSO parameter
             for i = 1:length(population)
@@ -60,16 +60,16 @@ classdef MFPSO < Algorithm
                 population(i).V = 0;
             end
 
-            while obj.notTerminated(Prob)
-                W = obj.maxW - (obj.maxW - obj.minW) * obj.FE / Prob.maxFE;
+            while Algo.notTerminated(Prob)
+                W = Algo.maxW - (Algo.maxW - Algo.minW) * Algo.FE / Prob.maxFE;
 
                 % Generation
-                population = obj.Generation(population, W, obj.Best);
+                population = Algo.Generation(population, W, Algo.Best);
                 % Evaluation
                 population_temp = Individual_MFPSO.empty();
                 for t = 1:Prob.T
                     population_t = population([population.MFFactor] == t);
-                    population_t = obj.Evaluation(population_t, Prob, t);
+                    population_t = Algo.Evaluation(population_t, Prob, t);
                     population_temp = [population_temp, population_t];
                 end
                 population = population_temp;
@@ -86,22 +86,22 @@ classdef MFPSO < Algorithm
             end
         end
 
-        function population = Generation(obj, population, W, GBest)
+        function population = Generation(Algo, population, W, GBest)
             for i = 1:length(population)
                 % Velocity update
-                if rand() < obj.RMP
+                if rand() < Algo.RMP
                     help_task = randperm(length(GBest), 2);
                     help_task(help_task == population(i).MFFactor) = [];
                     help_task = help_task(1);
 
                     population(i).V = W * population(i).V + ...
-                        obj.C1 .* rand() .* (population(i).PBestDec - population(i).Dec) + ...
-                        obj.C2 .* rand() .* (GBest{population(i).MFFactor}.Dec - population(i).Dec) + ...
-                        obj.C3 .* rand() .* (GBest{help_task}.Dec - population(i).Dec);
+                        Algo.C1 .* rand() .* (population(i).PBestDec - population(i).Dec) + ...
+                        Algo.C2 .* rand() .* (GBest{population(i).MFFactor}.Dec - population(i).Dec) + ...
+                        Algo.C3 .* rand() .* (GBest{help_task}.Dec - population(i).Dec);
                 else
                     population(i).V = W * population(i).V + ...
-                        obj.C1 .* rand() .* (population(i).PBestDec - population(i).Dec) + ...
-                        obj.C2 .* rand() .* (GBest{population(i).MFFactor}.Dec - population(i).Dec);
+                        Algo.C1 .* rand() .* (population(i).PBestDec - population(i).Dec) + ...
+                        Algo.C2 .* rand() .* (GBest{population(i).MFFactor}.Dec - population(i).Dec);
                 end
 
                 % Position update

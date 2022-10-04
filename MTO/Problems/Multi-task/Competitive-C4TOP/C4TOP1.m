@@ -9,19 +9,19 @@ classdef C4TOP1 < Problem
     %--------------------------------------------------------------------------
 
     methods
-        function obj = C4TOP1(varargin)
-            obj = obj@Problem(varargin);
-            obj.maxFE = 500 * 100 * 4;
+        function Prob = C4TOP1(varargin)
+            Prob = Prob@Problem(varargin);
+            Prob.maxFE = 500 * 100 * 4;
         end
 
-        function setTasks(obj)
+        function setTasks(Prob)
             Tasks = benchmark_C4TOP(1);
-            obj.T = length(Tasks);
-            for t = 1:obj.T
-                obj.D(t) = Tasks(t).Dim;
-                obj.Fnc{t} = Tasks(t).Fnc;
-                obj.Lb{t} = Tasks(t).Lb;
-                obj.Ub{t} = Tasks(t).Ub;
+            Prob.T = length(Tasks);
+            for t = 1:Prob.T
+                Prob.D(t) = Tasks(t).Dim;
+                Prob.Fnc{t} = Tasks(t).Fnc;
+                Prob.Lb{t} = Tasks(t).Lb;
+                Prob.Ub{t} = Tasks(t).Ub;
             end
         end
     end

@@ -16,24 +16,24 @@ classdef PSO < Algorithm
     end
 
     methods
-        function Parameter = getParameter(obj)
-            Parameter = {'maxW', num2str(obj.maxW), ...
-                        'minW', num2str(obj.minW), ...
-                        'C1', num2str(obj.C1), ...
-                        'C2', num2str(obj.C2)};
+        function Parameter = getParameter(Algo)
+            Parameter = {'maxW', num2str(Algo.maxW), ...
+                        'minW', num2str(Algo.minW), ...
+                        'C1', num2str(Algo.C1), ...
+                        'C2', num2str(Algo.C2)};
         end
 
-        function obj = setParameter(obj, Parameter)
+        function Algo = setParameter(Algo, Parameter)
             i = 1;
-            obj.maxW = str2double(Parameter{i}); i = i + 1;
-            obj.minW = str2double(Parameter{i}); i = i + 1;
-            obj.C1 = str2double(Parameter{i}); i = i + 1;
-            obj.C2 = str2double(Parameter{i}); i = i + 1;
+            Algo.maxW = str2double(Parameter{i}); i = i + 1;
+            Algo.minW = str2double(Parameter{i}); i = i + 1;
+            Algo.C1 = str2double(Parameter{i}); i = i + 1;
+            Algo.C2 = str2double(Parameter{i}); i = i + 1;
         end
 
-        function run(obj, Prob)
+        function run(Algo, Prob)
             % Initialization
-            population = Initialization(obj, Prob, Individual_PSO);
+            population = Initialization(Algo, Prob, Individual_PSO);
 
             % Initialize PSO parameter
             for t = 1:Prob.T
@@ -45,14 +45,14 @@ classdef PSO < Algorithm
                 end
             end
 
-            while obj.notTerminated(Prob)
-                W = obj.maxW - (obj.maxW - obj.minW) * obj.FE / Prob.maxFE;
+            while Algo.notTerminated(Prob)
+                W = Algo.maxW - (Algo.maxW - Algo.minW) * Algo.FE / Prob.maxFE;
 
                 for t = 1:Prob.T
                     % Generation
-                    population{t} = obj.Generation(population{t}, W, obj.Best{t});
+                    population{t} = Algo.Generation(population{t}, W, Algo.Best{t});
                     % Evaluation
-                    population{t} = obj.Evaluation(population{t}, Prob, t);
+                    population{t} = Algo.Evaluation(population{t}, Prob, t);
                     % PBest update
                     for i = 1:length(population{t})
                         if population{t}(i).CV < population{t}(i).PBestCV || ...
@@ -67,12 +67,12 @@ classdef PSO < Algorithm
             end
         end
 
-        function population = Generation(obj, population, W, GBest)
+        function population = Generation(Algo, population, W, GBest)
             for i = 1:length(population)
                 % Velocity update
                 population(i).V = W * population(i).V + ...
-                obj.C1 .* rand() .* (population(i).PBestDec - population(i).Dec) + ...
-                    obj.C2 .* rand() .* (GBest.Dec - population(i).Dec);
+                Algo.C1 .* rand() .* (population(i).PBestDec - population(i).Dec) + ...
+                    Algo.C2 .* rand() .* (GBest.Dec - population(i).Dec);
 
                 % Position update
                 population(i).Dec = population(i).Dec + population(i).V;

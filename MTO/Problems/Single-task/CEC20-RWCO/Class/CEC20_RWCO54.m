@@ -9,18 +9,18 @@ classdef CEC20_RWCO54 < Problem
     %--------------------------------------------------------------------------
 
     methods
-        function obj = CEC20_RWCO54(varargin)
-            obj = obj@Problem(varargin);
-            obj.maxFE = eva_CEC20_RWCO(54);
+        function Prob = CEC20_RWCO54(varargin)
+            Prob = Prob@Problem(varargin);
+            Prob.maxFE = eva_CEC20_RWCO(54);
         end
 
-        function setTasks(obj)
+        function setTasks(Prob)
             Tasks(1) = benchmark_CEC20_RWCO(54);
-            obj.T = 1;
-            obj.D(1) = Tasks(1).Dim;
-            obj.Fnc{1} = Tasks(1).Fnc;
-            obj.Lb{1} = Tasks(1).Lb;
-            obj.Ub{1} = Tasks(1).Ub;
+            Prob.T = 1;
+            Prob.D(1) = Tasks(1).Dim;
+            Prob.Fnc{1} = Tasks(1).Fnc;
+            Prob.Lb{1} = Tasks(1).Lb;
+            Prob.Ub{1} = Tasks(1).Ub;
         end
     end
 end

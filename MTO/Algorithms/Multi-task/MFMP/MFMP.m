@@ -30,38 +30,38 @@ classdef MFMP < Algorithm
     end
 
     methods
-        function Parameter = getParameter(obj)
-            Parameter = {'P: 100p% top as pbest', num2str(obj.P), ...
-                        'H: success memory size', num2str(obj.H), ...
-                        'Theta', num2str(obj.Theta), ...
-                        'C', num2str(obj.C), ...
-                        'Alpha', num2str(obj.Alpha)};
+        function Parameter = getParameter(Algo)
+            Parameter = {'P: 100p% top as pbest', num2str(Algo.P), ...
+                        'H: success memory size', num2str(Algo.H), ...
+                        'Theta', num2str(Algo.Theta), ...
+                        'C', num2str(Algo.C), ...
+                        'Alpha', num2str(Algo.Alpha)};
         end
 
-        function obj = setParameter(obj, Parameter)
+        function Algo = setParameter(Algo, Parameter)
             i = 1;
-            obj.P = str2double(Parameter{i}); i = i + 1;
-            obj.H = str2double(Parameter{i}); i = i + 1;
-            obj.Theta = str2double(Parameter{i}); i = i + 1;
-            obj.C = str2double(Parameter{i}); i = i + 1;
-            obj.Alpha = str2double(Parameter{i}); i = i + 1;
+            Algo.P = str2double(Parameter{i}); i = i + 1;
+            Algo.H = str2double(Parameter{i}); i = i + 1;
+            Algo.Theta = str2double(Parameter{i}); i = i + 1;
+            Algo.C = str2double(Parameter{i}); i = i + 1;
+            Algo.Alpha = str2double(Parameter{i}); i = i + 1;
         end
 
-        function run(obj, Prob)
+        function run(Algo, Prob)
             % Initialization
-            population = Initialization(obj, Prob, Individual_DE);
+            population = Initialization(Algo, Prob, Individual_DE);
             reduce_flag = false;
             SR(:, 1) = ones(Prob.T, 1);
             RMP(:, 1) = 0.5 * ones(Prob.T, 1);
             for t = 1:Prob.T
                 % initialize Parameter
                 Hidx{t} = 1;
-                MF{t} = 0.5 .* ones(obj.H, 1);
-                MCR{t} = 0.5 .* ones(obj.H, 1);
+                MF{t} = 0.5 .* ones(Algo.H, 1);
+                MCR{t} = 0.5 .* ones(Algo.H, 1);
                 archive{t} = Individual_DE.empty();
             end
 
-            while obj.notTerminated(Prob)
+            while Algo.notTerminated(Prob)
                 for t = 1:Prob.T
                     % Randomly choose an task to communicate
                     task_idx = 1:Prob.T;
@@ -70,7 +70,7 @@ classdef MFMP < Algorithm
 
                     % Calculate individual F and CR
                     for i = 1:length(population{t})
-                        idx = randi(obj.H);
+                        idx = randi(Algo.H);
                         uF = MF{t}(idx);
                         population{t}(i).F = uF + 0.1 * tan(pi * (rand() - 0.5));
                         while (population{t}(i).F <= 0)
@@ -87,9 +87,9 @@ classdef MFMP < Algorithm
                     % Generation
                     union = [population{t}, archive{t}];
                     c_union = [population{c_idx}, archive{c_idx}];
-                    [offspring, flag] = obj.Generation(population{t}, union, population{c_idx}, c_union, RMP(t, obj.Gen - 1));
+                    [offspring, flag] = Algo.Generation(population{t}, union, population{c_idx}, c_union, RMP(t, Algo.Gen - 1));
                     % Evaluation
-                    offspring = obj.Evaluation(offspring, Prob, t);
+                    offspring = Algo.Evaluation(offspring, Prob, t);
                     % Selection
                     [~, replace] = Selection_Tournament(population{t}, offspring);
 
@@ -106,10 +106,10 @@ classdef MFMP < Algorithm
                         MF{t}(Hidx{t}) = sum(dif .* (SF.^2)) / sum(dif .* SF);
                         MCR{t}(Hidx{t}) = sum(dif .* SCR);
                     else
-                        MF{t}(Hidx{t}) = MF{t}(mod(Hidx{t} + obj.H - 2, obj.H) + 1);
-                        MCR{t}(Hidx{t}) = MCR{t}(mod(Hidx{t} + obj.H - 2, obj.H) + 1);
+                        MF{t}(Hidx{t}) = MF{t}(mod(Hidx{t} + Algo.H - 2, Algo.H) + 1);
+                        MCR{t}(Hidx{t}) = MCR{t}(mod(Hidx{t} + Algo.H - 2, Algo.H) + 1);
                     end
-                    Hidx{t} = mod(Hidx{t}, obj.H) + 1;
+                    Hidx{t} = mod(Hidx{t}, Algo.H) + 1;
 
                     % Update archive
                     archive{t} = [archive{t}, population{t}(replace)];
@@ -120,25 +120,25 @@ classdef MFMP < Algorithm
                     population{t}(replace) = offspring(replace);
 
                     % update RMP
-                    SR(t, obj.Gen) = sum(replace) / length(population{t});
-                    if SR(t, obj.Gen) >= obj.Theta
-                        RMP(t, obj.Gen) = RMP(t, obj.Gen - 1);
+                    SR(t, Algo.Gen) = sum(replace) / length(population{t});
+                    if SR(t, Algo.Gen) >= Algo.Theta
+                        RMP(t, Algo.Gen) = RMP(t, Algo.Gen - 1);
                     else
                         if sum(flag) == 0
-                            RMP(t, obj.Gen) = min(RMP(t, obj.Gen - 1) + obj.C * (1 - SR(t, obj.Gen)), 1);
+                            RMP(t, Algo.Gen) = min(RMP(t, Algo.Gen - 1) + Algo.C * (1 - SR(t, Algo.Gen)), 1);
                         else
                             temp = (sum(replace & flag) / sum(flag));
-                            if temp > SR(t, obj.Gen)
-                                RMP(t, obj.Gen) = min(RMP(t, obj.Gen - 1) + obj.C * temp, 1);
+                            if temp > SR(t, Algo.Gen)
+                                RMP(t, Algo.Gen) = min(RMP(t, Algo.Gen - 1) + Algo.C * temp, 1);
                             else
-                                RMP(t, obj.Gen) = max(RMP(t, obj.Gen - 1) - obj.C * (1 - temp), 0);
+                                RMP(t, Algo.Gen) = max(RMP(t, Algo.Gen - 1) - Algo.C * (1 - temp), 0);
                             end
                         end
                     end
                 end
 
                 % Population reduction
-                if ~reduce_flag && obj.FE >= Prob.maxFE * obj.Alpha
+                if ~reduce_flag && Algo.FE >= Prob.maxFE * Algo.Alpha
                     N = round(Prob.N / 2);
                     for t = 1:Prob.T
                         [~, rank] = sortrows([[population{t}.CV]', [population{t}.Obj]'], [1, 2]);
@@ -155,12 +155,12 @@ classdef MFMP < Algorithm
             end
         end
 
-        function [offspring, flag] = Generation(obj, population, union, c_pop, c_union, RMP)
+        function [offspring, flag] = Generation(Algo, population, union, c_pop, c_union, RMP)
             % get top 100p% individuals
             [~, rank] = sortrows([[population.CV]', [population.Obj]'], [1, 2]);
-            pop_pbest = rank(1:max(round(obj.P * length(population)), 1));
+            pop_pbest = rank(1:max(round(Algo.P * length(population)), 1));
             [~, rank] = sortrows([[c_pop.CV]', [c_pop.Obj]'], [1, 2]);
-            c_pop_pbest = rank(1:max(round(obj.P * length(c_pop)), 1));
+            c_pop_pbest = rank(1:max(round(Algo.P * length(c_pop)), 1));
 
             flag = zeros(1, length(population));
             for i = 1:length(population)

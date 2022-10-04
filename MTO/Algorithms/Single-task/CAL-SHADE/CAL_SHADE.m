@@ -28,45 +28,45 @@ classdef CAL_SHADE < Algorithm
     end
 
     methods
-        function Parameter = getParameter(obj)
-            Parameter = {'P: 100p% top as pbest', num2str(obj.P), ...
-                        'H: success memory size', num2str(obj.H), ...
-                        'EC_Top', num2str(obj.EC_Top), ...
-                        'EC_Tc', num2str(obj.EC_Tc), ...
-                        'EC_Cp', num2str(obj.EC_Cp)};
+        function Parameter = getParameter(Algo)
+            Parameter = {'P: 100p% top as pbest', num2str(Algo.P), ...
+                        'H: success memory size', num2str(Algo.H), ...
+                        'EC_Top', num2str(Algo.EC_Top), ...
+                        'EC_Tc', num2str(Algo.EC_Tc), ...
+                        'EC_Cp', num2str(Algo.EC_Cp)};
         end
 
-        function obj = setParameter(obj, Parameter)
+        function Algo = setParameter(Algo, Parameter)
             i = 1;
-            obj.P = str2double(Parameter{i}); i = i + 1;
-            obj.H = str2double(Parameter{i}); i = i + 1;
-            obj.EC_Top = str2double(Parameter{i}); i = i + 1;
-            obj.EC_Tc = str2double(Parameter{i}); i = i + 1;
-            obj.EC_Cp = str2double(Parameter{i}); i = i + 1;
+            Algo.P = str2double(Parameter{i}); i = i + 1;
+            Algo.H = str2double(Parameter{i}); i = i + 1;
+            Algo.EC_Top = str2double(Parameter{i}); i = i + 1;
+            Algo.EC_Tc = str2double(Parameter{i}); i = i + 1;
+            Algo.EC_Cp = str2double(Parameter{i}); i = i + 1;
         end
 
-        function run(obj, Prob)
+        function run(Algo, Prob)
             % Initialization
-            population = Initialization(obj, Prob, Individual_DE);
+            population = Initialization(Algo, Prob, Individual_DE);
             Nmin = 4;
             for t = 1:Prob.T
                 % initialize Parameter
-                n = ceil(obj.EC_Top * length(population{t}));
+                n = ceil(Algo.EC_Top * length(population{t}));
                 cv_temp = [population{t}.CV];
                 [~, idx] = sort(cv_temp);
                 Ep0{t} = cv_temp(idx(n));
                 Hidx{t} = 1;
-                MF{t} = 0.5 .* ones(obj.H, 1);
-                MCR{t} = 0.5 .* ones(obj.H, 1);
+                MF{t} = 0.5 .* ones(Algo.H, 1);
+                MCR{t} = 0.5 .* ones(Algo.H, 1);
                 archive{t} = Individual_DE.empty();
             end
 
-            while obj.notTerminated(Prob)
-                N = round((Nmin - Prob.N) / Prob.maxFE * obj.FE + Prob.N);
+            while Algo.notTerminated(Prob)
+                N = round((Nmin - Prob.N) / Prob.maxFE * Algo.FE + Prob.N);
                 for t = 1:Prob.T
                     % Calculate individual F and CR
                     for i = 1:length(population{t})
-                        idx = randi(obj.H);
+                        idx = randi(Algo.H);
                         uF = MF{t}(idx);
                         population{t}(i).F = uF + 0.1 * tan(pi * (rand() - 0.5));
                         while (population{t}(i).F <= 0)
@@ -81,17 +81,17 @@ classdef CAL_SHADE < Algorithm
                     end
 
                     % calculate epsilon
-                    if obj.FE < obj.EC_Tc * Prob.maxFE
-                        Ep = Ep0{t} * ((1 - obj.FE / (obj.EC_Tc * Prob.maxFE))^obj.EC_Cp);
+                    if Algo.FE < Algo.EC_Tc * Prob.maxFE
+                        Ep = Ep0{t} * ((1 - Algo.FE / (Algo.EC_Tc * Prob.maxFE))^Algo.EC_Cp);
                     else
                         Ep = 0;
                     end
 
                     % Generation
                     union = [population{t}, archive{t}];
-                    offspring = obj.Generation(population{t}, union, Ep);
+                    offspring = Algo.Generation(population{t}, union, Ep);
                     % Evaluation
-                    offspring = obj.Evaluation(offspring, Prob, t);
+                    offspring = Algo.Evaluation(offspring, Prob, t);
                     % Selection
                     [~, replace] = Selection_Tournament(population{t}, offspring, Ep);
 
@@ -108,10 +108,10 @@ classdef CAL_SHADE < Algorithm
                         MF{t}(Hidx{t}) = sum(dif .* (SF.^2)) / sum(dif .* SF);
                         MCR{t}(Hidx{t}) = sum(dif .* SCR);
                     else
-                        MF{t}(Hidx{t}) = MF{t}(mod(Hidx{t} + obj.H - 2, obj.H) + 1);
-                        MCR{t}(Hidx{t}) = MCR{t}(mod(Hidx{t} + obj.H - 2, obj.H) + 1);
+                        MF{t}(Hidx{t}) = MF{t}(mod(Hidx{t} + Algo.H - 2, Algo.H) + 1);
+                        MCR{t}(Hidx{t}) = MCR{t}(mod(Hidx{t} + Algo.H - 2, Algo.H) + 1);
                     end
-                    Hidx{t} = mod(Hidx{t}, obj.H) + 1;
+                    Hidx{t} = mod(Hidx{t}, Algo.H) + 1;
 
                     % Update archive
                     archive{t} = [archive{t}, population{t}(replace)];
@@ -132,12 +132,12 @@ classdef CAL_SHADE < Algorithm
             end
         end
 
-        function offspring = Generation(obj, population, union, Ep)
+        function offspring = Generation(Algo, population, union, Ep)
             % get top 100p% individuals
             CV = [population.CV]; CV(CV < Ep) = 0;
             Obj = [population.Obj];
             [~, rank] = sortrows([CV', Obj'], [1, 2]);
-            pop_pbest = rank(1:max(round(obj.P * length(population)), 1));
+            pop_pbest = rank(1:max(round(Algo.P * length(population)), 1));
 
             for i = 1:length(population)
                 offspring(i) = population(i);

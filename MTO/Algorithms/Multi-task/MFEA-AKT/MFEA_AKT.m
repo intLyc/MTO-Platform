@@ -29,24 +29,24 @@ classdef MFEA_AKT < Algorithm
     end
 
     methods
-        function Parameter = getParameter(obj)
-            Parameter = {'RMP: Random Mating Probability', num2str(obj.RMP), ...
-                        'Gap', num2str(obj.Gap), ...
-                        'MuC: Simulated Binary Crossover', num2str(obj.MuC), ...
-                        'MuM: Polynomial Mutation', num2str(obj.MuM)};
+        function Parameter = getParameter(Algo)
+            Parameter = {'RMP: Random Mating Probability', num2str(Algo.RMP), ...
+                        'Gap', num2str(Algo.Gap), ...
+                        'MuC: Simulated Binary Crossover', num2str(Algo.MuC), ...
+                        'MuM: Polynomial Mutation', num2str(Algo.MuM)};
         end
 
-        function obj = setParameter(obj, Parameter)
+        function Algo = setParameter(Algo, Parameter)
             i = 1;
-            obj.RMP = str2double(Parameter{i}); i = i + 1;
-            obj.Gap = str2double(Parameter{i}); i = i + 1;
-            obj.MuC = str2double(Parameter{i}); i = i + 1;
-            obj.MuM = str2double(Parameter{i}); i = i + 1;
+            Algo.RMP = str2double(Parameter{i}); i = i + 1;
+            Algo.Gap = str2double(Parameter{i}); i = i + 1;
+            Algo.MuC = str2double(Parameter{i}); i = i + 1;
+            Algo.MuM = str2double(Parameter{i}); i = i + 1;
         end
 
-        function run(obj, Prob)
+        function run(Algo, Prob)
             % Initialize
-            population = Initialization_MF(obj, Prob, Individual_AKT);
+            population = Initialization_MF(Algo, Prob, Individual_AKT);
             cfb_record = [];
             for i = 1:length(population)
                 population(i).isTran = 0;
@@ -54,14 +54,14 @@ classdef MFEA_AKT < Algorithm
                 population(i).parNum = 0;
             end
 
-            while obj.notTerminated(Prob)
+            while Algo.notTerminated(Prob)
                 % Generation
-                offspring = obj.Generation(population);
+                offspring = Algo.Generation(population);
                 % Evaluation
                 offspring_temp = Individual_AKT.empty();
                 for t = 1:Prob.T
                     offspring_t = offspring([offspring.MFFactor] == t);
-                    offspring_t = obj.Evaluation(offspring_t, Prob, t);
+                    offspring_t = Algo.Evaluation(offspring_t, Prob, t);
                     for i = 1:length(offspring_t)
                         offspring_t(i).MFObj = inf(1, Prob.T);
                         offspring_t(i).MFObj(t) = offspring_t(i).Obj;
@@ -85,10 +85,10 @@ classdef MFEA_AKT < Algorithm
                 if any(imp_num)
                     [max_num, max_idx] = max(imp_num);
                 else % have not better CXFactor
-                    if obj.Gen <= obj.Gap + 1 % former obj.Gen
-                        record_temp = cfb_record(2:obj.Gen - 1);
+                    if Algo.Gen <= Algo.Gap + 1 % former Algo.Gen
+                        record_temp = cfb_record(2:Algo.Gen - 1);
                     else
-                        record_temp = cfb_record(obj.Gen - obj.Gap:obj.Gen - 1);
+                        record_temp = cfb_record(Algo.Gen - Algo.Gap:Algo.Gen - 1);
                     end
                     unique_temp = unique(record_temp);
                     hist_temp = hist(record_temp, unique_temp);
@@ -96,7 +96,7 @@ classdef MFEA_AKT < Algorithm
                     prcfb_count(unique_temp) = prcfb_count(unique_temp) + hist_temp;
                     [max_num, max_idx] = max(prcfb_count);
                 end
-                cfb_record(obj.Gen) = max_idx;
+                cfb_record(Algo.Gen) = max_idx;
                 % Adaptive CXFactor
                 for i = 1:length(offspring)
                     if offspring(i).parNum ~= 0
@@ -116,7 +116,7 @@ classdef MFEA_AKT < Algorithm
             end
         end
 
-        function offspring = Generation(obj, population)
+        function offspring = Generation(Algo, population)
             indorder = randperm(length(population));
             count = 1;
             for i = 1:ceil(length(population) / 2)
@@ -125,18 +125,18 @@ classdef MFEA_AKT < Algorithm
                 offspring(count) = population(p1);
                 offspring(count + 1) = population(p2);
 
-                if (population(p1).MFFactor == population(p2).MFFactor) || rand() < obj.RMP
+                if (population(p1).MFFactor == population(p2).MFFactor) || rand() < Algo.RMP
                     p = [p1, p2];
                     if (population(p1).MFFactor == population(p2).MFFactor)
                         % crossover
-                        [offspring(count).Dec, offspring(count + 1).Dec] = GA_Crossover(population(p1).Dec, population(p2).Dec, obj.MuC);
+                        [offspring(count).Dec, offspring(count + 1).Dec] = GA_Crossover(population(p1).Dec, population(p2).Dec, Algo.MuC);
                         offspring(count).CXFactor = population(p1).CXFactor;
                         offspring(count + 1).CXFactor = population(p2).CXFactor;
                         offspring(count).isTran = 0;
                         offspring(count + 1).isTran = 0;
                     else
                         alpha = population(p(randi(2))).CXFactor;
-                        [offspring(count).Dec, offspring(count + 1).Dec] = obj.hyberCX(population(p1).Dec, population(p2).Dec, alpha);
+                        [offspring(count).Dec, offspring(count + 1).Dec] = Algo.hyberCX(population(p1).Dec, population(p2).Dec, alpha);
                         offspring(count).CXFactor = alpha;
                         offspring(count + 1).CXFactor = alpha;
                         offspring(count).isTran = 1;
@@ -155,8 +155,8 @@ classdef MFEA_AKT < Algorithm
                     end
                 else
                     % mutation
-                    offspring(count).Dec = GA_Mutation(population(p1).Dec, obj.MuM);
-                    offspring(count + 1).Dec = GA_Mutation(population(p2).Dec, obj.MuM);
+                    offspring(count).Dec = GA_Mutation(population(p1).Dec, Algo.MuM);
+                    offspring(count + 1).Dec = GA_Mutation(population(p2).Dec, Algo.MuM);
                     % imitation
                     offspring(count).MFFactor = population(p1).MFFactor;
                     offspring(count + 1).MFFactor = population(p2).MFFactor;
@@ -169,31 +169,31 @@ classdef MFEA_AKT < Algorithm
             end
         end
 
-        function [OffDec1, OffDec2] = hyberCX(obj, ParDec1, ParDec2, alpha)
+        function [OffDec1, OffDec2] = hyberCX(Algo, ParDec1, ParDec2, alpha)
             switch alpha
                 case 1
-                    OffDec1 = obj.TPCrossover(ParDec1, ParDec2);
-                    OffDec2 = obj.TPCrossover(ParDec2, ParDec1);
+                    OffDec1 = Algo.TPCrossover(ParDec1, ParDec2);
+                    OffDec2 = Algo.TPCrossover(ParDec2, ParDec1);
                 case 2
-                    OffDec1 = obj.UFCrossover(ParDec1, ParDec2);
-                    OffDec2 = obj.UFCrossover(ParDec2, ParDec1);
+                    OffDec1 = Algo.UFCrossover(ParDec1, ParDec2);
+                    OffDec2 = Algo.UFCrossover(ParDec2, ParDec1);
                 case 3
-                    OffDec1 = obj.ARICrossover(ParDec1, ParDec2);
-                    OffDec2 = obj.ARICrossover(ParDec2, ParDec1);
+                    OffDec1 = Algo.ARICrossover(ParDec1, ParDec2);
+                    OffDec2 = Algo.ARICrossover(ParDec2, ParDec1);
                 case 4
-                    OffDec1 = obj.GEOCrossover(ParDec1, ParDec2);
-                    OffDec2 = obj.GEOCrossover(ParDec2, ParDec1);
+                    OffDec1 = Algo.GEOCrossover(ParDec1, ParDec2);
+                    OffDec2 = Algo.GEOCrossover(ParDec2, ParDec1);
                 case 5
                     a = 0.3;
-                    OffDec1 = obj.BLXACrossover(ParDec1, ParDec2, a);
-                    OffDec2 = obj.BLXACrossover(ParDec2, ParDec1, a);
+                    OffDec1 = Algo.BLXACrossover(ParDec1, ParDec2, a);
+                    OffDec2 = Algo.BLXACrossover(ParDec2, ParDec1, a);
                 case 6
-                    [OffDec1, OffDec2] = GA_Crossover(ParDec1, ParDec2, obj.MuC);
+                    [OffDec1, OffDec2] = GA_Crossover(ParDec1, ParDec2, Algo.MuC);
             end
         end
 
         % Twopoint crossover
-        function OffDec = TPCrossover(obj, ParDec1, ParDec2)
+        function OffDec = TPCrossover(Algo, ParDec1, ParDec2)
             i = randi([1, length(ParDec1)], 1, 1);
             j = randi([1, length(ParDec1)], 1, 1);
             if i > j
@@ -206,7 +206,7 @@ classdef MFEA_AKT < Algorithm
         end
 
         % Uniform crossover
-        function OffDec = UFCrossover(obj, ParDec1, ParDec2)
+        function OffDec = UFCrossover(Algo, ParDec1, ParDec2)
             i = 1;
             while i <= length(ParDec1)
                 u = randi([0, 1], 1, 1);
@@ -220,7 +220,7 @@ classdef MFEA_AKT < Algorithm
         end
 
         % Arithmetical crossover
-        function OffDec = ARICrossover(obj, ParDec1, ParDec2)
+        function OffDec = ARICrossover(Algo, ParDec1, ParDec2)
             i = 1; len = length(ParDec1);
             r = 0.25;
             while i <= len
@@ -230,7 +230,7 @@ classdef MFEA_AKT < Algorithm
         end
 
         % Geometric crossover
-        function OffDec = GEOCrossover(obj, ParDec1, ParDec2)
+        function OffDec = GEOCrossover(Algo, ParDec1, ParDec2)
             i = 1; len = length(ParDec1);
             r = 0.2;
             while i <= len
@@ -240,7 +240,7 @@ classdef MFEA_AKT < Algorithm
         end
 
         % BLX-a crossover
-        function OffDec = BLXACrossover(obj, ParDec1, ParDec2, a)
+        function OffDec = BLXACrossover(Algo, ParDec1, ParDec2, a)
             i = 1; len = length(ParDec1);
             while i <= len
                 if ParDec1(i) < ParDec2(i)

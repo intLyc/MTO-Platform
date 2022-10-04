@@ -1,9 +1,9 @@
-function [obj, cv] = Schwefel(x, M, opt, g)
+function [Obj, Con] = Schwefel(x, M, opt, g)
     % SCHWEFEL function
     %   - var: design variable vector
     %   - M: rotation matrix
     %   - opt: shift vector
-    %   - g: objective value move
+    %   - g: Objective value move
 
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
@@ -20,8 +20,8 @@ function [obj, cv] = Schwefel(x, M, opt, g)
         sum = sum + var(i) * sin(sqrt(abs(var(i))));
     end
 
-    obj = 418.9829 * dim - sum;
-    obj = obj + g;
+    Obj = 418.9829 * dim - sum;
+    Obj = Obj + g;
 
-    cv = 0;
+    Con = 0;
 end

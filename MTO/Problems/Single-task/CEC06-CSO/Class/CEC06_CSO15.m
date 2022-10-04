@@ -9,18 +9,18 @@ classdef CEC06_CSO15 < Problem
     %--------------------------------------------------------------------------
 
     methods
-        function obj = CEC06_CSO15(varargin)
-            obj = obj@Problem(varargin);
-            obj.maxFE = 500000;
+        function Prob = CEC06_CSO15(varargin)
+            Prob = Prob@Problem(varargin);
+            Prob.maxFE = 500000;
         end
 
-        function setTasks(obj)
+        function setTasks(Prob)
             Tasks(1) = benchmark_CEC06_CSO(15);
-            obj.T = 1;
-            obj.D(1) = Tasks(1).Dim;
-            obj.Fnc{1} = Tasks(1).Fnc;
-            obj.Lb{1} = Tasks(1).Lb;
-            obj.Ub{1} = Tasks(1).Ub;
+            Prob.T = 1;
+            Prob.D(1) = Tasks(1).Dim;
+            Prob.Fnc{1} = Tasks(1).Fnc;
+            Prob.Lb{1} = Tasks(1).Lb;
+            Prob.Ub{1} = Tasks(1).Ub;
         end
     end
 end

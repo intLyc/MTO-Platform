@@ -1,4 +1,4 @@
-function [min_obj, min_cv, min_idx] = min_FP(obj, cv, varargin)
+function [minObj, minCV, min_idx] = min_FP(Obj, CV, varargin)
     %% Minimal Feasible Priority / Epsilon Constraint
 
     n = numel(varargin);
@@ -7,11 +7,11 @@ function [min_obj, min_cv, min_idx] = min_FP(obj, cv, varargin)
     elseif n == 1
         ep = varargin{1};
     end
-    cv(cv <= ep) = 0;
+    CV(CV <= ep) = 0;
 
-    min_cv = min(cv);
-    idx_min_cv = find(cv == min_cv);
-    obj_temp = obj(idx_min_cv);
-    [min_obj, idx_temp] = min(obj_temp);
+    minCV = min(CV);
+    idx_min_cv = find(CV == minCV);
+    obj_temp = Obj(idx_min_cv);
+    [minObj, idx_temp] = min(obj_temp);
     min_idx = idx_min_cv(idx_temp);
 end

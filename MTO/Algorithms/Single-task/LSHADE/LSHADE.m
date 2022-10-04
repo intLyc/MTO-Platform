@@ -25,35 +25,35 @@ classdef LSHADE < Algorithm
     end
 
     methods
-        function Parameter = getParameter(obj)
-            Parameter = {'P: 100p% top as pbest', num2str(obj.P), ...
-                        'H: success memory size', num2str(obj.H)};
+        function Parameter = getParameter(Algo)
+            Parameter = {'P: 100p% top as pbest', num2str(Algo.P), ...
+                        'H: success memory size', num2str(Algo.H)};
         end
 
-        function obj = setParameter(obj, Parameter)
+        function Algo = setParameter(Algo, Parameter)
             i = 1;
-            obj.P = str2double(Parameter{i}); i = i + 1;
-            obj.H = str2double(Parameter{i}); i = i + 1;
+            Algo.P = str2double(Parameter{i}); i = i + 1;
+            Algo.H = str2double(Parameter{i}); i = i + 1;
         end
 
-        function run(obj, Prob)
+        function run(Algo, Prob)
             % Initialization
-            population = Initialization(obj, Prob, Individual_DE);
+            population = Initialization(Algo, Prob, Individual_DE);
             Nmin = 4;
             for t = 1:Prob.T
                 % initialize Parameter
                 Hidx{t} = 1;
-                MF{t} = 0.5 .* ones(obj.H, 1);
-                MCR{t} = 0.5 .* ones(obj.H, 1);
+                MF{t} = 0.5 .* ones(Algo.H, 1);
+                MCR{t} = 0.5 .* ones(Algo.H, 1);
                 archive{t} = Individual_DE.empty();
             end
 
-            while obj.notTerminated(Prob)
-                N = round((Nmin - Prob.N) / Prob.maxFE * obj.FE + Prob.N);
+            while Algo.notTerminated(Prob)
+                N = round((Nmin - Prob.N) / Prob.maxFE * Algo.FE + Prob.N);
                 for t = 1:Prob.T
                     % Calculate individual F and CR
                     for i = 1:length(population{t})
-                        idx = randi(obj.H);
+                        idx = randi(Algo.H);
                         uF = MF{t}(idx);
                         population{t}(i).F = uF + 0.1 * tan(pi * (rand() - 0.5));
                         while (population{t}(i).F <= 0)
@@ -69,9 +69,9 @@ classdef LSHADE < Algorithm
 
                     % Generation
                     union = [population{t}, archive{t}];
-                    offspring = obj.Generation(population{t}, union);
+                    offspring = Algo.Generation(population{t}, union);
                     % Evaluation
-                    offspring = obj.Evaluation(offspring, Prob, t);
+                    offspring = Algo.Evaluation(offspring, Prob, t);
                     % Selection
                     [~, replace] = Selection_Tournament(population{t}, offspring);
 
@@ -88,10 +88,10 @@ classdef LSHADE < Algorithm
                         MF{t}(Hidx{t}) = sum(dif .* (SF.^2)) / sum(dif .* SF);
                         MCR{t}(Hidx{t}) = sum(dif .* SCR);
                     else
-                        MF{t}(Hidx{t}) = MF{t}(mod(Hidx{t} + obj.H - 2, obj.H) + 1);
-                        MCR{t}(Hidx{t}) = MCR{t}(mod(Hidx{t} + obj.H - 2, obj.H) + 1);
+                        MF{t}(Hidx{t}) = MF{t}(mod(Hidx{t} + Algo.H - 2, Algo.H) + 1);
+                        MCR{t}(Hidx{t}) = MCR{t}(mod(Hidx{t} + Algo.H - 2, Algo.H) + 1);
                     end
-                    Hidx{t} = mod(Hidx{t}, obj.H) + 1;
+                    Hidx{t} = mod(Hidx{t}, Algo.H) + 1;
 
                     % Update archive
                     archive{t} = [archive{t}, population{t}(replace)];
@@ -110,10 +110,10 @@ classdef LSHADE < Algorithm
             end
         end
 
-        function offspring = Generation(obj, population, union)
+        function offspring = Generation(Algo, population, union)
             % get top 100p% individuals
             [~, rank] = sortrows([[population.CV]', [population.Obj]'], [1, 2]);
-            pop_pbest = rank(1:max(round(obj.P * length(population)), 1));
+            pop_pbest = rank(1:max(round(Algo.P * length(population)), 1));
 
             for i = 1:length(population)
                 offspring(i) = population(i);

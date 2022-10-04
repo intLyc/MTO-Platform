@@ -32,48 +32,48 @@ classdef EMEA < Algorithm
     end
 
     methods
-        function Parameter = getParameter(obj)
-            Parameter = {'Operator (Split with /)', obj.Operator, ...
-                        'S: Transfer num', num2str(obj.SNum), ...
-                        'G: Transfer TGap', num2str(obj.TGap), ...
-                        'MuC: Simulated Binary Crossover', num2str(obj.GA_MuC), ...
-                        'MuM: Polynomial Mutation', num2str(obj.GA_MuM), ...
-                        'F: DE Mutation Factor', num2str(obj.DE_F), ...
-                        'CR: DE Crossover Probability', num2str(obj.DE_CR)};
+        function Parameter = getParameter(Algo)
+            Parameter = {'Operator (Split with /)', Algo.Operator, ...
+                        'S: Transfer num', num2str(Algo.SNum), ...
+                        'G: Transfer TGap', num2str(Algo.TGap), ...
+                        'MuC: Simulated Binary Crossover', num2str(Algo.GA_MuC), ...
+                        'MuM: Polynomial Mutation', num2str(Algo.GA_MuM), ...
+                        'F: DE Mutation Factor', num2str(Algo.DE_F), ...
+                        'CR: DE Crossover Probability', num2str(Algo.DE_CR)};
         end
 
-        function obj = setParameter(obj, Parameter)
+        function Algo = setParameter(Algo, Parameter)
             i = 1;
-            obj.Operator = Parameter{i}; i = i + 1;
-            obj.SNum = str2double(Parameter{i}); i = i + 1;
-            obj.TGap = str2double(Parameter{i}); i = i + 1;
-            obj.GA_MuC = str2double(Parameter{i}); i = i + 1;
-            obj.GA_MuM = str2double(Parameter{i}); i = i + 1;
-            obj.DE_F = str2double(Parameter{i}); i = i + 1;
-            obj.DE_CR = str2double(Parameter{i}); i = i + 1;
+            Algo.Operator = Parameter{i}; i = i + 1;
+            Algo.SNum = str2double(Parameter{i}); i = i + 1;
+            Algo.TGap = str2double(Parameter{i}); i = i + 1;
+            Algo.GA_MuC = str2double(Parameter{i}); i = i + 1;
+            Algo.GA_MuM = str2double(Parameter{i}); i = i + 1;
+            Algo.DE_F = str2double(Parameter{i}); i = i + 1;
+            Algo.DE_CR = str2double(Parameter{i}); i = i + 1;
         end
 
-        function run(obj, Prob)
-            operator = split(obj.Operator, '/');
+        function run(Algo, Prob)
+            operator = split(Algo.Operator, '/');
 
             % Initialization
-            population = Initialization(obj, Prob, Individual);
+            population = Initialization(Algo, Prob, Individual);
 
-            while obj.notTerminated(Prob)
+            while Algo.notTerminated(Prob)
                 for t = 1:Prob.T
                     % Generation
                     op_idx = mod(t - 1, length(operator)) + 1;
                     op = operator{op_idx};
                     switch op
                         case 'GA'
-                            offspring = obj.Generation_GA(population{t});
+                            offspring = Algo.Generation_GA(population{t});
                         case 'DE'
-                            offspring = obj.Generation_DE(population{t});
+                            offspring = Algo.Generation_DE(population{t});
                     end
 
                     % Knowledge Transfer
-                    if obj.SNum > 0 && mod(obj.Gen, obj.TGap) == 0
-                        inject_num = round(obj.SNum ./ (Prob.T - 1));
+                    if Algo.SNum > 0 && mod(Algo.Gen, Algo.TGap) == 0
+                        inject_num = round(Algo.SNum ./ (Prob.T - 1));
                         inject_pop = Individual.empty();
                         for k = 1:Prob.T
                             if t == k
@@ -113,7 +113,7 @@ classdef EMEA < Algorithm
                     end
 
                     % Evaluation
-                    offspring = obj.Evaluation(offspring, Prob, t);
+                    offspring = Algo.Evaluation(offspring, Prob, t);
 
                     % Selection
                     switch op
@@ -126,7 +126,7 @@ classdef EMEA < Algorithm
             end
         end
 
-        function offspring = Generation_GA(obj, population)
+        function offspring = Generation_GA(Algo, population)
             indorder = randperm(length(population));
             count = 1;
             for i = 1:ceil(length(population) / 2)
@@ -135,10 +135,10 @@ classdef EMEA < Algorithm
                 offspring(count) = population(p1);
                 offspring(count + 1) = population(p2);
 
-                [offspring(count).Dec, offspring(count + 1).Dec] = GA_Crossover(population(p1).Dec, population(p2).Dec, obj.GA_MuC);
+                [offspring(count).Dec, offspring(count + 1).Dec] = GA_Crossover(population(p1).Dec, population(p2).Dec, Algo.GA_MuC);
 
-                offspring(count).Dec = GA_Mutation(offspring(count).Dec, obj.GA_MuM);
-                offspring(count + 1).Dec = GA_Mutation(offspring(count + 1).Dec, obj.GA_MuM);
+                offspring(count).Dec = GA_Mutation(offspring(count).Dec, Algo.GA_MuM);
+                offspring(count + 1).Dec = GA_Mutation(offspring(count + 1).Dec, Algo.GA_MuM);
 
                 for x = count:count + 1
                     offspring(x).Dec(offspring(x).Dec > 1) = 1;
@@ -148,14 +148,14 @@ classdef EMEA < Algorithm
             end
         end
 
-        function offspring = Generation_DE(obj, population)
+        function offspring = Generation_DE(Algo, population)
             for i = 1:length(population)
                 offspring(i) = population(i);
                 A = randperm(length(population), 4);
                 A(A == i) = []; x1 = A(1); x2 = A(2); x3 = A(3);
 
-                offspring(i).Dec = population(x1).Dec + obj.DE_F * (population(x2).Dec - population(x3).Dec);
-                offspring(i).Dec = DE_Crossover(offspring(i).Dec, population(i).Dec, obj.DE_CR);
+                offspring(i).Dec = population(x1).Dec + Algo.DE_F * (population(x2).Dec - population(x3).Dec);
+                offspring(i).Dec = DE_Crossover(offspring(i).Dec, population(i).Dec, Algo.DE_CR);
 
                 offspring(i).Dec(offspring(i).Dec > 1) = 1;
                 offspring(i).Dec(offspring(i).Dec < 0) = 0;

@@ -1,4 +1,4 @@
-function [obj, con] = Rosenbrock2(var, M, opt, opt_con)
+function [Obj, Con] = Rosenbrock2(var, M, opt, opt_con)
     % Rosenbrock function
     %   - var: design variable vector
     %   - M: rotation matrix
@@ -6,7 +6,7 @@ function [obj, con] = Rosenbrock2(var, M, opt, opt_con)
     %   - opt_con: feasible region shift vector
     dim = length(var);
 
-    % object
+    % Object
     x = (M * (var - opt(1:dim))')';
     sumx = 0;
     for ii = 1:(dim - 1)
@@ -18,12 +18,12 @@ function [obj, con] = Rosenbrock2(var, M, opt, opt_con)
     if dim == 1
         sumx = 100 * (x(1) - x(1)^2)^2 + (x(1) - 1)^2;
     end
-    obj = sumx;
+    Obj = sumx;
 
     % constraint
     x = 2 * (var - opt_con(1:dim));
     g = sum(x.^2, 2) - 100 * dim;
 
     g(g < 0) = 0;
-    con = g;
+    Con = g;
 end

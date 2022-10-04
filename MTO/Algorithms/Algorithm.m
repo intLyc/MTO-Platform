@@ -23,42 +23,42 @@ classdef Algorithm < handle
     end
 
     methods
-        function obj = Algorithm(varargin)
+        function Algo = Algorithm(varargin)
             % Algorithm constructor, cannot be changed
             if length(varargin) >= 1
-                obj.Name = varargin{1};
+                Algo.Name = varargin{1};
             end
-            obj.Result_Idx = 1;
-            obj.FE = 0;
-            obj.Gen = 1;
-            obj.FE_Gen = [];
-            obj.Best = {};
-            obj.Result = [];
+            Algo.Result_Idx = 1;
+            Algo.FE = 0;
+            Algo.Gen = 1;
+            Algo.FE_Gen = [];
+            Algo.Best = {};
+            Algo.Result = [];
         end
 
-        function reset(obj)
-            obj.Result_Idx = 1;
-            obj.FE = 0;
-            obj.Gen = 1;
-            obj.FE_Gen = [];
-            obj.Best = {};
-            obj.Result = [];
+        function reset(Algo)
+            Algo.Result_Idx = 1;
+            Algo.FE = 0;
+            Algo.Gen = 1;
+            Algo.FE_Gen = [];
+            Algo.Best = {};
+            Algo.Result = [];
         end
 
-        function Parameter = getParameter(obj)
+        function Parameter = getParameter(Algo)
             % Get algorithm's parameter
             % return parameter, contains {para1, value1, para2, value2, ...} (string)
             Parameter = {};
         end
 
-        function setParameter(obj, Parameter)
+        function setParameter(Algo, Parameter)
             % set algorithm's parameter
             % arg parameter_cell, contains {value1, value2, ...} (string)
         end
 
-        function Result = getResult(obj, Prob)
-            Result = gen2eva(obj.Result, obj.FE_Gen, obj.Result_Num);
-            if obj.Save_Dec
+        function Result = getResult(Algo, Prob)
+            Result = gen2eva(Algo.Result, Algo.FE_Gen, Algo.Result_Num);
+            if Algo.Save_Dec
                 for t = 1:size(Result, 1)
                     for idx = 1:size(Result, 2)
                         Result(t, idx).Dec = Prob.Lb{t} + Result(t, idx).Dec(1:Prob.D(t)) .* (Prob.Ub{t} - Prob.Lb{t});
@@ -70,24 +70,24 @@ classdef Algorithm < handle
             end
         end
 
-        function flag = notTerminated(obj, Prob)
-            if isempty(obj.Best)
+        function flag = notTerminated(Algo, Prob)
+            if isempty(Algo.Best)
                 flag = true;
                 return;
             end
 
-            flag = obj.FE < Prob.maxFE;
+            flag = Algo.FE < Prob.maxFE;
 
             for t = 1:Prob.T
-                obj.Result(t, obj.Gen).Obj = obj.Best{t}.Obj;
-                obj.Result(t, obj.Gen).CV = obj.Best{t}.CV;
-                obj.Result(t, obj.Gen).Dec = obj.Best{t}.Dec;
+                Algo.Result(t, Algo.Gen).Obj = Algo.Best{t}.Obj;
+                Algo.Result(t, Algo.Gen).CV = Algo.Best{t}.CV;
+                Algo.Result(t, Algo.Gen).Dec = Algo.Best{t}.Dec;
             end
-            obj.FE_Gen(obj.Gen) = obj.FE;
-            obj.Gen = obj.Gen + 1;
+            Algo.FE_Gen(Algo.Gen) = Algo.FE;
+            Algo.Gen = Algo.Gen + 1;
         end
 
-        function [Pop, Flag] = Evaluation(obj, Pop, Prob, t)
+        function [Pop, Flag] = Evaluation(Algo, Pop, Prob, t)
             for i = 1:length(Pop)
                 x = (Prob.Ub{t} - Prob.Lb{t}) .* Pop(i).Dec(1:Prob.D(t)) + Prob.Lb{t};
                 [Obj, Con] = Prob.Fnc{t}(x);
@@ -95,12 +95,12 @@ classdef Algorithm < handle
                 Pop(i).Obj = Obj;
                 Pop(i).CV = CV;
             end
-            obj.FE = obj.FE + length(Pop);
+            Algo.FE = Algo.FE + length(Pop);
 
             % Update Best
-            if isempty(obj.Best)
+            if isempty(Algo.Best)
                 for k = 1:Prob.T
-                    obj.Best{k} = Individual.empty();
+                    Algo.Best{k} = Individual.empty();
                 end
             end
             [~, ~, idx] = min_FP([Pop.Obj], [Pop.CV]);
@@ -108,9 +108,9 @@ classdef Algorithm < handle
             BestTemp.Dec = Pop(idx).Dec;
             BestTemp.Obj = Pop(idx).Obj;
             BestTemp.CV = Pop(idx).CV;
-            BestTemp = [BestTemp, obj.Best{t}];
+            BestTemp = [BestTemp, Algo.Best{t}];
             [~, ~, idx] = min_FP([BestTemp.Obj], [BestTemp.CV]);
-            obj.Best{t} = BestTemp(idx);
+            Algo.Best{t} = BestTemp(idx);
             % Set Best Update Flag
             if idx == 1
                 Flag = true;
@@ -121,6 +121,6 @@ classdef Algorithm < handle
     end
 
     methods (Abstract)
-        run(obj, Prob) % run this tasks with algorithm,
+        run(Algo, Prob) % run this tasks with algorithm,
     end
 end

@@ -25,20 +25,20 @@ classdef JADE < Algorithm
     end
 
     methods
-        function Parameter = getParameter(obj)
-            Parameter = {'P: 100p% top as pbest', num2str(obj.P), ...
-                        'C: life span of uF and uCR', num2str(obj.C)};
+        function Parameter = getParameter(Algo)
+            Parameter = {'P: 100p% top as pbest', num2str(Algo.P), ...
+                        'C: life span of uF and uCR', num2str(Algo.C)};
         end
 
-        function obj = setParameter(obj, Parameter)
+        function Algo = setParameter(Algo, Parameter)
             i = 1;
-            obj.P = str2double(Parameter{i}); i = i + 1;
-            obj.C = str2double(Parameter{i}); i = i + 1;
+            Algo.P = str2double(Parameter{i}); i = i + 1;
+            Algo.C = str2double(Parameter{i}); i = i + 1;
         end
 
-        function run(obj, Prob)
+        function run(Algo, Prob)
             % Initialization
-            population = Initialization(obj, Prob, Individual_DE);
+            population = Initialization(Algo, Prob, Individual_DE);
             for t = 1:Prob.T
                 % initialize Parameter
                 uF{t} = 0.5;
@@ -46,7 +46,7 @@ classdef JADE < Algorithm
                 archive{t} = Individual_DE.empty();
             end
 
-            while obj.notTerminated(Prob)
+            while Algo.notTerminated(Prob)
                 for t = 1:Prob.T
                     % calculate individual F and CR
                     for i = 1:length(population{t})
@@ -62,9 +62,9 @@ classdef JADE < Algorithm
                     end
 
                     union = [population{t}, archive{t}];
-                    offspring = obj.Generation(population{t}, union);
+                    offspring = Algo.Generation(population{t}, union);
                     % Evaluation
-                    offspring = obj.Evaluation(offspring, Prob, t);
+                    offspring = Algo.Evaluation(offspring, Prob, t);
                     % Selection
                     [~, replace] = Selection_Tournament(population{t}, offspring);
 
@@ -75,8 +75,8 @@ classdef JADE < Algorithm
                     % update uF uCR
                     for i = 1:length(SF)
                         newSF = sum(SF.^2) ./ sum(SF);
-                        uF{t} = (1 - obj.C) * uF{t} + obj.C .* newSF;
-                        uCR{t} = (1 - obj.C) * uCR{t} + obj.C .* mean(SCR);
+                        uF{t} = (1 - Algo.C) * uF{t} + Algo.C .* newSF;
+                        uCR{t} = (1 - Algo.C) * uCR{t} + Algo.C .* mean(SCR);
                     end
 
                     % Update archive
@@ -90,10 +90,10 @@ classdef JADE < Algorithm
             end
         end
 
-        function offspring = Generation(obj, population, union)
+        function offspring = Generation(Algo, population, union)
             % get top 100p% individuals
             [~, rank] = sort([population.Obj]);
-            pop_pbest = rank(1:max(round(obj.P * length(population)), 1));
+            pop_pbest = rank(1:max(round(Algo.P * length(population)), 1));
 
             for i = 1:length(population)
                 offspring(i) = population(i);

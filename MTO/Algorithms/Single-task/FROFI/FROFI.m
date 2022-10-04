@@ -22,19 +22,19 @@ classdef FROFI < Algorithm
     %--------------------------------------------------------------------------
 
     methods
-        function run(obj, Prob)
+        function run(Algo, Prob)
             F_pool = [0.6, 0.8, 1.0];
             CR_pool = [0.1, 0.2, 1.0];
 
             % Initialization
-            population = Initialization(obj, Prob, Individual);
+            population = Initialization(Algo, Prob, Individual);
 
-            while obj.notTerminated(Prob)
+            while Algo.notTerminated(Prob)
                 for t = 1:Prob.T
                     % Generation
-                    offspring = obj.Generation(population{t}, F_pool, CR_pool);
+                    offspring = Algo.Generation(population{t}, F_pool, CR_pool);
                     % Evaluation
-                    offspring = obj.Evaluation(offspring, Prob, t);
+                    offspring = Algo.Evaluation(offspring, Prob, t);
                     % Selection
                     archive = offspring([offspring.CV] > [population{t}.CV] & [offspring.Obj] < [population{t}.Obj]);
                     [population{t}] = Selection_Tournament(population{t}, offspring);
@@ -66,7 +66,7 @@ classdef FROFI < Algorithm
                         temp = population{t}(randi(end));
                         k = randi(length(temp.Dec));
                         temp.Dec(k) = rand();
-                        temp = obj.Evaluation(temp, Prob, t);
+                        temp = Algo.Evaluation(temp, Prob, t);
 
                         if population{t}(worst).Obj > temp.Obj
                             population{t}(worst) = temp;
@@ -76,7 +76,7 @@ classdef FROFI < Algorithm
             end
         end
 
-        function offspring = Generation(obj, population, F_pool, CR_pool)
+        function offspring = Generation(Algo, population, F_pool, CR_pool)
             [~, best] = min([population.Obj]);
 
             for i = 1:length(population)

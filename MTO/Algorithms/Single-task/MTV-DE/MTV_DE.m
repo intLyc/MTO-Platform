@@ -30,57 +30,57 @@ classdef MTV_DE < Algorithm
     end
 
     methods
-        function Parameter = getParameter(obj)
-            Parameter = {'F: Mutation Factor', num2str(obj.F), ...
-                        'CR: Crossover Probability', num2str(obj.CR), ...
-                        'No: number of trial vectors', num2str(obj.No), ...
-                        'SR: stochastic ranking rate', num2str(obj.SR)};
+        function Parameter = getParameter(Algo)
+            Parameter = {'F: Mutation Factor', num2str(Algo.F), ...
+                        'CR: Crossover Probability', num2str(Algo.CR), ...
+                        'No: number of trial vectors', num2str(Algo.No), ...
+                        'SR: stochastic ranking rate', num2str(Algo.SR)};
         end
 
-        function obj = setParameter(obj, Parameter)
+        function Algo = setParameter(Algo, Parameter)
             i = 1;
-            obj.F = str2double(Parameter{i}); i = i + 1;
-            obj.CR = str2double(Parameter{i}); i = i + 1;
-            obj.No = str2double(Parameter{i}); i = i + 1;
-            obj.SR = str2double(Parameter{i}); i = i + 1;
+            Algo.F = str2double(Parameter{i}); i = i + 1;
+            Algo.CR = str2double(Parameter{i}); i = i + 1;
+            Algo.No = str2double(Parameter{i}); i = i + 1;
+            Algo.SR = str2double(Parameter{i}); i = i + 1;
         end
 
-        function run(obj, Prob)
+        function run(Algo, Prob)
             % Initialization
-            population = Initialization(obj, Prob, Individual);
+            population = Initialization(Algo, Prob, Individual);
 
-            while obj.notTerminated(Prob)
+            while Algo.notTerminated(Prob)
                 for t = 1:Prob.T
                     % Generation
-                    offspring_temp = obj.Generation(population{t});
+                    offspring_temp = Algo.Generation(population{t});
                     % Evaluation
-                    offspring_temp = obj.Evaluation(offspring_temp, Prob, t);
+                    offspring_temp = Algo.Evaluation(offspring_temp, Prob, t);
                     % Pre Selection
                     for i = 1:length(population{t})
-                        idx = (i - 1) * obj.No + (1:obj.No);
+                        idx = (i - 1) * Algo.No + (1:Algo.No);
                         [~, ~, best] = min_FP([offspring_temp(idx).Obj], [offspring_temp(idx).CV]);
                         offspring(i) = offspring_temp(idx(best));
                     end
                     % Selection
                     [~, replace] = Selection_Tournament(population{t}, offspring);
                     replace_obj = [population{t}.Obj] > [offspring.Obj];
-                    idx_sr = rand(1, length(population{t})) <= obj.SR;
+                    idx_sr = rand(1, length(population{t})) <= Algo.SR;
                     replace(idx_sr) = replace_obj(idx_sr);
                     population{t}(replace) = offspring(replace);
                 end
             end
         end
 
-        function offspring = Generation(obj, population)
+        function offspring = Generation(Algo, population)
             for i = 1:length(population)
-                j = (i - 1) * obj.No;
-                for k = 1:obj.No
+                j = (i - 1) * Algo.No;
+                for k = 1:Algo.No
                     offspring(j + k) = population(i);
                     A = randperm(length(population), 4);
                     A(A == i) = []; x1 = A(1); x2 = A(2); x3 = A(3);
 
-                    offspring(j + k).Dec = population(x1).Dec + obj.F * (population(x2).Dec - population(x3).Dec);
-                    offspring(j + k).Dec = DE_Crossover(offspring(j + k).Dec, population(i).Dec, obj.CR);
+                    offspring(j + k).Dec = population(x1).Dec + Algo.F * (population(x2).Dec - population(x3).Dec);
+                    offspring(j + k).Dec = DE_Crossover(offspring(j + k).Dec, population(i).Dec, Algo.CR);
 
                     offspring(j + k).Dec(offspring(j + k).Dec > 1) = 1;
                     offspring(j + k).Dec(offspring(j + k).Dec < 0) = 0;

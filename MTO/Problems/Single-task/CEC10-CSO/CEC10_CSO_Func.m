@@ -1,4 +1,4 @@
-function [obj, con] = CEC10_CSO_Func(x, problem)
+function [Obj, Con] = CEC10_CSO_Func(x, problem)
 
     [ps, D] = size(x);
     g = zeros(ps, 1);
@@ -392,9 +392,9 @@ function [obj, con] = CEC10_CSO_Func(x, problem)
             h(:, 1) = abs(1 / D * sum((-z .* sin(sqrt(abs(z)))), 2)) - delta;
     end
 
-    obj = f;
+    Obj = f;
     g(g < 0) = 0;
     h(h < 0) = 0;
-    con = [g, h];
-    con(isnan(con)) = Inf;
+    Con = [g, h];
+    Con(isnan(Con)) = Inf;
 end

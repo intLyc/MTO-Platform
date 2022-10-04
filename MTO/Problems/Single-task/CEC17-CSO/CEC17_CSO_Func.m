@@ -1,4 +1,4 @@
-function [obj, con] = CEC17_CSO_Func(x, I_fno, o, M)
+function [Obj, Con] = CEC17_CSO_Func(x, I_fno, o, M)
 
     % CEC2017 Constrained Optimization Test Suite
     % Guohua Wu (email: guohuawu@nudt.edu.cn, National University of Defense Technology)
@@ -347,10 +347,10 @@ function [obj, con] = CEC17_CSO_Func(x, I_fno, o, M)
         h = zeros(ps, 1);
     end
 
-    obj = f;
+    Obj = f;
     g(g < 0) = 0;
     h = abs(h) - 1e-4;
     h(h < 0) = 0;
-    con = [g, h];
-    con(isnan(con)) = Inf;
+    Con = [g, h];
+    Con(isnan(Con)) = Inf;
 end

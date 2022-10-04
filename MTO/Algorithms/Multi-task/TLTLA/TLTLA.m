@@ -27,32 +27,32 @@ classdef TLTLA < Algorithm
     end
 
     methods
-        function Parameter = getParameter(obj)
-            Parameter = {'RMP: Random Mating Probability', num2str(obj.RMP), ...
-                        'MuC: Simulated Binary Crossover', num2str(obj.MuC), ...
-                        'MuM: Polynomial Mutation', num2str(obj.MuM)};
+        function Parameter = getParameter(Algo)
+            Parameter = {'RMP: Random Mating Probability', num2str(Algo.RMP), ...
+                        'MuC: Simulated Binary Crossover', num2str(Algo.MuC), ...
+                        'MuM: Polynomial Mutation', num2str(Algo.MuM)};
         end
 
-        function obj = setParameter(obj, Parameter)
+        function Algo = setParameter(Algo, Parameter)
             i = 1;
-            obj.RMP = str2double(Parameter{i}); i = i + 1;
-            obj.MuC = str2double(Parameter{i}); i = i + 1;
-            obj.MuM = str2double(Parameter{i}); i = i + 1;
+            Algo.RMP = str2double(Parameter{i}); i = i + 1;
+            Algo.MuC = str2double(Parameter{i}); i = i + 1;
+            Algo.MuM = str2double(Parameter{i}); i = i + 1;
         end
 
-        function run(obj, Prob)
+        function run(Algo, Prob)
             % Initialize
-            population = Initialization_MF(obj, Prob, Individual_MF);
+            population = Initialization_MF(Algo, Prob, Individual_MF);
 
-            while obj.notTerminated(Prob)
+            while Algo.notTerminated(Prob)
                 %% Upper-level: Inter-task Knowledge Transfer
                 % Generation
-                offspring = obj.Generation(population);
+                offspring = Algo.Generation(population);
                 % Evaluation
                 offspring_temp = Individual_MF.empty();
                 for t = 1:Prob.T
                     offspring_t = offspring([offspring.MFFactor] == t);
-                    offspring_t = obj.Evaluation(offspring_t, Prob, t);
+                    offspring_t = Algo.Evaluation(offspring_t, Prob, t);
                     for i = 1:length(offspring_t)
                         offspring_t(i).MFObj = inf(1, Prob.T);
                         offspring_t(i).MFCV = inf(1, Prob.T);
@@ -68,7 +68,7 @@ classdef TLTLA < Algorithm
                 %% Lower-level: Intra-task Knowledge Transfer
                 parent = randi(length(population));
                 t = population(parent).MFFactor;
-                dimen = mod(obj.Gen - 2, max(Prob.D)) + 1; % start with 1 Dim
+                dimen = mod(Algo.Gen - 2, max(Prob.D)) + 1; % start with 1 Dim
                 child_Dec = zeros(size(population(parent)));
                 pool = population([population.MFFactor] == t);
                 for d = 1:max(Prob.D)
@@ -90,7 +90,7 @@ classdef TLTLA < Algorithm
                     tmp_population = population(parent);
                     for d = 1:max(Prob.D)
                         tmp_population.Dec(d) = child_Dec(d);
-                        tmp_population = obj.Evaluation(tmp_population, Prob, t);
+                        tmp_population = Algo.Evaluation(tmp_population, Prob, t);
                         TMP = [tmp_population, population(parent)];
                         [~, ~, idx] = min_FP([TMP.Obj], [TMP.CV]);
                         if idx == 1
@@ -102,7 +102,7 @@ classdef TLTLA < Algorithm
                     for d = 1:max(Prob.D)
                         tmp_population = population(parent);
                         tmp_population.Dec(d) = child_Dec(d);
-                        tmp_population = obj.Evaluation(tmp_population, Prob, t);
+                        tmp_population = Algo.Evaluation(tmp_population, Prob, t);
                         TMP = [tmp_population, population(parent)];
                         [~, ~, idx] = min_FP([TMP.Obj], [TMP.CV]);
                         if idx == 1
@@ -114,7 +114,7 @@ classdef TLTLA < Algorithm
             end
         end
 
-        function offspring = Generation(obj, population)
+        function offspring = Generation(Algo, population)
             indorder = randperm(length(population));
             count = 1;
             for i = 1:ceil(length(population) / 2)
@@ -123,17 +123,17 @@ classdef TLTLA < Algorithm
                 offspring(count) = population(p1);
                 offspring(count + 1) = population(p2);
 
-                if (population(p1).MFFactor == population(p2).MFFactor) || rand() < obj.RMP
+                if (population(p1).MFFactor == population(p2).MFFactor) || rand() < Algo.RMP
                     % crossover
-                    [offspring(count).Dec, offspring(count + 1).Dec] = GA_Crossover(population(p1).Dec, population(p2).Dec, obj.MuC);
+                    [offspring(count).Dec, offspring(count + 1).Dec] = GA_Crossover(population(p1).Dec, population(p2).Dec, Algo.MuC);
                     % imitation
                     p = [p1, p2];
                     offspring(count).MFFactor = population(p(randi(2))).MFFactor;
                     offspring(count + 1).MFFactor = population(p(randi(2))).MFFactor;
                 else
                     % mutation
-                    offspring(count).Dec = GA_Mutation(population(p1).Dec, obj.MuM);
-                    offspring(count + 1).Dec = GA_Mutation(population(p2).Dec, obj.MuM);
+                    offspring(count).Dec = GA_Mutation(population(p1).Dec, Algo.MuM);
+                    offspring(count + 1).Dec = GA_Mutation(population(p2).Dec, Algo.MuM);
                     % imitation
                     offspring(count).MFFactor = population(p1).MFFactor;
                     offspring(count + 1).MFFactor = population(p2).MFFactor;

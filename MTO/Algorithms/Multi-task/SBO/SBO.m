@@ -30,24 +30,24 @@ classdef SBO < Algorithm
     end
 
     methods
-        function Parameter = getParameter(obj)
-            Parameter = {'Benefit: Beneficial factor', num2str(obj.Benefit), ...
-                        'Harm: Harmful factor', num2str(obj.Harm), ...
-                        'MuC: Simulated Binary Crossover', num2str(obj.MuC), ...
-                        'MuM: Polynomial Mutation', num2str(obj.MuM)};
+        function Parameter = getParameter(Algo)
+            Parameter = {'Benefit: Beneficial factor', num2str(Algo.Benefit), ...
+                        'Harm: Harmful factor', num2str(Algo.Harm), ...
+                        'MuC: Simulated Binary Crossover', num2str(Algo.MuC), ...
+                        'MuM: Polynomial Mutation', num2str(Algo.MuM)};
         end
 
-        function obj = setParameter(obj, Parameter)
+        function Algo = setParameter(Algo, Parameter)
             i = 1;
-            obj.Benefit = str2double(Parameter{i}); i = i + 1;
-            obj.Harm = str2double(Parameter{i}); i = i + 1;
-            obj.MuC = str2double(Parameter{i}); i = i + 1;
-            obj.MuM = str2double(Parameter{i}); i = i + 1;
+            Algo.Benefit = str2double(Parameter{i}); i = i + 1;
+            Algo.Harm = str2double(Parameter{i}); i = i + 1;
+            Algo.MuC = str2double(Parameter{i}); i = i + 1;
+            Algo.MuM = str2double(Parameter{i}); i = i + 1;
         end
 
-        function run(obj, Prob)
+        function run(Algo, Prob)
             % Initialization
-            population_temp = Initialization(obj, Prob, IndividualSBO);
+            population_temp = Initialization(Algo, Prob, IndividualSBO);
             population = IndividualSBO.empty();
             for t = 1:Prob.T
                 [~, rank] = sortrows([[population_temp{t}.CV]', [population_temp{t}.Obj]'], [1, 2]);
@@ -67,13 +67,13 @@ classdef SBO < Algorithm
             PIJ = ones(Prob.T, Prob.T); % Benefit and Harm
             AIJ = ones(Prob.T, Prob.T); % Harm and neutral
 
-            while obj.notTerminated(Prob)
+            while Algo.notTerminated(Prob)
                 offspring = IndividualSBO.empty();
                 for t = 1:Prob.T
                     t_idx = [population.MFFactor] == t;
                     find_idx = find(t_idx);
                     % generation
-                    offspring_t = obj.Generation(population(t_idx));
+                    offspring_t = Algo.Generation(population(t_idx));
                     for i = 1:length(offspring_t)
                         offspring_t(i).MFFactor = t;
                         offspring_t(i).BelongT = t;
@@ -103,7 +103,7 @@ classdef SBO < Algorithm
                     end
 
                     % Evaluation
-                    offspring(t_idx) = obj.Evaluation(offspring(t_idx), Prob, t);
+                    offspring(t_idx) = Algo.Evaluation(offspring(t_idx), Prob, t);
 
                     [~, rank] = sortrows([[offspring(t_idx).CV]', [offspring(t_idx).Obj]'], [1, 2]);
                     for i = 1:length(rank)
@@ -127,22 +127,22 @@ classdef SBO < Algorithm
                     rankC = [offspring(t_idx).rankC];
                     rankO = [offspring(t_idx).rankO];
                     for k = 1:length(t_idx)
-                        if rankC(k) < Prob.N * obj.Benefit
-                            if rankO(k) < Prob.N * obj.Benefit
+                        if rankC(k) < Prob.N * Algo.Benefit
+                            if rankO(k) < Prob.N * Algo.Benefit
                                 MIJ(t, offspring(find_idx(k)).BelongT) = MIJ(t, offspring(find_idx(k)).BelongT) + 1;
-                            elseif rankO(k) > Prob.N * (1 - obj.Harm)
+                            elseif rankO(k) > Prob.N * (1 - Algo.Harm)
                                 PIJ(t, offspring(find_idx(k)).BelongT) = PIJ(t, offspring(find_idx(k)).BelongT) + 1;
                             else
                                 OIJ(t, offspring(find_idx(k)).BelongT) = OIJ(t, offspring(find_idx(k)).BelongT) + 1;
                             end
-                        elseif rankC(k) > Prob.N * (1 - obj.Harm)
-                            if rankO(k) > Prob.N * (1 - obj.Harm)
+                        elseif rankC(k) > Prob.N * (1 - Algo.Harm)
+                            if rankO(k) > Prob.N * (1 - Algo.Harm)
                                 CIJ(t, offspring(find_idx(k)).BelongT) = CIJ(t, offspring(find_idx(k)).BelongT) + 1;
                             end
                         else
-                            if rankO(k) > Prob.N * (1 - obj.Harm)
+                            if rankO(k) > Prob.N * (1 - Algo.Harm)
                                 AIJ(t, offspring(find_idx(k)).BelongT) = AIJ(t, offspring(find_idx(k)).BelongT) + 1;
-                            elseif rankO(k) >= Prob.N * obj.Benefit && rankO(k) <= Prob.N * (1 - obj.Harm)
+                            elseif rankO(k) >= Prob.N * Algo.Benefit && rankO(k) <= Prob.N * (1 - Algo.Harm)
                                 NIJ(t, offspring(find_idx(k)).BelongT) = NIJ(t, offspring(find_idx(k)).BelongT) + 1;
                             end
                         end
@@ -153,7 +153,7 @@ classdef SBO < Algorithm
             end
         end
 
-        function offspring = Generation(obj, population)
+        function offspring = Generation(Algo, population)
             indorder = randperm(length(population));
             count = 1;
             for i = 1:ceil(length(population) / 2)
@@ -162,10 +162,10 @@ classdef SBO < Algorithm
                 offspring(count) = population(p1);
                 offspring(count + 1) = population(p2);
 
-                [offspring(count).Dec, offspring(count + 1).Dec] = GA_Crossover(population(p1).Dec, population(p2).Dec, obj.MuC);
+                [offspring(count).Dec, offspring(count + 1).Dec] = GA_Crossover(population(p1).Dec, population(p2).Dec, Algo.MuC);
 
-                offspring(count).Dec = GA_Mutation(offspring(count).Dec, obj.MuM);
-                offspring(count + 1).Dec = GA_Mutation(offspring(count + 1).Dec, obj.MuM);
+                offspring(count).Dec = GA_Mutation(offspring(count).Dec, Algo.MuM);
+                offspring(count + 1).Dec = GA_Mutation(offspring(count + 1).Dec, Algo.MuM);
 
                 for x = count:count + 1
                     offspring(x).Dec(offspring(x).Dec > 1) = 1;

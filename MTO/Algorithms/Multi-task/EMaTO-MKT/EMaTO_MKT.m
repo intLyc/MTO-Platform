@@ -29,41 +29,41 @@ classdef EMaTO_MKT < Algorithm
     end
 
     methods
-        function Parameter = getParameter(obj)
-            Parameter = {'MuC: Simulated Binary Crossover', num2str(obj.MuC), ...
-                        'MuM: Polynomial Mutation', num2str(obj.MuM), ...
-                        'AMP0: Initial AMP', num2str(obj.AMP0), ...
-                        'Sigma', num2str(obj.Sigma), ...
-                        'K: Cluster Num', num2str(obj.K), ...
-                        'KTN: Knowledge Transfer Tasks Num', num2str(obj.KTN)};
+        function Parameter = getParameter(Algo)
+            Parameter = {'MuC: Simulated Binary Crossover', num2str(Algo.MuC), ...
+                        'MuM: Polynomial Mutation', num2str(Algo.MuM), ...
+                        'AMP0: Initial AMP', num2str(Algo.AMP0), ...
+                        'Sigma', num2str(Algo.Sigma), ...
+                        'K: Cluster Num', num2str(Algo.K), ...
+                        'KTN: Knowledge Transfer Tasks Num', num2str(Algo.KTN)};
         end
 
-        function obj = setParameter(obj, Parameter)
+        function Algo = setParameter(Algo, Parameter)
             i = 1;
-            obj.MuC = str2double(Parameter{i}); i = i + 1;
-            obj.MuM = str2double(Parameter{i}); i = i + 1;
-            obj.AMP0 = str2double(Parameter{i}); i = i + 1;
-            obj.Sigma = str2double(Parameter{i}); i = i + 1;
-            obj.K = str2double(Parameter{i}); i = i + 1;
-            obj.KTN = str2double(Parameter{i}); i = i + 1;
+            Algo.MuC = str2double(Parameter{i}); i = i + 1;
+            Algo.MuM = str2double(Parameter{i}); i = i + 1;
+            Algo.AMP0 = str2double(Parameter{i}); i = i + 1;
+            Algo.Sigma = str2double(Parameter{i}); i = i + 1;
+            Algo.K = str2double(Parameter{i}); i = i + 1;
+            Algo.KTN = str2double(Parameter{i}); i = i + 1;
         end
 
-        function run(obj, Prob)
+        function run(Algo, Prob)
             % Initialization
-            population = Initialization(obj, Prob, Individual_MKT);
+            population = Initialization(Algo, Prob, Individual_MKT);
 
-            while obj.notTerminated(Prob)
+            while Algo.notTerminated(Prob)
                 % AMP
-                if obj.Gen < 4
-                    AMP(1:Prob.T) = obj.AMP0;
+                if Algo.Gen < 4
+                    AMP(1:Prob.T) = Algo.AMP0;
                 else
-                    x1 = [obj.Result(:, obj.Gen - 1).Obj];
-                    x2 = [obj.Result(:, obj.Gen - 2).Obj];
-                    x3 = [obj.Result(:, obj.Gen - 3).Obj];
+                    x1 = [Algo.Result(:, Algo.Gen - 1).Obj];
+                    x2 = [Algo.Result(:, Algo.Gen - 2).Obj];
+                    x3 = [Algo.Result(:, Algo.Gen - 3).Obj];
                     temp1 = x2 - x1;
                     temp2 = x3 - x2;
                     AMP = temp1 ./ (temp1 + temp2);
-                    AMP(isnan(AMP)) = obj.AMP0;
+                    AMP(isnan(AMP)) = Algo.AMP0;
                 end
 
                 % Calculate MMD
@@ -72,20 +72,20 @@ classdef EMaTO_MKT < Algorithm
                     dec_t = reshape([population{t}.Dec], length(population{t}(1).Dec), length(population{t}));
                     for k = t + 1:Prob.T
                         dec_k = reshape([population{k}.Dec], length(population{k}(1).Dec), length(population{k}));
-                        difference(t, k) = obj.mmd(dec_t, dec_k, obj.Sigma);
+                        difference(t, k) = Algo.mmd(dec_t, dec_k, Algo.Sigma);
                         difference(k, t) = difference(t, k);
                     end
                 end
 
                 % Clustering in LEKT
-                [cluster_model, population] = obj.LEKT(population, Prob.T, difference);
+                [cluster_model, population] = Algo.LEKT(population, Prob.T, difference);
 
                 % Generation
-                offspring = obj.Generation(population, AMP, cluster_model);
+                offspring = Algo.Generation(population, AMP, cluster_model);
 
                 for t = 1:Prob.T
                     % Evaluation
-                    offspring{t} = obj.Evaluation(offspring{t}, Prob, t);
+                    offspring{t} = Algo.Evaluation(offspring{t}, Prob, t);
                     population{t} = [population{t}, offspring{t}];
                     [~, rank] = sort([population{t}.Obj]);
                     population{t} = population{t}(rank(1:Prob.N));
@@ -93,7 +93,7 @@ classdef EMaTO_MKT < Algorithm
             end
         end
 
-        function offspring = Generation(obj, population, AMP, cluster_model)
+        function offspring = Generation(Algo, population, AMP, cluster_model)
             for t = 1:length(population)
                 indorder = randperm(length(population{t}));
                 count = 1;
@@ -104,9 +104,9 @@ classdef EMaTO_MKT < Algorithm
                     offspring{t}(count + 1) = population{t}(p2);
 
                     if rand() < AMP(t)
-                        [offspring{t}(count).Dec, offspring{t}(count + 1).Dec] = GA_Crossover(population{t}(p1).Dec, population{t}(p2).Dec, obj.MuC);
-                        offspring{t}(count).Dec = GA_Mutation(offspring{t}(count).Dec, obj.MuM);
-                        offspring{t}(count + 1).Dec = GA_Mutation(offspring{t}(count + 1).Dec, obj.MuM);
+                        [offspring{t}(count).Dec, offspring{t}(count + 1).Dec] = GA_Crossover(population{t}(p1).Dec, population{t}(p2).Dec, Algo.MuC);
+                        offspring{t}(count).Dec = GA_Mutation(offspring{t}(count).Dec, Algo.MuM);
+                        offspring{t}(count + 1).Dec = GA_Mutation(offspring{t}(count + 1).Dec, Algo.MuM);
                     else
                         % Knowledge Tansfer
                         current_mean = cluster_model(t).Nich_mean(population{t}(p1).ClusterNum, :);
@@ -124,10 +124,10 @@ classdef EMaTO_MKT < Algorithm
             end
         end
 
-        function [clusterModel, population] = LEKT(obj, population, task_num, difference)
+        function [clusterModel, population] = LEKT(Algo, population, task_num, difference)
             clusterModel = struct;
-            K = obj.K; %cluster numbers
-            knowledge_task_num = obj.KTN; %number of tasks involved in knowledge transfer
+            K = Algo.K; %cluster numbers
+            knowledge_task_num = Algo.KTN; %number of tasks involved in knowledge transfer
             TempPopulation = population;
             dim = length(TempPopulation{1}(1).Dec);
             for i = 1:task_num
@@ -159,7 +159,7 @@ classdef EMaTO_MKT < Algorithm
             end
         end
 
-        function mmd_XY = mmd(obj, X, Y, Sigma)
+        function mmd_XY = mmd(Algo, X, Y, Sigma)
             % Author：kailugaji
             % Maximum Mean Discrepancy 最大均值差异 越小说明X与Y越相似
             % X与Y数据维度必须一致, X, Y为无标签数据，源域数据，目标域数据
@@ -167,9 +167,9 @@ classdef EMaTO_MKT < Algorithm
             % Sigma is kernel size, 高斯核的sigma
             [N_X, ~] = size(X);
             [N_Y, ~] = size(Y);
-            K = obj.rbf_dot(X, X, Sigma); %N_X*N_X
-            L = obj.rbf_dot(Y, Y, Sigma); %N_Y*N_Y
-            KL = obj.rbf_dot(X, Y, Sigma); %N_X*N_Y
+            K = Algo.rbf_dot(X, X, Sigma); %N_X*N_X
+            L = Algo.rbf_dot(Y, Y, Sigma); %N_Y*N_Y
+            KL = Algo.rbf_dot(X, Y, Sigma); %N_X*N_Y
             c_K = 1 / (N_X^2);
             c_L = 1 / (N_Y^2);
             c_KL = 2 / (N_X * N_Y);
@@ -177,7 +177,7 @@ classdef EMaTO_MKT < Algorithm
             mmd_XY = sqrt(mmd_XY);
         end
 
-        function H = rbf_dot(obj, X, Y, deg)
+        function H = rbf_dot(Algo, X, Y, deg)
             % Author：kailugaji
             % 高斯核函数/径向基函数 K(x, y)=exp(-d^2/Sigma), d=(x-y)^2, 假设X与Y维度一样
             % Deg is kernel size,高斯核的sigma

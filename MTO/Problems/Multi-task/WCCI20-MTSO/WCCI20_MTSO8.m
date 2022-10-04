@@ -9,19 +9,19 @@ classdef WCCI20_MTSO8 < Problem
     %--------------------------------------------------------------------------
 
     methods
-        function obj = WCCI20_MTSO8(varargin)
-            obj = obj@Problem(varargin);
-            obj.maxFE = 1000 * 100;
+        function Prob = WCCI20_MTSO8(varargin)
+            Prob = Prob@Problem(varargin);
+            Prob.maxFE = 1000 * 100;
         end
 
-        function setTasks(obj)
+        function setTasks(Prob)
             Tasks = benchmark_WCCI20_MTSO(8);
-            obj.T = length(Tasks);
-            for t = 1:obj.T
-                obj.D(t) = Tasks(t).Dim;
-                obj.Fnc{t} = Tasks(t).Fnc;
-                obj.Lb{t} = Tasks(t).Lb;
-                obj.Ub{t} = Tasks(t).Ub;
+            Prob.T = length(Tasks);
+            for t = 1:Prob.T
+                Prob.D(t) = Tasks(t).Dim;
+                Prob.Fnc{t} = Tasks(t).Fnc;
+                Prob.Lb{t} = Tasks(t).Lb;
+                Prob.Ub{t} = Tasks(t).Ub;
             end
         end
     end

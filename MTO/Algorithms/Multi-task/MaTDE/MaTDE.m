@@ -34,61 +34,61 @@ classdef MaTDE < Algorithm
     end
 
     methods
-        function Parameter = getParameter(obj)
-            Parameter = {'Alpha: Knowledge Transfer Rate', num2str(obj.Alpha), ...
-                        'ArcUpdate: Archive Update Rate', num2str(obj.ArcUpdate), ...
-                        'Shrink: Reward Shrink Rate', num2str(obj.Shrink), ...
-                        'Ro: Attenuation Coefficient', num2str(obj.Ro), ...
-                        'ArcMultip: Multiples of population size', num2str(obj.ArcMultip), ...
-                        'LF: F Lower Bound', num2str(obj.LF), ...
-                        'UF: F Upper Bound', num2str(obj.UF), ...
-                        'LCR: CR Lower Bound', num2str(obj.LCR), ...
-                        'UCR: CR Upper Bound', num2str(obj.UCR)};
+        function Parameter = getParameter(Algo)
+            Parameter = {'Alpha: Knowledge Transfer Rate', num2str(Algo.Alpha), ...
+                        'ArcUpdate: Archive Update Rate', num2str(Algo.ArcUpdate), ...
+                        'Shrink: Reward Shrink Rate', num2str(Algo.Shrink), ...
+                        'Ro: Attenuation Coefficient', num2str(Algo.Ro), ...
+                        'ArcMultip: Multiples of population size', num2str(Algo.ArcMultip), ...
+                        'LF: F Lower Bound', num2str(Algo.LF), ...
+                        'UF: F Upper Bound', num2str(Algo.UF), ...
+                        'LCR: CR Lower Bound', num2str(Algo.LCR), ...
+                        'UCR: CR Upper Bound', num2str(Algo.UCR)};
         end
 
-        function obj = setParameter(obj, Parameter)
+        function Algo = setParameter(Algo, Parameter)
             i = 1;
-            obj.Alpha = str2double(Parameter{i}); i = i + 1;
-            obj.ArcUpdate = str2double(Parameter{i}); i = i + 1;
-            obj.Shrink = str2double(Parameter{i}); i = i + 1;
-            obj.Ro = str2double(Parameter{i}); i = i + 1;
-            obj.ArcMultip = str2double(Parameter{i}); i = i + 1;
-            obj.LF = str2double(Parameter{i}); i = i + 1;
-            obj.UF = str2double(Parameter{i}); i = i + 1;
-            obj.LCR = str2double(Parameter{i}); i = i + 1;
-            obj.UCR = str2double(Parameter{i}); i = i + 1;
+            Algo.Alpha = str2double(Parameter{i}); i = i + 1;
+            Algo.ArcUpdate = str2double(Parameter{i}); i = i + 1;
+            Algo.Shrink = str2double(Parameter{i}); i = i + 1;
+            Algo.Ro = str2double(Parameter{i}); i = i + 1;
+            Algo.ArcMultip = str2double(Parameter{i}); i = i + 1;
+            Algo.LF = str2double(Parameter{i}); i = i + 1;
+            Algo.UF = str2double(Parameter{i}); i = i + 1;
+            Algo.LCR = str2double(Parameter{i}); i = i + 1;
+            Algo.UCR = str2double(Parameter{i}); i = i + 1;
         end
 
-        function run(obj, Prob)
+        function run(Algo, Prob)
             % Initialization
-            population = Initialization(obj, Prob, Individual);
+            population = Initialization(Algo, Prob, Individual);
             possibility = zeros(Prob.T, Prob.T);
             reward = ones(Prob.T, Prob.T);
             archive = cell(1, Prob.T);
             for t = 1:Prob.T
                 for i = 1:length(population{t})
-                    archive = obj.putarchive(archive, t, population{t}(i), Prob.N);
+                    archive = Algo.putarchive(archive, t, population{t}(i), Prob.N);
                 end
             end
 
-            while obj.notTerminated(Prob)
+            while Algo.notTerminated(Prob)
                 for t = 1:Prob.T
-                    if rand() > obj.Alpha
-                        F = obj.LF + (obj.UF - obj.LF) * rand();
-                        CR = obj.LCR + (obj.UCR - obj.LCR) * rand();
+                    if rand() > Algo.Alpha
+                        F = Algo.LF + (Algo.UF - Algo.LF) * rand();
+                        CR = Algo.LCR + (Algo.UCR - Algo.LCR) * rand();
 
                         % Generation
-                        offspring = obj.Generation(population{t}, F, CR);
+                        offspring = Algo.Generation(population{t}, F, CR);
                         % Evaluation
-                        offspring = obj.Evaluation(offspring, Prob, t);
+                        offspring = Algo.Evaluation(offspring, Prob, t);
                         % Selection
                         population{t} = Selection_Tournament(population{t}, offspring);
                     else
                         % Knowledge transfer
-                        [transfer_task, possibility] = obj.adaptivechoose(t, Prob.T, archive, reward, possibility, Prob.D);
+                        [transfer_task, possibility] = Algo.adaptivechoose(t, Prob.T, archive, reward, possibility, Prob.D);
 
                         % Crossover
-                        CR = obj.LCR + (obj.UCR - obj.LCR) * rand();
+                        CR = Algo.LCR + (Algo.UCR - Algo.LCR) * rand();
                         for i = 1:length(population{t})
                             offspring(i) = population{t}(i);
                             r1 = randi(length(population{transfer_task}));
@@ -96,27 +96,27 @@ classdef MaTDE < Algorithm
                         end
 
                         % Evaluation
-                        [offspring, flag] = obj.Evaluation(offspring, Prob, t);
+                        [offspring, flag] = Algo.Evaluation(offspring, Prob, t);
                         % Selection
                         population{t} = Selection_Tournament(population{t}, offspring);
 
                         if flag % Best updated
-                            reward(t, transfer_task) = reward(t, transfer_task) / obj.Shrink;
+                            reward(t, transfer_task) = reward(t, transfer_task) / Algo.Shrink;
                         else
-                            reward(t, transfer_task) = reward(t, transfer_task) * obj.Shrink;
+                            reward(t, transfer_task) = reward(t, transfer_task) * Algo.Shrink;
                         end
                     end
                     % update archive
                     for i = 1:length(population{t})
-                        if rand() < obj.ArcUpdate
-                            archive = obj.putarchive(archive, t, population{t}(i), Prob.N);
+                        if rand() < Algo.ArcUpdate
+                            archive = Algo.putarchive(archive, t, population{t}(i), Prob.N);
                         end
                     end
                 end
             end
         end
 
-        function offspring = Generation(obj, population, F, CR)
+        function offspring = Generation(Algo, population, F, CR)
             for i = 1:length(population)
                 offspring(i) = population(i);
                 A = randperm(length(population), 4);
@@ -131,15 +131,15 @@ classdef MaTDE < Algorithm
             end
         end
 
-        function [num, possibility] = adaptivechoose(obj, task_idx, T, archive, reward, possibility, Dim)
+        function [num, possibility] = adaptivechoose(Algo, task_idx, T, archive, reward, possibility, Dim)
             sum = 0;
-            sim = obj.calSIM(task_idx, T, archive, Dim);
+            sim = Algo.calSIM(task_idx, T, archive, Dim);
             % update possibility table
             for i = 1:T
                 if i == task_idx
                     continue;
                 end
-                possibility(task_idx, i) = obj.Ro * possibility(task_idx, i) + reward(task_idx, i) / (1 + log(1 + sim(i, 1)));
+                possibility(task_idx, i) = Algo.Ro * possibility(task_idx, i) + reward(task_idx, i) / (1 + log(1 + sim(i, 1)));
                 sum = sum + possibility(task_idx, i);
             end
 
@@ -157,8 +157,8 @@ classdef MaTDE < Algorithm
             num = i;
         end
 
-        function archive = putarchive(obj, archive, task_idx, individual, N)
-            max_size = obj.ArcMultip * N;
+        function archive = putarchive(Algo, archive, task_idx, individual, N)
+            max_size = Algo.ArcMultip * N;
             archive_size = size(archive{task_idx}, 1);
             if archive_size < max_size
                 archive_size = archive_size + 1;
@@ -174,19 +174,19 @@ classdef MaTDE < Algorithm
             end
         end
 
-        function similarity = calSIM(obj, task_idx, T, archive, Dim)
+        function similarity = calSIM(Algo, task_idx, T, archive, Dim)
             % Calculate similarity
             for i = 1:T
                 if task_idx ~= i
                     NVARS = min(Dim(task_idx), Dim(i)); % Unify dimensions to lower task
-                    cov0 = obj.getCov(task_idx, archive, NVARS);
-                    cov1 = obj.getCov(i, archive, NVARS);
+                    cov0 = Algo.getCov(task_idx, archive, NVARS);
+                    cov1 = Algo.getCov(i, archive, NVARS);
                     cov0_det = det(cov0);
                     Inv_cov0 = pinv(cov0);
                     cov1_det = det(cov1);
                     Inv_cov1 = pinv(cov1);
-                    tr = obj.getTrace(Inv_cov1, cov0);
-                    u = obj.getMul(task_idx, i, archive, NVARS, Inv_cov1);
+                    tr = Algo.getTrace(Inv_cov1, cov0);
+                    u = Algo.getMul(task_idx, i, archive, NVARS, Inv_cov1);
                     if cov0_det < 1e-3
                         cov0_det = 0.001;
                     end
@@ -194,15 +194,15 @@ classdef MaTDE < Algorithm
                         cov1_det = 0.001;
                     end
                     s1 = abs(0.5 * (tr + u - NVARS + log(cov1_det / cov0_det)));
-                    tr = obj.getTrace(Inv_cov0, cov1);
-                    u = obj.getMul(i, task_idx, archive, NVARS, Inv_cov0);
+                    tr = Algo.getTrace(Inv_cov0, cov1);
+                    u = Algo.getMul(i, task_idx, archive, NVARS, Inv_cov0);
                     s2 = abs(0.5 * (tr + u - NVARS + log(cov0_det / cov1_det)));
                     similarity(i, 1) = 0.5 * (s1 + s2);
                 end
             end
         end
 
-        function COV = getCov(obj, task_idx, archive, NVARS)
+        function COV = getCov(Algo, task_idx, archive, NVARS)
             % generate NVARS*NVARS Dim cov matrix
             cur_ar_size = size(archive{task_idx}, 1);
             pop_Dec = zeros(cur_ar_size, NVARS);
@@ -212,13 +212,13 @@ classdef MaTDE < Algorithm
             COV = cov(pop_Dec);
         end
 
-        function tr = getTrace(obj, inv_cov1, cov2)
+        function tr = getTrace(Algo, inv_cov1, cov2)
             % KLD first step
             fmatrix = inv_cov1 * cov2;
             tr = sum(diag(fmatrix));
         end
 
-        function u = getMul(obj, t0, t1, archive, NVARS, invcov)
+        function u = getMul(Algo, t0, t1, archive, NVARS, invcov)
             % KLD second step
             pop0_archive = archive{t0};
             pop1_archive = archive{t1};

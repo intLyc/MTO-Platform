@@ -27,35 +27,35 @@ classdef AT_MFEA < Algorithm
     end
 
     methods
-        function Parameter = getParameter(obj)
-            Parameter = {'RMP: Random Mating Probability', num2str(obj.RMP), ...
-                        'MuC: Simulated Binary Crossover', num2str(obj.MuC), ...
-                        'MuM: Polynomial Mutation', num2str(obj.MuM), ...
-                        'Swap: Variable Swap Probability', num2str(obj.Swap)};
+        function Parameter = getParameter(Algo)
+            Parameter = {'RMP: Random Mating Probability', num2str(Algo.RMP), ...
+                        'MuC: Simulated Binary Crossover', num2str(Algo.MuC), ...
+                        'MuM: Polynomial Mutation', num2str(Algo.MuM), ...
+                        'Swap: Variable Swap Probability', num2str(Algo.Swap)};
         end
 
-        function obj = setParameter(obj, Parameter)
+        function Algo = setParameter(Algo, Parameter)
             i = 1;
-            obj.RMP = str2double(Parameter{i}); i = i + 1;
-            obj.MuC = str2double(Parameter{i}); i = i + 1;
-            obj.MuM = str2double(Parameter{i}); i = i + 1;
-            obj.Swap = str2double(Parameter{i}); i = i + 1;
+            Algo.RMP = str2double(Parameter{i}); i = i + 1;
+            Algo.MuC = str2double(Parameter{i}); i = i + 1;
+            Algo.MuM = str2double(Parameter{i}); i = i + 1;
+            Algo.Swap = str2double(Parameter{i}); i = i + 1;
         end
 
-        function run(obj, Prob)
+        function run(Algo, Prob)
             % Initialize
-            population = Initialization_MF(obj, Prob, Individual_MF);
+            population = Initialization_MF(Algo, Prob, Individual_MF);
             % Initialize Affine Transformation
             [Mu_tasks, Sigma_tasks] = InitialDistribution(population, Prob.T);
 
-            while obj.notTerminated(Prob)
+            while Algo.notTerminated(Prob)
                 % Generation
-                offspring = obj.Generation(population, Mu_tasks, Sigma_tasks);
+                offspring = Algo.Generation(population, Mu_tasks, Sigma_tasks);
                 % Evaluation
                 offspring_temp = Individual_MF.empty();
                 for t = 1:Prob.T
                     offspring_t = offspring([offspring.MFFactor] == t);
-                    offspring_t = obj.Evaluation(offspring_t, Prob, t);
+                    offspring_t = Algo.Evaluation(offspring_t, Prob, t);
                     for i = 1:length(offspring_t)
                         offspring_t(i).MFObj = inf(1, Prob.T);
                         offspring_t(i).MFCV = inf(1, Prob.T);
@@ -71,7 +71,7 @@ classdef AT_MFEA < Algorithm
             end
         end
 
-        function offspring = Generation(obj, population, Mu_tasks, Sigma_tasks)
+        function offspring = Generation(Algo, population, Mu_tasks, Sigma_tasks)
             indorder = randperm(length(population));
             count = 1;
             for i = 1:ceil(length(population) / 2)
@@ -82,12 +82,12 @@ classdef AT_MFEA < Algorithm
 
                 if (population(p1).MFFactor == population(p2).MFFactor)
                     % crossover
-                    [offspring(count).Dec, offspring(count + 1).Dec] = GA_Crossover(population(p1).Dec, population(p2).Dec, obj.MuC);
+                    [offspring(count).Dec, offspring(count + 1).Dec] = GA_Crossover(population(p1).Dec, population(p2).Dec, Algo.MuC);
                     % mutation
-                    offspring(count).Dec = GA_Mutation(offspring(count).Dec, obj.MuM);
-                    offspring(count + 1).Dec = GA_Mutation(offspring(count + 1).Dec, obj.MuM);
+                    offspring(count).Dec = GA_Mutation(offspring(count).Dec, Algo.MuM);
+                    offspring(count + 1).Dec = GA_Mutation(offspring(count + 1).Dec, Algo.MuM);
                     % variable swap (uniform X)
-                    swap_indicator = (rand(1, length(population(p1).Dec)) >= obj.Swap);
+                    swap_indicator = (rand(1, length(population(p1).Dec)) >= Algo.Swap);
                     temp = offspring(count + 1).Dec(swap_indicator);
                     offspring(count + 1).Dec(swap_indicator) = offspring(count).Dec(swap_indicator);
                     offspring(count).Dec(swap_indicator) = temp;
@@ -95,17 +95,17 @@ classdef AT_MFEA < Algorithm
                     p = [p1, p2];
                     offspring(count).MFFactor = population(p(randi(2))).MFFactor;
                     offspring(count + 1).MFFactor = population(p(randi(2))).MFFactor;
-                elseif rand() < obj.RMP
+                elseif rand() < Algo.RMP
                     % affine transformation
                     pm1 = population(p1); pm2 = population(p2);
                     pm1.Dec = AT_Transfer(population(p1).Dec, Mu_tasks{population(p1).MFFactor}, Sigma_tasks{population(p1).MFFactor}, Mu_tasks{population(p2).MFFactor}, Sigma_tasks{population(p2).MFFactor});
                     pm2.Dec = AT_Transfer(population(p2).Dec, Mu_tasks{population(p2).MFFactor}, Sigma_tasks{population(p2).MFFactor}, Mu_tasks{population(p1).MFFactor}, Sigma_tasks{population(p1).MFFactor});
                     % crossover
-                    offspring(count).Dec = GA_Crossover(pm1.Dec, population(p2).Dec, obj.MuC);
-                    offspring(count + 1).Dec = GA_Crossover(population(p1).Dec, pm2.Dec, obj.MuC);
+                    offspring(count).Dec = GA_Crossover(pm1.Dec, population(p2).Dec, Algo.MuC);
+                    offspring(count + 1).Dec = GA_Crossover(population(p1).Dec, pm2.Dec, Algo.MuC);
                     % mutation
-                    offspring(count).Dec = GA_Mutation(offspring(count).Dec, obj.MuM);
-                    offspring(count + 1).Dec = GA_Mutation(offspring(count + 1).Dec, obj.MuM);
+                    offspring(count).Dec = GA_Mutation(offspring(count).Dec, Algo.MuM);
+                    offspring(count + 1).Dec = GA_Mutation(offspring(count + 1).Dec, Algo.MuM);
                     % imitation
                     p = [p1, p2];
                     offspring(count).MFFactor = population(p(randi(2))).MFFactor;
@@ -121,12 +121,12 @@ classdef AT_MFEA < Algorithm
                         end
                         offspring_temp = population(idx);
                         % crossover
-                        [offspring(count + x - 1).Dec, offspring_temp.Dec] = GA_Crossover(population(p(x)).Dec, population(idx).Dec, obj.MuC);
+                        [offspring(count + x - 1).Dec, offspring_temp.Dec] = GA_Crossover(population(p(x)).Dec, population(idx).Dec, Algo.MuC);
                         % mutation
-                        offspring(count + x - 1).Dec = GA_Mutation(offspring(count + x - 1).Dec, obj.MuM);
-                        offspring_temp.Dec = GA_Mutation(offspring_temp.Dec, obj.MuM);
+                        offspring(count + x - 1).Dec = GA_Mutation(offspring(count + x - 1).Dec, Algo.MuM);
+                        offspring_temp.Dec = GA_Mutation(offspring_temp.Dec, Algo.MuM);
                         % variable swap (uniform X)
-                        swap_indicator = (rand(1, length(population(p(x)).Dec)) >= obj.Swap);
+                        swap_indicator = (rand(1, length(population(p(x)).Dec)) >= Algo.Swap);
                         offspring(count + x - 1).Dec(swap_indicator) = offspring_temp.Dec(swap_indicator);
                         % imitate
                         offspring(count + x - 1).MFFactor = population(p(x)).MFFactor;

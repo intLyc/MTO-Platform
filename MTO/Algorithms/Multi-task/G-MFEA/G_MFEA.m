@@ -31,28 +31,28 @@ classdef G_MFEA < Algorithm
     end
 
     methods
-        function Parameter = getParameter(obj)
-            Parameter = {'RMP: Random Mating Probability', num2str(obj.RMP), ...
-                        'MuC: Simulated Binary Crossover', num2str(obj.MuC), ...
-                        'MuM: Polynomial Mutation', num2str(obj.MuM), ...
-                        'Phi', num2str(obj.Phi), ...
-                        'Theta', num2str(obj.Theta), ...
-                        'Top', num2str(obj.Top)};
+        function Parameter = getParameter(Algo)
+            Parameter = {'RMP: Random Mating Probability', num2str(Algo.RMP), ...
+                        'MuC: Simulated Binary Crossover', num2str(Algo.MuC), ...
+                        'MuM: Polynomial Mutation', num2str(Algo.MuM), ...
+                        'Phi', num2str(Algo.Phi), ...
+                        'Theta', num2str(Algo.Theta), ...
+                        'Top', num2str(Algo.Top)};
         end
 
-        function obj = setParameter(obj, Parameter)
+        function Algo = setParameter(Algo, Parameter)
             i = 1;
-            obj.RMP = str2double(Parameter{i}); i = i + 1;
-            obj.MuC = str2double(Parameter{i}); i = i + 1;
-            obj.MuM = str2double(Parameter{i}); i = i + 1;
-            obj.Phi = str2double(Parameter{i}); i = i + 1;
-            obj.Theta = str2double(Parameter{i}); i = i + 1;
-            obj.Top = str2double(Parameter{i}); i = i + 1;
+            Algo.RMP = str2double(Parameter{i}); i = i + 1;
+            Algo.MuC = str2double(Parameter{i}); i = i + 1;
+            Algo.MuM = str2double(Parameter{i}); i = i + 1;
+            Algo.Phi = str2double(Parameter{i}); i = i + 1;
+            Algo.Theta = str2double(Parameter{i}); i = i + 1;
+            Algo.Top = str2double(Parameter{i}); i = i + 1;
         end
 
-        function run(obj, Prob)
+        function run(Algo, Prob)
             % Initialize
-            population = Initialization_MF(obj, Prob, Individual_MF);
+            population = Initialization_MF(Algo, Prob, Individual_MF);
             MidNum = 0.5 * ones(1, max(Prob.D));
             Alpha = 0;
             transfer = {};
@@ -84,14 +84,14 @@ classdef G_MFEA < Algorithm
                 end
             end
 
-            while obj.notTerminated(Prob)
+            while Algo.notTerminated(Prob)
                 % Generation
-                offspring = obj.Generation(population, transfer);
+                offspring = Algo.Generation(population, transfer);
                 % Evaluation
                 offspring_temp = Individual_MF.empty();
                 for t = 1:Prob.T
                     offspring_t = offspring([offspring.MFFactor] == t);
-                    offspring_t = obj.Evaluation(offspring_t, Prob, t);
+                    offspring_t = Algo.Evaluation(offspring_t, Prob, t);
                     for i = 1:length(offspring_t)
                         offspring_t(i).MFObj = inf(1, Prob.T);
                         offspring_t(i).MFCV = inf(1, Prob.T);
@@ -112,12 +112,12 @@ classdef G_MFEA < Algorithm
                     pop_Rank{t} = [population_t.MFRank];
                 end
 
-                if obj.Gen >= obj.Phi * (Prob.maxFE / (Prob.N * Prob.T)) && ...
-                        mod(obj.Gen, round(obj.Theta * (Prob.maxFE / (Prob.N * Prob.T)))) == 0
-                    Alpha = (obj.FE / Prob.maxFE)^2;
+                if Algo.Gen >= Algo.Phi * (Prob.maxFE / (Prob.N * Prob.T)) && ...
+                        mod(Algo.Gen, round(Algo.Theta * (Prob.maxFE / (Prob.N * Prob.T)))) == 0
+                    Alpha = (Algo.FE / Prob.maxFE)^2;
                     for t = 1:Prob.T
                         [~, y] = sort(pop_Rank{t});
-                        meanT{t} = mean(pop_Dec{t}(y(1:round(obj.Top * Prob.N)), :));
+                        meanT{t} = mean(pop_Dec{t}(y(1:round(Algo.Top * Prob.N)), :));
                     end
                 end
 
@@ -136,7 +136,7 @@ classdef G_MFEA < Algorithm
                         idx = 1;
                         for i = find([population.MFFactor] == p2)
                             population(i).Dec = intpop(idx, :);
-                            population(i) = obj.Evaluation(population(i), Prob, p2);
+                            population(i) = Algo.Evaluation(population(i), Prob, p2);
                             idx = idx + 1;
                         end
                         intmean = meanT{p1};
@@ -148,7 +148,7 @@ classdef G_MFEA < Algorithm
             end
         end
 
-        function offspring = Generation(obj, population, transfer)
+        function offspring = Generation(Algo, population, transfer)
             indorder = randperm(length(population));
             count = 1;
             for i = 1:ceil(length(population) / 2)
@@ -159,16 +159,16 @@ classdef G_MFEA < Algorithm
 
                 if (population(p1).MFFactor == population(p2).MFFactor)
                     % crossover
-                    [offspring(count).Dec, offspring(count + 1).Dec] = GA_Crossover(population(p1).Dec, population(p2).Dec, obj.MuC);
+                    [offspring(count).Dec, offspring(count + 1).Dec] = GA_Crossover(population(p1).Dec, population(p2).Dec, Algo.MuC);
                     % imitation
                     p = [p1, p2];
                     offspring(count).MFFactor = population(p(randi(2))).MFFactor;
                     offspring(count + 1).MFFactor = population(p(randi(2))).MFFactor;
-                elseif rand() < obj.RMP
+                elseif rand() < Algo.RMP
                     TDec1 = population(p1).Dec + transfer{population(p1).MFFactor, population(p2).MFFactor};
                     TDec2 = population(p2).Dec + transfer{population(p2).MFFactor, population(p1).MFFactor};
                     % crossover
-                    [offspring(count).Dec, offspring(count + 1).Dec] = GA_Crossover(TDec1, TDec2, obj.MuC);
+                    [offspring(count).Dec, offspring(count + 1).Dec] = GA_Crossover(TDec1, TDec2, Algo.MuC);
                     offspring(count).Dec = offspring(count).Dec - transfer{population(p1).MFFactor, population(p2).MFFactor};
                     offspring(count + 1).Dec = offspring(count + 1).Dec - transfer{population(p2).MFFactor, population(p1).MFFactor};
                     % imitation
@@ -177,8 +177,8 @@ classdef G_MFEA < Algorithm
                     offspring(count + 1).MFFactor = population(p(randi(2))).MFFactor;
                 else
                     % mutation
-                    offspring(count).Dec = GA_Mutation(population(p1).Dec, obj.MuM);
-                    offspring(count + 1).Dec = GA_Mutation(population(p2).Dec, obj.MuM);
+                    offspring(count).Dec = GA_Mutation(population(p1).Dec, Algo.MuM);
+                    offspring(count + 1).Dec = GA_Mutation(population(p2).Dec, Algo.MuM);
                     % imitation
                     offspring(count).MFFactor = population(p1).MFFactor;
                     offspring(count + 1).MFFactor = population(p2).MFFactor;

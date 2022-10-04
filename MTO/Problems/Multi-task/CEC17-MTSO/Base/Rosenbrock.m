@@ -1,9 +1,9 @@
-function [obj, cv] = Rosenbrock(x, M, opt, g)
+function [Obj, Con] = Rosenbrock(x, M, opt, g)
     % ROSENBROCK function
     %   - var: design variable vector
     %   - M: rotation matrix
     %   - opt: shift vector
-    %   - g: objective value move
+    %   - g: Objective value move
 
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
@@ -25,8 +25,8 @@ function [obj, cv] = Rosenbrock(x, M, opt, g)
     if dim == 1
         sum = 100 * (var(1) - var(1)^2)^2 + (var(1) - 1)^2;
     end
-    obj = sum;
-    obj = obj + g;
+    Obj = sum;
+    Obj = Obj + g;
 
-    cv = 0;
+    Con = 0;
 end

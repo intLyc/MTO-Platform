@@ -27,20 +27,20 @@ classdef jDE < Algorithm
     end
 
     methods
-        function Parameter = getParameter(obj)
-            Parameter = {'T1: probability of F change', num2str(obj.T1), ...
-                        'T2: probability of CR change', num2str(obj.T2)};
+        function Parameter = getParameter(Algo)
+            Parameter = {'T1: probability of F change', num2str(Algo.T1), ...
+                        'T2: probability of CR change', num2str(Algo.T2)};
         end
 
-        function obj = setParameter(obj, Parameter)
+        function Algo = setParameter(Algo, Parameter)
             i = 1;
-            obj.T1 = str2double(Parameter{i}); i = i + 1;
-            obj.T2 = str2double(Parameter{i}); i = i + 1;
+            Algo.T1 = str2double(Parameter{i}); i = i + 1;
+            Algo.T2 = str2double(Parameter{i}); i = i + 1;
         end
 
-        function run(obj, Prob)
+        function run(Algo, Prob)
             % Initialization
-            population = Initialization(obj, Prob, Individual_DE);
+            population = Initialization(Algo, Prob, Individual_DE);
             for t = 1:Prob.T
                 % initialize F and CR
                 for i = 1:length(population{t})
@@ -49,29 +49,29 @@ classdef jDE < Algorithm
                 end
             end
 
-            while obj.notTerminated(Prob)
+            while Algo.notTerminated(Prob)
                 for t = 1:Prob.T
                     % Generation
-                    offspring = obj.Generation(population{t});
+                    offspring = Algo.Generation(population{t});
                     % Evaluation
-                    offspring = obj.Evaluation(offspring, Prob, t);
+                    offspring = Algo.Evaluation(offspring, Prob, t);
                     % Selection
                     population{t} = Selection_Tournament(population{t}, offspring);
                 end
             end
         end
 
-        function offspring = Generation(obj, population)
+        function offspring = Generation(Algo, population)
             for i = 1:length(population)
                 offspring(i) = population(i);
 
                 % parameter self-adaptation
                 offspring(i).F = population(i).F;
                 offspring(i).CR = population(i).CR;
-                if rand() < obj.T1
+                if rand() < Algo.T1
                     offspring(i).F = rand() * 0.9 + 0.1;
                 end
-                if rand() < obj.T2
+                if rand() < Algo.T2
                     offspring(i).CR = rand();
                 end
 

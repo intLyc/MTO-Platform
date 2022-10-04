@@ -1,9 +1,9 @@
-function [obj, cv] = Weierstrass(var, M, opt, g)
+function [Obj, Con] = Weierstrass(var, M, opt, g)
     % WEIERSTASS function
     %   - var: design variable vector
     %   - M: rotation matrix
     %   - opt: shift vector
-    %   - g: objective value move
+    %   - g: Objective value move
 
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
@@ -17,20 +17,20 @@ function [obj, cv] = Weierstrass(var, M, opt, g)
     a = 0.5;
     b = 3;
     kmax = 20;
-    obj = 0;
+    Obj = 0;
 
     for i = 1:D
 
         for k = 0:kmax
-            obj = obj + a^k * cos(2 * pi * b^k * (var(i) + 0.5));
+            Obj = Obj + a^k * cos(2 * pi * b^k * (var(i) + 0.5));
         end
 
     end
 
     for k = 0:kmax
-        obj = obj - D * a^k * cos(2 * pi * b^k * 0.5);
+        Obj = Obj - D * a^k * cos(2 * pi * b^k * 0.5);
     end
-    obj = obj + g;
+    Obj = Obj + g;
 
-    cv = 0;
+    Con = 0;
 end

@@ -29,47 +29,47 @@ classdef DeCODE < Algorithm
     end
 
     methods
-        function Parameter = getParameter(obj)
-            Parameter = {'Alpha', num2str(obj.Alpha), ...
-                        'Beta', num2str(obj.Beta), ...
-                        'Gama', num2str(obj.Gama), ...
-                        'Mu', num2str(obj.Mu), ...
-                        'P', num2str(obj.P)};
+        function Parameter = getParameter(Algo)
+            Parameter = {'Alpha', num2str(Algo.Alpha), ...
+                        'Beta', num2str(Algo.Beta), ...
+                        'Gama', num2str(Algo.Gama), ...
+                        'Mu', num2str(Algo.Mu), ...
+                        'P', num2str(Algo.P)};
         end
 
-        function obj = setParameter(obj, Parameter)
+        function Algo = setParameter(Algo, Parameter)
             i = 1;
-            obj.Alpha = str2double(Parameter{i}); i = i + 1;
-            obj.Beta = str2double(Parameter{i}); i = i + 1;
-            obj.Gama = str2double(Parameter{i}); i = i + 1;
-            obj.Mu = str2double(Parameter{i}); i = i + 1;
-            obj.P = str2double(Parameter{i}); i = i + 1;
+            Algo.Alpha = str2double(Parameter{i}); i = i + 1;
+            Algo.Beta = str2double(Parameter{i}); i = i + 1;
+            Algo.Gama = str2double(Parameter{i}); i = i + 1;
+            Algo.Mu = str2double(Parameter{i}); i = i + 1;
+            Algo.P = str2double(Parameter{i}); i = i + 1;
         end
 
-        function run(obj, Prob)
+        function run(Algo, Prob)
             F_pool = [0.6, 0.8, 1.0];
             CR_pool = [0.1, 0.2, 1.0];
 
             % Initialization
-            population = Initialization(obj, Prob, Individual);
+            population = Initialization(Algo, Prob, Individual);
             archive = population;
             for t = 1:Prob.T
                 Ep0{t} = min(10^(Prob.D(t) / 2), max([population{t}.CV]));
-                cp{t} = (-log(Ep0{t}) - obj.Beta) / log(1 - obj.P);
+                cp{t} = (-log(Ep0{t}) - Algo.Beta) / log(1 - Algo.P);
                 pmax{t} = 1;
                 X{t} = 0;
             end
 
-            while obj.notTerminated(Prob)
+            while Algo.notTerminated(Prob)
                 for t = 1:Prob.T
-                    if X{t} < obj.P
+                    if X{t} < Algo.P
                         Ep = Ep0{t} * (1 - X{t})^cp{t};
                     else
                         Ep = 0;
                     end
                     X{t} = X{t} + Prob.N / (Prob.maxFE / Prob.T);
 
-                    if length(find([population{t}.CV] == 0)) > obj.P * length(population{t})
+                    if length(find([population{t}.CV] == 0)) > Algo.P * length(population{t})
                         Ep = 0;
                     end
 
@@ -81,29 +81,29 @@ classdef DeCODE < Algorithm
                         pmax{t} = 1e-18;
                     end
 
-                    pr = max(1e-18, pmax{t} / (1 + exp(obj.Gama * (obj.FE / (Prob.maxFE / Prob.T) - obj.Alpha))));
+                    pr = max(1e-18, pmax{t} / (1 + exp(Algo.Gama * (Algo.FE / (Prob.maxFE / Prob.T) - Algo.Alpha))));
 
                     % diversity restart
-                    if std([population{t}.CV]) < obj.Mu && isempty(find([population{t}.CV] == 0))
-                        population{t} = Initialization_One(obj, Prob, t, Individual);
+                    if std([population{t}.CV]) < Algo.Mu && isempty(find([population{t}.CV] == 0))
+                        population{t} = Initialization_One(Algo, Prob, t, Individual);
                     end
 
                     weights = 0:pr / length(population{t}):pr - pr / length(population{t});
                     weights(randperm(length(weights))) = weights;
 
                     % Generation
-                    offspring = obj.Generation(population{t}, F_pool, CR_pool, weights, obj.FE / Prob.maxFE);
+                    offspring = Algo.Generation(population{t}, F_pool, CR_pool, weights, Algo.FE / Prob.maxFE);
                     % Evaluation
-                    offspring = obj.Evaluation(offspring, Prob, t);
+                    offspring = Algo.Evaluation(offspring, Prob, t);
 
                     % selection
-                    [population{t}] = obj.Selection(population{t}, offspring, weights);
+                    [population{t}] = Algo.Selection(population{t}, offspring, weights);
                     [archive{t}] = Selection_Tournament(archive{t}, offspring);
                 end
             end
         end
 
-        function offspring = Generation(obj, population, F_pool, CR_pool, weights, rate)
+        function offspring = Generation(Algo, population, F_pool, CR_pool, weights, rate)
             Obj = [population.Obj]; CV = [population.CV];
             normal_Obj = (Obj - min(Obj)) ./ (std(Obj) + eps(0));
             normal_CV = (CV - min(CV)) ./ (std(CV) + eps(0));
@@ -161,7 +161,7 @@ classdef DeCODE < Algorithm
             end
         end
 
-        function population = Selection(obj, population, offspring, weights)
+        function population = Selection(Algo, population, offspring, weights)
             Obj = [[population.Obj], [offspring.Obj]];
             CV = [[population.CV], [offspring.CV]];
             normal_Obj = (Obj - min(Obj)) ./ (std(Obj) + eps(0));
