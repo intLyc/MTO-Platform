@@ -41,24 +41,23 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 ### Add your algorithm
 
 - Inherit the **Algorithm.m** class from the Algorithms folder to implement a new algorithm class and put it in the Algorithms folder or its subfolders
-- Implement the method function data = run(obj. parameter_cell).
-- Add labels to the second line. <Single/Multi/Many> <None/Competitive/Constrained>
+- Implement the method function data = run().
+- Add labels to the second line. <ST-SO/MT-SO/MaT-SO> <None/Competitive/Constrained>
 - *Refer to the MFEA or GA algorithm implementation*
 
 ### Add your problem
 
 - Inherit the **Problem.m** class from the Problem folder to implement a new problem class and put it in the Problem folder or its subfolders
-- Implement the construct function and set default obj.sub_eva
-- Implement the method function Tasks = getTasks(obj)
-- Add labels to the second line. <Single/Multi/Many> <None/Competitive/Constrained>
+- Implement the method function Tasks = setTasks()
+- Add labels to the second line. <ST-SO/MT-SO/MaT-SO> <None/Competitive/Constrained>
 - *Refer to the CEC17_MTSO problem implementation*
 
 ### Add your metric
 
 - Inherit the **Metric.m** class from the Metric folder to implement a new metric class and put it in the Metric folder or its subfolders
-- Implement the method function result = calculate(data)
+- Implement the method function result = calculate()
 - Add labels to the second line. <Table/Figure>
-- *Refer to the Obj.m and ConvergeObj.m metric implementation*
+- *Refer to the Objective.m and Converge_Obj.m metric implementation*
 
 ## Module
 
@@ -189,25 +188,24 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 ### 加入自己的算法
 
 - 继承Algorithms文件夹下的**Algorithm.m**类实现新的算法类，并放入Algorithms文件夹或其子文件夹内
-- 实现 function data = run(obj, parameter_cell)
-- 在文件的第2行添加标签 <Single/Multi/Many> <None/Competitive/Constrained>
+- 实现 function data = run()
+- 在文件的第2行添加标签 <ST-SO/MT-SO/MaT-SO> <None/Competitive/Constrained>
 - *可参考MFEA、GA算法的实现*
 
 ### 加入自己的问题
 
 - 继承Problem文件夹下的**Problem.m**类实现新的问题类，并放入Problem文件夹或其子文件夹内
-- 实现构造函数并为 obj.sub_eva 设置默认评价次数
-- 实现 function Tasks = getTasks(obj)
+- 实现 function Tasks = setTasks()
 - 按照Problem类中的各虚函数的注释实现继承的虚函数
-- 在文件的第2行添加标签 <Single/Multi/Many> <None/Competitive/Constrained>
+- 在文件的第2行添加标签 <ST-SO/MT-SO/MaT-SO> <None/Competitive/Constrained>
 - *可参考CEC17_MTSO问题的实现*
 
 ### 加入自己的指标
 
 - 继承Metric文件夹下的**Metric.m**类实现新的指标类，并放入Metric文件夹或其子文件夹内
-- 实现 function result = calculate(data)
+- 实现 function result = calculate()
 - 在文件的第2行添加标签 <Table/Figure>，对应于列表数据展示和图像数据展示
-- *可参考Obj.m和ConvergeObj.m的实现*
+- *可参考Objective.m和Converge_Obj.m的实现*
 
 ## 功能
 
