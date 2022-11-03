@@ -61,7 +61,7 @@ classdef MaTDE < Algorithm
 
         function run(Algo, Prob)
             % Initialization
-            population = Initialization(Algo, Prob, Individual);
+            population = Initialization(Algo, Prob, Individual_DE);
             possibility = zeros(Prob.T, Prob.T);
             reward = ones(Prob.T, Prob.T);
             archive = cell(1, Prob.T);
@@ -74,11 +74,13 @@ classdef MaTDE < Algorithm
             while Algo.notTerminated(Prob)
                 for t = 1:Prob.T
                     if rand() > Algo.Alpha
-                        F = Algo.LF + (Algo.UF - Algo.LF) * rand();
-                        CR = Algo.LCR + (Algo.UCR - Algo.LCR) * rand();
+                        for i = 1:length(population{t})
+                            population{t}(i).F = Algo.LF + (Algo.UF - Algo.LF) * rand();
+                            population{t}(i).CR = Algo.LCR + (Algo.UCR - Algo.LCR) * rand();
+                        end
 
                         % Generation
-                        offspring = Algo.Generation(population{t}, F, CR);
+                        offspring = Algo.Generation(population{t});
                         % Evaluation
                         offspring = Algo.Evaluation(offspring, Prob, t);
                         % Selection
@@ -88,8 +90,8 @@ classdef MaTDE < Algorithm
                         [transfer_task, possibility] = Algo.adaptivechoose(t, Prob.T, archive, reward, possibility, Prob.D);
 
                         % Crossover
-                        CR = Algo.LCR + (Algo.UCR - Algo.LCR) * rand();
                         for i = 1:length(population{t})
+                            CR = Algo.LCR + (Algo.UCR - Algo.LCR) * rand();
                             offspring(i) = population{t}(i);
                             r1 = randi(length(population{transfer_task}));
                             offspring(i).Dec = DE_Crossover(offspring(i).Dec, population{transfer_task}(r1).Dec, CR);
@@ -116,14 +118,14 @@ classdef MaTDE < Algorithm
             end
         end
 
-        function offspring = Generation(Algo, population, F, CR)
+        function offspring = Generation(Algo, population)
             for i = 1:length(population)
                 offspring(i) = population(i);
                 A = randperm(length(population), 4);
                 A(A == i) = []; x1 = A(1); x2 = A(2); x3 = A(3);
 
-                offspring(i).Dec = population(x1).Dec + F * (population(x2).Dec - population(x3).Dec);
-                offspring(i).Dec = DE_Crossover(offspring(i).Dec, population(i).Dec, CR);
+                offspring(i).Dec = population(x1).Dec + population(i).F * (population(x2).Dec - population(x3).Dec);
+                offspring(i).Dec = DE_Crossover(offspring(i).Dec, population(i).Dec, population(i).CR);
 
                 rand_Dec = rand(1, length(offspring(i).Dec));
                 offspring(i).Dec(offspring(i).Dec > 1) = rand_Dec(offspring(i).Dec > 1);
