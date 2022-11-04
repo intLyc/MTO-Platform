@@ -1,0 +1,89 @@
+function result = IGD(MTOData)
+    % <Metric>
+
+    % Inverted Generational Distance
+    % The code implementation is referenced from PlatEMO(https://github.com/BIMK/PlatEMO).
+
+    %------------------------------- Copyright --------------------------------
+    % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
+    % research purposes. All publications which use this platform or any code
+    % in the platform should acknowledge the use of "MTO-Platform" and cite
+    % or footnote "https://github.com/intLyc/MTO-Platform"
+    %--------------------------------------------------------------------------
+
+    result.Metric = 'Min';
+    result.RowName = {};
+    result.ColumnName = {};
+    % Data for Table
+    result.TableData = [];
+    % Data for Converge Plot
+    result.ConvergeData.X = [];
+    result.ConvergeData.Y = [];
+    % Data for Pareto Plot
+    result.ParetoData.Obj = [];
+    result.ParetoData.Optimum = [];
+
+    row = 1;
+    for prob = 1:length(MTOData.Problems)
+        if MTOData.Problems(prob).M <= 1
+            return;
+        end
+        tnum = MTOData.Problems(prob).T;
+        for task = 1:tnum
+            if tnum == 1
+                result.RowName{row} = MTOData.Problems(prob).Name;
+            else
+                result.RowName{row} = [MTOData.Problems(prob).Name, '-T', num2str(task)];
+            end
+            row = row + 1;
+        end
+    end
+    result.ColumnName = {MTOData.Algorithms.Name};
+
+    % Calculate IGD
+    row = 1;
+    for prob = 1:length(MTOData.Problems)
+        optimum = MTOData.Problems(prob).Optimum;
+        for task = 1:MTOData.Problems(prob).T
+            for algo = 1:length(MTOData.Algorithms)
+                gen = size(MTOData.Results(prob, algo, 1).Obj{task}, 1);
+                igd = zeros(MTOData.Reps, gen);
+                BestObj = {};
+                for rep = 1:MTOData.Reps
+                    for g = 1:gen
+                        Obj = squeeze(MTOData.Results(prob, algo, rep).Obj{task}(g, :, :));
+                        CV = squeeze(MTOData.Results(prob, algo, rep).CV(task, g, :));
+                        BestObj{rep} = getBestObj(Obj, CV);
+                        igd(rep, g) = getIGD(BestObj{rep}, optimum{task});
+                    end
+                end
+                result.TableData(row, algo, :) = igd(:, end);
+                result.ConvergeData.Y(row, algo, :) = mean(igd(:, :), 1);
+                result.ConvergeData.X(row, algo, :) = [1:gen] ./ gen .* MTOData.Problems(prob).maxFE ./ MTOData.Problems(prob).T;
+
+                [~, rank] = sort(igd(:, end));
+                result.ParetoData.Obj{row, algo} = squeeze(BestObj{rank(ceil(end / 2))}(:, :));
+            end
+            result.ParetoData.Optimum{row}(:, :) = optimum{task};
+            row = row + 1;
+        end
+    end
+end
+
+function BestObj = getBestObj(Obj, CV)
+    Feasible = find(all(CV <= 0, 2));
+    if isempty(Feasible)
+        Best = [];
+    else
+        Best = NDSort(Obj(Feasible, :), 1) == 1;
+    end
+    BestObj = Obj(Feasible(Best), :);
+end
+
+function score = getIGD(PopObj, optimum)
+    if size(PopObj, 2) ~= size(optimum, 2)
+        score = nan;
+    else
+        score = mean(min(pdist2(optimum, PopObj), [], 2));
+    end
+end

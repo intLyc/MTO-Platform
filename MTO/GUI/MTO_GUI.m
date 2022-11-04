@@ -16,7 +16,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         TProblemDropDown              matlab.ui.control.DropDown
         ProblemDropDownLabel          matlab.ui.control.Label
         TTaskTypeDropDown             matlab.ui.control.DropDown
-        TaskLabel_2                   matlab.ui.control.Label
+        TypeLabel_2                   matlab.ui.control.Label
         SpecialLabel_2                matlab.ui.control.Label
         TSpecialTypeDropDown          matlab.ui.control.DropDown
         TPanel2                       matlab.ui.container.Panel
@@ -32,13 +32,11 @@ classdef MTO_GUI < matlab.apps.AppBase
         TP3GridLayout                 matlab.ui.container.GridLayout
         OutputTextAreaLabel           matlab.ui.control.Label
         TOutputTextArea               matlab.ui.control.TextArea
-        MTOPlatformv020YanchiLiLabel  matlab.ui.control.Label
+        MTOPlatformv030YanchiLiLabel  matlab.ui.control.Label
         ExperimentTab                 matlab.ui.container.Tab
         ExperimentsGridLayout         matlab.ui.container.GridLayout
         EPanel3                       matlab.ui.container.Panel
         EP3GridLayout                 matlab.ui.container.GridLayout
-        ETableTabGroup                matlab.ui.container.TabGroup
-        ETableTab                     matlab.ui.container.Tab
         EP3TGridLayout                matlab.ui.container.GridLayout
         EP3T1GridLayout               matlab.ui.container.GridLayout
         ETestTypeDropDown             matlab.ui.control.DropDown
@@ -48,15 +46,10 @@ classdef MTO_GUI < matlab.apps.AppBase
         EHighlightTypeDropDown        matlab.ui.control.DropDown
         ESaveTableButton              matlab.ui.control.Button
         EDataFormatEditField          matlab.ui.control.EditField
+        EConvergeButton               matlab.ui.control.Button
+        EParetoButton                 matlab.ui.control.Button
+        EConvergeTypeDropDown         matlab.ui.control.DropDown
         EUITable                      matlab.ui.control.Table
-        EFigureTab                    matlab.ui.container.Tab
-        EP3FGridLayout                matlab.ui.container.GridLayout
-        EP3F1GridLayout               matlab.ui.container.GridLayout
-        EProblemsDropDown             matlab.ui.control.DropDown
-        ESaveFigureButton             matlab.ui.control.Button
-        ESaveFigureTypeDropDown       matlab.ui.control.DropDown
-        EFigureTypeDropDown           matlab.ui.control.DropDown
-        EConvergenceTrendUIAxes       matlab.ui.control.UIAxes
         EPanel1                       matlab.ui.container.Panel
         EP1GridLayout                 matlab.ui.container.GridLayout
         EProblemsAddButton            matlab.ui.control.Button
@@ -139,14 +132,21 @@ classdef MTO_GUI < matlab.apps.AppBase
         DefaultLineWidth = 1.5
         DefaultMarkerList = {'o', '*', 'x', '^', '+', 'p', 'v', 's', 'd', '<', '>', 'h'}
         DefaultMarkerSize = 7
+        DefaultMarkerNum = 10
         
         % Test Module
         TData % data
         
         % Experiment Module
         EData % data
-        EFigureData
         EStopFlag % stop button clicked flag
+        
+        ETableSelected % selected table cell index
+        EMetricMin = true % default metric min
+        EResultConvergeData % results converge corresponding to metric
+        EResultParetoData % results pareto corresponding to metric
+        EResultTableData % results data corresponding to metric
+        
         ETableData % table data for calculate
         ETableView % table data view
         ETableTest % table data view test
@@ -171,15 +171,9 @@ classdef MTO_GUI < matlab.apps.AppBase
         function readMetric(app)
             % load the metrics
             
-            metric_table = app.readList('../Metrics', {'Table'});
+            metric_table = app.readList('../Metrics', {'Metric'});
             metric_table = sort_nat(metric_table);
             app.EDataTypeDropDown.Items = ['Reps', metric_table];
-            
-            metric_figure = app.readList('../Metrics', {'Figure'});
-            metric_figure = sort_nat(metric_figure);
-            
-            app.TShowTypeDropDown.Items = [app.TShowTypeDropDown.Items, metric_figure];
-            app.EFigureTypeDropDown.Items = metric_figure;
         end
         
         function read_list = readList(app, folder_name, label_str)
@@ -358,7 +352,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     app.TupdateTasksFigure();
                 case 'Feasible Region (2D)' % Feasible Region (2D)
                     app.TupdateFeasibleRegion();
-                otherwise % Metric
+                case 'Convergence'
                     app.TupdateFigureAxes();
             end
         end
@@ -478,38 +472,47 @@ classdef MTO_GUI < matlab.apps.AppBase
             if isempty(app.TData)
                 return;
             end
-            eval(['TFigureData = ', app.TShowTypeDropDown.Value, '(app.TData);']);
+            
             cla(app.TUIAxes, 'reset');
             
-            xdata = TFigureData.XData(:, 1);
-            ydata = TFigureData.YData(:, 1);
-            xlim_max = 0;
+            if max(app.TData.Problems(1).M) == 1
+                result = Obj(app.TData);
+            else
+                result = IGD(app.TData);
+            end
+            
             xlim_min = inf;
+            xlim_max = 0;
             tasks_name = {};
-            for i = 1:length(xdata)
-                if i > length(TFigureData.MarkerType)
+            for j = 1:size(result.ConvergeData.X, 1)
+                if j > length(app.DefaultMarkerList)
                     marker = '';
                 else
-                    marker = TFigureData.MarkerType{i};
+                    marker = app.DefaultMarkerList{j};
                 end
-                p = plot(app.TUIAxes, xdata{i}, ydata{i}, ['-', marker]);
-                p.LineWidth = TFigureData.LineWidth;
-                indices = round(length(ydata{i})/TFigureData.MarkerNum);
-                p.MarkerIndices = indices:indices:length(ydata{i})-round(indices/2);
-                p.MarkerSize = TFigureData.MarkerSize;
+                
+                y = squeeze(result.ConvergeData.Y(j, 1, :))';
+                x = squeeze(result.ConvergeData.X(j, 1, :))';
+                p = plot(app.TUIAxes, x, y, ['-', marker]);
+                p.LineWidth = app.DefaultLineWidth;
+                indices = round(length(y)/app.DefaultMarkerNum);
+                p.MarkerIndices = indices:indices:length(y)-round(indices/2);
+                p.MarkerSize = app.DefaultMarkerSize;
+                xlim_max = max(xlim_max, x(end));
+                xlim_min = min(xlim_min, x(1));
                 hold(app.TUIAxes, 'on');
-                xlim_max = max(xlim_max, xdata{i}(end));
-                xlim_min = min(xlim_min, xdata{i}(1));
-                tasks_name = [tasks_name, ['T', num2str(i)]];
+                tasks_name = [tasks_name, ['T', num2str(j)]];
             end
             
             xlim(app.TUIAxes, [xlim_min, xlim_max]);
-            xlabel(app.TUIAxes, TFigureData.XLabel);
-            ylabel(app.TUIAxes, TFigureData.YLabel);
-            if length(xdata) > 1
-                legend(app.TUIAxes, tasks_name);
+            if max(app.TData.Problems(1).M) == 1
+                ylabel(app.TUIAxes, 'Obj');
+            else
+                ylabel(app.TUIAxes, 'IGD');
             end
-            grid(app.TUIAxes, TFigureData.GridType);
+            xlabel(app.TUIAxes, 'Evaluation');
+            legend(app.TUIAxes, tasks_name);
+            grid(app.TUIAxes, 'on');
         end
         
         function Toutput(app, output_str)
@@ -545,6 +548,39 @@ classdef MTO_GUI < matlab.apps.AppBase
             drawnow;
         end
         
+        function EreloadTableData(app)
+            % reload table data in Experiment module
+            
+            app.EresetFormat();
+            switch app.EDataTypeDropDown.Value
+                case 'Reps'
+                    app.EresetTable({app.EData.Problems.Name}, {app.EData.Algorithms.Name});
+                    app.EupdateTableReps();
+                otherwise
+                    eval(['result = ', app.EDataTypeDropDown.Value, '(app.EData);']);
+                    if isfield(result, 'ConvergeData')
+                        app.EResultConvergeData = result.ConvergeData;
+                    else
+                        app.EResultConvergeData = [];
+                    end
+                    if isfield(result, 'ParetoData')
+                        app.EResultParetoData = result.ParetoData;
+                    else
+                        app.EResultParetoData = [];
+                    end
+                    switch result.Metric
+                        case 'Min'
+                            app.EMetricMin = true;
+                        case 'Max'
+                            app.EMetricMin = false;
+                    end
+                    app.EResultTableData = result.TableData;
+                    app.EresetTable(result.RowName, result.ColumnName);
+                    app.EupdateTableData();
+                    app.EupdateTableTest();
+            end
+        end
+        
         function EupdateTableReps(app)
             % update table reps per run
             
@@ -552,9 +588,10 @@ classdef MTO_GUI < matlab.apps.AppBase
             drawnow;
         end
         
-        function EupdateTableData(app, table_data)
+        function EupdateTableData(app)
             % update table data
             
+            table_data = app.EResultTableData;
             show_type = app.EShowTypeDropDown.Value;
             format_str = app.EDataFormatEditField.Value;
             app.EUITable.Data = {};
@@ -563,42 +600,53 @@ classdef MTO_GUI < matlab.apps.AppBase
             
             switch show_type
                 case 'Mean' % Mean
-                    data_mean = nanmean(table_data, 3);
+                    data_mean = mean(table_data, 3, 'omitnan');
                     app.ETableData = data_mean;
                     app.ETableView = sprintfc(format_str, data_mean);
                 case 'Mean&Std' % Mean&Std
-                    data_mean = nanmean(table_data, 3);
-                    data_std = nanstd(table_data, 0, 3);
+                    data_mean = mean(table_data, 3, 'omitnan');
+                    data_std = std(table_data, 0, 3, 'omitnan');
                     app.ETableData = data_mean;
                     x = zeros([size(data_mean, 1), 2*size(data_mean, 2)]);
                     x(:, 1:2:end) = data_mean;
                     x(:, 2:2:end) = data_std;
                     app.ETableView = sprintfc(format_str, x);
                 case 'Std'
-                    data_std = nanstd(table_data, 0, 3);
+                    data_std = std(table_data, 0, 3, 'omitnan');
                     app.ETableData = data_std;
                     app.ETableView = sprintfc(format_str, data_std);
                 case 'Median'
-                    data_median = nanmedian(table_data, 3);
+                    data_median = median(table_data, 3, 'omitnan');
                     app.ETableData = data_median;
                     app.ETableView = sprintfc(format_str, data_median);
                 case 'Best'
-                    data_min = min(table_data, [], 3);
-                    app.ETableData = data_min;
-                    app.ETableView = sprintfc(format_str, data_min);
+                    if app.EMetricMin
+                        data_best = min(table_data, [], 3);
+                    else
+                        data_best = max(table_data, [], 3);
+                    end
+                    app.ETableData = data_best;
+                    app.ETableView = sprintfc(format_str, data_best);
                 case 'Worst'
                     data_nan = max(isnan(table_data), [], 3);
-                    data_max = max(table_data, [], 3);
-                    data_max(data_nan == 1) = NaN;
-                    app.ETableData = data_max;
-                    app.ETableView = sprintfc(format_str, data_max);
+                    if app.EMetricMin
+                        data_worst = max(table_data, [], 3);
+                    else
+                        data_worst = min(table_data, [], 3);
+                    end
+                    data_worst(data_nan == 1) = NaN;
+                    app.ETableData = data_worst;
+                    app.ETableView = sprintfc(format_str, data_worst);
             end
             app.EUITable.Data = app.ETableView;
+            drawnow;
+            app.EupdateTableHighlight();
         end
         
-        function EupdateTableTest(app, table_data)
+        function EupdateTableTest(app)
             % update table test
             
+            table_data = app.EResultTableData;
             if isempty(app.EData)
                 return;
             end
@@ -640,10 +688,10 @@ classdef MTO_GUI < matlab.apps.AppBase
                         data1(isnan(data1)) = Inf;
                         data2 = app.ETableData(row_i, algo_selected);
                         data2(isnan(data2)) = Inf;
-                        if data1 < data2
+                        if (app.EMetricMin && data1 < data2) || (~app.EMetricMin && data1 > data2)
                             app.ETableTest{row_i, algo} = '+';
                             sign_p(1) = sign_p(1) + 1;
-                        elseif data1 > data2
+                        elseif (app.EMetricMin && data1 > data2) || (~app.EMetricMin && data1 < data2)
                             app.ETableTest{row_i, algo} = '-';
                             sign_p(2) = sign_p(2) + 1;
                         else
@@ -695,8 +743,12 @@ classdef MTO_GUI < matlab.apps.AppBase
                 % best
                 if ~(sum(isnan(app.ETableData(row_i, :))) == size(app.ETableData, 2))
                     temp_data = app.ETableData(row_i, :);
-                    min_data = min(temp_data);
-                    temp_idx = temp_data == min_data;
+                    if app.EMetricMin
+                        best_data = min(temp_data);
+                    else
+                        best_data = max(temp_data);
+                    end
+                    temp_idx = temp_data == best_data;
                     x = 1:length(temp_idx);
                     x = x(temp_idx);
                     for xx = 1:length(x)
@@ -714,7 +766,11 @@ classdef MTO_GUI < matlab.apps.AppBase
                             app.EUITable.addStyle(low_color, 'cell', [row_i, x(xx)]);
                         end
                     else
-                        [~, index] = max(app.ETableData(row_i, :));
+                        if app.EMetricMin
+                            [~, index] = max(app.ETableData(row_i, :));
+                        else
+                            [~, index] = min(app.ETableData(row_i, :));
+                        end
                         app.EUITable.addStyle(low_color, 'cell', [row_i, index]);
                     end
                 end
@@ -722,93 +778,25 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
         end
         
-        function EupdateTable(app)
-            % update table in Experiment module
-            
-            if isempty(app.EData)
-                return;
-            end
-            
-            switch app.EDataTypeDropDown.Value
-                case 'Reps'
-                    app.EresetTable({app.EData.Problems.Name}, {app.EData.Algorithms.Name});
-                    app.EupdateTableReps();
-                otherwise
-                    eval(['result = ', app.EDataTypeDropDown.Value, '(app.EData);']);
-                    app.EresetTable(result.RowName, result.ColumnName);
-                    app.EupdateTableData(result.TableData);
-                    app.EupdateTableTest(result.TableData);
-            end
-            drawnow;
-            app.EupdateTableHighlight();
-        end
-        
         function EresetFormat(app)
             format_str = app.EDataFormatEditField.Value;
             
             switch app.EShowTypeDropDown.Value
                 case 'Mean'
-                    format_str = '%.2e';
+                    format_str = '%.4e';
                 case 'Mean&Std'
-                    format_str = '%.2e (%.2e)';
+                    format_str = '%.4e (%.2e)';
                 case 'Std'
                     format_str = '%.2e';
                 case 'Median'
-                    format_str = '%.2e';
+                    format_str = '%.4e';
                 case 'Best'
-                    format_str = '%.2e';
+                    format_str = '%.4e';
                 case 'Worst'
-                    format_str = '%.2e';
+                    format_str = '%.4e';
             end
             
             app.EDataFormatEditField.Value = format_str;
-        end
-        
-        function EresetFigureData(app)
-            cla(app.EConvergenceTrendUIAxes, 'reset');
-            
-            if isempty(app.EData)
-                app.EFigureData = [];
-                return;
-            end
-            
-            eval(['app.EFigureData = ', app.EFigureTypeDropDown.Value, '(app.EData);']);
-            app.EProblemsDropDown.Items = app.EFigureData.Problems;
-            app.EProblemsDropDown.ItemsData = 1:length(app.EProblemsDropDown.Items);
-            app.EupdateFigureAxes();
-        end
-        
-        function EupdateFigureAxes(app)
-            % update figure axes
-            
-            cla(app.EConvergenceTrendUIAxes, 'reset');
-            problem_index = app.EProblemsDropDown.Value;
-            xlim_max = 0;
-            xlim_min = inf;
-            xdata = app.EFigureData.XData(problem_index, :);
-            ydata = app.EFigureData.YData(problem_index, :);
-            
-            for i = 1:length(xdata)
-                if i > length(app.EFigureData.MarkerType)
-                    marker = '';
-                else
-                    marker = app.EFigureData.MarkerType{i};
-                end
-                p = plot(app.EConvergenceTrendUIAxes, xdata{i}, ydata{i}, ['-', marker]);
-                p.LineWidth = app.EFigureData.LineWidth;
-                indices = round(length(ydata{i})/app.EFigureData.MarkerNum);
-                p.MarkerIndices = indices:indices:length(ydata{i})-round(indices/2);
-                p.MarkerSize = app.EFigureData.MarkerSize;
-                hold(app.EConvergenceTrendUIAxes, 'on');
-                xlim_max = max(xlim_max, xdata{i}(end));
-                xlim_min = min(xlim_min, xdata{i}(1));
-            end
-            
-            xlim(app.EConvergenceTrendUIAxes, [xlim_min, xlim_max]);
-            xlabel(app.EConvergenceTrendUIAxes, app.EFigureData.XLabel);
-            ylabel(app.EConvergenceTrendUIAxes, app.EFigureData.YLabel);
-            legend(app.EConvergenceTrendUIAxes, strrep(app.EFigureData.Legend, '_', '\_'));
-            grid(app.EConvergenceTrendUIAxes, app.EFigureData.GridType);
         end
         
         function result = DcheckSplitData(app)
@@ -944,10 +932,10 @@ classdef MTO_GUI < matlab.apps.AppBase
                             sum(data_selected(i).NodeData.Problems(prob).D ~= problems(prob).D) || ...
                             data_selected(i).NodeData.Problems(prob).N ~= problems(prob).N || ...
                             data_selected(i).NodeData.Problems(prob).maxFE ~= problems(prob).maxFE
-                        msg = 'The data''s problems not equal';
-                        uiconfirm(app.MTOPlatformUIFigure, msg, 'error', 'Icon','warning');
-                        result = false;
-                        return;
+                    msg = 'The data''s problems not equal';
+                    uiconfirm(app.MTOPlatformUIFigure, msg, 'error', 'Icon','warning');
+                    result = false;
+                    return;
                     end
                 end
             end
@@ -1139,6 +1127,9 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TData.Problems(1).Name = app.TProblemTree.Children(1).NodeData.Name;
             app.TData.Problems(1).T = app.TProblemTree.Children(1).NodeData.T;
             app.TData.Problems(1).M = app.TProblemTree.Children(1).NodeData.M;
+            if max(app.TData.Problems(1).M) > 1
+                app.TData.Problems(1).Optimum = app.TProblemTree.Children(1).NodeData.getOptimum();
+            end
             app.TData.Problems(1).D = app.TProblemTree.Children(1).NodeData.D;
             app.TData.Problems(1).N = app.TProblemTree.Children(1).NodeData.N;
             app.TData.Problems(1).Fnc = app.TProblemTree.Children(1).NodeData.Fnc;
@@ -1156,8 +1147,12 @@ classdef MTO_GUI < matlab.apps.AppBase
             tmp = app.TAlgorithmTree.Children(1).NodeData.getResult(app.TProblemTree.Children(1).NodeData);
             for t = 1:size(tmp, 1)
                 for g = 1:size(tmp,2)
-                    app.TData.Results(1,1,1).Obj(t, g) = tmp(t, g).Obj;
-                    app.TData.Results(1,1,1).CV(t, g) = tmp(t, g).CV;
+                    if max(app.TData.Problems(1).M) > 1
+                        app.TData.Results(1,1,1).Obj{t}(g, :, :) = tmp(t, g).Obj(:, :);
+                    else
+                        app.TData.Results(1,1,1).Obj(t, g, :, :) = tmp(t, g).Obj(:, :);
+                    end
+                    app.TData.Results(1,1,1).CV(t, g, :) = tmp(t, g).CV;
                 end
             end
             best_data = app.TAlgorithmTree.Children(1).NodeData.Best;
@@ -1322,6 +1317,9 @@ classdef MTO_GUI < matlab.apps.AppBase
                 MTOData.Problems(prob).Name = app.EProblemsTree.Children(prob).NodeData.Name;
                 MTOData.Problems(prob).T = app.EProblemsTree.Children(prob).NodeData.T;
                 MTOData.Problems(prob).M = app.EProblemsTree.Children(prob).NodeData.M;
+                if max(MTOData.Problems(prob).M) > 1
+                    MTOData.Problems(prob).Optimum = app.EProblemsTree.Children(prob).NodeData.getOptimum();
+                end
                 MTOData.Problems(prob).D = app.EProblemsTree.Children(prob).NodeData.D;
                 MTOData.Problems(prob).N = app.EProblemsTree.Children(prob).NodeData.N;
                 MTOData.Problems(prob).Fnc = app.EProblemsTree.Children(prob).NodeData.Fnc;
@@ -1343,7 +1341,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EupdateTableReps();
             app.EresetTable({MTOData.Problems.Name}, {MTOData.Algorithms.Name});
             app.EresetTableAlgorithmDropDown({MTOData.Algorithms.Name});
-            cla(app.EConvergenceTrendUIAxes, 'reset');
+            % cla(app.EConvergenceTrendUIAxes, 'reset');
             
             % main experiment loop
             tStart = tic;
@@ -1363,8 +1361,12 @@ classdef MTO_GUI < matlab.apps.AppBase
                             tmp = algo_obj.getResult(prob_obj);
                             for t = 1:size(tmp, 1)
                                 for g = 1:size(tmp,2)
-                                    Results(prob, algo, rep).Obj(t, g) = tmp(t, g).Obj;
-                                    Results(prob, algo, rep).CV(t, g) = tmp(t, g).CV;
+                                    if max(prob_obj.M) > 1
+                                        Results(prob, algo, rep).Obj{t}(g, :, :) = tmp(t, g).Obj(:, :);
+                                    else
+                                        Results(prob, algo, rep).Obj(t, g, :, :) = tmp(t, g).Obj(:, :);
+                                    end
+                                    Results(prob, algo, rep).CV(t, g, :) = tmp(t, g).CV;
                                     if isfield(tmp, 'Dec')
                                         Results(prob, algo, rep).Dec(t, g, :) = tmp(t, g).Dec;
                                     end
@@ -1382,8 +1384,12 @@ classdef MTO_GUI < matlab.apps.AppBase
                             tmp = algo_obj.getResult(prob_obj);
                             for t = 1:size(tmp, 1)
                                 for g = 1:size(tmp,2)
-                                    Results(prob, algo, rep).Obj(t, g) = tmp(t, g).Obj;
-                                    Results(prob, algo, rep).CV(t, g) = tmp(t, g).CV;
+                                    if max(prob_obj.M) > 1
+                                        Results(prob, algo, rep).Obj{t}(g, :, :) = tmp(t, g).Obj(:, :);
+                                    else
+                                        Results(prob, algo, rep).Obj(t, g, :, :) = tmp(t, g).Obj(:, :);
+                                    end
+                                    Results(prob, algo, rep).CV(t, g, :) = tmp(t, g).CV;
                                     if isfield(tmp, 'Dec')
                                         Results(prob, algo, rep).Dec(t, g, :) = tmp(t, g).Dec;
                                     end
@@ -1415,8 +1421,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             uiconfirm(app.MTOPlatformUIFigure, msg, 'success', 'Icon', 'success');
             
             app.EstartEnable(true);
-            app.EupdateTable();
-            app.EresetFigureData();
+            app.EreloadTableData();
         end
 
         % Button pushed function: EPauseButton
@@ -1571,46 +1576,37 @@ classdef MTO_GUI < matlab.apps.AppBase
             save([dir_name, file_name], 'MTOData');
         end
 
-        % Value changed function: EDataFormatEditField
-        function EDataFormatEditFieldValueChanged(app, event)
-            app.EupdateTable();
-        end
-
         % Value changed function: EDataTypeDropDown
         function EDataTypeDropDownValueChanged(app, event)
-            app.EresetFormat();
-            app.EupdateTable();
+            app.EreloadTableData();
+        end
+
+        % Value changed function: EDataFormatEditField
+        function EDataFormatEditFieldValueChanged(app, event)
+            app.EupdateTableData();
+            app.EupdateTableTest();
         end
 
         % Value changed function: EShowTypeDropDown
         function EShowTypeDropDownValueChanged(app, event)
             app.EresetFormat();
-            app.EupdateTable();
+            app.EupdateTableData();
+            app.EupdateTableTest();
         end
 
         % Value changed function: ETestTypeDropDown
         function ETestTypeDropDownValueChanged(app, event)
-            app.EupdateTable();
+            app.EupdateTableTest();
         end
 
         % Value changed function: EAlgorithmDropDown
         function EAlgorithmDropDownValueChanged(app, event)
-            app.EupdateTable();
+            app.EupdateTableTest();
         end
 
         % Value changed function: EHighlightTypeDropDown
         function EHighlightTypeDropDownValueChanged(app, event)
             app.EupdateTableHighlight();
-        end
-
-        % Value changed function: EFigureTypeDropDown
-        function EFigureTypeDropDownValueChanged(app, event)
-            app.EresetFigureData();
-        end
-
-        % Value changed function: EProblemsDropDown
-        function EProblemsDropDownValueChanged(app, event)
-            app.EupdateFigureAxes();
         end
 
         % Button pushed function: ELoadDataButton
@@ -1631,8 +1627,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EData = MTOData;
             app.ETableReps = app.EData.Reps * ones([length(app.EData.Problems), length(app.EData.Algorithms)]);
             app.EresetTableAlgorithmDropDown({app.EData.Algorithms.Name});
-            app.EupdateTable();
-            app.EresetFigureData();
+            app.EreloadTableData();
         end
 
         % Button pushed function: ESaveTableButton
@@ -1652,8 +1647,12 @@ classdef MTO_GUI < matlab.apps.AppBase
                     for row_i = 1:size(app.ETableData, 1)
                         if ~(sum(isnan(app.ETableData(row_i, :))) == size(app.ETableData, 2))
                             temp_data = app.ETableData(row_i, :);
-                            min_data = min(temp_data);
-                            temp_idx = temp_data == min_data;
+                            if app.EMetricMin
+                                best_data = min(temp_data);
+                            else
+                                best_data = max(temp_data);
+                            end
+                            temp_idx = temp_data == best_data;
                             x = 1:length(temp_idx);
                             x = x(temp_idx);
                             for xx = 1:length(x)
@@ -1682,60 +1681,6 @@ classdef MTO_GUI < matlab.apps.AppBase
                 column_name = app.EUITable.ColumnName(1:size(app.EUITable.Data, 2))';
                 cell_out = [[{''}; row_name], [column_name; app.EUITable.Data]];
                 writecell(cell_out, [dir_name, file_name]);
-            end
-        end
-
-        % Button pushed function: ESaveFigureButton
-        function ESaveFigureButtonPushed(app, event)
-            % save figure to folder
-            
-            % check data
-            if isempty(app.EFigureData)
-                return;
-            end
-            
-            % check selected dir name
-            dir_name = uigetdir('./', 'Select save path');
-            figure(app.MTOPlatformUIFigure);
-            if dir_name == 0
-                return;
-            end
-            
-            % save figure
-            fig_dir_name = [dir_name, '/Figure/'];
-            mkdir(fig_dir_name);
-            
-            for problem_index = 1:length(app.EFigureData.Problems)
-                fig = figure('Visible', 'off');
-                xlim_max = 0;
-                xlim_min = inf;
-                xdata = app.EFigureData.XData(problem_index, :);
-                ydata = app.EFigureData.YData(problem_index, :);
-                
-                for i = 1:length(xdata)
-                    if i > length(app.EFigureData.MarkerType)
-                        marker = '';
-                    else
-                        marker = app.EFigureData.MarkerType{i};
-                    end
-                    p = plot(xdata{i}, ydata{i}, ['-', marker]);
-                    p.LineWidth = app.EFigureData.LineWidth;
-                    indices = round(length(ydata{i})/app.EFigureData.MarkerNum);
-                    p.MarkerIndices = indices:indices:length(ydata{i})-round(indices/2);
-                    p.MarkerSize = app.EFigureData.MarkerSize;
-                    hold on;
-                    xlim_max = max(xlim_max, xdata{i}(end));
-                    xlim_min = min(xlim_min, xdata{i}(1));
-                end
-                
-                xlim([xlim_min, xlim_max]);
-                xlabel(app.EFigureData.XLabel);
-                ylabel(app.EFigureData.YLabel);
-                legend(strrep(app.EFigureData.Legend, '_', '\_'));
-                grid(app.EFigureData.GridType);
-                
-                file_name = [fig_dir_name, app.EFigureData.Problems{problem_index}, '.', app.ESaveFigureTypeDropDown.Value];
-                exportgraphics(fig, file_name);
             end
         end
 
@@ -2082,6 +2027,160 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.DDataTree.SelectedNodes = selected;
             drawnow;
         end
+
+        % Cell selection callback: EUITable
+        function EUITableCellSelection(app, event)
+            app.ETableSelected = event.Indices;
+        end
+
+        % Button pushed function: EConvergeButton
+        function EConvergeButtonPushed(app, event)
+            if strcmp(app.EDataTypeDropDown.Value, 'Reps') || ...
+                    isempty(app.EResultConvergeData) || ...
+                    isempty(app.ETableSelected)
+            return;
+            end
+            
+            prob_list = unique(app.ETableSelected(:, 1));
+            for i = 1:length(prob_list)
+                idx = find(app.ETableSelected(:, 1) == prob_list(i));
+                algo_list = app.ETableSelected(idx, 2);
+                fig = figure();
+                ax = axes(fig);
+                xlim_min = inf;
+                xlim_max = 0;
+                
+                for j = 1:length(algo_list)
+                    if j > length(app.DefaultMarkerList)
+                        marker = '';
+                    else
+                        marker = app.DefaultMarkerList{j};
+                    end
+                    
+                    y = squeeze(app.EResultConvergeData.Y(prob_list(i), algo_list(j), :))';
+                    if strcmp(app.EConvergeTypeDropDown.Value, 'Log')
+                        y = log(y);
+                    end
+                    
+                    x = squeeze(app.EResultConvergeData.X(prob_list(i), algo_list(j), :))';
+                    p = plot(ax, x, y, ['-', marker]);
+                    p.LineWidth = app.DefaultLineWidth;
+                    indices = round(length(y)/app.DefaultMarkerNum);
+                    p.MarkerIndices = indices:indices:length(y)-round(indices/2);
+                    p.MarkerSize = app.DefaultMarkerSize;
+                    xlim_max = max(xlim_max, x(end));
+                    xlim_min = min(xlim_min, x(1));
+                    hold(ax, 'on');
+                end
+                
+                xlim(ax, [xlim_min, xlim_max]);
+                if strcmp(app.EConvergeTypeDropDown.Value, 'Log')
+                    ylabel(ax, ['Log - ', strrep(app.EDataTypeDropDown.Value, '_', ' ')]);
+                else
+                    ylabel(ax, strrep(app.EDataTypeDropDown.Value, '_', ' '));
+                end
+                xlabel(ax, 'Evaluation');
+                legend(ax, strrep(app.EUITable.ColumnName(algo_list), '_', '\_'));
+                title(ax, strrep(app.EUITable.RowName(prob_list(i)), '_', '\_'))
+                grid(ax, 'on');
+            end
+        end
+
+        % Button pushed function: EParetoButton
+        function EParetoButtonPushed(app, event)
+            if strcmp(app.EDataTypeDropDown.Value, 'Reps') || ...
+                    isempty(app.EResultParetoData) || ...
+                    isempty(app.ETableSelected)
+            return;
+            end
+            
+            prob_list = unique(app.ETableSelected(:, 1));
+            for i = 1:length(prob_list)
+                idx = find(app.ETableSelected(:, 1) == prob_list(i));
+                algo_list = app.ETableSelected(idx, 2);
+                fig = figure();
+                ax = axes(fig);
+                
+                M = size(app.EResultParetoData.Obj{prob_list(i),1}, 2);
+                if M == 2
+                    if ~isempty(app.EResultParetoData.Optimum)
+                        % draw optimum
+                        x = squeeze(app.EResultParetoData.Optimum{prob_list(i)}(:, 1));
+                        y = squeeze(app.EResultParetoData.Optimum{prob_list(i)}(:, 2));
+                        s = scatter(ax, x, y);
+                        s.MarkerEdgeColor = 'none';
+                        s.MarkerFaceAlpha = 0.65;
+                        s.MarkerFaceColor = [.2,.2,.2];
+                        s.SizeData = 3;
+                        hold(ax, 'on');
+                    end
+                    
+                    % draw each algorithm
+                    color_list = colororder;
+                    for j = 1:length(algo_list)
+                        x = squeeze(app.EResultParetoData.Obj{prob_list(i), algo_list(j)}(:, 1));
+                        y = squeeze(app.EResultParetoData.Obj{prob_list(i), algo_list(j)}(:, 2));
+                        s = scatter(ax, x, y);
+                        s.MarkerEdgeColor = color_list(j,:);
+                        s.MarkerFaceAlpha = 0.65;
+                        s.MarkerFaceColor = color_list(j,:);
+                        s.SizeData = 40;
+                        hold(ax, 'on');
+                    end
+                    
+                    xlabel(ax, '$f_1$', 'interpreter', 'latex');
+                    ylabel(ax, '$f_2$', 'interpreter', 'latex');
+                    
+                    if ~isempty(app.EResultParetoData.Optimum)
+                        legend(ax, ['Pareto Front'; strrep(app.EUITable.ColumnName(algo_list), '_', '\_')]);
+                    else
+                        legend(ax, strrep(app.EUITable.ColumnName(algo_list), '_', '\_'));
+                    end
+                    title(ax, strrep(app.EUITable.RowName(prob_list(i)), '_', '\_'))
+                    grid(ax, 'on');
+                elseif M == 3
+                    %                     if ~isempty(app.EResultParetoData.Optimum)
+                    %                         % draw optimum
+                    %                         x = squeeze(app.EResultParetoData.Optimum{prob_list(i)}(:, 1));
+                    %                         y = squeeze(app.EResultParetoData.Optimum{prob_list(i)}(:, 2));
+                    %                         z = squeeze(app.EResultParetoData.Optimum{prob_list(i)}(:, 3));
+                    %                         s = scatter3(ax, x, y, z);
+                    %                         s.MarkerEdgeColor = 'none';
+                    %                         s.MarkerFaceAlpha = 0.65;
+                    %                         s.MarkerFaceColor = [.2,.2,.2];
+                    %                         s.SizeData = 5;
+                    %                         hold(ax, 'on');
+                    %                     end
+                    
+                    % draw each algorithm
+                    color_list = colororder;
+                    for j = 1:length(algo_list)
+                        x = squeeze(app.EResultParetoData.Obj{prob_list(i), algo_list(j)}(:, 1));
+                        y = squeeze(app.EResultParetoData.Obj{prob_list(i), algo_list(j)}(:, 2));
+                        z = squeeze(app.EResultParetoData.Obj{prob_list(i), algo_list(j)}(:, 3));
+                        s = scatter3(ax, x, y, z);
+                        s.MarkerEdgeColor = color_list(j,:);
+                        s.MarkerFaceAlpha = 0.65;
+                        s.MarkerFaceColor = color_list(j,:);
+                        s.SizeData = 40;
+                        hold(ax, 'on');
+                    end
+                    
+                    xlabel(ax, '$f_1$', 'interpreter', 'latex');
+                    ylabel(ax, '$f_2$', 'interpreter', 'latex');
+                    zlabel(ax, '$f_3$', 'interpreter', 'latex');
+                    
+                    %                     if ~isempty(app.EResultParetoData.Optimum)
+                    %                         legend(ax, ['Pareto Front'; strrep(app.EUITable.ColumnName(algo_list), '_', '\_')]);
+                    %                     else
+                    legend(ax, strrep(app.EUITable.ColumnName(algo_list), '_', '\_'));
+                    %                     end
+                    title(ax, strrep(app.EUITable.RowName(prob_list(i)), '_', '\_'))
+                    view(ax,[135 30]);
+                    grid(ax, 'on');
+                end
+            end
+        end
     end
 
     % Component initialization
@@ -2093,7 +2192,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create MTOPlatformUIFigure and hide until all components are created
             app.MTOPlatformUIFigure = uifigure('Visible', 'off');
             app.MTOPlatformUIFigure.Color = [1 1 1];
-            app.MTOPlatformUIFigure.Position = [100 100 1026 680];
+            app.MTOPlatformUIFigure.Position = [100 100 1120 707];
             app.MTOPlatformUIFigure.Name = 'MTO Platform';
             app.MTOPlatformUIFigure.WindowStyle = 'modal';
 
@@ -2191,7 +2290,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create TTaskTypeDropDown
             app.TTaskTypeDropDown = uidropdown(app.TP1GridLayout);
-            app.TTaskTypeDropDown.Items = {'MT-SO', 'MaT-SO', 'ST-SO'};
+            app.TTaskTypeDropDown.Items = {'MT-SO', 'MaT-SO', 'ST-SO', 'MT-MO', 'MaT-MO', 'ST-MO'};
             app.TTaskTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @TTaskTypeDropDownValueChanged, true);
             app.TTaskTypeDropDown.FontWeight = 'bold';
             app.TTaskTypeDropDown.BackgroundColor = [1 1 1];
@@ -2199,13 +2298,13 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TTaskTypeDropDown.Layout.Column = 2;
             app.TTaskTypeDropDown.Value = 'MT-SO';
 
-            % Create TaskLabel_2
-            app.TaskLabel_2 = uilabel(app.TP1GridLayout);
-            app.TaskLabel_2.FontWeight = 'bold';
-            app.TaskLabel_2.Tooltip = {'Single-task EA Option'};
-            app.TaskLabel_2.Layout.Row = 1;
-            app.TaskLabel_2.Layout.Column = 1;
-            app.TaskLabel_2.Text = 'Task';
+            % Create TypeLabel_2
+            app.TypeLabel_2 = uilabel(app.TP1GridLayout);
+            app.TypeLabel_2.FontWeight = 'bold';
+            app.TypeLabel_2.Tooltip = {'Single-task EA Option'};
+            app.TypeLabel_2.Layout.Row = 1;
+            app.TypeLabel_2.Layout.Column = 1;
+            app.TypeLabel_2.Text = 'Type';
 
             % Create SpecialLabel_2
             app.SpecialLabel_2 = uilabel(app.TP1GridLayout);
@@ -2250,7 +2349,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create TShowTypeDropDown
             app.TShowTypeDropDown = uidropdown(app.TP21GridLayout);
-            app.TShowTypeDropDown.Items = {'Tasks Figure (1D Unified)', 'Tasks Figure (1D Real)', 'Feasible Region (2D)'};
+            app.TShowTypeDropDown.Items = {'Tasks Figure (1D Unified)', 'Tasks Figure (1D Real)', 'Feasible Region (2D)', 'Convergence'};
             app.TShowTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @TShowTypeDropDownValueChanged, true);
             app.TShowTypeDropDown.Tooltip = {'Show type'};
             app.TShowTypeDropDown.FontWeight = 'bold';
@@ -2337,13 +2436,13 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TOutputTextArea.Layout.Row = 2;
             app.TOutputTextArea.Layout.Column = 1;
 
-            % Create MTOPlatformv020YanchiLiLabel
-            app.MTOPlatformv020YanchiLiLabel = uilabel(app.TP3GridLayout);
-            app.MTOPlatformv020YanchiLiLabel.HorizontalAlignment = 'center';
-            app.MTOPlatformv020YanchiLiLabel.FontWeight = 'bold';
-            app.MTOPlatformv020YanchiLiLabel.Layout.Row = 3;
-            app.MTOPlatformv020YanchiLiLabel.Layout.Column = 1;
-            app.MTOPlatformv020YanchiLiLabel.Text = 'MTO-Platform v0.2.0  Yanchi Li';
+            % Create MTOPlatformv030YanchiLiLabel
+            app.MTOPlatformv030YanchiLiLabel = uilabel(app.TP3GridLayout);
+            app.MTOPlatformv030YanchiLiLabel.HorizontalAlignment = 'center';
+            app.MTOPlatformv030YanchiLiLabel.FontWeight = 'bold';
+            app.MTOPlatformv030YanchiLiLabel.Layout.Row = 3;
+            app.MTOPlatformv030YanchiLiLabel.Layout.Column = 1;
+            app.MTOPlatformv030YanchiLiLabel.Text = 'MTO-Platform v0.3.0  Yanchi Li';
 
             % Create ExperimentTab
             app.ExperimentTab = uitab(app.MTOPlatformTabGroup);
@@ -2371,27 +2470,19 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EP3GridLayout.Padding = [0 0 0 0];
             app.EP3GridLayout.BackgroundColor = [1 1 1];
 
-            % Create ETableTabGroup
-            app.ETableTabGroup = uitabgroup(app.EP3GridLayout);
-            app.ETableTabGroup.Layout.Row = 1;
-            app.ETableTabGroup.Layout.Column = 1;
-
-            % Create ETableTab
-            app.ETableTab = uitab(app.ETableTabGroup);
-            app.ETableTab.Title = 'Table';
-            app.ETableTab.BackgroundColor = [1 1 1];
-
             % Create EP3TGridLayout
-            app.EP3TGridLayout = uigridlayout(app.ETableTab);
+            app.EP3TGridLayout = uigridlayout(app.EP3GridLayout);
             app.EP3TGridLayout.ColumnWidth = {'1x'};
             app.EP3TGridLayout.RowHeight = {'fit', '1x'};
             app.EP3TGridLayout.RowSpacing = 0;
             app.EP3TGridLayout.Padding = [5 5 5 5];
+            app.EP3TGridLayout.Layout.Row = 1;
+            app.EP3TGridLayout.Layout.Column = 1;
             app.EP3TGridLayout.BackgroundColor = [1 1 1];
 
             % Create EP3T1GridLayout
             app.EP3T1GridLayout = uigridlayout(app.EP3TGridLayout);
-            app.EP3T1GridLayout.ColumnWidth = {90, '1x', 90, 90, 90, 90, 90, 90};
+            app.EP3T1GridLayout.ColumnWidth = {'0.5x', '0.7x', '0.8x', '0.8x', '1x', '1x', '1x', '1x', '1x', '1x'};
             app.EP3T1GridLayout.RowHeight = {'fit'};
             app.EP3T1GridLayout.ColumnSpacing = 5;
             app.EP3T1GridLayout.Padding = [0 5 0 0];
@@ -2407,7 +2498,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.ETestTypeDropDown.FontWeight = 'bold';
             app.ETestTypeDropDown.BackgroundColor = [1 1 1];
             app.ETestTypeDropDown.Layout.Row = 1;
-            app.ETestTypeDropDown.Layout.Column = 6;
+            app.ETestTypeDropDown.Layout.Column = 8;
             app.ETestTypeDropDown.Value = 'None';
 
             % Create EAlgorithmDropDown
@@ -2418,7 +2509,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EAlgorithmDropDown.FontWeight = 'bold';
             app.EAlgorithmDropDown.BackgroundColor = [1 1 1];
             app.EAlgorithmDropDown.Layout.Row = 1;
-            app.EAlgorithmDropDown.Layout.Column = 7;
+            app.EAlgorithmDropDown.Layout.Column = 9;
             app.EAlgorithmDropDown.Value = 'Algorithm';
 
             % Create EShowTypeDropDown
@@ -2429,7 +2520,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EShowTypeDropDown.FontWeight = 'bold';
             app.EShowTypeDropDown.BackgroundColor = [1 1 1];
             app.EShowTypeDropDown.Layout.Row = 1;
-            app.EShowTypeDropDown.Layout.Column = 5;
+            app.EShowTypeDropDown.Layout.Column = 7;
             app.EShowTypeDropDown.Value = 'Mean';
 
             % Create EDataTypeDropDown
@@ -2440,7 +2531,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EDataTypeDropDown.FontWeight = 'bold';
             app.EDataTypeDropDown.BackgroundColor = [1 1 1];
             app.EDataTypeDropDown.Layout.Row = 1;
-            app.EDataTypeDropDown.Layout.Column = 4;
+            app.EDataTypeDropDown.Layout.Column = 6;
             app.EDataTypeDropDown.Value = 'Reps';
 
             % Create EHighlightTypeDropDown
@@ -2451,7 +2542,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EHighlightTypeDropDown.FontWeight = 'bold';
             app.EHighlightTypeDropDown.BackgroundColor = [1 1 1];
             app.EHighlightTypeDropDown.Layout.Row = 1;
-            app.EHighlightTypeDropDown.Layout.Column = 8;
+            app.EHighlightTypeDropDown.Layout.Column = 10;
             app.EHighlightTypeDropDown.Value = 'Best&Worst';
 
             % Create ESaveTableButton
@@ -2470,87 +2561,46 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EDataFormatEditField.HorizontalAlignment = 'center';
             app.EDataFormatEditField.Tooltip = {'Data Format Str'};
             app.EDataFormatEditField.Layout.Row = 1;
-            app.EDataFormatEditField.Layout.Column = 3;
+            app.EDataFormatEditField.Layout.Column = 5;
             app.EDataFormatEditField.Value = '%d';
+
+            % Create EConvergeButton
+            app.EConvergeButton = uibutton(app.EP3T1GridLayout, 'push');
+            app.EConvergeButton.ButtonPushedFcn = createCallbackFcn(app, @EConvergeButtonPushed, true);
+            app.EConvergeButton.BackgroundColor = [1 1 1];
+            app.EConvergeButton.FontWeight = 'bold';
+            app.EConvergeButton.Tooltip = {'Draw Convergence Plot'};
+            app.EConvergeButton.Layout.Row = 1;
+            app.EConvergeButton.Layout.Column = 3;
+            app.EConvergeButton.Text = 'Converge';
+
+            % Create EParetoButton
+            app.EParetoButton = uibutton(app.EP3T1GridLayout, 'push');
+            app.EParetoButton.ButtonPushedFcn = createCallbackFcn(app, @EParetoButtonPushed, true);
+            app.EParetoButton.BackgroundColor = [1 1 1];
+            app.EParetoButton.FontWeight = 'bold';
+            app.EParetoButton.Tooltip = {'Draw Median Population Pareto Front'};
+            app.EParetoButton.Layout.Row = 1;
+            app.EParetoButton.Layout.Column = 4;
+            app.EParetoButton.Text = 'Pareto';
+
+            % Create EConvergeTypeDropDown
+            app.EConvergeTypeDropDown = uidropdown(app.EP3T1GridLayout);
+            app.EConvergeTypeDropDown.Items = {'Log', 'Normal'};
+            app.EConvergeTypeDropDown.Tooltip = {'Show Type'};
+            app.EConvergeTypeDropDown.FontWeight = 'bold';
+            app.EConvergeTypeDropDown.BackgroundColor = [1 1 1];
+            app.EConvergeTypeDropDown.Layout.Row = 1;
+            app.EConvergeTypeDropDown.Layout.Column = 2;
+            app.EConvergeTypeDropDown.Value = 'Log';
 
             % Create EUITable
             app.EUITable = uitable(app.EP3TGridLayout);
             app.EUITable.ColumnName = '';
             app.EUITable.RowName = {};
+            app.EUITable.CellSelectionCallback = createCallbackFcn(app, @EUITableCellSelection, true);
             app.EUITable.Layout.Row = 2;
             app.EUITable.Layout.Column = 1;
-
-            % Create EFigureTab
-            app.EFigureTab = uitab(app.ETableTabGroup);
-            app.EFigureTab.Title = 'Figure';
-            app.EFigureTab.BackgroundColor = [1 1 1];
-
-            % Create EP3FGridLayout
-            app.EP3FGridLayout = uigridlayout(app.EFigureTab);
-            app.EP3FGridLayout.ColumnWidth = {'1x'};
-            app.EP3FGridLayout.RowHeight = {'fit', '1x'};
-            app.EP3FGridLayout.Padding = [5 5 5 5];
-            app.EP3FGridLayout.BackgroundColor = [1 1 1];
-
-            % Create EP3F1GridLayout
-            app.EP3F1GridLayout = uigridlayout(app.EP3FGridLayout);
-            app.EP3F1GridLayout.ColumnWidth = {90, 90, '1x', 150, 150};
-            app.EP3F1GridLayout.RowHeight = {'fit'};
-            app.EP3F1GridLayout.ColumnSpacing = 5;
-            app.EP3F1GridLayout.Padding = [0 0 0 0];
-            app.EP3F1GridLayout.Layout.Row = 1;
-            app.EP3F1GridLayout.Layout.Column = 1;
-            app.EP3F1GridLayout.BackgroundColor = [1 1 1];
-
-            % Create EProblemsDropDown
-            app.EProblemsDropDown = uidropdown(app.EP3F1GridLayout);
-            app.EProblemsDropDown.Items = {'Problem '};
-            app.EProblemsDropDown.ValueChangedFcn = createCallbackFcn(app, @EProblemsDropDownValueChanged, true);
-            app.EProblemsDropDown.Tooltip = {'Problem or Task'};
-            app.EProblemsDropDown.FontWeight = 'bold';
-            app.EProblemsDropDown.BackgroundColor = [1 1 1];
-            app.EProblemsDropDown.Layout.Row = 1;
-            app.EProblemsDropDown.Layout.Column = 5;
-            app.EProblemsDropDown.Value = 'Problem ';
-
-            % Create ESaveFigureButton
-            app.ESaveFigureButton = uibutton(app.EP3F1GridLayout, 'push');
-            app.ESaveFigureButton.ButtonPushedFcn = createCallbackFcn(app, @ESaveFigureButtonPushed, true);
-            app.ESaveFigureButton.BackgroundColor = [0.702 1 0.702];
-            app.ESaveFigureButton.FontWeight = 'bold';
-            app.ESaveFigureButton.Tooltip = {'Select save dir and it will save all figures to ''dir/Figure/'''};
-            app.ESaveFigureButton.Layout.Row = 1;
-            app.ESaveFigureButton.Layout.Column = 1;
-            app.ESaveFigureButton.Text = 'Save';
-
-            % Create ESaveFigureTypeDropDown
-            app.ESaveFigureTypeDropDown = uidropdown(app.EP3F1GridLayout);
-            app.ESaveFigureTypeDropDown.Items = {'eps', 'png', 'pdf'};
-            app.ESaveFigureTypeDropDown.Tooltip = {'Save Figure Type'};
-            app.ESaveFigureTypeDropDown.FontWeight = 'bold';
-            app.ESaveFigureTypeDropDown.BackgroundColor = [1 1 1];
-            app.ESaveFigureTypeDropDown.Layout.Row = 1;
-            app.ESaveFigureTypeDropDown.Layout.Column = 2;
-            app.ESaveFigureTypeDropDown.Value = 'eps';
-
-            % Create EFigureTypeDropDown
-            app.EFigureTypeDropDown = uidropdown(app.EP3F1GridLayout);
-            app.EFigureTypeDropDown.Items = {'Figure Type'};
-            app.EFigureTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EFigureTypeDropDownValueChanged, true);
-            app.EFigureTypeDropDown.Tooltip = {'Data Type'};
-            app.EFigureTypeDropDown.FontWeight = 'bold';
-            app.EFigureTypeDropDown.BackgroundColor = [1 1 1];
-            app.EFigureTypeDropDown.Layout.Row = 1;
-            app.EFigureTypeDropDown.Layout.Column = 4;
-            app.EFigureTypeDropDown.Value = 'Figure Type';
-
-            % Create EConvergenceTrendUIAxes
-            app.EConvergenceTrendUIAxes = uiaxes(app.EP3FGridLayout);
-            xlabel(app.EConvergenceTrendUIAxes, 'Evaluation')
-            ylabel(app.EConvergenceTrendUIAxes, 'Objective Value')
-            app.EConvergenceTrendUIAxes.PlotBoxAspectRatio = [1.37847866419295 1 1];
-            app.EConvergenceTrendUIAxes.Layout.Row = 2;
-            app.EConvergenceTrendUIAxes.Layout.Column = 1;
 
             % Create EPanel1
             app.EPanel1 = uipanel(app.ExperimentsGridLayout);
@@ -2663,7 +2713,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create ETaskTypeDropDown
             app.ETaskTypeDropDown = uidropdown(app.EP1GridLayout);
-            app.ETaskTypeDropDown.Items = {'MT-SO', 'MaT-SO', 'ST-SO'};
+            app.ETaskTypeDropDown.Items = {'MT-SO', 'MaT-SO', 'ST-SO', 'MT-MO', 'MaT-MO', 'ST-MO'};
             app.ETaskTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @ETaskTypeDropDownValueChanged, true);
             app.ETaskTypeDropDown.FontWeight = 'bold';
             app.ETaskTypeDropDown.BackgroundColor = [1 1 1];

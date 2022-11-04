@@ -12,7 +12,7 @@ classdef Problem < handle
     properties
         defaultT = 50 % Default task number of each problem
         defaultD = 50 % Default dimension of each task
-        defaultN = 50 % Default population size of each task
+        defaultN = 100 % Default population size of each task
 
         Name % Problem's Name
         T % Task number

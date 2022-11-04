@@ -1,7 +1,0 @@
-MTO/Problems/Multi-task/CEC17-MTSO/Tasks filter=lfs diff=lfs merge=lfs -text
-MTO/Problems/Multi-task/WCCI20-MTSO/Tasks filter=lfs diff=lfs merge=lfs -text
-MTO/Problems/Multi-task/WCCI20-MaTSO/Tasks filter=lfs diff=lfs merge=lfs -text
-MTO/Problems/Multi-task/Competitive-C4TOP/Data filter=lfs diff=lfs merge=lfs -text
-MTO/Problems/Single-task/CEC17-CSO/Data filter=lfs diff=lfs merge=lfs -text
-MTO/Problems/Single-task/CEC20-RWCO/Data filter=lfs diff=lfs merge=lfs -text
-Doc/ReadmeFigure filter=lfs diff=lfs merge=lfs -text

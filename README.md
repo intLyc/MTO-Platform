@@ -19,7 +19,7 @@
 
 ## Introduction
 
-The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](https://github.com/BIMK/PlatEMO) and designed to facilitate experiments on multi-task optimization algorithms.
+The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](https://github.com/BIMK/PlatEMO) and designed to facilitate experiments on multitasking optimization algorithms.
 
 ### Related Websites
 [http://www.bdsc.site/websites/MTO/index.html](http://www.bdsc.site/websites/MTO/index.html)
@@ -34,30 +34,29 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 
 ### Run MTO Platform
 
-- GUI: 'mto'
-- Command line: 'mto(AlgoCell, ProbCell, Reps, ParFlag, SaveName)'
-- Example: 'mto({'MFEA','AT-MFEA'},{'CEC17_MTSO1_CI_HS','CEC17_MTSO2_CI_MS'},2,true,'MTODataSave')'
+- GUI: mto
+- Command line: mto(AlgoCell, ProbCell, Reps, ParFlag, SaveName)
+- Example: mto({'MFEA','AT-MFEA'},{'CEC17_MTSO1_CI_HS','CEC17_MTSO2_CI_MS'},2,true,'MTODataSave')
 
 ### Add your algorithm
 
-- Inherit the **Algorithm.m** class from the Algorithms folder to implement a new algorithm class and put it in the Algorithms folder or its subfolders
+- Inherit the **Algorithm.m** class from the Algorithms' folder to implement a new algorithm class and put it in the Algorithms folder or its subfolders
 - Implement the method function data = run().
-- Add labels to the second line. <ST-SO/MT-SO/MaT-SO> <None/Competitive/Constrained>
-- *Refer to the MFEA or GA algorithm implementation*
+- Add labels to the second line. <ST-SO/MT-SO/MaT-SO/ST-MO/MT-MO/MaT-MO> <None/Competitive/Constrained>
+- *Refer to the MFEA or MO-MFEA algorithm implementation*
 
 ### Add your problem
 
 - Inherit the **Problem.m** class from the Problem folder to implement a new problem class and put it in the Problem folder or its subfolders
 - Implement the method function Tasks = setTasks()
-- Add labels to the second line. <ST-SO/MT-SO/MaT-SO> <None/Competitive/Constrained>
-- *Refer to the CEC17_MTSO problem implementation*
+- Add labels to the second line. <ST-SO/MT-SO/MaT-SO/ST-MO/MT-MO/MaT-MO> <None/Competitive/Constrained>
+- *Refer to the CEC17_MTSO or MTMO_Instance1 problem implementation*
 
 ### Add your metric
 
 - Inherit the **Metric.m** class from the Metric folder to implement a new metric class and put it in the Metric folder or its subfolders
-- Implement the method function result = calculate()
-- Add labels to the second line. <Table/Figure>
-- *Refer to the Objective.m and Converge_Obj.m metric implementation*
+- Add labels to the second line. <Metric>
+- *Refer to the Obj.m and IGD.m metric implementation*
 
 ## Module
 
@@ -68,16 +67,16 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 
 1. Algorithm selection
     - Select an algorithm to be displayed in the Algorithm Tree
-    - Open the Algorithm and it will show the algorithm parameter settings. *double click to modify it*
+    - Open the Algorithm, and it will show the algorithm parameter settings. *Double-click to modify*
 2. Problem selection
     - Select a problem and display it in the Problem Tree
-    - Open the Problem Node to display the problem parameter settings. *double click to modify it*
+    - Open the Problem Node to display the problem parameter settings. *Double-click to modify*
 3. Run
     - Click the Start button
 4. Check the figure
     - Task Figure 1D (unified / real)
     - Feasible Region 2D
-    - Objs convergence
+    - Obj convergence
 
 ### II. Experiment Module
 
@@ -85,33 +84,34 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 ![Experiment Module Figure](./Doc/ReadmeFigure/MTO-Platform%20Experiment%20Module%202.png)
 
 1. parameter settings
-    - Run Times: Number of independent runs
+    - Reps: Number of independent run times
     - Parallel：Parallel execution
 
 2. Algorithm selection
-    - After selecting an algorithm in Algorithms, click Add button, it will add the algorithm to Selected Algorithms, you can expand the algorithm and double click to modify the parameters or algorithm name, double-click to modify the parameters or algorithm name. *Multi-selectable, right-click to select all, can be added repeatedly*
+    - After selecting an algorithm in Algorithms, click Add button, it will add the algorithm to Selected Algorithms, you can expand the algorithm and double-click to modify the parameters or algorithm name, double-click to modify the parameters or algorithm name. *Multi-selectable, right-click to select all, can be added repeatedly*
     - Select the algorithm in Selected Algorithms and click the Delete button to delete the selected algorithm. *Multi-selectable, right-click to select all*
 
 3. Problem Selection
-    - After selecting the problem in Problems, click Add button, it will add the problem to Selected Problems, you can expand the problem and double click to modify the parameters or problem name.  *Multi-selectable, right-click to select all, can be added repeatedly*
+    - After selecting the problem in Problems, click Add button, it will add the problem to Selected Problems, you can expand the problem and double-click to modify the parameters or problem name.  *Multi-selectable, right-click to select all, can be added repeatedly*
     - Select the problem in Selected Problems and click the Delete button to delete the selected problem. *Multi-selectable, right-click to select all*. 
 
 4. Start/Pause/Stop
-    - After selecting the algorithm and problem, click Start button to start running.
-    - In the process of running, click Pause button to pause, and then click Resume button to continue.
-    - In the process of running, click Stop button to stop running.
+    - After selecting the algorithm and problem, click the Start button to start running.
+    - In the process of running, click the Pause button to pause, and then click the Resume button to continue.
+    - In the process of running, click the Stop button to stop running.
   
 5. Table Statistics
-    - Select Table on the right side to display the experimental data
     - Display data with metric
-    - Data type (for Obj and min(Obj))
+    - Draw Metric Convergence. *Select table cell first.*
+    - Draw Pareto Front Results. *Select table cell first.*
+    - Data type
       - Mean
       - Mean&Std
       - Std
       - Median
       - Best
       - Worst
-    - Statistical test (for Fitness)
+    - Statistical test
       - None
       - Rank sum test
       - Signed rank test
@@ -119,40 +119,34 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
       - None
       - Highlight best
       - Highlight best worst
-    - Save the data, click the Save button to save the current table content
+    - Save the data, click the blue Save button to save the current table content
 
-6. Convergence graph
-    - Select Figure on the right side to display the experimental convergence graph
-    - Figure type with metric
-    - Problem selection, select a problem, display the graph of the problem
-    - Save figures, select the save file type, and click Save button to save the graphs of all problems.
-
-7. Read/Save Data
+6. Read/Save Data
     - To save data, click the Save Data button to save the data of the currently running experiment
-    - Read data, click Load Data button, read the saved experimental data, and display the data
+    - Read data, click the Load Data button, read the saved experimental data, and display the data
 
 
 ### III. Data Process Module
 
 1. Read data
-    - Click the Load Data button, read the saved experimental data, add to the Data Tree. *Multi-selectable, can be added repeatedly*
+    - Click the Load Data button, read the saved experimental data, and add it to the Data Tree. *Multi-selectable, can be added repeatedly*
     - Expand the data in the Data Tree can display the specific content of the data, *can modify the name of the data*
 
 2. Delete Data
-    - Select the data in Data Tree and click Delete Data button to delete. Click the Delete Data button to delete. *Multi-selectable, right-click to select all*
+    - Select the data in Data Tree and click the Delete Data button to delete. Click the Delete Data button to delete. *Multi-selectable, right-click to select all*
 
 3. Save Data
     - Select the data in the Data Tree and click the Save Data button to save it. *Multi-selectable*
 
 4. Data split
-    - Split by number of independent runs, select more than 1 data in the Data Tree, click the Reps Split button to split the selected data by each independent run and add it to the Data Tree.
+    - Split by the number of independent runs, select more than 1 data in the Data Tree, click the Reps Split button to split the selected data by each independent run and add it to the Data Tree.
     - Split by Algorithms, select more than 1 data item in the Data Tree, click the Algorithms Split button to split the selected data by algorithms and add them to the Data Tree.
     - Split by Problem, select more than 1 data item in the Data Tree, click on the Problems Split button to split the selected data by problem and add it to the Data Tree.
 
 5. Data Merge
     - Merge by independent runs, select 2 or more data in Data Tree, *provided that all settings are the same except the number of runs*, click the Reps Merge button to merge the selected data by the number of independent runs and add them to the Data Tree.
-    - Merge by Algorithm, select more than 2 data items in Data Tree, *provided that all settings are the same except Algorithm*, click Algorithms Merge button to merge the selected data by algorithm and add them to Data Tree.
-    - Merge by Problem, select more than 2 data items in Data Tree, *provided all settings are the same except Problem*, click the Problems Merge button to merge the selected data by problem and add them to Data Tree.
+    - Merge by Algorithm, select more than 2 data items in Data Tree, *provided that all settings are the same except Algorithm*, click Algorithms Merge button to merge the selected data by the algorithm and add them to the Data Tree.
+    - Merge by Problem, select more than 2 data items in Data Tree, *provided all settings are the same except Problem*, click the Problems Merge button to merge the selected data by problem and add them to the Data Tree.
 
 
 ---
@@ -181,30 +175,29 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 
 ### 运行MTO Platform
 
-- GUI界面: 'mto'
-- 命令行: 'mto(AlgoCell, ProbCell, Reps, ParFlag, SaveName)'
-- 示例: 'mto({'MFEA','AT-MFEA'},{'CEC17_MTSO1_CI_HS','CEC17_MTSO2_CI_MS'},2,true,'MTODataSave')'
+- GUI界面: mto
+- 命令行: mto(AlgoCell, ProbCell, Reps, ParFlag, SaveName)
+- 示例: mto({'MFEA','AT-MFEA'},{'CEC17_MTSO1_CI_HS','CEC17_MTSO2_CI_MS'},2,true,'MTODataSave')
 
 ### 加入自己的算法
 
 - 继承Algorithms文件夹下的**Algorithm.m**类实现新的算法类，并放入Algorithms文件夹或其子文件夹内
 - 实现 function data = run()
-- 在文件的第2行添加标签 <ST-SO/MT-SO/MaT-SO> <None/Competitive/Constrained>
-- *可参考MFEA、GA算法的实现*
+- 在文件的第2行添加标签 <ST-SO/MT-SO/MaT-SO/ST-MO/MT-MO/MaT-MO> <None/Competitive/Constrained>
+- *可参考 MFEA、MO-MFEA 算法的实现*
 
 ### 加入自己的问题
 
 - 继承Problem文件夹下的**Problem.m**类实现新的问题类，并放入Problem文件夹或其子文件夹内
 - 实现 function Tasks = setTasks()
 - 按照Problem类中的各虚函数的注释实现继承的虚函数
-- 在文件的第2行添加标签 <ST-SO/MT-SO/MaT-SO> <None/Competitive/Constrained>
-- *可参考CEC17_MTSO问题的实现*
+- 在文件的第2行添加标签 <ST-SO/MT-SO/MaT-SO/ST-MO/MT-MO/MaT-MO> <None/Competitive/Constrained>
+- *可参考 CEC17_MTSO、MTMO_Instance1 问题的实现*
 
 ### 加入自己的指标
 
 - 继承Metric文件夹下的**Metric.m**类实现新的指标类，并放入Metric文件夹或其子文件夹内
-- 实现 function result = calculate()
-- 在文件的第2行添加标签 <Table/Figure>，对应于列表数据展示和图像数据展示
+- 在文件的第2行添加标签 <Metric>，对应于列表数据展示和图像数据展示
 - *可参考Objective.m和Converge_Obj.m的实现*
 
 ## 功能
@@ -250,8 +243,9 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
     - 在运行过程中，点击Stop按钮终止
   
 5. 表格统计
-    - 右侧选取Table，显示实验数据
-    - 显示数据，由Metric.calculate()计算
+    - 显示数据，由Metric计算
+    - 绘制Metric收敛图，*先从表格中选取数据*
+    - 绘制Pareto前沿结果，*先从表格中选取数据*
     - 数据类型
       - Mean 平均目标值
       - Mean&Std 平均目标值 (标准差)
@@ -259,7 +253,7 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
       - Median 目标值中位数
       - Best 最优目标值
       - Worst 最差目标值
-    - 统计测试 (Fitness)
+    - 统计测试
       - None
       - Rank sum test 秩和检验
       - Signed rank test 符号秩检验
@@ -269,13 +263,7 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
       - Highlight best worst 高亮最优值和最差值
     - 保存数据，点击Save按钮，保存当前表格内容
 
-6. 收敛图
-    - 右侧选取Figure，显示实验收敛图
-    - 展示类型，由Metric.calculate()计算
-    - 问题选择，选择某一问题显示图像内容
-    - 保存所有数据，选取保存文件类型，点击Save按钮保存所有任务的图像
-
-7. 读取/保存数据
+6. 读取/保存数据
     - 保存数据，点击Save Data按钮，保存当前运行实验的数据
     - 读取数据，点击Load Data按钮，读取保存的实验数据，并显示数据
 

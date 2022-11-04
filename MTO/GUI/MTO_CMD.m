@@ -38,6 +38,9 @@ function MTO_CMD(AlgoCell, ProbCell, Reps, ParFlag, SaveName)
         Data.Problems(prob).Name = ProbObject{prob}.Name;
         Data.Problems(prob).T = ProbObject{prob}.T;
         Data.Problems(prob).M = ProbObject{prob}.M;
+        if max(Data.Problems(prob).M) > 1
+            Data.Problems(prob).Optimum = ProbObject{prob}.getOptimum();
+        end
         Data.Problems(prob).D = ProbObject{prob}.D;
         Data.Problems(prob).N = ProbObject{prob}.N;
         Data.Problems(prob).Fnc = ProbObject{prob}.Fnc;
@@ -67,10 +70,18 @@ function MTO_CMD(AlgoCell, ProbCell, Reps, ParFlag, SaveName)
                     tmp = AlgoObject{algo}.getResult(ProbObject{prob});
                     for t = 1:size(tmp, 1)
                         for g = 1:size(tmp, 2)
-                            Results(prob, algo, rep).Obj(t, g) = tmp(t, g).Obj;
-                            Results(prob, algo, rep).CV(t, g) = tmp(t, g).CV;
-                            if isfield(tmp, 'Dec')
-                                Results(prob, algo, rep).Dec(t, g, :) = tmp(t, g).Dec;
+                            if max(ProbObject{prob}.Problems(prob).M) > 1
+                                Results(prob, algo, rep).Obj{t}(g, :, :) = tmp(t, g).Obj(:, :);
+                                Results(prob, algo, rep).CV{t}(g, :) = tmp(t, g).CV;
+                                if isfield(tmp, 'Dec')
+                                    Results(prob, algo, rep).Dec{t}(g, :) = tmp(t, g).Dec;
+                                end
+                            else
+                                Results(prob, algo, rep).Obj(t, g, :, :) = tmp(t, g).Obj(:, :);
+                                Results(prob, algo, rep).CV(t, g, :) = tmp(t, g).CV;
+                                if isfield(tmp, 'Dec')
+                                    Results(prob, algo, rep).Dec(t, g, :) = tmp(t, g).Dec;
+                                end
                             end
                         end
                     end
@@ -86,8 +97,12 @@ function MTO_CMD(AlgoCell, ProbCell, Reps, ParFlag, SaveName)
                     tmp = AlgoObject{algo}.getResult(ProbObject{prob});
                     for t = 1:size(tmp, 1)
                         for g = 1:size(tmp, 2)
-                            Results(prob, algo, rep).Obj(t, g) = tmp(t, g).Obj;
-                            Results(prob, algo, rep).CV(t, g) = tmp(t, g).CV;
+                            if max(ProbObject{prob}.Problems(prob).M) > 1
+                                Results(prob, algo, rep).Obj{t}(g, :, :) = tmp(t, g).Obj(:, :);
+                            else
+                                Results(prob, algo, rep).Obj(t, g, :, :) = tmp(t, g).Obj(:, :);
+                            end
+                            Results(prob, algo, rep).CV(t, g, :) = tmp(t, g).CV;
                             if isfield(tmp, 'Dec')
                                 Results(prob, algo, rep).Dec(t, g, :) = tmp(t, g).Dec;
                             end

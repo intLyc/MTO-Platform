@@ -18,7 +18,7 @@ classdef Algorithm < handle
         Result % Result of run
 
         Save_Dec = false % Save Dec Flag
-        Result_Num = 100 % Convergence Results Num
+        Result_Num = 50 % Convergence Results Num
         Result_Idx % Result Save Idx
     end
 
@@ -61,8 +61,8 @@ classdef Algorithm < handle
             if Algo.Save_Dec
                 for t = 1:size(Result, 1)
                     for idx = 1:size(Result, 2)
-                        Result(t, idx).Dec = Prob.Lb{t} + Result(t, idx).Dec(1:Prob.D(t)) .* (Prob.Ub{t} - Prob.Lb{t});
-                        Result(t, idx).Dec(Prob.D(t) + 1:max(Prob.D)) = NaN;
+                        Result(t, idx).Dec = Prob.Lb{t} + Result(t, idx).Dec(:, 1:Prob.D(t)) .* (Prob.Ub{t} - Prob.Lb{t});
+                        Result(t, idx).Dec(:, Prob.D(t) + 1:max(Prob.D)) = NaN;
                     end
                 end
             else
@@ -70,18 +70,30 @@ classdef Algorithm < handle
             end
         end
 
-        function flag = notTerminated(Algo, Prob)
-            if isempty(Algo.Best)
+        function flag = notTerminated(Algo, varargin)
+            if length(varargin) == 1
+                Prob = varargin{1};
+            elseif length(varargin) == 2
+                Prob = varargin{1};
+                Pop = varargin{2};
+            end
+
+            if max(Prob.M) == 1 && isempty(Algo.Best)
                 flag = true;
                 return;
             end
-
             flag = Algo.FE < Prob.maxFE;
 
             for t = 1:Prob.T
-                Algo.Result(t, Algo.Gen).Obj = Algo.Best{t}.Obj;
-                Algo.Result(t, Algo.Gen).CV = Algo.Best{t}.CV;
-                Algo.Result(t, Algo.Gen).Dec = Algo.Best{t}.Dec;
+                if max(Prob.M) == 1 % Single-objective
+                    Algo.Result(t, Algo.Gen).Obj = Algo.Best{t}.Obj;
+                    Algo.Result(t, Algo.Gen).CV = Algo.Best{t}.CV;
+                    Algo.Result(t, Algo.Gen).Dec = Algo.Best{t}.Dec;
+                else % Multi-objective
+                    Algo.Result(t, Algo.Gen).Obj = Pop{t}.Objs;
+                    Algo.Result(t, Algo.Gen).CV = Pop{t}.CVs;
+                    Algo.Result(t, Algo.Gen).Dec = Pop{t}.Decs;
+                end
             end
             Algo.FE_Gen(Algo.Gen) = Algo.FE;
             Algo.Gen = Algo.Gen + 1;
@@ -97,24 +109,28 @@ classdef Algorithm < handle
             end
             Algo.FE = Algo.FE + length(Pop);
 
-            % Update Best
-            if isempty(Algo.Best)
-                for k = 1:Prob.T
-                    Algo.Best{k} = Individual.empty();
+            if max(Prob.M) == 1 % Single-objective
+                % Update Best
+                if isempty(Algo.Best)
+                    for k = 1:Prob.T
+                        Algo.Best{k} = Individual.empty();
+                    end
                 end
-            end
-            [~, ~, idx] = min_FP([Pop.Obj], [Pop.CV]);
-            BestTemp = Individual();
-            BestTemp.Dec = Pop(idx).Dec;
-            BestTemp.Obj = Pop(idx).Obj;
-            BestTemp.CV = Pop(idx).CV;
-            BestTemp = [BestTemp, Algo.Best{t}];
-            [~, ~, idx] = min_FP([BestTemp.Obj], [BestTemp.CV]);
-            Algo.Best{t} = BestTemp(idx);
-            % Set Best Update Flag
-            if idx == 1
-                Flag = true;
-            else
+                [~, ~, idx] = min_FP([Pop.Obj], [Pop.CV]);
+                BestTemp = Individual();
+                BestTemp.Dec = Pop(idx).Dec;
+                BestTemp.Obj = Pop(idx).Obj;
+                BestTemp.CV = Pop(idx).CV;
+                BestTemp = [BestTemp, Algo.Best{t}];
+                [~, ~, idx] = min_FP([BestTemp.Obj], [BestTemp.CV]);
+                Algo.Best{t} = BestTemp(idx);
+                % Set Best Update Flag
+                if idx == 1
+                    Flag = true;
+                else
+                    Flag = false;
+                end
+            else % Multi-objective
                 Flag = false;
             end
         end

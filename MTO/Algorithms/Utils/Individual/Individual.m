@@ -14,4 +14,18 @@ classdef Individual
         Obj % objective value
         CV % constraint violation
     end
+
+    methods
+        function value = Decs(obj)
+            value = cat(1, obj.Dec);
+        end
+
+        function value = Objs(obj)
+            value = cat(1, obj.Obj);
+        end
+
+        function value = CVs(obj)
+            value = cat(1, obj.CV);
+        end
+    end
 end
