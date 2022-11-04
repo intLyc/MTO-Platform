@@ -557,7 +557,24 @@ classdef MTO_GUI < matlab.apps.AppBase
                     app.EresetTable({app.EData.Problems.Name}, {app.EData.Algorithms.Name});
                     app.EupdateTableReps();
                 otherwise
-                    eval(['result = ', app.EDataTypeDropDown.Value, '(app.EData);']);
+                    is_calculate = true;
+                    if isfield(app.EData, 'Metrics')
+                        metric_idx = find(ismember({app.EData.Metrics.Name}, app.EDataTypeDropDown.Value));
+                        if ~isempty(metric_idx)
+                            is_calculate = false;
+                        end
+                    end
+                    if is_calculate
+                        eval(['result = ', app.EDataTypeDropDown.Value, '(app.EData);']);
+                        metric.Name = app.EDataTypeDropDown.Value;
+                        metric.Result = result;
+                        if ~isfield(app.EData, 'Metrics')
+                            app.EData.Metrics = struct.empty();
+                        end
+                        app.EData.Metrics = [app.EData.Metrics, metric];
+                    else
+                        result = app.EData.Metrics(metric_idx).Result;
+                    end
                     if isfield(result, 'ConvergeData')
                         app.EResultConvergeData = result.ConvergeData;
                     else
