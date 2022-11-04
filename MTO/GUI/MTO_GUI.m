@@ -353,7 +353,9 @@ classdef MTO_GUI < matlab.apps.AppBase
                 case 'Feasible Region (2D)' % Feasible Region (2D)
                     app.TupdateFeasibleRegion();
                 case 'Convergence'
-                    app.TupdateFigureAxes();
+                    app.TupdateConvergence();
+                case 'Pareto Front'
+                    app.TupdateParetoFront();
             end
         end
         
@@ -466,7 +468,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
         end
         
-        function TupdateFigureAxes(app)
+        function TupdateConvergence(app)
             % update figure axes
             
             if isempty(app.TData)
@@ -511,6 +513,54 @@ classdef MTO_GUI < matlab.apps.AppBase
                 ylabel(app.TUIAxes, 'IGD');
             end
             xlabel(app.TUIAxes, 'Evaluation');
+            legend(app.TUIAxes, tasks_name);
+            grid(app.TUIAxes, 'on');
+        end
+        
+        function TupdateParetoFront(app)
+            % update figure axes
+            
+            if isempty(app.TData)
+                return;
+            end
+            
+            cla(app.TUIAxes, 'reset');
+            
+            if max(app.TData.Problems(1).M) ~= 2 || min(app.TData.Problems(1).M) ~= 2
+                return;
+            end
+            
+            result = IGD(app.TData);
+            
+            tasks_name = {};
+            color_list = colororder;
+            for j = 1:size(result.ParetoData.Obj, 1)
+                if ~isempty(result.ParetoData.Optimum)
+                    % draw optimum
+                    x = squeeze(result.ParetoData.Optimum{j}(:, 1));
+                    y = squeeze(result.ParetoData.Optimum{j}(:, 2));
+                    s = scatter(app.TUIAxes, x, y);
+                    s.MarkerEdgeColor = color_list(j,:);
+                    s.MarkerFaceAlpha = 0.65;
+                    s.MarkerFaceColor = color_list(j,:);
+                    s.SizeData = 3;
+                    hold(app.TUIAxes, 'on');
+                    
+                    % draw population
+                    x = squeeze(result.ParetoData.Obj{j, 1}(:, 1));
+                    y = squeeze(result.ParetoData.Obj{j, 1}(:, 2));
+                    s = scatter(app.TUIAxes, x, y);
+                    s.MarkerEdgeColor = color_list(j,:);
+                    s.MarkerFaceAlpha = 0.65;
+                    s.MarkerFaceColor = color_list(j,:);
+                    s.SizeData = 40;
+                    hold(app.TUIAxes, 'on');
+                end
+                tasks_name = [tasks_name, ['T', num2str(j), ' Pareto Front'], ['T', num2str(j), ' Population']];
+            end
+            
+            xlabel(app.TUIAxes, '$f_1$', 'interpreter', 'latex');
+            ylabel(app.TUIAxes, '$f_2$', 'interpreter', 'latex');
             legend(app.TUIAxes, tasks_name);
             grid(app.TUIAxes, 'on');
         end
@@ -1180,9 +1230,16 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Output Best Data To Right Text
             app.Toutput(['Algo: ', app.TData.Algorithms(1).Name]);
             app.Toutput(['Prob: ', app.TData.Problems(1).Name]);
-            for t = 1:length(best_data)
-                app.Toutput(['T', num2str(t), ' Obj: ', num2str(best_data{t}.Obj, '%.2e'), ...
-                    ' CV: ', num2str(best_data{t}.CV, '%.2e')]);
+            if max(app.TData.Problems(1).M) == 1
+                for t = 1:length(best_data)
+                    app.Toutput(['T', num2str(t), ' Obj: ', num2str(best_data{t}.Obj, '%.2e'), ...
+                        ' CV: ', num2str(best_data{t}.CV, '%.2e')]);
+                end
+            else
+                result = IGD(app.TData);
+                for t = 1:size(result.TableData, 1)
+                    app.Toutput(['T', num2str(t), ' IGD: ', num2str(result.TableData(t, 1, 1), '%.2e')]);
+                end
             end
             app.Toutput('-------------------------------------------');
             
@@ -2366,7 +2423,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create TShowTypeDropDown
             app.TShowTypeDropDown = uidropdown(app.TP21GridLayout);
-            app.TShowTypeDropDown.Items = {'Tasks Figure (1D Unified)', 'Tasks Figure (1D Real)', 'Feasible Region (2D)', 'Convergence'};
+            app.TShowTypeDropDown.Items = {'Tasks Figure (1D Unified)', 'Tasks Figure (1D Real)', 'Feasible Region (2D)', 'Convergence', 'Pareto Front'};
             app.TShowTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @TShowTypeDropDownValueChanged, true);
             app.TShowTypeDropDown.Tooltip = {'Show type'};
             app.TShowTypeDropDown.FontWeight = 'bold';
