@@ -92,7 +92,7 @@ classdef TLTLA < Algorithm
                         tmp_population.Dec(d) = child_Dec(d);
                         tmp_population = Algo.Evaluation(tmp_population, Prob, t);
                         TMP = [tmp_population, population(parent)];
-                        [~, ~, idx] = min_FP([TMP.Obj], [TMP.CV]);
+                        [~, ~, idx] = min_FP(TMP.Objs, TMP.CVs);
                         if idx == 1
                             population(parent) = tmp_population;
                             break;

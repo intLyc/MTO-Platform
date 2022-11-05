@@ -1,7 +1,7 @@
 function [size1, size2] = InterCompare(conleadpop_obj, conleadpop_con, objleadpop_obj, objleadpop_con)
 
-    mix_obj = [objleadpop_obj, conleadpop_obj];
-    mix_con = [conleadpop_con, objleadpop_con];
+    mix_obj = [objleadpop_obj; conleadpop_obj];
+    mix_con = [conleadpop_con; objleadpop_con];
 
     [~, objIndex] = sort(mix_obj);
     [~, conIndex] = sort(mix_con);

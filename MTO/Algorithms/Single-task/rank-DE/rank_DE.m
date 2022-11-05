@@ -56,7 +56,7 @@ classdef rank_DE < Algorithm
 
         function offspring = Generation(Algo, population)
             % calculate rank
-            [~, rank] = sortrows([[population.CV]', [population.Obj]'], [1, 2]);
+            [~, rank] = sortrows([population.CVs, population.Objs], [1, 2]);
 
             for i = 1:length(population)
                 offspring(i) = population(i);

@@ -50,7 +50,7 @@ classdef SBO < Algorithm
             population_temp = Initialization(Algo, Prob, IndividualSBO);
             population = IndividualSBO.empty();
             for t = 1:Prob.T
-                [~, rank] = sortrows([[population_temp{t}.CV]', [population_temp{t}.Obj]'], [1, 2]);
+                [~, rank] = sortrows([population_temp{t}.CVs, population_temp{t}.Objs], [1, 2]);
                 for i = 1:length(population_temp{t})
                     population_temp{t}(rank(i)).rankO = i;
                     population_temp{t}(rank(i)).MFFactor = t;
@@ -105,16 +105,16 @@ classdef SBO < Algorithm
                     % Evaluation
                     offspring(t_idx) = Algo.Evaluation(offspring(t_idx), Prob, t);
 
-                    [~, rank] = sortrows([[offspring(t_idx).CV]', [offspring(t_idx).Obj]'], [1, 2]);
+                    [~, rank] = sortrows([offspring(t_idx).CVs, offspring(t_idx).Objs], [1, 2]);
                     for i = 1:length(rank)
                         offspring(find_idx(rank(i))).rankC = i;
                     end
 
                     % selection
                     population_temp = [population(t_idx), offspring(t_idx)];
-                    [~, rank] = sortrows([[population_temp.CV]', [population_temp.Obj]'], [1, 2]);
+                    [~, rank] = sortrows([population_temp.CVs, population_temp.Objs], [1, 2]);
                     population(t_idx) = population_temp(rank(1:Prob.N));
-                    [~, rank] = sortrows([[population(t_idx).CV]', [population(t_idx).Obj]'], [1, 2]);
+                    [~, rank] = sortrows([population(t_idx).CVs, population(t_idx).Objs], [1, 2]);
                     for i = 1:length(rank)
                         population(find_idx(rank(i))).rankO = i;
                     end

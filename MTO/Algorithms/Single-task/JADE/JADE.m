@@ -92,7 +92,7 @@ classdef JADE < Algorithm
 
         function offspring = Generation(Algo, population, union)
             % get top 100p% individuals
-            [~, rank] = sort([population.Obj]);
+            [~, rank] = sortrows([population.CVs, population.Objs], [1, 2]);
             pop_pbest = rank(1:max(round(Algo.P * length(population)), 1));
 
             for i = 1:length(population)

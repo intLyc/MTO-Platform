@@ -70,7 +70,7 @@ classdef CORCO < Algorithm
                             cor_flag{t} = true;
                         end
                     end
-                    weights = WeightGenerator(length(population{t}), [population{t}.CV], [population{t}.Obj], X{t}, cor_idx{t}, div_delta{t}, stage);
+                    weights = WeightGenerator(length(population{t}), population{t}.CVs, population{t}.Objs, X{t}, cor_idx{t}, div_delta{t}, stage);
 
                     % Generation
                     offspring = Algo.Generation(population{t}, F_pool, CR_pool, weights);
@@ -81,7 +81,7 @@ classdef CORCO < Algorithm
                     population{t} = Algo.Selection(population{t}, offspring, weights);
                     archive{t} = Algo.SelectionArchive(archive{t}, offspring, stage);
 
-                    [con_obj_betterNum, obj_con_betterNum] = InterCompare([archive{t}.Obj], [archive{t}.CV], [population{t}.Obj], [population{t}.CV]);
+                    [con_obj_betterNum, obj_con_betterNum] = InterCompare(archive{t}.Objs, archive{t}.CVs, population{t}.Objs, population{t}.CVs);
                     p = reshape([population{t}.Dec], length(population{t}(1).Dec), length(population{t}))';
                     div_idx{t} = sum(std(p)) / size(p, 2);
                     betterRecord1{t} = [betterRecord1{t}, con_obj_betterNum];
@@ -91,7 +91,7 @@ classdef CORCO < Algorithm
         end
 
         function offspring = Generation(Algo, population, F_pool, CR_pool, weights)
-            Obj = [population.Obj]; CV = [population.CV];
+            Obj = population.Objs; CV = population.CVs;
             normal_Obj = (Obj - min(Obj)) ./ (max(Obj) - min(Obj) + 1e-15);
             normal_CV = (CV - min(CV)) ./ (max(CV) - min(CV) + 1e-15);
 
@@ -149,8 +149,8 @@ classdef CORCO < Algorithm
         end
 
         function population = Selection(Algo, population, offspring, weights)
-            Obj = [[population.Obj], [offspring.Obj]];
-            CV = [[population.CV], [offspring.CV]];
+            Obj = [population.Objs', offspring.Objs'];
+            CV = [population.CVs', offspring.CVs'];
             normal_Obj = (Obj - min(Obj)) ./ (max(Obj) - min(Obj) + 1e-15);
             normal_CV = (CV - min(CV)) ./ (max(CV) - min(CV) + 1e-15);
 

@@ -98,8 +98,8 @@ classdef CAL_SHADE < Algorithm
                     % calculate SF SCR
                     SF = [population{t}(replace).F];
                     SCR = [population{t}(replace).CR];
-                    dif = [population{t}(replace).CV] - [offspring(replace).CV];
-                    dif_obj = [population{t}(replace).Obj] - [offspring(replace).Obj];
+                    dif = population{t}(replace).CVs' - offspring(replace).CVs';
+                    dif_obj = population{t}(replace).Objs' - offspring(replace).Objs';
                     dif_obj(dif_obj < 0) = 0;
                     dif(dif <= 0) = dif_obj(dif <= 0);
                     dif = dif ./ sum(dif);
@@ -123,9 +123,9 @@ classdef CAL_SHADE < Algorithm
 
                     % Linear Population Size Reduction
                     if length(population{t}) > N
-                        CV = [population{t}.CV]; CV(CV < Ep) = 0;
-                        Obj = [population{t}.Obj];
-                        [~, rank] = sortrows([CV', Obj'], [1, 2]);
+                        CV = population{t}.CVs; CV(CV < Ep) = 0;
+                        Obj = population{t}.Objs;
+                        [~, rank] = sortrows([CV, Obj], [1, 2]);
                         population{t} = population{t}(rank(1:N));
                     end
                 end
@@ -134,9 +134,9 @@ classdef CAL_SHADE < Algorithm
 
         function offspring = Generation(Algo, population, union, Ep)
             % get top 100p% individuals
-            CV = [population.CV]; CV(CV < Ep) = 0;
-            Obj = [population.Obj];
-            [~, rank] = sortrows([CV', Obj'], [1, 2]);
+            CV = population.CVs; CV(CV < Ep) = 0;
+            Obj = population.Objs;
+            [~, rank] = sortrows([CV, Obj], [1, 2]);
             pop_pbest = rank(1:max(round(Algo.P * length(population)), 1));
 
             for i = 1:length(population)

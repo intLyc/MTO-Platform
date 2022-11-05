@@ -63,7 +63,7 @@ classdef CMA_ES < Algorithm
                         population{t}(i).Dec(population{t}(i).Dec < 0) = 0;
                     end
                     population{t} = Algo.Evaluation(population{t}, Prob, t);
-                    [~, rank] = sortrows([[population{t}.CV]', [population{t}.Obj]'], [1, 2]);
+                    [~, rank] = sortrows([population{t}.CVs, population{t}.Objs], [1, 2]);
 
                     % Update mean
                     Pstep = Pstep(rank, :);

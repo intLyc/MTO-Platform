@@ -96,8 +96,8 @@ classdef MFMP < Algorithm
                     % calculate SF SCR
                     SF = [population{t}(replace).F];
                     SCR = [population{t}(replace).CR];
-                    dif = [population{t}(replace).CV] - [offspring(replace).CV];
-                    dif_obj = [population{t}(replace).Obj] - [offspring(replace).Obj];
+                    dif = population{t}(replace).CVs' - offspring(replace).CVs';
+                    dif_obj = population{t}(replace).Objs' - offspring(replace).Objs';
                     dif_obj(dif_obj < 0) = 0;
                     dif(dif <= 0) = dif_obj(dif <= 0);
                     dif = dif ./ sum(dif);
@@ -141,7 +141,7 @@ classdef MFMP < Algorithm
                 if ~reduce_flag && Algo.FE >= Prob.maxFE * Algo.Alpha
                     N = round(Prob.N / 2);
                     for t = 1:Prob.T
-                        [~, rank] = sortrows([[population{t}.CV]', [population{t}.Obj]'], [1, 2]);
+                        [~, rank] = sortrows([population{t}.CVs, population{t}.Objs], [1, 2]);
                         % save to archive
                         archive{t} = [archive{t}, population{t}(rank(N + 1:end))];
                         if length(archive{t}) > Prob.N
@@ -157,9 +157,9 @@ classdef MFMP < Algorithm
 
         function [offspring, flag] = Generation(Algo, population, union, c_pop, c_union, RMP)
             % get top 100p% individuals
-            [~, rank] = sortrows([[population.CV]', [population.Obj]'], [1, 2]);
+            [~, rank] = sortrows([population.CVs, population.Objs], [1, 2]);
             pop_pbest = rank(1:max(round(Algo.P * length(population)), 1));
-            [~, rank] = sortrows([[c_pop.CV]', [c_pop.Obj]'], [1, 2]);
+            [~, rank] = sortrows([c_pop.CVs, c_pop.Objs], [1, 2]);
             c_pop_pbest = rank(1:max(round(Algo.P * length(c_pop)), 1));
 
             flag = zeros(1, length(population));

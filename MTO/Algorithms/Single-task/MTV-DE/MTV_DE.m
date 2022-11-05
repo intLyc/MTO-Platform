@@ -58,12 +58,12 @@ classdef MTV_DE < Algorithm
                     % Pre Selection
                     for i = 1:length(population{t})
                         idx = (i - 1) * Algo.No + (1:Algo.No);
-                        [~, ~, best] = min_FP([offspring_temp(idx).Obj], [offspring_temp(idx).CV]);
+                        [~, ~, best] = min_FP(offspring_temp(idx).Objs, offspring_temp(idx).CVs);
                         offspring(i) = offspring_temp(idx(best));
                     end
                     % Selection
                     [~, replace] = Selection_Tournament(population{t}, offspring);
-                    replace_obj = [population{t}.Obj] > [offspring.Obj];
+                    replace_obj = population{t}.Objs > offspring.Objs;
                     idx_sr = rand(1, length(population{t})) <= Algo.SR;
                     replace(idx_sr) = replace_obj(idx_sr);
                     population{t}(replace) = offspring(replace);

@@ -85,7 +85,7 @@ classdef EMaTO_MKT < Algorithm
                     % Evaluation
                     offspring{t} = Algo.Evaluation(offspring{t}, Prob, t);
                     population{t} = [population{t}, offspring{t}];
-                    [~, rank] = sort([population{t}.Obj]);
+                    [~, rank] = sort(population{t}.Objs);
                     population{t} = population{t}(rank(1:Prob.N));
                 end
             end

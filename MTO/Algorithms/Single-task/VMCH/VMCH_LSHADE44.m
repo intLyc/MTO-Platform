@@ -227,8 +227,8 @@ classdef VMCH_LSHADE44 < Algorithm
                         k_idx = [population{t}.ST] == k;
                         SF = [population{t}(replace & k_idx).F];
                         SCR = [population{t}(replace & k_idx).CR];
-                        dif = [population{t}(replace & k_idx).CV] - [offspring(replace & k_idx).CV];
-                        dif_obj = [population{t}(replace & k_idx).Obj] - [offspring(replace & k_idx).Obj];
+                        dif = population{t}(replace & k_idx).CVs' - offspring(replace & k_idx).CVs';
+                        dif_obj = population{t}(replace & k_idx).Objs' - offspring(replace & k_idx).Objs';
                         dif_obj(dif_obj < 0) = 0;
                         dif(dif <= 0) = dif_obj(dif <= 0);
                         dif = dif ./ sum(dif);
@@ -252,7 +252,7 @@ classdef VMCH_LSHADE44 < Algorithm
 
                     % Linear Population Size Reduction
                     if length(population{t}) > N
-                        [~, rank] = sortrows([[population{t}.CV]', [population{t}.Obj]'], [1, 2]);
+                        [~, rank] = sortrows([population{t}.CVs, population{t}.Objs], [1, 2]);
                         population{t} = population{t}(rank(1:N));
                     end
                 end
@@ -261,7 +261,7 @@ classdef VMCH_LSHADE44 < Algorithm
 
         function offspring = Generation(Algo, population, union)
             % get top 100p% individuals
-            [~, rank] = sortrows([[population.CV]', [population.Obj]'], [1, 2]);
+            [~, rank] = sortrows([population.CVs, population.Objs], [1, 2]);
             pop_pbest = rank(1:max(round(Algo.P * length(population)), 1));
 
             for i = 1:length(population)
@@ -299,7 +299,7 @@ classdef VMCH_LSHADE44 < Algorithm
                     case 3 % randrl + bin
                         A = randperm(length(population), 4);
                         A(A == i) = []; idx = A(1:3);
-                        [~, rank_temp] = sortrows([[population(idx).CV]', [population(idx).Obj]'], [1, 2]);
+                        [~, rank_temp] = sortrows([population(idx).CVs, population(idx).Objs], [1, 2]);
                         x1 = idx(rank_temp(1));
                         if rand < 0.5
                             x2 = idx(rank_temp(2)); x3 = idx(rank_temp(3));
@@ -312,7 +312,7 @@ classdef VMCH_LSHADE44 < Algorithm
                     case 4 % randrl + exp
                         A = randperm(length(population), 4);
                         A(A == i) = []; idx = A(1:3);
-                        [~, rank_temp] = sortrows([[population(idx).CV]', [population(idx).Obj]'], [1, 2]);
+                        [~, rank_temp] = sortrows([population(idx).CVs, population(idx).Objs], [1, 2]);
                         x1 = idx(rank_temp(1));
                         if rand < 0.5
                             x2 = idx(rank_temp(2)); x3 = idx(rank_temp(3));

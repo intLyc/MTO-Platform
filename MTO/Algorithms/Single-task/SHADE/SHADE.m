@@ -75,8 +75,8 @@ classdef SHADE < Algorithm
                     % calculate SF SCR
                     SF = [population{t}(replace).F];
                     SCR = [population{t}(replace).CR];
-                    dif = [population{t}(replace).CV] - [offspring(replace).CV];
-                    dif_obj = [population{t}(replace).Obj] - [offspring(replace).Obj];
+                    dif = population{t}(replace).CVs' - offspring(replace).CVs';
+                    dif_obj = population{t}(replace).Objs' - offspring(replace).Objs';
                     dif_obj(dif_obj < 0) = 0;
                     dif(dif <= 0) = dif_obj(dif <= 0);
                     dif = dif ./ sum(dif);
@@ -103,7 +103,7 @@ classdef SHADE < Algorithm
 
         function offspring = Generation(Algo, population, union)
             % get top 100p% individuals
-            [~, rank] = sortrows([[population.CV]', [population.Obj]'], [1, 2]);
+            [~, rank] = sortrows([population.CVs, population.Objs], [1, 2]);
             pop_pbest = rank(1:max(round(Algo.P * length(population)), 1));
 
             for i = 1:length(population)

@@ -17,10 +17,10 @@ function [population, replace] = Selection_Tournament(population, offspring, var
         Ep = varargin{1};
     end
 
-    replace_cv = [population.CV] > [offspring.CV] & ...
-        [population.CV] > Ep & [offspring.CV] > Ep;
-    equal_cv = [population.CV] <= Ep & [offspring.CV] <= Ep;
-    replace_f = [population.Obj] > [offspring.Obj];
+    replace_cv = population.CVs > offspring.CVs & ...
+        population.CVs > Ep & offspring.CVs > Ep;
+    equal_cv = population.CVs <= Ep & offspring.CVs <= Ep;
+    replace_f = population.Objs > offspring.Objs;
     replace = (equal_cv & replace_f) | replace_cv;
     population(replace) = offspring(replace);
 end

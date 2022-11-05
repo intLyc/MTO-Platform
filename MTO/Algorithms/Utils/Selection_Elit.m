@@ -19,8 +19,8 @@ function [population, rank] = Selection_Elit(population, offspring, varargin)
 
     N = length(population);
     population = [population, offspring];
-    CV = [population.CV]; CV(CV < Ep) = 0;
-    Obj = [population.Obj];
-    [~, rank] = sortrows([CV', Obj'], [1, 2]);
+    CV = population.CVs; CV(CV < Ep) = 0;
+    Obj = population.Objs;
+    [~, rank] = sortrows([CV, Obj], [1, 2]);
     population = population(rank(1:N));
 end

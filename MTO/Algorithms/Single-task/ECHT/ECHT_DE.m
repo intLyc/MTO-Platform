@@ -109,8 +109,8 @@ classdef ECHT_DE < Algorithm
                                     case 3 % Epsilon constraint
                                         flag = sort_EC(obj_pair, cv_pair, Ep);
                                     case 4 % Self-adaptive penalty
-                                        obj_temp = [[population{t, ch}.Obj], offspring_temp(i).Obj];
-                                        cv_temp = [[population{t, ch}.CV], offspring_temp(i).CV];
+                                        obj_temp = [population{t, ch}.Objs; offspring_temp(i).Obj];
+                                        cv_temp = [population{t, ch}.CVs; offspring_temp(i).CV];
                                         f = cal_SP(obj_temp, cv_temp, 1);
                                         if f(i) > f(end)
                                             flag = [2, 1];

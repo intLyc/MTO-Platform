@@ -104,7 +104,7 @@ classdef DeCODE < Algorithm
         end
 
         function offspring = Generation(Algo, population, F_pool, CR_pool, weights, rate)
-            Obj = [population.Obj]; CV = [population.CV];
+            Obj = population.Objs; CV = population.CVs;
             normal_Obj = (Obj - min(Obj)) ./ (std(Obj) + eps(0));
             normal_CV = (CV - min(CV)) ./ (std(CV) + eps(0));
 
@@ -162,8 +162,8 @@ classdef DeCODE < Algorithm
         end
 
         function population = Selection(Algo, population, offspring, weights)
-            Obj = [[population.Obj], [offspring.Obj]];
-            CV = [[population.CV], [offspring.CV]];
+            Obj = [population.Objs', offspring.Objs'];
+            CV = [population.CVs', offspring.CVs'];
             normal_Obj = (Obj - min(Obj)) ./ (std(Obj) + eps(0));
             normal_CV = (CV - min(CV)) ./ (std(CV) + eps(0));
 

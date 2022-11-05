@@ -69,7 +69,7 @@ classdef MTEA_SaO < Algorithm
                 fail_iter = zeros(Prob.T, STNum);
                 for t = 1:Prob.T
                     parent = population{t};
-                    median_Obj(t) = median([parent.Obj]); median_CV(t) = median([parent.CV]);
+                    median_Obj(t) = median(parent.Objs); median_CV(t) = median(parent.CVs);
 
                     % Knowledge Transfer, only use for generate child
                     if obj.TNum > 0 && mod(obj.Gen - 1, obj.SaGap) + 1 < (obj.SaGap - obj.Memory) && mod(obj.Gen, obj.TGap) == 0
@@ -98,10 +98,10 @@ classdef MTEA_SaO < Algorithm
                                 population{t}(STIdx) = Selection_Tournament(population{t}(STIdx), offspring);
                         end
 
-                        succ_iter(t, st) = sum([population{t}(STIdx).CV] < median_CV(t) | ...
-                            ([population{t}(STIdx).CV] == median_CV(t) & [population{t}(STIdx).Obj] < median_Obj(t)), 'all');
-                        fail_iter(t, st) = sum([population{t}(STIdx).CV] > median_CV(t) | ...
-                            ([population{t}(STIdx).CV] == median_CV(t) & [population{t}(STIdx).Obj] > median_Obj(t)), 'all');
+                        succ_iter(t, st) = sum(population{t}(STIdx).CVs < median_CV(t) | ...
+                            (population{t}(STIdx).CVs == median_CV(t) & population{t}(STIdx).Objs < median_Obj(t)), 'all');
+                        fail_iter(t, st) = sum(population{t}(STIdx).CVs > median_CV(t) | ...
+                            (population{t}(STIdx).CVs == median_CV(t) & population{t}(STIdx).Objs > median_Obj(t)), 'all');
                     end
                 end
 

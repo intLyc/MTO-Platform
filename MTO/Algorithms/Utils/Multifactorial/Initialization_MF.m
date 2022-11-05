@@ -26,10 +26,10 @@ function population = Initialization_MF(Algo, Prob, Individual_Class)
     % Calculate facotrial ranks
     for t = 1:Prob.T
         for i = 1:length(population)
-            Obj(i) = population(i).MFObj(t);
-            CV(i) = population(i).MFCV(t);
+            Obj(i, 1) = population(i).MFObj(t);
+            CV(i, 1) = population(i).MFCV(t);
         end
-        [~, rank] = sortrows([CV', Obj'], [1, 2]);
+        [~, rank] = sortrows([CV, Obj], [1, 2]);
         for i = 1:length(population)
             population(rank(i)).MFRank(t) = i;
         end

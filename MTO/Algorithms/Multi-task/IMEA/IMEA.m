@@ -67,7 +67,7 @@ classdef IMEA < Algorithm
                             tmp_pop = population{k}(transfer_idx);
                             transfer_pop = [transfer_pop, tmp_pop];
                         end
-                        [~, replace_idx] = sortrows([[population{t}.CV]', [population{t}.Obj]'], [1, 2]);
+                        [~, replace_idx] = sortrows([population{t}.CVs, population{t}.Objs], [1, 2]);
                         parent(replace_idx(1:length(transfer_pop))) = transfer_pop;
                     end
                     % Generation

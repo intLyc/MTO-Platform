@@ -76,7 +76,7 @@ classdef C2oDE < Algorithm
                     % Pre Selection
                     for i = 1:length(population{t})
                         idx = (i - 1) * 3 + (1:3);
-                        [~, ~, best] = min_FP([offspring_temp(idx).Obj], [offspring_temp(idx).CV]);
+                        [~, ~, best] = min_FP(offspring_temp(idx).Objs, offspring_temp(idx).CVs);
                         offspring(i) = offspring_temp(idx(best));
                     end
                     % Selection
@@ -95,7 +95,7 @@ classdef C2oDE < Algorithm
                 % current-to-best
                 A = randperm(length(population), 3);
                 A(A == i) = []; x1 = A(1); x2 = A(2);
-                [~, best] = min([population.Obj]);
+                [~, best] = min(population.Objs);
                 F = F_pool(randi(length(F_pool)));
                 CR = CR_pool(randi(length(CR_pool)));
                 offspring(j).Dec = population(i).Dec + ...
@@ -106,7 +106,7 @@ classdef C2oDE < Algorithm
                 % rand-to-best-modified
                 A = randperm(length(population), 5);
                 A(A == i) = []; x1 = A(1); x2 = A(2); x3 = A(3); x4 = A(4);
-                [~, ~, best] = min_FP([population.Obj], [population.CV]);
+                [~, ~, best] = min_FP(population.Objs, population.CVs);
                 F = F_pool(randi(length(F_pool)));
                 CR = CR_pool(randi(length(CR_pool)));
                 offspring(j + 1).Dec = population(x1).Dec + ...

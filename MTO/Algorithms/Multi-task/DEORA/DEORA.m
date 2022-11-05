@@ -86,15 +86,15 @@ classdef DEORA < Algorithm
                 % Evaluation
                 offspring = Algo.Evaluation(offspring, Prob, k);
 
-                fit_old = [population{k}.Obj];
-                replace = [population{k}.Obj] > [offspring.Obj];
+                fit_old = population{k}.Objs';
+                replace = population{k}.Objs > offspring.Objs;
                 population{k}(replace) = offspring(replace);
-                fit_new = [population{k}.Obj];
+                fit_new = population{k}.Objs';
 
                 % calculate the reward
                 R_p = max((fit_old - fit_new) ./ (fit_old), 0);
                 best_g = [Algo.Best{:}];
-                R_b = max((min([best_g.Obj]) - min(fit_new)) / min([best_g.Obj]), 0);
+                R_b = max((min(best_g.Objs) - min(fit_new)) / min(best_g.Objs), 0);
                 R = zeros(Prob.T, 1);
                 for t = 1:Prob.T
                     if t == k %The main task
