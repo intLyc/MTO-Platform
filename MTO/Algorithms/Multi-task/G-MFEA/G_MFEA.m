@@ -60,7 +60,7 @@ classdef G_MFEA < Algorithm
             for t = 1:Prob.T
                 meanT{t} = zeros(1, max(Prob.D));
                 population_t = population([population.MFFactor] == t);
-                pop_Dec{t} = reshape([population_t.Dec], length(population_t(1).Dec), length(population_t))';
+                pop_Dec{t} = population_t.Decs;
                 pop_Rank{t} = [population_t.MFRank];
             end
             for t = 1:Prob.T - 1
@@ -108,7 +108,7 @@ classdef G_MFEA < Algorithm
                 pop_Dec = {}; pop_Rank = {};
                 for t = 1:Prob.T
                     population_t = population([population.MFFactor] == t);
-                    pop_Dec{t} = reshape([population_t.Dec], length(population_t(1).Dec), length(population_t))';
+                    pop_Dec{t} = population_t.Decs;
                     pop_Rank{t} = [population_t.MFRank];
                 end
 

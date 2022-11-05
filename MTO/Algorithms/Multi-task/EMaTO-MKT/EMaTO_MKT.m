@@ -69,10 +69,8 @@ classdef EMaTO_MKT < Algorithm
                 % Calculate MMD
                 difference = inf .* ones(Prob.T);
                 for t = 1:Prob.T - 1
-                    dec_t = reshape([population{t}.Dec], length(population{t}(1).Dec), length(population{t}));
                     for k = t + 1:Prob.T
-                        dec_k = reshape([population{k}.Dec], length(population{k}(1).Dec), length(population{k}));
-                        difference(t, k) = Algo.mmd(dec_t, dec_k, Algo.Sigma);
+                        difference(t, k) = Algo.mmd(population{t}.Decs', population{k}.Decs', Algo.Sigma);
                         difference(k, t) = difference(t, k);
                     end
                 end
@@ -134,14 +132,13 @@ classdef EMaTO_MKT < Algorithm
                 clusterModel(i).Nich_mean = zeros(K, dim);
                 clusterModel(i).Nich_std = zeros(K, dim);
                 Subpop = TempPopulation{i};
-                SubpopRnvec = reshape([Subpop.Dec], length(Subpop(1).Dec), length(Subpop))';
+                SubpopRnvec = Subpop.Decs;
                 temp_difference = difference(i, :);
                 [~, index] = sort(temp_difference);
                 %--------------Generate clusters by k-means--------------------------
                 for j = 1:knowledge_task_num
                     Selected_population = population{index(j)};
-                    Selected_matrix = reshape([Selected_population.Dec], length(Selected_population(1).Dec), length(Selected_population))';
-                    SubpopRnvec = [SubpopRnvec; Selected_matrix];
+                    SubpopRnvec = [SubpopRnvec; Selected_population.Decs];
                 end
                 [idx, ~] = kmeans(SubpopRnvec, K, 'Distance', 'cityblock', 'MaxIter', 30);
                 for ii = 1:length(Subpop)

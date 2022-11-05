@@ -56,17 +56,15 @@ classdef MTEA_AD < Algorithm
                         else
                             NL = epsilon(t);
                         end
-                        curr_pop_dec = reshape([offspring.Dec], length(offspring(1).Dec), length(offspring))';
 
                         his_pop_dec = [];
                         for k = 1:Prob.T
                             if k ~= t
-                                his_pop_dec_t = reshape([population{k}.Dec], length(population{k}(1).Dec), length(population{k}))';
-                                his_pop_dec = [his_pop_dec; his_pop_dec_t];
+                                his_pop_dec = [his_pop_dec; population{k}.Decs];
                             end
                         end
 
-                        tfsol = learn_anomaly_detection(curr_pop_dec, his_pop_dec, NL);
+                        tfsol = learn_anomaly_detection(offspring.Decs, his_pop_dec, NL);
 
                         transfer_pop = Individual.empty();
                         for i = 1:size(tfsol, 1)
