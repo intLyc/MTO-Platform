@@ -1,5 +1,5 @@
 classdef MTEA_SaO < Algorithm
-    % <MT-SO> <None>
+    % <MT-SO> <None/Constrained>
 
     %------------------------------- Reference --------------------------------
     % @Article{Li2022MTEA-SaO,

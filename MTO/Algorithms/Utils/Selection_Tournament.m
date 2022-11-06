@@ -22,5 +22,6 @@ function [population, replace] = Selection_Tournament(population, offspring, var
     equal_cv = population.CVs <= Ep & offspring.CVs <= Ep;
     replace_f = population.Objs > offspring.Objs;
     replace = (equal_cv & replace_f) | replace_cv;
+    replace = replace';
     population(replace) = offspring(replace);
 end

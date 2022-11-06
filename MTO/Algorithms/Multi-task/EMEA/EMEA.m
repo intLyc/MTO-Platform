@@ -81,11 +81,13 @@ classdef EMEA < Algorithm
                             end
                             [~, curr_rank] = sortrows([population{t}.CVs, population{t}.Objs], [1, 2]);
                             curr_pop = population{t}(curr_rank);
-                            curr_pop_dec = curr_pop.Decs(:, 1:Prob.D(t));
+                            curr_pop_dec = curr_pop.Decs;
+                            curr_pop_dec = curr_pop_dec(:, 1:Prob.D(t));
 
                             [~, his_rank] = sortrows([population{k}.CVs, population{k}.Objs], [1, 2]);
                             his_pop = population{k}(his_rank);
-                            his_pop_dec = his_pop.Decs(:, 1:Prob.D(k));
+                            his_pop_dec = his_pop.Decs;
+                            his_pop_dec = his_pop_dec(:, 1:Prob.D(k));
                             his_best_dec = his_pop_dec(1:inject_num, :);
 
                             % map to original
