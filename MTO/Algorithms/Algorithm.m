@@ -7,19 +7,18 @@ classdef Algorithm < handle
     % research purposes. All publications which use this platform or any code
     % in the platform should acknowledge the use of "MTO-Platform" and cite
     % or footnote "https://github.com/intLyc/MTO-Platform"
-    %--------------------------------------------------------------------------s
+    %--------------------------------------------------------------------------
 
     properties
-        Name % Algorithm's Name
+        Name % Algorithm Name
         FE % Function evaluations
         Gen % Generations
         FE_Gen % FE in each generations
-        Best % Best individual found
-        Result % Result of run
+        Best % Best individual found (Single-objective)
+        Result % Result after run
 
         Save_Dec = false % Save Dec Flag
         Result_Num = 50 % Convergence Results Num
-        Result_Idx % Result Save Idx
     end
 
     methods
@@ -28,7 +27,6 @@ classdef Algorithm < handle
             if length(varargin) >= 1
                 Algo.Name = varargin{1};
             end
-            Algo.Result_Idx = 1;
             Algo.FE = 0;
             Algo.Gen = 1;
             Algo.FE_Gen = [];
@@ -37,7 +35,6 @@ classdef Algorithm < handle
         end
 
         function reset(Algo)
-            Algo.Result_Idx = 1;
             Algo.FE = 0;
             Algo.Gen = 1;
             Algo.FE_Gen = [];

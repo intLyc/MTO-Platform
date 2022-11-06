@@ -10,19 +10,19 @@ classdef Problem < handle
     %--------------------------------------------------------------------------
 
     properties
-        defaultT = 50 % Default task number of each problem
-        defaultD = 50 % Default dimension of each task
-        defaultN = 100 % Default population size of each task
+        defaultT = 50 % Default tasks number
+        defaultD = 50 % Default dimension for each task
+        defaultN = 100 % Default population size for each task
 
-        Name % Problem's Name
-        T % Task number
-        M % Objective number for each task
-        D % Dimension for each task
-        N % Population size for each task
-        Fnc % Tasks functions
-        Lb % Lower Bound
-        Ub % Upper Boun
-        maxFE % Maximum evaluations of all tasks
+        Name % (cell) Problems Name List
+        T % (integer) Tasks number
+        M % (vector) Objective number for each task
+        D % (vector) Dimension for each task
+        N % (vector) Population size for each task
+        Fnc % (cell) Function for each task
+        Lb % (cell) Lower Bound for each task
+        Ub % (cell) Upper Bound for each task
+        maxFE % (integer) Maximum evaluations
     end
 
     methods
