@@ -12,6 +12,6 @@ classdef Individual_PSO < Individual
         PBestDec
         PBestObj
         PBestCV
-        V
+        V = 0
     end
 end
