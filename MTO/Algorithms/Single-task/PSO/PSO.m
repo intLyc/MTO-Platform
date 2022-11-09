@@ -1,6 +1,18 @@
 classdef PSO < Algorithm
     % <ST-SO> <None/Constrained>
 
+    %------------------------------- Reference --------------------------------
+    % @InProceedings{Kennedy1995PSO,
+    %   author     = {Kennedy, J. and Eberhart, R.},
+    %   booktitle  = {Proceedings of ICNN'95 - International Conference on Neural Networks},
+    %   title      = {Particle Swarm Optimization},
+    %   year       = {1995},
+    %   pages      = {1942-1948 vol.4},
+    %   volume     = {4},
+    %   doi        = {10.1109/ICNN.1995.488968},
+    % }
+    %--------------------------------------------------------------------------
+
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
     % research purposes. All publications which use this platform or any code
