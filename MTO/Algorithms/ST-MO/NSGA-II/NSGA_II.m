@@ -44,7 +44,7 @@ classdef NSGA_II < Algorithm
             % Initialize
             population = Initialization(Algo, Prob, Individual);
             for t = 1:Prob.T
-                rank{t} = Algo.Sort(population{t});
+                rank{t} = NSGA2Sort(population{t});
             end
 
             while Algo.notTerminated(Prob, population)
@@ -56,7 +56,7 @@ classdef NSGA_II < Algorithm
                     offspring = Algo.Evaluation(offspring, Prob, t);
                     % Selection
                     population{t} = [population{t}, offspring];
-                    rank{t} = Algo.Sort(population{t});
+                    rank{t} = NSGA2Sort(population{t});
                     population{t} = population{t}(rank{t}(1:Prob.N));
                     rank{t} = rank{t}(1:Prob.N);
                 end
@@ -82,7 +82,5 @@ classdef NSGA_II < Algorithm
                 count = count + 2;
             end
         end
-
-
     end
 end
