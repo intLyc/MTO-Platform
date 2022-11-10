@@ -25,16 +25,21 @@ classdef CEC17_MTMO5_PI_MS < Problem
         end
 
         function setTasks(Prob)
+            file_dir = './Problems/MT-MO/CEC17-MTMO/Data/';
+
+            load([file_dir, 'Mpm1.mat'])
+            load([file_dir, 'Spm1.mat'])
             Prob.T = 2;
             Prob.M(1) = 2;
             Prob.D(1) = 50;
-            Prob.Fnc{1} = @(x)getFun_CEC17_MTMO(x, 5, 1);
+            Prob.Fnc{1} = @(x)getFun_CEC17_MTMO(x, 5, 1, Mpm1, Spm1);
             Prob.Lb{1} = 0 * ones(1, Prob.D(1));
             Prob.Ub{1} = 1 * ones(1, Prob.D(1));
 
+            load([file_dir, 'Mpm2.mat'])
             Prob.M(2) = 2;
             Prob.D(2) = 50;
-            Prob.Fnc{2} = @(x)getFun_CEC17_MTMO(x, 5, 2);
+            Prob.Fnc{2} = @(x)getFun_CEC17_MTMO(x, 5, 2, Mpm2, 0);
             Prob.Lb{2} = 0 * ones(1, Prob.D(2));
             Prob.Ub{2} = 1 * ones(1, Prob.D(2));
         end

@@ -25,18 +25,21 @@ classdef CEC17_MTMO8_NI_MS < Problem
         end
 
         function setTasks(Prob)
+            file_dir = './Problems/MT-MO/CEC17-MTMO/Data/';
+
             Prob.T = 2;
             Prob.M(1) = 3;
             Prob.D(1) = 20;
-            Prob.Fnc{1} = @(x)getFun_CEC17_MTMO(x, 8, 1);
+            Prob.Fnc{1} = @(x)getFun_CEC17_MTMO(x, 8, 1, 1, 0);
             Prob.Lb{1} = -20 * ones(1, Prob.D(1));
             Prob.Ub{1} = 20 * ones(1, Prob.D(1));
             Prob.Lb{1}(1:2) = 0;
             Prob.Ub{1}(1:2) = 1;
 
+            load([file_dir, 'Mnm2.mat'])
             Prob.M(2) = 2;
             Prob.D(2) = 20;
-            Prob.Fnc{2} = @(x)getFun_CEC17_MTMO(x, 8, 2);
+            Prob.Fnc{2} = @(x)getFun_CEC17_MTMO(x, 8, 2, Mnm2, 0);
             Prob.Lb{2} = -20 * ones(1, Prob.D(2));
             Prob.Ub{2} = 20 * ones(1, Prob.D(2));
             Prob.Lb{2}(1:2) = 0;

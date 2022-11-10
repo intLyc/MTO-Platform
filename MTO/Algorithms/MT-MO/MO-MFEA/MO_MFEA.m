@@ -23,8 +23,8 @@ classdef MO_MFEA < Algorithm
 
     properties (SetAccess = private)
         RMP = 0.3
-        MuC = 10
-        MuM = 10
+        MuC = 20
+        MuM = 15
     end
 
     methods

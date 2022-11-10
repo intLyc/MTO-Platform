@@ -25,18 +25,21 @@ classdef CEC17_MTMO4_PI_HS < Problem
         end
 
         function setTasks(Prob)
+            file_dir = './Problems/MT-MO/CEC17-MTMO/Data/';
+
             Prob.T = 2;
             Prob.M(1) = 2;
             Prob.D(1) = 50;
-            Prob.Fnc{1} = @(x)getFun_CEC17_MTMO(x, 4, 1);
+            Prob.Fnc{1} = @(x)getFun_CEC17_MTMO(x, 4, 1, 1, 0);
             Prob.Lb{1} = -100 * ones(1, Prob.D(1));
             Prob.Ub{1} = 100 * ones(1, Prob.D(1));
             Prob.Lb{1}(1) = 0;
             Prob.Ub{1}(1) = 1;
 
+            load([file_dir, 'Sph2.mat'])
             Prob.M(2) = 2;
             Prob.D(2) = 50;
-            Prob.Fnc{2} = @(x)getFun_CEC17_MTMO(x, 4, 2);
+            Prob.Fnc{2} = @(x)getFun_CEC17_MTMO(x, 4, 2, 1, Sph2);
             Prob.Lb{2} = -100 * ones(1, Prob.D(2));
             Prob.Ub{2} = 100 * ones(1, Prob.D(2));
             Prob.Lb{2}(1) = 0;

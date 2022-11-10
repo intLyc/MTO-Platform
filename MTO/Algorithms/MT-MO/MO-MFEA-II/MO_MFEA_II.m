@@ -22,8 +22,8 @@ classdef MO_MFEA_II < Algorithm
     %--------------------------------------------------------------------------
 
     properties (SetAccess = private)
-        MuC = 10
-        MuM = 10
+        MuC = 20
+        MuM = 15
         Swap = 0.5
     end
 
