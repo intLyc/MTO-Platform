@@ -73,7 +73,7 @@ classdef MTEA_SaO < Algorithm
 
                     % Knowledge Transfer, only use for generate child
                     if obj.TNum > 0 && mod(obj.Gen - 1, obj.SaGap) + 1 < (obj.SaGap - obj.Memory) && mod(obj.Gen, obj.TGap) == 0
-                        transfer_pop = obj.transfer([population(1:t - 1), population(t + 1:end)]);
+                        transfer_pop = obj.Transfer([population(1:t - 1), population(t + 1:end)]);
                         replace = randperm(length(parent), length(transfer_pop));
                         parent(replace) = transfer_pop;
                     end
@@ -140,7 +140,7 @@ classdef MTEA_SaO < Algorithm
             end
         end
 
-        function transfer_pop = transfer(obj, archive)
+        function transfer_pop = Transfer(obj, archive)
             % random transfer
             for i = 1:obj.TNum
                 rand_t = randi([1, length(archive)]);
