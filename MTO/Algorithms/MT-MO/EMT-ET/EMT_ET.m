@@ -48,7 +48,7 @@ classdef EMT_ET < Algorithm
             % Initialize
             population = Initialization(Algo, Prob, Individual_ET);
             for t = 1:Prob.T
-                FrontNo = NDSort(population{t}.Objs, population{t}.CVs, Prob.N);
+                [rank{t}, FrontNo] = NSGA2Sort(population{t});
                 for i = 1:length(population{t})
                     population{t}(i).FrontNo = FrontNo(i);
                 end
@@ -57,31 +57,30 @@ classdef EMT_ET < Algorithm
             while Algo.notTerminated(Prob, population)
                 for t = 1:Prob.T
                     % Transfer
-                    transfer_pop = Algo.Transfer(Prob, population, t);
+                    transfer_pop = Algo.Transfer(population, t);
+                    transfer_pop = Algo.Evaluation(transfer_pop, Prob, t);
                     for i = 1:length(population{t})
                         population{t}(i).isTrans = false;
                     end
                     % Generation
-                    offspring = Algo.Generation([population{t}, transfer_pop], Prob.N);
+                    population{t} = [population{t}, transfer_pop];
+                    mating_pool = TournamentSelection(2, Prob.N - Algo.G, [rank{t}(:, 1); ones(Algo.G, 1)]);
+                    offspring = Algo.Generation(population{t}(mating_pool));
                     % Evaluation
                     offspring = Algo.Evaluation(offspring, Prob, t);
                     % Selection
                     population{t} = [population{t}, offspring];
-                    [FrontNo, MaxFNo] = NDSort(population{t}.Objs, population{t}.CVs, Prob.N);
+                    [rank{t}, FrontNo] = NSGA2Sort(population{t});
                     for i = 1:length(population{t})
                         population{t}(i).FrontNo = FrontNo(i);
                     end
-                    Next = FrontNo < MaxFNo;
-                    CrowdDis = CrowdingDistance(population{t}.Objs, FrontNo);
-                    Last = find(FrontNo == MaxFNo);
-                    [~, Rank] = sort(CrowdDis(Last), 'descend');
-                    Next(Last(Rank(1:Prob.N - sum(Next)))) = true;
-                    population{t} = population{t}(Next);
+                    population{t} = population{t}(rank{t}(1:Prob.N));
+                    rank{t} = rank{t}(1:Prob.N);
                 end
             end
         end
 
-        function transfer_pop = Transfer(Algo, Prob, population, t)
+        function transfer_pop = Transfer(Algo, population, t)
             transfer_pop = Individual_ET.empty();
             s = find([population{t}.isTrans] == true & [population{t}.FrontNo] < 2);
             if ~isempty(s)
@@ -114,27 +113,14 @@ classdef EMT_ET < Algorithm
                     transfer_pop(i).Dec = 2 * rand() * transfer_pop(i).Dec;
                     transfer_pop(i).Dec(transfer_pop(i).Dec > 1) = 1;
                     transfer_pop(i).Dec(transfer_pop(i).Dec < 0) = 0;
-                    transfer_pop(i) = Algo.Evaluation(transfer_pop(i), Prob, t);
                 end
             end
         end
 
-        function offspring = Generation(Algo, population, N)
+        function offspring = Generation(Algo, population)
             count = 1;
-            for i = 1:ceil(N / 2)
-                % parent tournament selection
-                t1 = randi(length(population)); t2 = randi(length(population));
-                if population(t1).FrontNo < population(t1).FrontNo
-                    p1 = t1;
-                else
-                    p1 = t2;
-                end
-                t1 = randi(length(population)); t2 = randi(length(population));
-                if population(t1).FrontNo < population(t1).FrontNo
-                    p2 = t1;
-                else
-                    p2 = t2;
-                end
+            for i = 1:ceil(length(population) / 2)
+                p1 = i; p2 = i + fix(length(population) / 2);
 
                 offspring(count) = population(p1);
                 offspring(count + 1) = population(p2);

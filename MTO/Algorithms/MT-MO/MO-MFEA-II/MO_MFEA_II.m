@@ -48,6 +48,7 @@ classdef MO_MFEA_II < Algorithm
                 for i = 1:Prob.N
                     population{t}(i).MFFactor = t;
                 end
+                rank{t} = NSGA2Sort(population{t});
             end
 
             while Algo.notTerminated(Prob, population)
@@ -61,21 +62,18 @@ classdef MO_MFEA_II < Algorithm
                 RMP = learnRMP(subpops, Prob.D); % learning RMP matrix online at every generation.
 
                 % Generation
-                population = Algo.MFSort(population);
-                offspring = Algo.Generation([population{:}], RMP);
+                mating_pool = TournamentSelection(2, Prob.N * Prob.T, [rank{:}]);
+                parent = [population{:}];
+                offspring = Algo.Generation(parent(mating_pool), RMP);
                 for t = 1:Prob.T
                     % Evaluation
                     offspring_t = offspring([offspring.MFFactor] == t);
                     offspring_t = Algo.Evaluation(offspring_t, Prob, t);
                     % Selection
                     population{t} = [population{t}, offspring_t];
-                    [FrontNo, MaxFNo] = NDSort(population{t}.Objs, population{t}.CVs, Prob.N);
-                    Next = FrontNo < MaxFNo;
-                    CrowdDis = CrowdingDistance(population{t}.Objs, FrontNo);
-                    Last = find(FrontNo == MaxFNo);
-                    [~, Rank] = sort(CrowdDis(Last), 'descend');
-                    Next(Last(Rank(1:Prob.N - sum(Next)))) = true;
-                    population{t} = population{t}(Next);
+                    rank{t} = NSGA2Sort(population{t});
+                    population{t} = population{t}(rank{t}(1:Prob.N));
+                    rank{t} = rank{t}(1:Prob.N);
                 end
             end
         end
@@ -83,21 +81,8 @@ classdef MO_MFEA_II < Algorithm
         function offspring = Generation(Algo, population, RMP)
             count = 1;
             for i = 1:ceil(length(population) / 2)
-                % parent tournament selection
-                t1 = randi(length(population)); t2 = randi(length(population));
-                if population(t1).MFRank < population(t1).MFRank
-                    p1 = t1;
-                else
-                    p1 = t2;
-                end
-                t1 = randi(length(population)); t2 = randi(length(population));
-                if population(t1).MFRank < population(t1).MFRank
-                    p2 = t1;
-                else
-                    p2 = t2;
-                end
+                p1 = i; p2 = i + fix(length(population) / 2);
                 rmp = RMP(population(p1).MFFactor, population(p2).MFFactor);
-
                 % multifactorial generation
                 offspring(count) = population(p1);
                 offspring(count + 1) = population(p2);
@@ -143,17 +128,6 @@ classdef MO_MFEA_II < Algorithm
                     offspring(x).Dec(offspring(x).Dec < 0) = 0;
                 end
                 count = count + 2;
-            end
-        end
-
-        function population = MFSort(Algo, population)
-            for t = 1:length(population)
-                FrontNo = NDSort(population{t}.Objs, population{t}.CVs, inf);
-                CrowdDis = CrowdingDistance(population{t}.Objs, FrontNo);
-                [~, rank] = sortrows([FrontNo', -CrowdDis']);
-                for i = 1:length(population{t})
-                    population{t}(rank(i)).MFRank = i;
-                end
             end
         end
     end

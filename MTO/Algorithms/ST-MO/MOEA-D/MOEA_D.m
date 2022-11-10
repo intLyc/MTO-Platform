@@ -25,8 +25,8 @@ classdef MOEA_D < Algorithm
 
     properties (SetAccess = private)
         Type = 1
-        MuC = 10
-        MuM = 10
+        MuC = 20
+        MuM = 15
     end
 
     methods
@@ -105,17 +105,13 @@ classdef MOEA_D < Algorithm
         end
 
         function offspring = Generation(Algo, population)
-            indorder = randperm(length(population));
-            count = 1;
             for i = 1:ceil(length(population) / 2)
-                p1 = indorder(i);
-                p2 = indorder(i + fix(length(population) / 2));
-                offspring(count) = population(p1);
-                offspring(count).Dec = GA_Crossover(population(p1).Dec, population(p2).Dec, Algo.MuC);
-                offspring(count).Dec = GA_Mutation(offspring(count).Dec, Algo.MuM);
-                offspring(count).Dec(offspring(count).Dec > 1) = 1;
-                offspring(count).Dec(offspring(count).Dec < 0) = 0;
-                count = count + 1;
+                p1 = i; p2 = i + fix(length(population) / 2);
+                offspring(i) = population(p1);
+                offspring(i).Dec = GA_Crossover(population(p1).Dec, population(p2).Dec, Algo.MuC);
+                offspring(i).Dec = GA_Mutation(offspring(i).Dec, Algo.MuM);
+                offspring(i).Dec(offspring(i).Dec > 1) = 1;
+                offspring(i).Dec(offspring(i).Dec < 0) = 0;
             end
         end
     end

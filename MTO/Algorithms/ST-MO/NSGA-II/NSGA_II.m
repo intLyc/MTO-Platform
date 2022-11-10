@@ -2,7 +2,7 @@ classdef NSGA_II < Algorithm
     % <ST-MO> <None/Constrained>
 
     % The code implementation is referenced from PlatEMO(https://github.com/BIMK/PlatEMO).
-    
+
     %------------------------------- Reference --------------------------------
     % @article{Deb2002NSGA2,
     %   title      = {A Fast and Elitist Multiobjective Genetic Algorithm: Nsga-ii},
@@ -24,8 +24,8 @@ classdef NSGA_II < Algorithm
     %--------------------------------------------------------------------------
 
     properties (SetAccess = private)
-        MuC = 10
-        MuM = 10
+        MuC = 20
+        MuM = 15
     end
 
     methods
@@ -43,32 +43,30 @@ classdef NSGA_II < Algorithm
         function run(Algo, Prob)
             % Initialize
             population = Initialization(Algo, Prob, Individual);
+            for t = 1:Prob.T
+                rank{t} = Algo.Sort(population{t});
+            end
 
             while Algo.notTerminated(Prob, population)
                 % Generation
                 for t = 1:Prob.T
-                    offspring = Algo.Generation(population{t});
+                    mating_pool = TournamentSelection(2, Prob.N, rank{t});
+                    offspring = Algo.Generation(population{t}(mating_pool));
                     % Evaluation
                     offspring = Algo.Evaluation(offspring, Prob, t);
                     % Selection
                     population{t} = [population{t}, offspring];
-                    [FrontNo, MaxFNo] = NDSort(population{t}.Objs, population{t}.CVs, Prob.N);
-                    Next = FrontNo < MaxFNo;
-                    CrowdDis = CrowdingDistance(population{t}.Objs, FrontNo);
-                    Last = find(FrontNo == MaxFNo);
-                    [~, Rank] = sort(CrowdDis(Last), 'descend');
-                    Next(Last(Rank(1:Prob.N - sum(Next)))) = true;
-                    population{t} = population{t}(Next);
+                    rank{t} = Algo.Sort(population{t});
+                    population{t} = population{t}(rank{t}(1:Prob.N));
+                    rank{t} = rank{t}(1:Prob.N);
                 end
             end
         end
 
         function offspring = Generation(Algo, population)
-            indorder = randperm(length(population));
             count = 1;
             for i = 1:ceil(length(population) / 2)
-                p1 = indorder(i);
-                p2 = indorder(i + fix(length(population) / 2));
+                p1 = i; p2 = i + fix(length(population) / 2);
                 offspring(count) = population(p1);
                 offspring(count + 1) = population(p2);
 
@@ -84,5 +82,7 @@ classdef NSGA_II < Algorithm
                 count = count + 2;
             end
         end
+
+
     end
 end

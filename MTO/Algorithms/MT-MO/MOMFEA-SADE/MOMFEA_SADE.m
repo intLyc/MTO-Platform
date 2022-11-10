@@ -74,13 +74,8 @@ classdef MOMFEA_SADE < Algorithm
                     offspring = Algo.Evaluation(offspring, Prob, t);
                     % Selection
                     population{t} = [population{t}, offspring];
-                    [FrontNo, MaxFNo] = NDSort(population{t}.Objs, population{t}.CVs, Prob.N);
-                    Next = FrontNo < MaxFNo;
-                    CrowdDis = CrowdingDistance(population{t}.Objs, FrontNo);
-                    Last = find(FrontNo == MaxFNo);
-                    [~, Rank] = sort(CrowdDis(Last), 'descend');
-                    Next(Last(Rank(1:Prob.N - sum(Next)))) = true;
-                    population{t} = population{t}(Next);
+                    rank = NSGA2Sort(population{t});
+                    population{t} = population{t}(rank(1:Prob.N));
                 end
                 % DE Strategies Probabilities Updation
                 R_Used(Algo.Gen, :) = hist([DE_Pool{:}], 1:STNum);
