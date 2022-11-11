@@ -180,8 +180,8 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 ### 运行MTO Platform
 
 - GUI界面: mto
-- 命令行: mto(AlgoCell, ProbCell, Reps, ParFlag, SaveName)
-- 示例: mto({'MFEA','AT-MFEA'},{'CEC17_MTSO1_CI_HS','CEC17_MTSO2_CI_MS'},2,true,'MTODataSave')
+- 命令行: mto(AlgoCell, ProbCell, Reps, Results_Num, ParFlag, SaveName)
+- 示例: mto({'MFEA','AT-MFEA'},{'CEC17_MTSO1_CI_HS','CEC17_MTSO2_CI_MS'},2,50,true,'MTODataSave')
 
 ### 加入自己的算法
 
