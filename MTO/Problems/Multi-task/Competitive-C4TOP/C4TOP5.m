@@ -1,5 +1,5 @@
 classdef C4TOP5 < Problem
-    % <MT-SO> <Competitive>
+    % <Multi-task> <Single-objective> <Competitive>
 
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for

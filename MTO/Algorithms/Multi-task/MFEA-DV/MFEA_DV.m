@@ -1,5 +1,5 @@
 classdef MFEA_DV < Algorithm
-    % <MT-SO> <None>
+    % <Multi-task> <Single-objective> <None>
 
     %------------------------------- Reference --------------------------------
     % @Article{Yin2019MFEA-DV,

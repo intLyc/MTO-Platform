@@ -1,5 +1,5 @@
 classdef CMA_ES < Algorithm
-    % <ST-SO> <None/Constrained>
+    % <Single-task> <Single-objective> <None/Constrained>
 
     %------------------------------- Reference --------------------------------
     % @article{Hansen2001CMA-ES,

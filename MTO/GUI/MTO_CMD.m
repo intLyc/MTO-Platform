@@ -1,6 +1,6 @@
-function MTO_CMD(AlgoCell, ProbCell, Reps, ParFlag, SaveName)
+function MTO_CMD(AlgoCell, ProbCell, Reps, Results_Num, ParFlag, SaveName)
     %% MTO Platform run with command line, save data in mat file
-    % Input: algorithms char cell, problems char cell, Reps, parallel flag, save file name
+    % Input: algorithms char cell, problems char cell, Reps, results num, parallel flag, save file name
     % Output: none
 
     %------------------------------- Copyright --------------------------------
@@ -62,15 +62,17 @@ function MTO_CMD(AlgoCell, ProbCell, Reps, ParFlag, SaveName)
         disp(['Problem: ', char(ProbObject{prob}.Name)]);
         for algo = 1:length(AlgoObject)
             disp(['Algorithm: ', char(AlgoObject{algo}.Name)]);
+            algo_obj = AlgoObject{algo};
+            algo_obj.Result_Num = Results_Num;
             if ParFlag
                 par_tool = Par(Reps);
                 parfor rep = 1:Reps
                     Par.tic
-                    AlgoObject{algo}.run(ProbObject{prob});
-                    tmp = AlgoObject{algo}.getResult(ProbObject{prob});
+                    algo_obj.run(ProbObject{prob});
+                    tmp = algo_obj.getResult(ProbObject{prob});
                     for t = 1:size(tmp, 1)
                         for g = 1:size(tmp, 2)
-                            if max(ProbObject{prob}.Problems(prob).M) > 1
+                            if max(ProbObject{prob}.M) > 1
                                 Results(prob, algo, rep).Obj{t}(g, :, :) = tmp(t, g).Obj(:, :);
                                 Results(prob, algo, rep).CV{t}(g, :) = tmp(t, g).CV;
                                 if isfield(tmp, 'Dec')
@@ -85,7 +87,7 @@ function MTO_CMD(AlgoCell, ProbCell, Reps, ParFlag, SaveName)
                             end
                         end
                     end
-                    AlgoObject{algo}.reset();
+                    algo_obj.reset();
                     par_tool(rep) = Par.toc;
                 end
                 Data.RunTimes(prob, algo, :) = [par_tool.ItStop] - [par_tool.ItStart];
@@ -93,11 +95,11 @@ function MTO_CMD(AlgoCell, ProbCell, Reps, ParFlag, SaveName)
                 t_temp = [];
                 for rep = 1:Reps
                     tstart = tic;
-                    AlgoObject{algo}.run(ProbObject{prob});
-                    tmp = AlgoObject{algo}.getResult(ProbObject{prob});
+                    algo_obj.run(ProbObject{prob});
+                    tmp = algo_obj.getResult(ProbObject{prob});
                     for t = 1:size(tmp, 1)
                         for g = 1:size(tmp, 2)
-                            if max(ProbObject{prob}.Problems(prob).M) > 1
+                            if max(ProbObject{prob}.M) > 1
                                 Results(prob, algo, rep).Obj{t}(g, :, :) = tmp(t, g).Obj(:, :);
                             else
                                 Results(prob, algo, rep).Obj(t, g, :, :) = tmp(t, g).Obj(:, :);
@@ -108,7 +110,7 @@ function MTO_CMD(AlgoCell, ProbCell, Reps, ParFlag, SaveName)
                             end
                         end
                     end
-                    AlgoObject{algo}.reset();
+                    algo_obj.reset();
                     t_temp(rep) = toc(tstart);
                 end
                 Data.RunTimes(prob, algo, :) = t_temp;

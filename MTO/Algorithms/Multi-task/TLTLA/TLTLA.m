@@ -1,5 +1,5 @@
 classdef TLTLA < Algorithm
-    % <MT-SO> <None/Constrained>
+    % <Multi-task> <Single-objective> <None/Constrained>
 
     %------------------------------- Reference --------------------------------
     % @Article{Ma2020TLTLA,

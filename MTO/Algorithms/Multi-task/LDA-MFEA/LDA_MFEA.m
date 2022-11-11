@@ -1,5 +1,5 @@
 classdef LDA_MFEA < Algorithm
-    % <MT-SO> <None>
+    % <Multi-task> <Single-objective> <None>
 
     %------------------------------- Reference --------------------------------
     % @inproceedings{Bali2017LDA-MFEA,

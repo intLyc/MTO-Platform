@@ -1,5 +1,5 @@
 classdef VMCH_LSHADE44 < Algorithm
-    % <ST-SO> <Constrained>
+    % <Single-task> <Single-objective> <Constrained>
 
     %------------------------------- Reference --------------------------------
     % @Article{Wu2022VMCH,

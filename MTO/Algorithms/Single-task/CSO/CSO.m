@@ -1,5 +1,5 @@
 classdef CSO < Algorithm
-    % <ST-SO> <None/Constrained>
+    % <Single-task> <Single-objective> <None/Constrained>
 
     %------------------------------- Reference --------------------------------
     % @Article{Cheng2015CSO,

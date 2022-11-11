@@ -1,7 +1,7 @@
 function mto(varargin)
     %% MTO Platform
     % GUI: 'mto'
-    % Command line: 'mto(AlgoCell, ProbCell, Reps, ParFlag, SaveName)'
+    % Command line: 'mto(AlgoCell, ProbCell, Reps, Results_Num, ParFlag, SaveName)'
 
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
@@ -21,6 +21,7 @@ function mto(varargin)
     else
         % run with command line, save data in mat file
         Reps = 1;
+        Results_Num = 50;
         ParFlag = 0;
         SaveName = 'MTOData';
         AlgoCell = varargin{1};
@@ -29,11 +30,14 @@ function mto(varargin)
             Reps = varargin{3};
         end
         if length(varargin) >= 4
-            ParFlag = varargin{4};
+            Results_Num = varargin{4};
         end
         if length(varargin) >= 5
+            ParFlag = varargin{4};
+        end
+        if length(varargin) >= 6
             SaveName = varargin{5};
         end
-        MTO_CMD(AlgoCell, ProbCell, Reps, ParFlag, SaveName);
+        MTO_CMD(AlgoCell, ProbCell, Reps, Results_Num, ParFlag, SaveName);
     end
 end

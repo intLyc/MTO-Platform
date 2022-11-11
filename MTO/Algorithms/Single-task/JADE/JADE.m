@@ -1,5 +1,5 @@
 classdef JADE < Algorithm
-    % <ST-SO> <None/Constrained>
+    % <Single-task> <Single-objective> <None/Constrained>
 
     %------------------------------- Reference --------------------------------
     % @InProceedings{Zhang2007JADE,

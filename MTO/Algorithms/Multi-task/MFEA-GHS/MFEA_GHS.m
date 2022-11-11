@@ -1,5 +1,5 @@
 classdef MFEA_GHS < Algorithm
-    % <MT-SO> <None/Constrained>
+    % <Multi-task> <Single-objective> <None/Constrained>
 
     %------------------------------- Reference --------------------------------
     % @Article{Liang2019MFEA-GHS,

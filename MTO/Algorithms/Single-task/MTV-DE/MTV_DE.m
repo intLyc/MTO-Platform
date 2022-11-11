@@ -1,5 +1,5 @@
 classdef MTV_DE < Algorithm
-    % <ST-SO> <Constrained>
+    % <Single-task> <Single-objective> <Constrained>
 
     %------------------------------- Reference --------------------------------
     % @article{MezuraMontes2007MTV-DE,

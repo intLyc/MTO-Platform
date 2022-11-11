@@ -1,5 +1,5 @@
 classdef C2oDE < Algorithm
-    % <ST-SO> <Constrained>
+    % <Single-task> <Single-objective> <Constrained>
 
     %------------------------------- Reference --------------------------------
     % @Article{Wang2019C2oDE,

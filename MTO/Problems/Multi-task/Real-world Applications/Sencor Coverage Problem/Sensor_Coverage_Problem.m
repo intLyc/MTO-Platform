@@ -1,5 +1,5 @@
 classdef Sensor_Coverage_Problem < Problem
-    % <MT-SO> <None/Competitive>
+    % <Multi-task> <Single-objective> <None/Competitive>
 
     %------------------------------- Reference --------------------------------
     % Reference 1

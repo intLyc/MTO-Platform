@@ -1,5 +1,5 @@
 classdef DEORA < Algorithm
-    % <MT-SO> <Competitive>
+    % <Multi-task> <Single-objective> <Competitive>
 
     %------------------------------- Reference --------------------------------
     % @Article{Li2022CompetitiveMTO,

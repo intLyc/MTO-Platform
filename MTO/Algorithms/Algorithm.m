@@ -16,9 +16,9 @@ classdef Algorithm < handle
         FE_Gen % FE in each generations
         Best % Best individual found (Single-objective)
         Result % Result after run
+        Result_Num % Convergence Results Num
 
         Save_Dec = false % Save Dec Flag
-        Result_Num = 50 % Convergence Results Num
     end
 
     methods

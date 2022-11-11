@@ -1,5 +1,5 @@
 classdef CMT2 < Problem
-    % <MT-SO> <Constrained>
+    % <Multi-task> <Single-objective> <Constrained>
 
     %------------------------------- Reference --------------------------------
     % @InProceedings{Li2022CMT-Benchmark,

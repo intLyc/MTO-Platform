@@ -1,5 +1,5 @@
 classdef rank_DE < Algorithm
-    % <ST-SO> <None/Constrained>
+    % <Single-task> <Single-objective> <None/Constrained>
 
     %------------------------------- Reference --------------------------------
     % @Article{Gong2013rank-DE,

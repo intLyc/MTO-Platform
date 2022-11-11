@@ -1,5 +1,5 @@
 classdef MFDE < Algorithm
-    % <MT-SO> <None/Constrained>
+    % <Multi-task> <Single-objective> <None/Constrained>
 
     %------------------------------- Reference --------------------------------
     % @InProceedings{Feng2017MFDE-MFPSO,

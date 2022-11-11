@@ -1,5 +1,5 @@
 classdef EMaTO_MKT < Algorithm
-    % <MaT-SO> <None>
+    % <Many-task> <Single-objective> <None>
 
     %------------------------------- Reference --------------------------------
     % @Article{Liang2021EMaTO-MKT,

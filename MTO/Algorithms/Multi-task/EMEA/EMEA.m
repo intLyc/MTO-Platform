@@ -1,5 +1,5 @@
 classdef EMEA < Algorithm
-    % <MT-SO> <None/Constrained>
+    % <Multi-task> <Single-objective> <None/Constrained>
 
     %------------------------------- Reference --------------------------------
     % @Article{Feng2019EMEA,

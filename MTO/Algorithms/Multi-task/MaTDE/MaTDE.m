@@ -1,5 +1,5 @@
 classdef MaTDE < Algorithm
-    % <MaT-SO> <None/Constrained>
+    % <Many-task> <Single-objective> <None/Constrained>
 
     %------------------------------- Reference --------------------------------
     % @article{Chen2020MaTDE,

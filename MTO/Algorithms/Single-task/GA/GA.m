@@ -1,5 +1,5 @@
 classdef GA < Algorithm
-    % <ST-SO> <None/Constrained>
+    % <Single-task> <Single-objective> <None/Constrained>
 
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for

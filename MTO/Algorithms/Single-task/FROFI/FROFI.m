@@ -1,5 +1,5 @@
 classdef FROFI < Algorithm
-    % <ST-SO> <Constrained>
+    % <Single-task> <Single-objective> <Constrained>
 
     %------------------------------- Reference --------------------------------
     % @Article{Wang2016FROFI,

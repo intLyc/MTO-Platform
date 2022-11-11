@@ -1,5 +1,5 @@
 classdef MFMP < Algorithm
-    % <MT-SO> <None/Constrained>
+    % <Multi-task> <Single-objective> <None/Constrained>
 
     %------------------------------- Reference --------------------------------
     % @Article{Li2020MFMP,

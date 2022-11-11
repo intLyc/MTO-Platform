@@ -1,5 +1,5 @@
 classdef MFEA < Algorithm
-    % <MT-SO> <None/Constrained>
+    % <Multi-task> <Single-objective> <None/Constrained>
 
     %------------------------------- Reference --------------------------------
     % @Article{Gupta2016MFEA,

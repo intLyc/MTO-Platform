@@ -1,5 +1,5 @@
 classdef MFEA_AKT < Algorithm
-    % <MT-SO> <None>
+    % <Multi-task> <Single-objective> <None>
 
     %------------------------------- Reference --------------------------------
     % @Article{Zhou2021MFEA-AKT,

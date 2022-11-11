@@ -1,5 +1,5 @@
 classdef ECHT_DE < Algorithm
-    % <ST-SO> <Constrained>
+    % <Single-task> <Single-objective> <Constrained>
 
     %------------------------------- Reference --------------------------------
     % @Article{Mallipeddi2010ECHT,

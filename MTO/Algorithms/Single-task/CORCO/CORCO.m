@@ -1,5 +1,5 @@
 classdef CORCO < Algorithm
-    % <ST-SO> <Constrained>
+    % <Single-task> <Single-objective> <Constrained>
 
     %------------------------------- Reference --------------------------------
     % @Article{Wang2020CORCO,

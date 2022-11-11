@@ -1,5 +1,5 @@
 classdef SBO < Algorithm
-    % <MaT-SO> <None/Constrained>
+    % <Many-task> <Single-objective> <None/Constrained>
 
     %------------------------------- Reference --------------------------------
     % @Article{Liaw2019SBO,

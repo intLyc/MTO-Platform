@@ -1,5 +1,5 @@
 classdef AT_MFEA < Algorithm
-    % <MT-SO> <None/Constrained>
+    % <Multi-task> <Single-objective> <None/Constrained>
 
     %------------------------------- Reference --------------------------------
     % @article{Xue2020AT-MFEA,

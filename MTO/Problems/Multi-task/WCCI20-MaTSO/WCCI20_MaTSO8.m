@@ -1,5 +1,5 @@
 classdef WCCI20_MaTSO8 < Problem
-    % <MaT-SO> <None>
+    % <Many-task> <Single-objective> <None>
 
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for

@@ -1,5 +1,5 @@
 classdef C2TOP_Case4_P1 < Problem
-    % <MT-SO> <Competitive>
+    % <Multi-task> <Single-objective> <Competitive>
 
     methods
         function Prob = C2TOP_Case4_P1(varargin)

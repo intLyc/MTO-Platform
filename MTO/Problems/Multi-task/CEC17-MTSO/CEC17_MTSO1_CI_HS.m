@@ -1,5 +1,5 @@
 classdef CEC17_MTSO1_CI_HS < Problem
-    % <MT-SO> <None>
+    % <Multi-task> <Multi-objective> <None>
 
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for

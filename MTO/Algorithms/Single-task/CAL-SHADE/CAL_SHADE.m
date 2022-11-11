@@ -1,5 +1,5 @@
 classdef CAL_SHADE < Algorithm
-    % <ST-SO> <Constrained>
+    % <Single-task> <Single-objective> <Constrained>
 
     %------------------------------- Reference --------------------------------
     % @InProceedings{Zamuda2017CAL-SHADE,

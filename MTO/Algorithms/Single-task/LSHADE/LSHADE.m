@@ -1,5 +1,5 @@
 classdef LSHADE < Algorithm
-    % <ST-SO> <None/Constrained>
+    % <Single-task> <Single-objective> <None/Constrained>
 
     %------------------------------- Reference --------------------------------
     % @InProceedings{Tanabe2014LSHADE,

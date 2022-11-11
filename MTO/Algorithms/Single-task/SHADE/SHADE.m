@@ -1,5 +1,5 @@
 classdef SHADE < Algorithm
-    % <ST-SO> <None/Constrained>
+    % <Single-task> <Single-objective> <None/Constrained>
 
     %------------------------------- Reference --------------------------------
     % @InProceedings{Tanabe2013SHADE,

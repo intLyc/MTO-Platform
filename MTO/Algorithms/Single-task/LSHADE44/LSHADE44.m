@@ -1,5 +1,5 @@
 classdef LSHADE44 < Algorithm
-    % <ST-SO> <None/Constrained>
+    % <Single-task> <Single-objective> <None/Constrained>
 
     %------------------------------- Reference --------------------------------
     % @InProceedings{Polakova2017LSHADE44,

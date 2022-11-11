@@ -1,5 +1,5 @@
 classdef SREMTO < Algorithm
-    % <MT-SO> <None/Constrained>
+    % <Multi-task> <Single-objective> <None/Constrained>
 
     %------------------------------- Reference --------------------------------
     % @Article{Zheng2020SREMTO,
