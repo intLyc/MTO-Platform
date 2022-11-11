@@ -202,7 +202,7 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 
 - 继承Metric文件夹下的**Metric.m**类实现新的指标类，并放入Metric文件夹或其子文件夹内
 - 在文件的第2行添加标签 <Metric>，对应于列表数据展示和图像数据展示
-- *可参考Objective.m和Converge_Obj.m的实现*
+- *可参考 Obj.m、IGD.m 的实现*
 
 ## 功能
 
