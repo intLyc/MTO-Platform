@@ -5,7 +5,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         MTOPlatformUIFigure          matlab.ui.Figure
         MTOPlatformGridLayout        matlab.ui.container.GridLayout
         MTOPlatformTabGroup          matlab.ui.container.TabGroup
-        TestTab                      matlab.ui.container.Tab
+        TestModuleTab                matlab.ui.container.Tab
         TestGridLayout               matlab.ui.container.GridLayout
         TPanel1                      matlab.ui.container.Panel
         TP1GridLayout                matlab.ui.container.GridLayout
@@ -35,7 +35,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         OutputTextAreaLabel          matlab.ui.control.Label
         TOutputTextArea              matlab.ui.control.TextArea
         MTOPlatformv03YanchiLiLabel  matlab.ui.control.Label
-        ExperimentTab                matlab.ui.container.Tab
+        ExperimentModuleTab          matlab.ui.container.Tab
         ExperimentsGridLayout        matlab.ui.container.GridLayout
         EPanel3                      matlab.ui.container.Panel
         EP3GridLayout                matlab.ui.container.GridLayout
@@ -77,9 +77,6 @@ classdef MTO_GUI < matlab.apps.AppBase
         EP2GridLayout                matlab.ui.container.GridLayout
         EAlgorithmsTree              matlab.ui.container.Tree
         EProblemsTree                matlab.ui.container.Tree
-        GridLayout                   matlab.ui.container.GridLayout
-        ELoadDataButton              matlab.ui.control.Button
-        ESaveDataButton              matlab.ui.control.Button
         GridLayout2                  matlab.ui.container.GridLayout
         EStartButton                 matlab.ui.control.Button
         EPauseButton                 matlab.ui.control.Button
@@ -90,7 +87,10 @@ classdef MTO_GUI < matlab.apps.AppBase
         GridLayout4                  matlab.ui.container.GridLayout
         ESelectedProblemsLabel       matlab.ui.control.Label
         EProblemsDelButton           matlab.ui.control.Button
-        DataProcessTab               matlab.ui.container.Tab
+        GridLayout                   matlab.ui.container.GridLayout
+        ESaveDataButton              matlab.ui.control.Button
+        ELoadDataButton              matlab.ui.control.Button
+        DataProcessModuleTab         matlab.ui.container.Tab
         DataProcessGridLayout        matlab.ui.container.GridLayout
         DPanel1                      matlab.ui.container.Panel
         DP1GridLayout                matlab.ui.container.GridLayout
@@ -1084,9 +1084,10 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TloadAlgoProb();
             app.TupdateAlgorithm();
             app.TupdateProblem();
-            app.TupdateUIAxes();
+            % app.TupdateUIAxes();
             app.EloadAlgoProb();
             app.readMetric();
+            app.MTOPlatformTabGroup.SelectedTab = app.ExperimentModuleTab;
         end
 
         % Value changed function: TTaskTypeDropDown
@@ -2292,7 +2293,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create MTOPlatformUIFigure and hide until all components are created
             app.MTOPlatformUIFigure = uifigure('Visible', 'off');
             app.MTOPlatformUIFigure.Color = [1 1 1];
-            app.MTOPlatformUIFigure.Position = [100 100 1126 677];
+            app.MTOPlatformUIFigure.Position = [100 100 1153 693];
             app.MTOPlatformUIFigure.Name = 'MTO Platform';
             app.MTOPlatformUIFigure.WindowStyle = 'modal';
 
@@ -2300,6 +2301,8 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.MTOPlatformGridLayout = uigridlayout(app.MTOPlatformUIFigure);
             app.MTOPlatformGridLayout.ColumnWidth = {'1x'};
             app.MTOPlatformGridLayout.RowHeight = {'1x'};
+            app.MTOPlatformGridLayout.ColumnSpacing = 5;
+            app.MTOPlatformGridLayout.RowSpacing = 5;
             app.MTOPlatformGridLayout.Padding = [0 0 0 0];
             app.MTOPlatformGridLayout.BackgroundColor = [1 1 1];
 
@@ -2308,16 +2311,18 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.MTOPlatformTabGroup.Layout.Row = 1;
             app.MTOPlatformTabGroup.Layout.Column = 1;
 
-            % Create TestTab
-            app.TestTab = uitab(app.MTOPlatformTabGroup);
-            app.TestTab.Title = 'Test';
-            app.TestTab.BackgroundColor = [1 1 1];
+            % Create TestModuleTab
+            app.TestModuleTab = uitab(app.MTOPlatformTabGroup);
+            app.TestModuleTab.Title = 'Test Module';
+            app.TestModuleTab.BackgroundColor = [1 1 1];
 
             % Create TestGridLayout
-            app.TestGridLayout = uigridlayout(app.TestTab);
-            app.TestGridLayout.ColumnWidth = {170, '3x', '1x'};
+            app.TestGridLayout = uigridlayout(app.TestModuleTab);
+            app.TestGridLayout.ColumnWidth = {165, '3x', '1x'};
             app.TestGridLayout.RowHeight = {'1x'};
             app.TestGridLayout.ColumnSpacing = 5;
+            app.TestGridLayout.RowSpacing = 5;
+            app.TestGridLayout.Padding = [5 5 5 5];
             app.TestGridLayout.BackgroundColor = [1 1 1];
 
             % Create TPanel1
@@ -2506,7 +2511,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TStartButton = uibutton(app.TP24GridLayout, 'push');
             app.TStartButton.ButtonPushedFcn = createCallbackFcn(app, @TStartButtonPushed, true);
             app.TStartButton.BusyAction = 'cancel';
-            app.TStartButton.BackgroundColor = [0.6706 0.949 0.6706];
+            app.TStartButton.BackgroundColor = [0.7882 1 0.7882];
             app.TStartButton.FontWeight = 'bold';
             app.TStartButton.Tooltip = {''};
             app.TStartButton.Layout.Row = 1;
@@ -2517,7 +2522,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TResetButton = uibutton(app.TP24GridLayout, 'push');
             app.TResetButton.ButtonPushedFcn = createCallbackFcn(app, @TResetButtonPushed, true);
             app.TResetButton.BusyAction = 'cancel';
-            app.TResetButton.BackgroundColor = [1 1 0.702];
+            app.TResetButton.BackgroundColor = [1 1 0.7608];
             app.TResetButton.FontWeight = 'bold';
             app.TResetButton.Tooltip = {''};
             app.TResetButton.Layout.Row = 1;
@@ -2568,16 +2573,18 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.MTOPlatformv03YanchiLiLabel.Layout.Column = 1;
             app.MTOPlatformv03YanchiLiLabel.Text = 'MTO-Platform v0.3  Yanchi Li';
 
-            % Create ExperimentTab
-            app.ExperimentTab = uitab(app.MTOPlatformTabGroup);
-            app.ExperimentTab.Title = 'Experiment';
-            app.ExperimentTab.BackgroundColor = [1 1 1];
+            % Create ExperimentModuleTab
+            app.ExperimentModuleTab = uitab(app.MTOPlatformTabGroup);
+            app.ExperimentModuleTab.Title = 'Experiment Module';
+            app.ExperimentModuleTab.BackgroundColor = [1 1 1];
 
             % Create ExperimentsGridLayout
-            app.ExperimentsGridLayout = uigridlayout(app.ExperimentTab);
-            app.ExperimentsGridLayout.ColumnWidth = {155, 160, '1.3x'};
+            app.ExperimentsGridLayout = uigridlayout(app.ExperimentModuleTab);
+            app.ExperimentsGridLayout.ColumnWidth = {165, 165, '1.3x'};
             app.ExperimentsGridLayout.RowHeight = {'1x'};
             app.ExperimentsGridLayout.ColumnSpacing = 5;
+            app.ExperimentsGridLayout.RowSpacing = 5;
+            app.ExperimentsGridLayout.Padding = [5 5 5 5];
             app.ExperimentsGridLayout.BackgroundColor = [1 1 1];
 
             % Create EPanel3
@@ -2606,7 +2613,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create EP3T1GridLayout
             app.EP3T1GridLayout = uigridlayout(app.EP3TGridLayout);
-            app.EP3T1GridLayout.ColumnWidth = {'0.9x', '0.7x', '0.9x', '0.9x', '1x', '1x', '1x', '1x', '1x', '1x'};
+            app.EP3T1GridLayout.ColumnWidth = {'1x', '0.7x', '0.9x', '0.9x', '1x', '1x', '1x', '1x', '1x', '1x'};
             app.EP3T1GridLayout.RowHeight = {'fit'};
             app.EP3T1GridLayout.ColumnSpacing = 5;
             app.EP3T1GridLayout.RowSpacing = 7;
@@ -2735,7 +2742,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create EP1GridLayout
             app.EP1GridLayout = uigridlayout(app.EPanel1);
-            app.EP1GridLayout.ColumnWidth = {'fit', '1x', 40};
+            app.EP1GridLayout.ColumnWidth = {65, '1x', 40};
             app.EP1GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x'};
             app.EP1GridLayout.ColumnSpacing = 5;
             app.EP1GridLayout.RowSpacing = 7;
@@ -2746,7 +2753,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EProblemsAddButton = uibutton(app.EP1GridLayout, 'push');
             app.EProblemsAddButton.ButtonPushedFcn = createCallbackFcn(app, @EProblemsAddButtonPushed, true);
             app.EProblemsAddButton.VerticalAlignment = 'top';
-            app.EProblemsAddButton.BackgroundColor = [0.702 1 0.702];
+            app.EProblemsAddButton.BackgroundColor = [1 1 1];
             app.EProblemsAddButton.FontWeight = 'bold';
             app.EProblemsAddButton.Tooltip = {'Add selected problems'};
             app.EProblemsAddButton.Layout.Row = 8;
@@ -2757,7 +2764,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EAlgorithmsAddButton = uibutton(app.EP1GridLayout, 'push');
             app.EAlgorithmsAddButton.ButtonPushedFcn = createCallbackFcn(app, @EAlgorithmsAddButtonPushed, true);
             app.EAlgorithmsAddButton.VerticalAlignment = 'top';
-            app.EAlgorithmsAddButton.BackgroundColor = [0.702 1 0.702];
+            app.EAlgorithmsAddButton.BackgroundColor = [1 1 1];
             app.EAlgorithmsAddButton.FontWeight = 'bold';
             app.EAlgorithmsAddButton.Tooltip = {'Add selected algorithms'};
             app.EAlgorithmsAddButton.Layout.Row = 6;
@@ -2803,13 +2810,13 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create EParallelDropDown
             app.EParallelDropDown = uidropdown(app.EP1GridLayout);
-            app.EParallelDropDown.Items = {'Enable', 'Disable'};
-            app.EParallelDropDown.ItemsData = [1 0];
+            app.EParallelDropDown.Items = {'Disable', 'Enable'};
+            app.EParallelDropDown.ItemsData = {'0', '1'};
             app.EParallelDropDown.FontWeight = 'bold';
             app.EParallelDropDown.BackgroundColor = [1 1 1];
             app.EParallelDropDown.Layout.Row = 2;
             app.EParallelDropDown.Layout.Column = [2 3];
-            app.EParallelDropDown.Value = 1;
+            app.EParallelDropDown.Value = '0';
 
             % Create TaskLabel_2
             app.TaskLabel_2 = uilabel(app.EP1GridLayout);
@@ -2869,7 +2876,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create GridLayout5
             app.GridLayout5 = uigridlayout(app.EP1GridLayout);
-            app.GridLayout5.ColumnWidth = {'1x', 55};
+            app.GridLayout5.ColumnWidth = {'1x', 65};
             app.GridLayout5.ColumnSpacing = 5;
             app.GridLayout5.RowSpacing = 7;
             app.GridLayout5.Padding = [0 0 0 0];
@@ -2886,7 +2893,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.ERepsEditField.FontWeight = 'bold';
             app.ERepsEditField.Layout.Row = 1;
             app.ERepsEditField.Layout.Column = 2;
-            app.ERepsEditField.Value = 30;
+            app.ERepsEditField.Value = 1;
 
             % Create EResultsNumEditField
             app.EResultsNumEditField = uieditfield(app.GridLayout5, 'numeric');
@@ -2944,35 +2951,6 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EProblemsTree.Layout.Row = 6;
             app.EProblemsTree.Layout.Column = 1;
 
-            % Create GridLayout
-            app.GridLayout = uigridlayout(app.EP2GridLayout);
-            app.GridLayout.RowHeight = {'1x'};
-            app.GridLayout.ColumnSpacing = 5;
-            app.GridLayout.Padding = [0 0 0 0];
-            app.GridLayout.Layout.Row = 1;
-            app.GridLayout.Layout.Column = 1;
-            app.GridLayout.BackgroundColor = [1 1 1];
-
-            % Create ELoadDataButton
-            app.ELoadDataButton = uibutton(app.GridLayout, 'push');
-            app.ELoadDataButton.ButtonPushedFcn = createCallbackFcn(app, @ELoadDataButtonPushed, true);
-            app.ELoadDataButton.BackgroundColor = [1 1 1];
-            app.ELoadDataButton.FontWeight = 'bold';
-            app.ELoadDataButton.Tooltip = {'Load MTOData.mat to show detials'};
-            app.ELoadDataButton.Layout.Row = 1;
-            app.ELoadDataButton.Layout.Column = 1;
-            app.ELoadDataButton.Text = 'Load Data';
-
-            % Create ESaveDataButton
-            app.ESaveDataButton = uibutton(app.GridLayout, 'push');
-            app.ESaveDataButton.ButtonPushedFcn = createCallbackFcn(app, @ESaveDataButtonPushed, true);
-            app.ESaveDataButton.BackgroundColor = [1 1 1];
-            app.ESaveDataButton.FontWeight = 'bold';
-            app.ESaveDataButton.Tooltip = {'Save finished data to mat file'};
-            app.ESaveDataButton.Layout.Row = 1;
-            app.ESaveDataButton.Layout.Column = 2;
-            app.ESaveDataButton.Text = 'Save Data';
-
             % Create GridLayout2
             app.GridLayout2 = uigridlayout(app.EP2GridLayout);
             app.GridLayout2.ColumnWidth = {'1x', '1x', '1x'};
@@ -2987,7 +2965,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EStartButton = uibutton(app.GridLayout2, 'push');
             app.EStartButton.ButtonPushedFcn = createCallbackFcn(app, @EStartButtonPushed, true);
             app.EStartButton.BusyAction = 'cancel';
-            app.EStartButton.BackgroundColor = [0.6706 0.949 0.6706];
+            app.EStartButton.BackgroundColor = [0.7882 1 0.7882];
             app.EStartButton.FontWeight = 'bold';
             app.EStartButton.Layout.Row = 1;
             app.EStartButton.Layout.Column = 1;
@@ -2997,7 +2975,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EPauseButton = uibutton(app.GridLayout2, 'push');
             app.EPauseButton.ButtonPushedFcn = createCallbackFcn(app, @EPauseButtonPushed, true);
             app.EPauseButton.BusyAction = 'cancel';
-            app.EPauseButton.BackgroundColor = [1 1 0.502];
+            app.EPauseButton.BackgroundColor = [1 1 0.7608];
             app.EPauseButton.FontWeight = 'bold';
             app.EPauseButton.Enable = 'off';
             app.EPauseButton.Layout.Row = 1;
@@ -3008,7 +2986,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EStopButton = uibutton(app.GridLayout2, 'push');
             app.EStopButton.ButtonPushedFcn = createCallbackFcn(app, @EStopButtonPushed, true);
             app.EStopButton.BusyAction = 'cancel';
-            app.EStopButton.BackgroundColor = [1 0.6 0.6];
+            app.EStopButton.BackgroundColor = [1 0.7294 0.7294];
             app.EStopButton.FontWeight = 'bold';
             app.EStopButton.Enable = 'off';
             app.EStopButton.Layout.Row = 1;
@@ -3036,7 +3014,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create EAlgorithmsDelButton
             app.EAlgorithmsDelButton = uibutton(app.GridLayout3, 'push');
             app.EAlgorithmsDelButton.ButtonPushedFcn = createCallbackFcn(app, @EAlgorithmsDelButtonPushed, true);
-            app.EAlgorithmsDelButton.BackgroundColor = [1 1 0.702];
+            app.EAlgorithmsDelButton.BackgroundColor = [1 1 1];
             app.EAlgorithmsDelButton.FontWeight = 'bold';
             app.EAlgorithmsDelButton.Tooltip = {'Delete selected algorithms'};
             app.EAlgorithmsDelButton.Layout.Row = 1;
@@ -3064,23 +3042,54 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create EProblemsDelButton
             app.EProblemsDelButton = uibutton(app.GridLayout4, 'push');
             app.EProblemsDelButton.ButtonPushedFcn = createCallbackFcn(app, @EProblemsDelButtonPushed, true);
-            app.EProblemsDelButton.BackgroundColor = [1 1 0.702];
+            app.EProblemsDelButton.BackgroundColor = [1 1 1];
             app.EProblemsDelButton.FontWeight = 'bold';
             app.EProblemsDelButton.Tooltip = {'Delete selected problems'};
             app.EProblemsDelButton.Layout.Row = 1;
             app.EProblemsDelButton.Layout.Column = 2;
             app.EProblemsDelButton.Text = 'Del';
 
-            % Create DataProcessTab
-            app.DataProcessTab = uitab(app.MTOPlatformTabGroup);
-            app.DataProcessTab.Title = 'Data Process';
-            app.DataProcessTab.BackgroundColor = [1 1 1];
+            % Create GridLayout
+            app.GridLayout = uigridlayout(app.EP2GridLayout);
+            app.GridLayout.RowHeight = {'1x'};
+            app.GridLayout.ColumnSpacing = 5;
+            app.GridLayout.Padding = [0 0 0 0];
+            app.GridLayout.Layout.Row = 1;
+            app.GridLayout.Layout.Column = 1;
+            app.GridLayout.BackgroundColor = [1 1 1];
+
+            % Create ESaveDataButton
+            app.ESaveDataButton = uibutton(app.GridLayout, 'push');
+            app.ESaveDataButton.ButtonPushedFcn = createCallbackFcn(app, @ESaveDataButtonPushed, true);
+            app.ESaveDataButton.BackgroundColor = [1 1 1];
+            app.ESaveDataButton.FontWeight = 'bold';
+            app.ESaveDataButton.Tooltip = {'Save finished data to mat file'};
+            app.ESaveDataButton.Layout.Row = 1;
+            app.ESaveDataButton.Layout.Column = 2;
+            app.ESaveDataButton.Text = 'Save Data';
+
+            % Create ELoadDataButton
+            app.ELoadDataButton = uibutton(app.GridLayout, 'push');
+            app.ELoadDataButton.ButtonPushedFcn = createCallbackFcn(app, @ELoadDataButtonPushed, true);
+            app.ELoadDataButton.BackgroundColor = [1 1 1];
+            app.ELoadDataButton.FontWeight = 'bold';
+            app.ELoadDataButton.Tooltip = {'Load MTOData.mat to show detials'};
+            app.ELoadDataButton.Layout.Row = 1;
+            app.ELoadDataButton.Layout.Column = 1;
+            app.ELoadDataButton.Text = 'Load Data';
+
+            % Create DataProcessModuleTab
+            app.DataProcessModuleTab = uitab(app.MTOPlatformTabGroup);
+            app.DataProcessModuleTab.Title = 'Data Process Module';
+            app.DataProcessModuleTab.BackgroundColor = [1 1 1];
 
             % Create DataProcessGridLayout
-            app.DataProcessGridLayout = uigridlayout(app.DataProcessTab);
+            app.DataProcessGridLayout = uigridlayout(app.DataProcessModuleTab);
             app.DataProcessGridLayout.ColumnWidth = {380, '1x'};
             app.DataProcessGridLayout.RowHeight = {'1x'};
             app.DataProcessGridLayout.ColumnSpacing = 5;
+            app.DataProcessGridLayout.RowSpacing = 5;
+            app.DataProcessGridLayout.Padding = [5 5 5 5];
             app.DataProcessGridLayout.BackgroundColor = [1 1 1];
 
             % Create DPanel1
@@ -3122,7 +3131,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create DLoadDataButton
             app.DLoadDataButton = uibutton(app.DP1P1GridLayout, 'push');
             app.DLoadDataButton.ButtonPushedFcn = createCallbackFcn(app, @DLoadDataButtonPushed, true);
-            app.DLoadDataButton.BackgroundColor = [0.502 0.702 1];
+            app.DLoadDataButton.BackgroundColor = [0.7412 0.8392 1];
             app.DLoadDataButton.FontWeight = 'bold';
             app.DLoadDataButton.Layout.Row = 2;
             app.DLoadDataButton.Layout.Column = 1;
@@ -3131,7 +3140,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create DDeleteDataButton
             app.DDeleteDataButton = uibutton(app.DP1P1GridLayout, 'push');
             app.DDeleteDataButton.ButtonPushedFcn = createCallbackFcn(app, @DDeleteDataButtonPushed, true);
-            app.DDeleteDataButton.BackgroundColor = [1 1 0.702];
+            app.DDeleteDataButton.BackgroundColor = [1 1 0.7608];
             app.DDeleteDataButton.FontWeight = 'bold';
             app.DDeleteDataButton.Layout.Row = 2;
             app.DDeleteDataButton.Layout.Column = 2;
@@ -3140,7 +3149,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create DSaveDataButton
             app.DSaveDataButton = uibutton(app.DP1P1GridLayout, 'push');
             app.DSaveDataButton.ButtonPushedFcn = createCallbackFcn(app, @DSaveDataButtonPushed, true);
-            app.DSaveDataButton.BackgroundColor = [0.6706 0.949 0.6706];
+            app.DSaveDataButton.BackgroundColor = [0.7882 1 0.7882];
             app.DSaveDataButton.FontWeight = 'bold';
             app.DSaveDataButton.Layout.Row = 2;
             app.DSaveDataButton.Layout.Column = 3;
@@ -3318,11 +3327,11 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.SelectedAlgoContextMenu.ContextMenuOpeningFcn = createCallbackFcn(app, @SelectedAlgoContextMenuOpening, true);
             
             % Assign app.SelectedAlgoContextMenu
-            app.TAlgorithmTree.ContextMenu = app.SelectedAlgoContextMenu;
             app.EAlgorithmsTree.ContextMenu = app.SelectedAlgoContextMenu;
 
             % Create SelectedAlgoSelectAllMenu
             app.SelectedAlgoSelectAllMenu = uimenu(app.SelectedAlgoContextMenu);
+            app.SelectedAlgoSelectAllMenu.Checked = 'on';
             app.SelectedAlgoSelectAllMenu.Text = 'Select All';
 
             % Create DDataContextMenu
@@ -3334,18 +3343,19 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create SelectedAlgoSelectAllMenu_2
             app.SelectedAlgoSelectAllMenu_2 = uimenu(app.DDataContextMenu);
+            app.SelectedAlgoSelectAllMenu_2.Checked = 'on';
             app.SelectedAlgoSelectAllMenu_2.Text = 'Select All';
 
             % Create SelectedProbContextMenu
             app.SelectedProbContextMenu = uicontextmenu(app.MTOPlatformUIFigure);
             
             % Assign app.SelectedProbContextMenu
-            app.TProblemTree.ContextMenu = app.SelectedProbContextMenu;
             app.EProblemsTree.ContextMenu = app.SelectedProbContextMenu;
 
             % Create SelectedProbSelectAllMenu
             app.SelectedProbSelectAllMenu = uimenu(app.SelectedProbContextMenu);
             app.SelectedProbSelectAllMenu.MenuSelectedFcn = createCallbackFcn(app, @ESelectedProbContextMenuOpening, true);
+            app.SelectedProbSelectAllMenu.Checked = 'on';
             app.SelectedProbSelectAllMenu.Text = 'Select All';
 
             % Create AlgorithmsContextMenu
@@ -3357,6 +3367,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create AlgorithmsSelectAllMenu
             app.AlgorithmsSelectAllMenu = uimenu(app.AlgorithmsContextMenu);
+            app.AlgorithmsSelectAllMenu.Checked = 'on';
             app.AlgorithmsSelectAllMenu.Text = 'Select All';
 
             % Create ProblemsContextMenu
@@ -3368,6 +3379,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create ProblemsSelectAllMenu
             app.ProblemsSelectAllMenu = uimenu(app.ProblemsContextMenu);
             app.ProblemsSelectAllMenu.MenuSelectedFcn = createCallbackFcn(app, @EProblemsContextMenuOpening, true);
+            app.ProblemsSelectAllMenu.Checked = 'on';
             app.ProblemsSelectAllMenu.Text = 'Select All';
 
             % Show the figure after all components are created
