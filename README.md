@@ -64,6 +64,7 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 
 ![Test Module Tasks](./Doc/ReadmeFigure/MTO-Platform%20Test%20Module.png)
 ![Test Module Convergence](./Doc/ReadmeFigure/MTO-Platform%20Test%20Module%202.png)
+![Test Module Pareto](./Doc/ReadmeFigure/MTO-Platform%20Test%20Module%203.png)
 
 1. Algorithm selection
     - Select an algorithm to be displayed in the Algorithm Tree
@@ -83,6 +84,7 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 
 ![Experiment Module Table](./Doc/ReadmeFigure/MTO-Platform%20Experiment%20Module.png)
 ![Experiment Module Figure](./Doc/ReadmeFigure/MTO-Platform%20Experiment%20Module%202.png)
+![Experiment Module Pareto](./Doc/ReadmeFigure/MTO-Platform%20Experiment%20Module%203.png)
 
 1. parameter settings
     - No. of Runs: Number of independent run times
@@ -208,6 +210,7 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 
 ![Test Module Tasks](./Doc/ReadmeFigure/MTO-Platform%20Test%20Module.png)
 ![Test Module Convergence](./Doc/ReadmeFigure/MTO-Platform%20Test%20Module%202.png)
+![Test Module Pareto](./Doc/ReadmeFigure/MTO-Platform%20Test%20Module%203.png)
 
 1. 算法选择
     - 选取一个算法，显示在Algorithm Tree中
@@ -227,6 +230,7 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 
 ![Experiment Module Table](./Doc/ReadmeFigure/MTO-Platform%20Experiment%20Module.png)
 ![Experiment Module Figure](./Doc/ReadmeFigure/MTO-Platform%20Experiment%20Module%202.png)
+![Experiment Module Pareto](./Doc/ReadmeFigure/MTO-Platform%20Experiment%20Module%203.png)
 
 1. 参数设置
     - No. of Runs: 独立运行次数
