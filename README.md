@@ -35,21 +35,21 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 ### Run MTO Platform
 
 - GUI: mto
-- Command line: mto(AlgoCell, ProbCell, Reps, ParFlag, SaveName)
-- Example: mto({'MFEA','AT-MFEA'},{'CEC17_MTSO1_CI_HS','CEC17_MTSO2_CI_MS'},2,true,'MTODataSave')
+- Command line: mto(AlgoCell, ProbCell, Reps, Results_num, ParFlag, SaveName)
+- Example: mto({'MFEA','AT-MFEA'},{'CEC17_MTSO1_CI_HS','CEC17_MTSO2_CI_MS'},2,50,true,'MTODataSave')
 
 ### Add your algorithm
 
 - Inherit the **Algorithm.m** class from the Algorithms' folder to implement a new algorithm class and put it in the Algorithms folder or its subfolders
 - Implement the method function data = run().
-- Add labels to the second line. <ST-SO/MT-SO/MaT-SO/ST-MO/MT-MO/MaT-MO> <None/Competitive/Constrained>
+- Add labels to the second line. <Multi-task/Many-task/Single-task> <Multi-objective/Single-objective> <None/Competitive/Constrained>
 - *Refer to the MFEA or MO-MFEA algorithm implementation*
 
 ### Add your problem
 
 - Inherit the **Problem.m** class from the Problem folder to implement a new problem class and put it in the Problem folder or its subfolders
 - Implement the method function Tasks = setTasks()
-- Add labels to the second line. <ST-SO/MT-SO/MaT-SO/ST-MO/MT-MO/MaT-MO> <None/Competitive/Constrained>
+- Add labels to the second line. <Multi-task/Many-task/Single-task> <Multi-objective/Single-objective> <None/Competitive/Constrained>
 - *Refer to the CEC17_MTSO or MTMO_Instance1 problem implementation*
 
 ### Add your metric
@@ -76,7 +76,8 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 4. Check the figure
     - Task Figure 1D (unified / real)
     - Feasible Region 2D
-    - Obj convergence
+    - Obj Convergence
+    - Pareto Front
 
 ### II. Experiment Module
 
@@ -84,7 +85,8 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 ![Experiment Module Figure](./Doc/ReadmeFigure/MTO-Platform%20Experiment%20Module%202.png)
 
 1. parameter settings
-    - Reps: Number of independent run times
+    - No. of Runs: Number of independent run times
+    - No. of Results: Number of save results
     - Parallel：Parallel execution
 
 2. Algorithm selection
@@ -183,7 +185,7 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 
 - 继承Algorithms文件夹下的**Algorithm.m**类实现新的算法类，并放入Algorithms文件夹或其子文件夹内
 - 实现 function data = run()
-- 在文件的第2行添加标签 <ST-SO/MT-SO/MaT-SO/ST-MO/MT-MO/MaT-MO> <None/Competitive/Constrained>
+- 在文件的第2行添加标签 <Multi-task/Many-task/Single-task> <Multi-objective/Single-objective> <None/Competitive/Constrained>
 - *可参考 MFEA、MO-MFEA 算法的实现*
 
 ### 加入自己的问题
@@ -191,7 +193,7 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 - 继承Problem文件夹下的**Problem.m**类实现新的问题类，并放入Problem文件夹或其子文件夹内
 - 实现 function Tasks = setTasks()
 - 按照Problem类中的各虚函数的注释实现继承的虚函数
-- 在文件的第2行添加标签 <ST-SO/MT-SO/MaT-SO/ST-MO/MT-MO/MaT-MO> <None/Competitive/Constrained>
+- 在文件的第2行添加标签 <Multi-task/Many-task/Single-task> <Multi-objective/Single-objective> <None/Competitive/Constrained>
 - *可参考 CEC17_MTSO、MTMO_Instance1 问题的实现*
 
 ### 加入自己的指标
@@ -219,6 +221,7 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
     - 问题1维图像（归一化/原始）
     - 可行域2维图像
     - 收敛图，运行完后显示
+    - Pareto前沿，运行完后显示
 
 ### 二、实验模块
 
@@ -226,7 +229,8 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 ![Experiment Module Figure](./Doc/ReadmeFigure/MTO-Platform%20Experiment%20Module%202.png)
 
 1. 参数设置
-    - Run Times: 独立运行次数
+    - No. of Runs: 独立运行次数
+    - No. of Results: 结果保存次数
     - Parallel: 是否开启并行
 
 2. 算法选择
