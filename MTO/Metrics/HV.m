@@ -1,7 +1,7 @@
 function result = HV(MTOData)
     % <Metric>
 
-    % Hypervolume
+    % Hypervolume (HV)
     % The code implementation is referenced from PlatEMO(https://github.com/BIMK/PlatEMO).
 
     %------------------------------- Copyright --------------------------------

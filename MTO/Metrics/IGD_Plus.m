@@ -1,7 +1,7 @@
-function result = IGD(MTOData)
+function result = IGD_Plus(MTOData)
     % <Metric>
 
-    % Inverted Generational Distance (IGD)
+    % Inverted Generational Distance Plus (IGD+)
     % The code implementation is referenced from PlatEMO(https://github.com/BIMK/PlatEMO).
 
     %------------------------------- Copyright --------------------------------
@@ -40,7 +40,7 @@ function result = IGD(MTOData)
     end
     result.ColumnName = {MTOData.Algorithms.Name};
 
-    % Calculate IGD+
+    % Calculate IGD
     row = 1;
     for prob = 1:length(MTOData.Problems)
         optimum = MTOData.Problems(prob).Optimum;
@@ -84,12 +84,6 @@ function score = getIGD(PopObj, optimum)
     if size(PopObj, 2) ~= size(optimum, 2)
         score = nan;
     else
-        [Nr, M] = size(optimum);
-        [N, ~] = size(PopObj);
-        delta = zeros(Nr, 1);
-        for i = 1:Nr
-            delta(i) = min(sqrt(sum(max(PopObj - repmat(optimum(i, :), N, 1), zeros(N, M)).^2, 2)));
-        end
-        score = mean(delta);
+        score = mean(min(pdist2(optimum, PopObj), [], 2));
     end
 end
