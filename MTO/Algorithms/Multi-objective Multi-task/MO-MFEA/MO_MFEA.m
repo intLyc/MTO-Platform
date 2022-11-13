@@ -48,12 +48,13 @@ classdef MO_MFEA < Algorithm
                 for i = 1:Prob.N
                     population{t}(i).MFFactor = t;
                 end
-                rank{t} = NSGA2Sort(population{t});
+                rank = NSGA2Sort(population{t});
+                population{t} = population{t}(rank);
             end
 
             while Algo.notTerminated(Prob, population)
                 % Generation
-                mating_pool = TournamentSelection(2, Prob.N * Prob.T, [rank{:}]);
+                mating_pool = TournamentSelection(2, Prob.N * Prob.T, repmat(1:Prob.N, 1, Prob.T));
                 parent = [population{:}];
                 offspring = Algo.Generation(parent(mating_pool));
                 for t = 1:Prob.T
@@ -62,9 +63,8 @@ classdef MO_MFEA < Algorithm
                     offspring_t = Algo.Evaluation(offspring_t, Prob, t);
                     % Selection
                     population{t} = [population{t}, offspring_t];
-                    rank{t} = NSGA2Sort(population{t});
-                    population{t} = population{t}(rank{t}(1:Prob.N));
-                    rank{t} = rank{t}(1:Prob.N);
+                    rank = NSGA2Sort(population{t});
+                    population{t} = population{t}(rank(1:Prob.N));
                 end
             end
         end

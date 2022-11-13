@@ -33,10 +33,10 @@ function mto(varargin)
             Results_Num = varargin{4};
         end
         if length(varargin) >= 5
-            ParFlag = varargin{4};
+            ParFlag = varargin{5};
         end
         if length(varargin) >= 6
-            SaveName = varargin{5};
+            SaveName = varargin{6};
         end
         MTO_CMD(AlgoCell, ProbCell, Reps, Results_Num, ParFlag, SaveName);
     end

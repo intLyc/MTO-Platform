@@ -44,21 +44,21 @@ classdef NSGA_II < Algorithm
             % Initialize
             population = Initialization(Algo, Prob, Individual);
             for t = 1:Prob.T
-                rank{t} = NSGA2Sort(population{t});
+                rank = NSGA2Sort(population{t});
+                population{t} = population{t}(rank);
             end
 
             while Algo.notTerminated(Prob, population)
                 % Generation
                 for t = 1:Prob.T
-                    mating_pool = TournamentSelection(2, Prob.N, rank{t});
+                    mating_pool = TournamentSelection(2, Prob.N, 1:Prob.N);
                     offspring = Algo.Generation(population{t}(mating_pool));
                     % Evaluation
                     offspring = Algo.Evaluation(offspring, Prob, t);
                     % Selection
                     population{t} = [population{t}, offspring];
-                    rank{t} = NSGA2Sort(population{t});
-                    population{t} = population{t}(rank{t}(1:Prob.N));
-                    rank{t} = rank{t}(1:Prob.N);
+                    rank = NSGA2Sort(population{t});
+                    population{t} = population{t}(rank(1:Prob.N));
                 end
             end
         end

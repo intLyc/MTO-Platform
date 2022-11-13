@@ -48,10 +48,11 @@ classdef EMT_ET < Algorithm
             % Initialize
             population = Initialization(Algo, Prob, Individual_ET);
             for t = 1:Prob.T
-                [rank{t}, FrontNo] = NSGA2Sort(population{t});
+                [rank, FrontNo] = NSGA2Sort(population{t});
                 for i = 1:length(population{t})
                     population{t}(i).FrontNo = FrontNo(i);
                 end
+                population{t} = population{t}(rank);
             end
 
             while Algo.notTerminated(Prob, population)
@@ -64,18 +65,17 @@ classdef EMT_ET < Algorithm
                     end
                     % Generation
                     population{t} = [population{t}, transfer_pop];
-                    mating_pool = TournamentSelection(2, Prob.N - Algo.G, [rank{t}(:, 1); ones(Algo.G, 1)]);
+                    mating_pool = TournamentSelection(2, Prob.N - Algo.G, [1:Prob.N, ones(1, Algo.G)]);
                     offspring = Algo.Generation(population{t}(mating_pool));
                     % Evaluation
                     offspring = Algo.Evaluation(offspring, Prob, t);
                     % Selection
                     population{t} = [population{t}, offspring];
-                    [rank{t}, FrontNo] = NSGA2Sort(population{t});
+                    [rank, FrontNo] = NSGA2Sort(population{t});
                     for i = 1:length(population{t})
                         population{t}(i).FrontNo = FrontNo(i);
                     end
-                    population{t} = population{t}(rank{t}(1:Prob.N));
-                    rank{t} = rank{t}(1:Prob.N);
+                    population{t} = population{t}(rank(1:Prob.N));
                 end
             end
         end
