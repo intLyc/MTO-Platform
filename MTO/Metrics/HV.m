@@ -1,4 +1,4 @@
-function result = HV(MTOData)
+function result = HV(MTOData, varargin)
     % <Metric>
 
     % Hypervolume (HV)
@@ -10,6 +10,11 @@ function result = HV(MTOData)
     % in the platform should acknowledge the use of "MTO-Platform" and cite
     % or footnote "https://github.com/intLyc/MTO-Platform"
     %--------------------------------------------------------------------------
+
+    Par_flag = false;
+    if length(varargin) >= 1
+        Par_flag = varargin{1};
+    end
 
     result.Metric = 'Max';
     result.RowName = {};
@@ -49,12 +54,23 @@ function result = HV(MTOData)
                 gen = size(MTOData.Results(prob, algo, 1).Obj{task}, 1);
                 hv = zeros(MTOData.Reps, gen);
                 BestObj = {};
-                for rep = 1:MTOData.Reps
-                    for g = 1:gen
-                        Obj = squeeze(MTOData.Results(prob, algo, rep).Obj{task}(g, :, :));
-                        CV = squeeze(MTOData.Results(prob, algo, rep).CV(task, g, :));
-                        BestObj{rep} = getBestObj(Obj, CV);
-                        hv(rep, g) = getHV(BestObj{rep}, optimum{task});
+                if Par_flag
+                    parfor rep = 1:MTOData.Reps
+                        for g = 1:gen
+                            Obj = squeeze(MTOData.Results(prob, algo, rep).Obj{task}(g, :, :));
+                            CV = squeeze(MTOData.Results(prob, algo, rep).CV(task, g, :));
+                            BestObj{rep} = getBestObj(Obj, CV);
+                            hv(rep, g) = getHV(BestObj{rep}, optimum{task});
+                        end
+                    end
+                else
+                    for rep = 1:MTOData.Reps
+                        for g = 1:gen
+                            Obj = squeeze(MTOData.Results(prob, algo, rep).Obj{task}(g, :, :));
+                            CV = squeeze(MTOData.Results(prob, algo, rep).CV(task, g, :));
+                            BestObj{rep} = getBestObj(Obj, CV);
+                            hv(rep, g) = getHV(BestObj{rep}, optimum{task});
+                        end
                     end
                 end
                 result.TableData(row, algo, :) = hv(:, end);

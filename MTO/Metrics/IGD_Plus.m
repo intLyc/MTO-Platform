@@ -12,7 +12,7 @@ function result = IGD_Plus(MTOData, varargin)
     %--------------------------------------------------------------------------
 
     Par_flag = false;
-    if nargin >= 1
+    if length(varargin) >= 1
         Par_flag = varargin{1};
     end
 
