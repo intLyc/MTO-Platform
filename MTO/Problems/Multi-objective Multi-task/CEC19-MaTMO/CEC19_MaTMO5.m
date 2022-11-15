@@ -1,5 +1,5 @@
 classdef CEC19_MaTMO5 < Problem
-    % <MaT-MO> <None>
+    % <Many-task> <Multi-objective> <None>
 
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
