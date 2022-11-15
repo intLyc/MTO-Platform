@@ -32,26 +32,10 @@ classdef MTO_GUI < matlab.apps.AppBase
         TUIAxes                      matlab.ui.control.UIAxes
         TPanel3                      matlab.ui.container.Panel
         TP3GridLayout                matlab.ui.container.GridLayout
-        OutputTextAreaLabel          matlab.ui.control.Label
         TOutputTextArea              matlab.ui.control.TextArea
         MTOPlatformv03YanchiLiLabel  matlab.ui.control.Label
         ExperimentModuleTab          matlab.ui.container.Tab
         ExperimentsGridLayout        matlab.ui.container.GridLayout
-        EPanel3                      matlab.ui.container.Panel
-        EP3GridLayout                matlab.ui.container.GridLayout
-        EP3TGridLayout               matlab.ui.container.GridLayout
-        EP3T1GridLayout              matlab.ui.container.GridLayout
-        ETestTypeDropDown            matlab.ui.control.DropDown
-        EAlgorithmDropDown           matlab.ui.control.DropDown
-        EShowTypeDropDown            matlab.ui.control.DropDown
-        EDataTypeDropDown            matlab.ui.control.DropDown
-        EHighlightTypeDropDown       matlab.ui.control.DropDown
-        ESaveTableButton             matlab.ui.control.Button
-        EDataFormatEditField         matlab.ui.control.EditField
-        EConvergeButton              matlab.ui.control.Button
-        EParetoButton                matlab.ui.control.Button
-        EConvergeTypeDropDown        matlab.ui.control.DropDown
-        EUITable                     matlab.ui.control.Table
         EPanel1                      matlab.ui.container.Panel
         EP1GridLayout                matlab.ui.container.GridLayout
         EProblemsAddButton           matlab.ui.control.Button
@@ -90,6 +74,21 @@ classdef MTO_GUI < matlab.apps.AppBase
         GridLayout                   matlab.ui.container.GridLayout
         ESaveDataButton              matlab.ui.control.Button
         ELoadDataButton              matlab.ui.control.Button
+        EPanel3                      matlab.ui.container.Panel
+        EP3GridLayout                matlab.ui.container.GridLayout
+        EP3TGridLayout               matlab.ui.container.GridLayout
+        EP3T1GridLayout              matlab.ui.container.GridLayout
+        ETestTypeDropDown            matlab.ui.control.DropDown
+        EAlgorithmDropDown           matlab.ui.control.DropDown
+        EShowTypeDropDown            matlab.ui.control.DropDown
+        EDataTypeDropDown            matlab.ui.control.DropDown
+        EHighlightTypeDropDown       matlab.ui.control.DropDown
+        ESaveTableButton             matlab.ui.control.Button
+        EDataFormatEditField         matlab.ui.control.EditField
+        EConvergeButton              matlab.ui.control.Button
+        EParetoButton                matlab.ui.control.Button
+        EConvergeTypeDropDown        matlab.ui.control.DropDown
+        EUITable                     matlab.ui.control.Table
         DataProcessModuleTab         matlab.ui.container.Tab
         DataProcessGridLayout        matlab.ui.container.GridLayout
         DPanel1                      matlab.ui.container.Panel
@@ -2293,7 +2292,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create MTOPlatformUIFigure and hide until all components are created
             app.MTOPlatformUIFigure = uifigure('Visible', 'off');
             app.MTOPlatformUIFigure.Color = [1 1 1];
-            app.MTOPlatformUIFigure.Position = [100 100 1153 693];
+            app.MTOPlatformUIFigure.Position = [100 100 1146 685];
             app.MTOPlatformUIFigure.Name = 'MTO Platform';
             app.MTOPlatformUIFigure.WindowStyle = 'modal';
 
@@ -2320,13 +2319,11 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TestGridLayout = uigridlayout(app.TestModuleTab);
             app.TestGridLayout.ColumnWidth = {165, '3x', '1x'};
             app.TestGridLayout.RowHeight = {'1x'};
-            app.TestGridLayout.ColumnSpacing = 5;
-            app.TestGridLayout.RowSpacing = 5;
-            app.TestGridLayout.Padding = [5 5 5 5];
             app.TestGridLayout.BackgroundColor = [1 1 1];
 
             % Create TPanel1
             app.TPanel1 = uipanel(app.TestGridLayout);
+            app.TPanel1.BorderType = 'none';
             app.TPanel1.BackgroundColor = [1 1 1];
             app.TPanel1.Layout.Row = 1;
             app.TPanel1.Layout.Column = 1;
@@ -2337,7 +2334,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TP1GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x'};
             app.TP1GridLayout.ColumnSpacing = 5;
             app.TP1GridLayout.RowSpacing = 7;
-            app.TP1GridLayout.Padding = [5 5 5 5];
+            app.TP1GridLayout.Padding = [0 0 0 0];
             app.TP1GridLayout.BackgroundColor = [1 1 1];
 
             % Create AlgorithmDropDownLabel
@@ -2452,6 +2449,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create TPanel2
             app.TPanel2 = uipanel(app.TestGridLayout);
+            app.TPanel2.BorderType = 'none';
             app.TPanel2.BackgroundColor = [1 1 1];
             app.TPanel2.Layout.Row = 1;
             app.TPanel2.Layout.Column = 2;
@@ -2462,7 +2460,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TP2GridLayout.RowHeight = {'fit', '1x', 'fit'};
             app.TP2GridLayout.ColumnSpacing = 5;
             app.TP2GridLayout.RowSpacing = 7;
-            app.TP2GridLayout.Padding = [5 5 5 5];
+            app.TP2GridLayout.Padding = [0 0 0 0];
             app.TP2GridLayout.BackgroundColor = [1 1 1];
 
             % Create TP21GridLayout
@@ -2537,6 +2535,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create TPanel3
             app.TPanel3 = uipanel(app.TestGridLayout);
+            app.TPanel3.BorderType = 'none';
             app.TPanel3.BackgroundColor = [1 1 1];
             app.TPanel3.Layout.Row = 1;
             app.TPanel3.Layout.Column = 3;
@@ -2544,32 +2543,25 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create TP3GridLayout
             app.TP3GridLayout = uigridlayout(app.TPanel3);
             app.TP3GridLayout.ColumnWidth = {'1x'};
-            app.TP3GridLayout.RowHeight = {'fit', '1x', 'fit'};
+            app.TP3GridLayout.RowHeight = {'1x', 'fit'};
             app.TP3GridLayout.ColumnSpacing = 5;
             app.TP3GridLayout.RowSpacing = 7;
-            app.TP3GridLayout.Padding = [5 5 5 5];
+            app.TP3GridLayout.Padding = [0 0 0 0];
             app.TP3GridLayout.BackgroundColor = [1 1 1];
-
-            % Create OutputTextAreaLabel
-            app.OutputTextAreaLabel = uilabel(app.TP3GridLayout);
-            app.OutputTextAreaLabel.FontWeight = 'bold';
-            app.OutputTextAreaLabel.Layout.Row = 1;
-            app.OutputTextAreaLabel.Layout.Column = 1;
-            app.OutputTextAreaLabel.Text = 'Output';
 
             % Create TOutputTextArea
             app.TOutputTextArea = uitextarea(app.TP3GridLayout);
             app.TOutputTextArea.Editable = 'off';
             app.TOutputTextArea.WordWrap = 'off';
             app.TOutputTextArea.FontWeight = 'bold';
-            app.TOutputTextArea.Layout.Row = 2;
+            app.TOutputTextArea.Layout.Row = 1;
             app.TOutputTextArea.Layout.Column = 1;
 
             % Create MTOPlatformv03YanchiLiLabel
             app.MTOPlatformv03YanchiLiLabel = uilabel(app.TP3GridLayout);
             app.MTOPlatformv03YanchiLiLabel.HorizontalAlignment = 'center';
             app.MTOPlatformv03YanchiLiLabel.FontWeight = 'bold';
-            app.MTOPlatformv03YanchiLiLabel.Layout.Row = 3;
+            app.MTOPlatformv03YanchiLiLabel.Layout.Row = 2;
             app.MTOPlatformv03YanchiLiLabel.Layout.Column = 1;
             app.MTOPlatformv03YanchiLiLabel.Text = 'MTO-Platform v0.3  Yanchi Li';
 
@@ -2580,162 +2572,14 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create ExperimentsGridLayout
             app.ExperimentsGridLayout = uigridlayout(app.ExperimentModuleTab);
-            app.ExperimentsGridLayout.ColumnWidth = {165, 165, '1.3x'};
+            app.ExperimentsGridLayout.ColumnWidth = {155, 170, '1.3x'};
             app.ExperimentsGridLayout.RowHeight = {'1x'};
-            app.ExperimentsGridLayout.ColumnSpacing = 5;
-            app.ExperimentsGridLayout.RowSpacing = 5;
-            app.ExperimentsGridLayout.Padding = [5 5 5 5];
             app.ExperimentsGridLayout.BackgroundColor = [1 1 1];
-
-            % Create EPanel3
-            app.EPanel3 = uipanel(app.ExperimentsGridLayout);
-            app.EPanel3.AutoResizeChildren = 'off';
-            app.EPanel3.BackgroundColor = [1 1 1];
-            app.EPanel3.Layout.Row = 1;
-            app.EPanel3.Layout.Column = 3;
-
-            % Create EP3GridLayout
-            app.EP3GridLayout = uigridlayout(app.EPanel3);
-            app.EP3GridLayout.ColumnWidth = {'1x'};
-            app.EP3GridLayout.RowHeight = {'1x'};
-            app.EP3GridLayout.Padding = [0 0 0 0];
-            app.EP3GridLayout.BackgroundColor = [1 1 1];
-
-            % Create EP3TGridLayout
-            app.EP3TGridLayout = uigridlayout(app.EP3GridLayout);
-            app.EP3TGridLayout.ColumnWidth = {'1x'};
-            app.EP3TGridLayout.RowHeight = {'fit', '1x'};
-            app.EP3TGridLayout.RowSpacing = 0;
-            app.EP3TGridLayout.Padding = [5 5 5 5];
-            app.EP3TGridLayout.Layout.Row = 1;
-            app.EP3TGridLayout.Layout.Column = 1;
-            app.EP3TGridLayout.BackgroundColor = [1 1 1];
-
-            % Create EP3T1GridLayout
-            app.EP3T1GridLayout = uigridlayout(app.EP3TGridLayout);
-            app.EP3T1GridLayout.ColumnWidth = {'1x', '0.7x', '0.9x', '0.9x', '1x', '1x', '1x', '1x', '1x', '1x'};
-            app.EP3T1GridLayout.RowHeight = {'fit'};
-            app.EP3T1GridLayout.ColumnSpacing = 5;
-            app.EP3T1GridLayout.RowSpacing = 7;
-            app.EP3T1GridLayout.Padding = [0 5 0 0];
-            app.EP3T1GridLayout.Layout.Row = 1;
-            app.EP3T1GridLayout.Layout.Column = 1;
-            app.EP3T1GridLayout.BackgroundColor = [1 1 1];
-
-            % Create ETestTypeDropDown
-            app.ETestTypeDropDown = uidropdown(app.EP3T1GridLayout);
-            app.ETestTypeDropDown.Items = {'None', 'Rank sum test', 'Signed rank test'};
-            app.ETestTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @ETestTypeDropDownValueChanged, true);
-            app.ETestTypeDropDown.Tooltip = {'Statistical Analysis (Only for Objective value)'};
-            app.ETestTypeDropDown.FontWeight = 'bold';
-            app.ETestTypeDropDown.BackgroundColor = [1 1 1];
-            app.ETestTypeDropDown.Layout.Row = 1;
-            app.ETestTypeDropDown.Layout.Column = 8;
-            app.ETestTypeDropDown.Value = 'None';
-
-            % Create EAlgorithmDropDown
-            app.EAlgorithmDropDown = uidropdown(app.EP3T1GridLayout);
-            app.EAlgorithmDropDown.Items = {'Algorithm'};
-            app.EAlgorithmDropDown.ValueChangedFcn = createCallbackFcn(app, @EAlgorithmDropDownValueChanged, true);
-            app.EAlgorithmDropDown.Tooltip = {'Statistical Analysis main Algorithm (Only for Objective value)'};
-            app.EAlgorithmDropDown.FontWeight = 'bold';
-            app.EAlgorithmDropDown.BackgroundColor = [1 1 1];
-            app.EAlgorithmDropDown.Layout.Row = 1;
-            app.EAlgorithmDropDown.Layout.Column = 9;
-            app.EAlgorithmDropDown.Value = 'Algorithm';
-
-            % Create EShowTypeDropDown
-            app.EShowTypeDropDown = uidropdown(app.EP3T1GridLayout);
-            app.EShowTypeDropDown.Items = {'Mean', 'Mean&Std', 'Std', 'Median', 'Best', 'Worst'};
-            app.EShowTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EShowTypeDropDownValueChanged, true);
-            app.EShowTypeDropDown.Tooltip = {'Data Type (Only for Objective value)'};
-            app.EShowTypeDropDown.FontWeight = 'bold';
-            app.EShowTypeDropDown.BackgroundColor = [1 1 1];
-            app.EShowTypeDropDown.Layout.Row = 1;
-            app.EShowTypeDropDown.Layout.Column = 7;
-            app.EShowTypeDropDown.Value = 'Mean';
-
-            % Create EDataTypeDropDown
-            app.EDataTypeDropDown = uidropdown(app.EP3T1GridLayout);
-            app.EDataTypeDropDown.Items = {'Runs'};
-            app.EDataTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EDataTypeDropDownValueChanged, true);
-            app.EDataTypeDropDown.Tooltip = {'Show Type'};
-            app.EDataTypeDropDown.FontWeight = 'bold';
-            app.EDataTypeDropDown.BackgroundColor = [1 1 1];
-            app.EDataTypeDropDown.Layout.Row = 1;
-            app.EDataTypeDropDown.Layout.Column = 6;
-            app.EDataTypeDropDown.Value = 'Runs';
-
-            % Create EHighlightTypeDropDown
-            app.EHighlightTypeDropDown = uidropdown(app.EP3T1GridLayout);
-            app.EHighlightTypeDropDown.Items = {'None', 'Best', 'Best&Worst'};
-            app.EHighlightTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EHighlightTypeDropDownValueChanged, true);
-            app.EHighlightTypeDropDown.Tooltip = {'Highlight type'};
-            app.EHighlightTypeDropDown.FontWeight = 'bold';
-            app.EHighlightTypeDropDown.BackgroundColor = [1 1 1];
-            app.EHighlightTypeDropDown.Layout.Row = 1;
-            app.EHighlightTypeDropDown.Layout.Column = 10;
-            app.EHighlightTypeDropDown.Value = 'Best&Worst';
-
-            % Create ESaveTableButton
-            app.ESaveTableButton = uibutton(app.EP3T1GridLayout, 'push');
-            app.ESaveTableButton.ButtonPushedFcn = createCallbackFcn(app, @ESaveTableButtonPushed, true);
-            app.ESaveTableButton.BackgroundColor = [1 1 1];
-            app.ESaveTableButton.FontWeight = 'bold';
-            app.ESaveTableButton.Tooltip = {'Save current table to file'};
-            app.ESaveTableButton.Layout.Row = 1;
-            app.ESaveTableButton.Layout.Column = 1;
-            app.ESaveTableButton.Text = 'Save Table';
-
-            % Create EDataFormatEditField
-            app.EDataFormatEditField = uieditfield(app.EP3T1GridLayout, 'text');
-            app.EDataFormatEditField.ValueChangedFcn = createCallbackFcn(app, @EDataFormatEditFieldValueChanged, true);
-            app.EDataFormatEditField.HorizontalAlignment = 'center';
-            app.EDataFormatEditField.Tooltip = {'Data Format Str'};
-            app.EDataFormatEditField.Layout.Row = 1;
-            app.EDataFormatEditField.Layout.Column = 5;
-            app.EDataFormatEditField.Value = '%d';
-
-            % Create EConvergeButton
-            app.EConvergeButton = uibutton(app.EP3T1GridLayout, 'push');
-            app.EConvergeButton.ButtonPushedFcn = createCallbackFcn(app, @EConvergeButtonPushed, true);
-            app.EConvergeButton.BackgroundColor = [1 1 1];
-            app.EConvergeButton.FontWeight = 'bold';
-            app.EConvergeButton.Tooltip = {'Draw Convergence Plot'};
-            app.EConvergeButton.Layout.Row = 1;
-            app.EConvergeButton.Layout.Column = 3;
-            app.EConvergeButton.Text = 'Converge';
-
-            % Create EParetoButton
-            app.EParetoButton = uibutton(app.EP3T1GridLayout, 'push');
-            app.EParetoButton.ButtonPushedFcn = createCallbackFcn(app, @EParetoButtonPushed, true);
-            app.EParetoButton.BackgroundColor = [1 1 1];
-            app.EParetoButton.FontWeight = 'bold';
-            app.EParetoButton.Tooltip = {'Draw Median Population Pareto Front'};
-            app.EParetoButton.Layout.Row = 1;
-            app.EParetoButton.Layout.Column = 4;
-            app.EParetoButton.Text = 'Pareto';
-
-            % Create EConvergeTypeDropDown
-            app.EConvergeTypeDropDown = uidropdown(app.EP3T1GridLayout);
-            app.EConvergeTypeDropDown.Items = {'Log', 'Normal'};
-            app.EConvergeTypeDropDown.Tooltip = {'Show Type'};
-            app.EConvergeTypeDropDown.FontWeight = 'bold';
-            app.EConvergeTypeDropDown.BackgroundColor = [1 1 1];
-            app.EConvergeTypeDropDown.Layout.Row = 1;
-            app.EConvergeTypeDropDown.Layout.Column = 2;
-            app.EConvergeTypeDropDown.Value = 'Log';
-
-            % Create EUITable
-            app.EUITable = uitable(app.EP3TGridLayout);
-            app.EUITable.ColumnName = '';
-            app.EUITable.RowName = {};
-            app.EUITable.CellSelectionCallback = createCallbackFcn(app, @EUITableCellSelection, true);
-            app.EUITable.Layout.Row = 2;
-            app.EUITable.Layout.Column = 1;
 
             % Create EPanel1
             app.EPanel1 = uipanel(app.ExperimentsGridLayout);
+            app.EPanel1.ForegroundColor = [1 1 1];
+            app.EPanel1.BorderType = 'none';
             app.EPanel1.BackgroundColor = [1 1 1];
             app.EPanel1.Layout.Row = 1;
             app.EPanel1.Layout.Column = 1;
@@ -2746,7 +2590,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EP1GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x'};
             app.EP1GridLayout.ColumnSpacing = 5;
             app.EP1GridLayout.RowSpacing = 7;
-            app.EP1GridLayout.Padding = [5 5 5 5];
+            app.EP1GridLayout.Padding = [0 0 0 0];
             app.EP1GridLayout.BackgroundColor = [1 1 1];
 
             % Create EProblemsAddButton
@@ -2811,12 +2655,12 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create EParallelDropDown
             app.EParallelDropDown = uidropdown(app.EP1GridLayout);
             app.EParallelDropDown.Items = {'Disable', 'Enable'};
-            app.EParallelDropDown.ItemsData = {'0', '1'};
+            app.EParallelDropDown.ItemsData = [0 1];
             app.EParallelDropDown.FontWeight = 'bold';
             app.EParallelDropDown.BackgroundColor = [1 1 1];
             app.EParallelDropDown.Layout.Row = 2;
             app.EParallelDropDown.Layout.Column = [2 3];
-            app.EParallelDropDown.Value = '0';
+            app.EParallelDropDown.Value = 0;
 
             % Create TaskLabel_2
             app.TaskLabel_2 = uilabel(app.EP1GridLayout);
@@ -2922,6 +2766,8 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create EPanel2
             app.EPanel2 = uipanel(app.ExperimentsGridLayout);
+            app.EPanel2.ForegroundColor = [1 1 1];
+            app.EPanel2.BorderType = 'none';
             app.EPanel2.BackgroundColor = [1 1 1];
             app.EPanel2.Layout.Row = 1;
             app.EPanel2.Layout.Column = 2;
@@ -2932,7 +2778,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EP2GridLayout.RowHeight = {'fit', 'fit', 'fit', '1x', 'fit', '1x'};
             app.EP2GridLayout.ColumnSpacing = 5;
             app.EP2GridLayout.RowSpacing = 7;
-            app.EP2GridLayout.Padding = [5 5 5 5];
+            app.EP2GridLayout.Padding = [0 0 0 0];
             app.EP2GridLayout.BackgroundColor = [1 1 1];
 
             % Create EAlgorithmsTree
@@ -3078,6 +2924,155 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.ELoadDataButton.Layout.Column = 1;
             app.ELoadDataButton.Text = 'Load Data';
 
+            % Create EPanel3
+            app.EPanel3 = uipanel(app.ExperimentsGridLayout);
+            app.EPanel3.AutoResizeChildren = 'off';
+            app.EPanel3.ForegroundColor = [1 1 1];
+            app.EPanel3.BorderType = 'none';
+            app.EPanel3.BackgroundColor = [1 1 1];
+            app.EPanel3.Layout.Row = 1;
+            app.EPanel3.Layout.Column = 3;
+
+            % Create EP3GridLayout
+            app.EP3GridLayout = uigridlayout(app.EPanel3);
+            app.EP3GridLayout.ColumnWidth = {'1x'};
+            app.EP3GridLayout.RowHeight = {'1x'};
+            app.EP3GridLayout.Padding = [0 0 0 0];
+            app.EP3GridLayout.BackgroundColor = [1 1 1];
+
+            % Create EP3TGridLayout
+            app.EP3TGridLayout = uigridlayout(app.EP3GridLayout);
+            app.EP3TGridLayout.ColumnWidth = {'1x'};
+            app.EP3TGridLayout.RowHeight = {'fit', '1x'};
+            app.EP3TGridLayout.RowSpacing = 0;
+            app.EP3TGridLayout.Padding = [0 0 0 0];
+            app.EP3TGridLayout.Layout.Row = 1;
+            app.EP3TGridLayout.Layout.Column = 1;
+            app.EP3TGridLayout.BackgroundColor = [1 1 1];
+
+            % Create EP3T1GridLayout
+            app.EP3T1GridLayout = uigridlayout(app.EP3TGridLayout);
+            app.EP3T1GridLayout.ColumnWidth = {'1x', '0.7x', '0.9x', '0.9x', '1x', '1x', '1x', '1x', '1x', '1x'};
+            app.EP3T1GridLayout.RowHeight = {'fit'};
+            app.EP3T1GridLayout.ColumnSpacing = 5;
+            app.EP3T1GridLayout.RowSpacing = 7;
+            app.EP3T1GridLayout.Padding = [0 5 0 0];
+            app.EP3T1GridLayout.Layout.Row = 1;
+            app.EP3T1GridLayout.Layout.Column = 1;
+            app.EP3T1GridLayout.BackgroundColor = [1 1 1];
+
+            % Create ETestTypeDropDown
+            app.ETestTypeDropDown = uidropdown(app.EP3T1GridLayout);
+            app.ETestTypeDropDown.Items = {'None', 'Rank sum test', 'Signed rank test'};
+            app.ETestTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @ETestTypeDropDownValueChanged, true);
+            app.ETestTypeDropDown.Tooltip = {'Statistical Analysis (Only for Objective value)'};
+            app.ETestTypeDropDown.FontWeight = 'bold';
+            app.ETestTypeDropDown.BackgroundColor = [1 1 1];
+            app.ETestTypeDropDown.Layout.Row = 1;
+            app.ETestTypeDropDown.Layout.Column = 8;
+            app.ETestTypeDropDown.Value = 'None';
+
+            % Create EAlgorithmDropDown
+            app.EAlgorithmDropDown = uidropdown(app.EP3T1GridLayout);
+            app.EAlgorithmDropDown.Items = {'Algorithm'};
+            app.EAlgorithmDropDown.ValueChangedFcn = createCallbackFcn(app, @EAlgorithmDropDownValueChanged, true);
+            app.EAlgorithmDropDown.Tooltip = {'Statistical Analysis main Algorithm (Only for Objective value)'};
+            app.EAlgorithmDropDown.FontWeight = 'bold';
+            app.EAlgorithmDropDown.BackgroundColor = [1 1 1];
+            app.EAlgorithmDropDown.Layout.Row = 1;
+            app.EAlgorithmDropDown.Layout.Column = 9;
+            app.EAlgorithmDropDown.Value = 'Algorithm';
+
+            % Create EShowTypeDropDown
+            app.EShowTypeDropDown = uidropdown(app.EP3T1GridLayout);
+            app.EShowTypeDropDown.Items = {'Mean', 'Mean&Std', 'Std', 'Median', 'Best', 'Worst'};
+            app.EShowTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EShowTypeDropDownValueChanged, true);
+            app.EShowTypeDropDown.Tooltip = {'Data Type (Only for Objective value)'};
+            app.EShowTypeDropDown.FontWeight = 'bold';
+            app.EShowTypeDropDown.BackgroundColor = [1 1 1];
+            app.EShowTypeDropDown.Layout.Row = 1;
+            app.EShowTypeDropDown.Layout.Column = 7;
+            app.EShowTypeDropDown.Value = 'Mean';
+
+            % Create EDataTypeDropDown
+            app.EDataTypeDropDown = uidropdown(app.EP3T1GridLayout);
+            app.EDataTypeDropDown.Items = {'Runs'};
+            app.EDataTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EDataTypeDropDownValueChanged, true);
+            app.EDataTypeDropDown.Tooltip = {'Show Type'};
+            app.EDataTypeDropDown.FontWeight = 'bold';
+            app.EDataTypeDropDown.BackgroundColor = [1 1 1];
+            app.EDataTypeDropDown.Layout.Row = 1;
+            app.EDataTypeDropDown.Layout.Column = 6;
+            app.EDataTypeDropDown.Value = 'Runs';
+
+            % Create EHighlightTypeDropDown
+            app.EHighlightTypeDropDown = uidropdown(app.EP3T1GridLayout);
+            app.EHighlightTypeDropDown.Items = {'None', 'Best', 'Best&Worst'};
+            app.EHighlightTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EHighlightTypeDropDownValueChanged, true);
+            app.EHighlightTypeDropDown.Tooltip = {'Highlight type'};
+            app.EHighlightTypeDropDown.FontWeight = 'bold';
+            app.EHighlightTypeDropDown.BackgroundColor = [1 1 1];
+            app.EHighlightTypeDropDown.Layout.Row = 1;
+            app.EHighlightTypeDropDown.Layout.Column = 10;
+            app.EHighlightTypeDropDown.Value = 'Best&Worst';
+
+            % Create ESaveTableButton
+            app.ESaveTableButton = uibutton(app.EP3T1GridLayout, 'push');
+            app.ESaveTableButton.ButtonPushedFcn = createCallbackFcn(app, @ESaveTableButtonPushed, true);
+            app.ESaveTableButton.BackgroundColor = [1 1 1];
+            app.ESaveTableButton.FontWeight = 'bold';
+            app.ESaveTableButton.Tooltip = {'Save current table to file'};
+            app.ESaveTableButton.Layout.Row = 1;
+            app.ESaveTableButton.Layout.Column = 1;
+            app.ESaveTableButton.Text = 'Save Table';
+
+            % Create EDataFormatEditField
+            app.EDataFormatEditField = uieditfield(app.EP3T1GridLayout, 'text');
+            app.EDataFormatEditField.ValueChangedFcn = createCallbackFcn(app, @EDataFormatEditFieldValueChanged, true);
+            app.EDataFormatEditField.HorizontalAlignment = 'center';
+            app.EDataFormatEditField.Tooltip = {'Data Format Str'};
+            app.EDataFormatEditField.Layout.Row = 1;
+            app.EDataFormatEditField.Layout.Column = 5;
+            app.EDataFormatEditField.Value = '%d';
+
+            % Create EConvergeButton
+            app.EConvergeButton = uibutton(app.EP3T1GridLayout, 'push');
+            app.EConvergeButton.ButtonPushedFcn = createCallbackFcn(app, @EConvergeButtonPushed, true);
+            app.EConvergeButton.BackgroundColor = [1 1 1];
+            app.EConvergeButton.FontWeight = 'bold';
+            app.EConvergeButton.Tooltip = {'Draw Convergence Plot'};
+            app.EConvergeButton.Layout.Row = 1;
+            app.EConvergeButton.Layout.Column = 3;
+            app.EConvergeButton.Text = 'Converge';
+
+            % Create EParetoButton
+            app.EParetoButton = uibutton(app.EP3T1GridLayout, 'push');
+            app.EParetoButton.ButtonPushedFcn = createCallbackFcn(app, @EParetoButtonPushed, true);
+            app.EParetoButton.BackgroundColor = [1 1 1];
+            app.EParetoButton.FontWeight = 'bold';
+            app.EParetoButton.Tooltip = {'Draw Median Population Pareto Front'};
+            app.EParetoButton.Layout.Row = 1;
+            app.EParetoButton.Layout.Column = 4;
+            app.EParetoButton.Text = 'Pareto';
+
+            % Create EConvergeTypeDropDown
+            app.EConvergeTypeDropDown = uidropdown(app.EP3T1GridLayout);
+            app.EConvergeTypeDropDown.Items = {'Log', 'Normal'};
+            app.EConvergeTypeDropDown.Tooltip = {'Show Type'};
+            app.EConvergeTypeDropDown.FontWeight = 'bold';
+            app.EConvergeTypeDropDown.BackgroundColor = [1 1 1];
+            app.EConvergeTypeDropDown.Layout.Row = 1;
+            app.EConvergeTypeDropDown.Layout.Column = 2;
+            app.EConvergeTypeDropDown.Value = 'Log';
+
+            % Create EUITable
+            app.EUITable = uitable(app.EP3TGridLayout);
+            app.EUITable.ColumnName = '';
+            app.EUITable.RowName = {};
+            app.EUITable.CellSelectionCallback = createCallbackFcn(app, @EUITableCellSelection, true);
+            app.EUITable.Layout.Row = 2;
+            app.EUITable.Layout.Column = 1;
+
             % Create DataProcessModuleTab
             app.DataProcessModuleTab = uitab(app.MTOPlatformTabGroup);
             app.DataProcessModuleTab.Title = 'Data Process Module';
@@ -3087,13 +3082,11 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.DataProcessGridLayout = uigridlayout(app.DataProcessModuleTab);
             app.DataProcessGridLayout.ColumnWidth = {380, '1x'};
             app.DataProcessGridLayout.RowHeight = {'1x'};
-            app.DataProcessGridLayout.ColumnSpacing = 5;
-            app.DataProcessGridLayout.RowSpacing = 5;
-            app.DataProcessGridLayout.Padding = [5 5 5 5];
             app.DataProcessGridLayout.BackgroundColor = [1 1 1];
 
             % Create DPanel1
             app.DPanel1 = uipanel(app.DataProcessGridLayout);
+            app.DPanel1.BorderType = 'none';
             app.DPanel1.BackgroundColor = [1 1 1];
             app.DPanel1.Layout.Row = 1;
             app.DPanel1.Layout.Column = 1;
@@ -3101,9 +3094,9 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create DP1GridLayout
             app.DP1GridLayout = uigridlayout(app.DPanel1);
             app.DP1GridLayout.ColumnWidth = {'1x'};
-            app.DP1GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', 'fit'};
+            app.DP1GridLayout.RowHeight = {'0.5x', 'fit', 'fit', 'fit', 'fit', 'fit', '1x'};
             app.DP1GridLayout.RowSpacing = 20;
-            app.DP1GridLayout.Padding = [10 10 10 20];
+            app.DP1GridLayout.Padding = [0 0 0 0];
             app.DP1GridLayout.BackgroundColor = [1 1 1];
 
             % Create DDataProcessModuleLabel
@@ -3111,14 +3104,15 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.DDataProcessModuleLabel.HorizontalAlignment = 'center';
             app.DDataProcessModuleLabel.FontSize = 18;
             app.DDataProcessModuleLabel.FontWeight = 'bold';
-            app.DDataProcessModuleLabel.Layout.Row = 1;
+            app.DDataProcessModuleLabel.Layout.Row = 2;
             app.DDataProcessModuleLabel.Layout.Column = 1;
             app.DDataProcessModuleLabel.Text = 'Data Process Module';
 
             % Create DP1Panel1
             app.DP1Panel1 = uipanel(app.DP1GridLayout);
+            app.DP1Panel1.BorderType = 'none';
             app.DP1Panel1.BackgroundColor = [1 1 1];
-            app.DP1Panel1.Layout.Row = 2;
+            app.DP1Panel1.Layout.Row = 3;
             app.DP1Panel1.Layout.Column = 1;
 
             % Create DP1P1GridLayout
@@ -3171,8 +3165,9 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create DP1Panel2
             app.DP1Panel2 = uipanel(app.DP1GridLayout);
+            app.DP1Panel2.BorderType = 'none';
             app.DP1Panel2.BackgroundColor = [1 1 1];
-            app.DP1Panel2.Layout.Row = 3;
+            app.DP1Panel2.Layout.Row = 4;
             app.DP1Panel2.Layout.Column = 1;
 
             % Create DP1P2GridLayout
@@ -3218,8 +3213,9 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create DP1Panel3
             app.DP1Panel3 = uipanel(app.DP1GridLayout);
+            app.DP1Panel3.BorderType = 'none';
             app.DP1Panel3.BackgroundColor = [1 1 1];
-            app.DP1Panel3.Layout.Row = 4;
+            app.DP1Panel3.Layout.Row = 5;
             app.DP1Panel3.Layout.Column = 1;
 
             % Create DP1P3GridLayout
@@ -3265,8 +3261,9 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create DP1Panel4
             app.DP1Panel4 = uipanel(app.DP1GridLayout);
+            app.DP1Panel4.BorderType = 'none';
             app.DP1Panel4.BackgroundColor = [1 1 1];
-            app.DP1Panel4.Layout.Row = 5;
+            app.DP1Panel4.Layout.Row = 6;
             app.DP1Panel4.Layout.Column = 1;
 
             % Create DP1P4GridLayout
@@ -3303,6 +3300,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create DPanel2
             app.DPanel2 = uipanel(app.DataProcessGridLayout);
+            app.DPanel2.BorderType = 'none';
             app.DPanel2.BackgroundColor = [1 1 1];
             app.DPanel2.Layout.Row = 1;
             app.DPanel2.Layout.Column = 2;
