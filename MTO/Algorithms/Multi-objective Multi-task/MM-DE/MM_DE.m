@@ -119,6 +119,7 @@ classdef MM_DE < Algorithm
                         temp = find(min(old, new) == 1);
                         idx = temp(randperm(length(temp), min(length(temp), Algo.LM)));
                         for i = 1:length(idx)
+                            flag = false;
                             for x = 1:Algo.LN
                                 s = population{t}(idx(i));
                                 l = randi(length(population{t}(idx(i)).Dec));
@@ -138,12 +139,16 @@ classdef MM_DE < Algorithm
                                 FrontNo = NDSort([population{t}(idx(i)).Obj; s.Obj], [population{t}(idx(i)).CV; s.CV], inf);
                                 if FrontNo(1) > FrontNo(2) % Better Search
                                     population{t}(idx(i)) = s;
-                                    population{t}(idx(i)).Reg = population{t}(idx(i)).Reg ./ Algo.Lambda;
+                                    flag = true;
                                 elseif FrontNo(1) == FrontNo(2)
                                     archive = [archive, s];
-                                else
-                                    population{t}(idx(i)).Reg = population{t}(idx(i)).Reg .* Algo.Lambda;
                                 end
+                            end
+                            % Update Region
+                            if flag
+                                population{t}(idx(i)).Reg = population{t}(idx(i)).Reg ./ Algo.Lambda;
+                            else
+                                population{t}(idx(i)).Reg = population{t}(idx(i)).Reg .* Algo.Lambda;
                             end
                         end
                     end
