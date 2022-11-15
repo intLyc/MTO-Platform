@@ -49,8 +49,8 @@ classdef NSGA_II < Algorithm
             end
 
             while Algo.notTerminated(Prob, population)
-                % Generation
                 for t = 1:Prob.T
+                    % Generation
                     mating_pool = TournamentSelection(2, Prob.N, 1:Prob.N);
                     offspring = Algo.Generation(population{t}(mating_pool));
                     % Evaluation
