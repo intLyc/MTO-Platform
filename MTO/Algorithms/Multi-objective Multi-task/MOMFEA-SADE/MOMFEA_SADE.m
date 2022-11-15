@@ -58,7 +58,7 @@ classdef MOMFEA_SADE < Algorithm
                 if Algo.Gen <= Algo.LP
                     DE_Pro = ones(1, STNum);
                 else
-                    DE_Pro = sum(R_Succ(Algo.Gen - Algo.LP:Algo.Gen - 1, :), 1) ./ sum(R_Used(Algo.Gen - Algo.LP:Algo.Gen - 1, :), 1);
+                    DE_Pro = sum(R_Succ(Algo.Gen - Algo.LP:Algo.Gen - 1, :) + 1, 1) ./ sum(R_Used(Algo.Gen - Algo.LP:Algo.Gen - 1, :) + 1, 1);
                 end
 
                 Best = Algo.getBest(population);
