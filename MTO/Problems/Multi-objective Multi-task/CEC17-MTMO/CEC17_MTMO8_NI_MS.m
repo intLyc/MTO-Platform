@@ -21,7 +21,7 @@ classdef CEC17_MTMO8_NI_MS < Problem
     methods
         function Prob = CEC17_MTMO8_NI_MS(varargin)
             Prob = Prob@Problem(varargin);
-            Prob.maxFE = 1000 * 200;
+            Prob.maxFE = 1000 * 240;
         end
 
         function setTasks(Prob)

@@ -11,7 +11,7 @@ classdef CEC19_MTMO_CPLX9 < Problem
     methods
         function Prob = CEC19_MTMO_CPLX9(varargin)
             Prob = Prob@Problem(varargin);
-            Prob.maxFE = 1000 * 200;
+            Prob.maxFE = 1000 * 240;
         end
 
         function setTasks(Prob)
