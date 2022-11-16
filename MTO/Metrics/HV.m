@@ -13,6 +13,7 @@ function result = HV(MTOData, varargin)
 
     Par_flag = false;
     if length(varargin) >= 1
+        % Parallel Calculate
         Par_flag = varargin{1};
     end
 

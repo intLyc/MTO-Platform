@@ -1,4 +1,4 @@
-function result = MT_Score(MTOData)
+function result = MT_Score(MTOData, varargin)
     % <Metric>
 
     % Multi-task Score

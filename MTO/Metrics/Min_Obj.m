@@ -1,4 +1,4 @@
-function result = Min_Obj(MTOData)
+function result = Min_Obj(MTOData, varargin)
     % <Metric>
 
     % Minimal Objective Value of All Tasks

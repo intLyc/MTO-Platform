@@ -1,4 +1,4 @@
-function result = CV(MTOData)
+function result = CV(MTOData, varargin)
     % <Metric>
 
     % Constraint Violation

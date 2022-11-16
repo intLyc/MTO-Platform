@@ -1,4 +1,4 @@
-function result = FR(MTOData)
+function result = FR(MTOData, varargin)
     % <Metric>
 
     % Feasible Rate

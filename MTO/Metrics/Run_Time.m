@@ -1,4 +1,4 @@
-function result = Run_Time(MTOData)
+function result = Run_Time(MTOData, varargin)
     % <Metric>
 
     % Run Time

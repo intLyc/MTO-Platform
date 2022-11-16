@@ -1,4 +1,4 @@
-function result = Obj(MTOData)
+function result = Obj(MTOData, varargin)
     % <Metric>
 
     % Objective Value
