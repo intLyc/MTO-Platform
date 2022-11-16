@@ -38,6 +38,11 @@ classdef CEC19_MaTMO5 < Problem
                 Prob.T = Prob.defaultT;
             end
             Tasks = benchmark_CEC19_MaTMO(5, T);
+            Prob.M = [];
+            Prob.D = [];
+            Prob.Fnc = {};
+            Prob.Lb = {};
+            Prob.Ub = {};
             for t = 1:Prob.T
                 Prob.M(t) = 2;
                 Prob.D(t) = Tasks(t).Dim;
