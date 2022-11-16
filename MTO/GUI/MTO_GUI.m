@@ -628,7 +628,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                         end
                     end
                     if is_calculate
-                        eval(['result = ', app.EDataTypeDropDown.Value, '(app.EData);']);
+                        eval(['result = ', app.EDataTypeDropDown.Value, '(app.EData, ', num2str(app.EParallelDropDown.Value) ,');']);
                         metric.Name = app.EDataTypeDropDown.Value;
                         metric.Result = result;
                         if ~isfield(app.EData, 'Metrics')
