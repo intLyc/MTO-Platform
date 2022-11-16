@@ -1008,7 +1008,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     % check prob name
                     if ~strcmp(data_selected(i).NodeData.Problems(prob).Name, problems(prob).Name) || ...
                             data_selected(i).NodeData.Problems(prob).T ~= problems(prob).T || ...
-                            data_selected(i).NodeData.Problems(prob).M ~= problems(prob).M || ...
+                            sum(data_selected(i).NodeData.Problems(prob).M ~= problems(prob).M) || ...
                             sum(data_selected(i).NodeData.Problems(prob).D ~= problems(prob).D) || ...
                             data_selected(i).NodeData.Problems(prob).N ~= problems(prob).N || ...
                             data_selected(i).NodeData.Problems(prob).maxFE ~= problems(prob).maxFE
@@ -2165,15 +2165,23 @@ classdef MTO_GUI < matlab.apps.AppBase
                     x = squeeze(app.EResultConvergeData.X(prob_list(i), algo_list(j), :))';
                     p = plot(ax, x, y, ['-', marker]);
                     p.LineWidth = app.DefaultLineWidth;
-                    indices = round(length(y)/app.DefaultMarkerNum);
-                    p.MarkerIndices = indices:indices:length(y)-round(indices/2);
+                    indices = round(length(y)/min(app.DefaultMarkerNum,length(y)));
+                    if length(x) <= 3
+                        p.MarkerIndices = indices:indices:length(y);
+                    elseif length(y) < app.DefaultMarkerNum
+                        p.MarkerIndices = indices+1:indices:length(y)-round(indices/2);
+                    else
+                        p.MarkerIndices = indices:indices:length(y)-round(indices/2);
+                    end
                     p.MarkerSize = app.DefaultMarkerSize;
                     xlim_max = max(xlim_max, x(end));
                     xlim_min = min(xlim_min, x(1));
                     hold(ax, 'on');
                 end
                 
-                xlim(ax, [xlim_min, xlim_max]);
+                if xlim_min ~= xlim_max
+                    xlim(ax, [xlim_min, xlim_max]);
+                end
                 if strcmp(app.EConvergeTypeDropDown.Value, 'Log')
                     ylabel(ax, ['Log - ', strrep(app.EDataTypeDropDown.Value, '_', ' ')]);
                 else
