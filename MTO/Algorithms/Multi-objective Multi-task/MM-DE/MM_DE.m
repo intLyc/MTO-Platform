@@ -185,10 +185,10 @@ classdef MM_DE < Algorithm
                     population(i).F * (population(x1).Dec - population(x2).Dec);
                 offspring(i).Dec = DE_Crossover(offspring(i).Dec, population(i).Dec, population(i).CR);
 
-                rnd_lower = 0 + rand(size(population(i).Dec)) * (population(i).Dec - 0);
+                rnd_lower = 0 + rand(size(population(i).Dec)) .* (population(i).Dec - 0);
                 vio_low = find(offspring(i).Dec < 0);
                 offspring(i).Dec(vio_low) = rnd_lower(vio_low);
-                rnd_upper = population(i).Dec + rand(size(population(i).Dec)) * (1 - population(i).Dec);
+                rnd_upper = population(i).Dec + rand(size(population(i).Dec)) .* (1 - population(i).Dec);
                 vio_up = find(offspring(i).Dec > 1);
                 offspring(i).Dec(vio_up) = rnd_upper(vio_up);
 
