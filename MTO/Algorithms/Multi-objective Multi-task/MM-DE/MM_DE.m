@@ -107,15 +107,15 @@ classdef MM_DE < Algorithm
                     % update uF uCR
                     for i = 1:length(SF)
                         newSF = sum(SF.^2) ./ sum(SF);
-                        uF{t} = (1 - Algo.C) * uF{t} + Algo.C .* newSF;
-                        uCR{t} = (1 - Algo.C) * uCR{t} + Algo.C .* mean(SCR);
+                        uF{t} = (1 - Algo.C) .* uF{t} + Algo.C .* newSF;
+                        uCR{t} = (1 - Algo.C) .* uCR{t} + Algo.C .* mean(SCR);
                     end
 
                     population{t}(new < old) = offspring(new < old);
                     archive = offspring(new == old);
 
                     % Adaptive Local Search
-                    if mod(Algo.Gen, 10) == 0
+                    if mod(Algo.Gen, Algo.T) == 0
                         temp = find(min(old, new) == 1);
                         idx = temp(randperm(length(temp), min(length(temp), Algo.LM)));
                         for i = 1:length(idx)
@@ -185,10 +185,12 @@ classdef MM_DE < Algorithm
                     population(i).F * (population(x1).Dec - population(x2).Dec);
                 offspring(i).Dec = DE_Crossover(offspring(i).Dec, population(i).Dec, population(i).CR);
 
+                rnd_lower = 0 + rand(size(population(i).Dec)) * (population(i).Dec - 0);
                 vio_low = find(offspring(i).Dec < 0);
-                offspring(i).Dec(vio_low) = (population(i).Dec(vio_low) + 0) / 2;
+                offspring(i).Dec(vio_low) = rnd_lower(vio_low);
+                rnd_upper = population(i).Dec + rand(size(population(i).Dec)) * (1 - population(i).Dec);
                 vio_up = find(offspring(i).Dec > 1);
-                offspring(i).Dec(vio_up) = (population(i).Dec(vio_up) + 1) / 2;
+                offspring(i).Dec(vio_up) = rnd_upper(vio_up);
 
                 % Region Mutation and Crossover
                 offspring(i).Reg = population(i).Reg + ...
