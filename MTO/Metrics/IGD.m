@@ -2,7 +2,6 @@ function result = IGD(MTOData, varargin)
     % <Metric>
 
     % Inverted Generational Distance (IGD)
-    % The code implementation is referenced from PlatEMO(https://github.com/BIMK/PlatEMO).
 
     %------------------------------- Copyright --------------------------------
     % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
@@ -95,12 +94,4 @@ function BestObj = getBestObj(Obj, CV)
         Best = NDSort(Obj(Feasible, :), 1) == 1;
     end
     BestObj = Obj(Feasible(Best), :);
-end
-
-function score = getIGD(PopObj, optimum)
-    if size(PopObj, 2) ~= size(optimum, 2)
-        score = nan;
-    else
-        score = mean(min(pdist2(optimum, PopObj), [], 2));
-    end
 end
