@@ -75,8 +75,8 @@ classdef JADE < Algorithm
                     % update uF uCR
                     for i = 1:length(SF)
                         newSF = sum(SF.^2) ./ sum(SF);
-                        uF{t} = (1 - Algo.C) * uF{t} + Algo.C .* newSF;
-                        uCR{t} = (1 - Algo.C) * uCR{t} + Algo.C .* mean(SCR);
+                        uF{t} = (1 - Algo.C) .* uF{t} + Algo.C .* newSF;
+                        uCR{t} = (1 - Algo.C) .* uCR{t} + Algo.C .* mean(SCR);
                     end
 
                     % Update archive
