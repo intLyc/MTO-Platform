@@ -1,6 +1,6 @@
 function OffDec = DE_Crossover_Exp(OffDec, ParDec, CR)
-    D = length(OffDec);
-    L = 1 + fix(length(OffDec) * rand());
+    D = size(OffDec, 2);
+    L = 1 + fix(size(OffDec, 2) * rand());
     replace = L;
     position = L;
     while rand() < CR && length(replace) < D
@@ -12,6 +12,6 @@ function OffDec = DE_Crossover_Exp(OffDec, ParDec, CR)
         end
     end
     Dec_temp = ParDec;
-    Dec_temp(replace) = OffDec(replace);
+    Dec_temp(:, replace) = OffDec(:, replace);
     OffDec = Dec_temp;
 end
