@@ -54,7 +54,7 @@ classdef ProbabilityModel % Works reliably for 2(+) Dimensional distributions
                 model.mean_noisy = mean(solutions_noisy);
                 covariance = cov(solutions_noisy);
                 model.covarmat_noisy = diag(diag(covariance)); % Simplifying to univariate distribution by ignoring off diagonal terms of covariance matrix
-                model.covarmat_noisy = cov(solutions_noisy);
+                % model.covarmat_noisy = cov(solutions_noisy);
             elseif strcmp(model.modeltype, 'umd')
                 model.probofone_true = mean(solutions);
                 model.probofzero_true = 1 - model.probofone_true;
