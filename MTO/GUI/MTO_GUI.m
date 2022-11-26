@@ -1230,6 +1230,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             
             % run
             app.TAlgorithmTree.Children(1).NodeData.Result_Num = 50;
+            app.TAlgorithmTree.Children(1).NodeData.reset();
             app.TAlgorithmTree.Children(1).NodeData.run(app.TProblemTree.Children(1).NodeData);
             tmp = app.TAlgorithmTree.Children(1).NodeData.getResult(app.TProblemTree.Children(1).NodeData);
             for t = 1:size(tmp, 1)
@@ -1243,7 +1244,6 @@ classdef MTO_GUI < matlab.apps.AppBase
                 end
             end
             best_data = app.TAlgorithmTree.Children(1).NodeData.Best;
-            app.TAlgorithmTree.Children(1).NodeData.reset();
             
             app.TupdateUIAxes();
             
@@ -1457,6 +1457,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                         par_tool = Par(MTOData.Reps);
                         parfor rep = 1:MTOData.Reps
                             Par.tic
+                            algo_obj.reset();
                             algo_obj.run(prob_obj);
                             tmp = algo_obj.getResult(prob_obj);
                             for t = 1:size(tmp, 1)
@@ -1472,7 +1473,6 @@ classdef MTO_GUI < matlab.apps.AppBase
                                     end
                                 end
                             end
-                            algo_obj.reset();
                             par_tool(rep) = Par.toc;
                         end
                         MTOData.RunTimes(prob, algo, :) = [par_tool.ItStop] - [par_tool.ItStart];
@@ -1480,6 +1480,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                         t_temp = [];
                         for rep = 1:MTOData.Reps
                             tstart = tic;
+                            algo_obj.reset();
                             algo_obj.run(prob_obj);
                             tmp = algo_obj.getResult(prob_obj);
                             for t = 1:size(tmp, 1)
@@ -1495,7 +1496,6 @@ classdef MTO_GUI < matlab.apps.AppBase
                                     end
                                 end
                             end
-                            algo_obj.reset();
                             t_temp(rep) = toc(tstart);
                             
                             app.ETableReps(prob, algo) = rep;
