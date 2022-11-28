@@ -47,8 +47,10 @@ function result = CV(MTOData, varargin)
                     CV(rep, :) = MTOData.Results(prob, algo, rep).CV(task, :);
                 end
                 result.TableData(row, algo, :) = CV(:, end);
-                result.ConvergeData.Y(row, algo, :) = mean(CV(:, :), 1);
-                result.ConvergeData.X(row, algo, :) = [1:gen] ./ gen .* MTOData.Problems(prob).maxFE ./ MTOData.Problems(prob).T;
+                for rep = 1:MTOData.Reps
+                    result.ConvergeData.Y(row, algo, rep, :) = CV(rep, :);
+                    result.ConvergeData.X(row, algo, rep, :) = [1:gen] ./ gen .* MTOData.Problems(prob).maxFE ./ MTOData.Problems(prob).T;
+                end
             end
             row = row + 1;
         end

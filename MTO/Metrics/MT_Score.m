@@ -71,9 +71,9 @@ function result = MT_Score(MTOData, varargin)
             row = row + 1;
         end
         result.TableData(prob, :, 1) = score_temp(:, end);
-        for algo = 1:length(MTOData.Algorithms)
-            result.ConvergeData.Y(prob, algo, :) = score_temp(algo, :);
-            result.ConvergeData.X(prob, algo, :) = [1:gen] ./ gen .* MTOData.Problems(prob).maxFE ./ MTOData.Problems(prob).T;
-        end
+        % for algo = 1:length(MTOData.Algorithms)
+        %     result.ConvergeData.Y(prob, algo, 1, :) = score_temp(algo, :);
+        %     result.ConvergeData.X(prob, algo, 1, :) = [1:gen] ./ gen .* MTOData.Problems(prob).maxFE ./ MTOData.Problems(prob).T;
+        % end
     end
 end

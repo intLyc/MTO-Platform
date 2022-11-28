@@ -50,8 +50,10 @@ function result = Obj(MTOData, varargin)
                 end
                 Obj(CV > 0) = NaN;
                 result.TableData(row, algo, :) = Obj(:, end);
-                result.ConvergeData.Y(row, algo, :) = mean(Obj(:, :), 1);
-                result.ConvergeData.X(row, algo, :) = [1:gen] ./ gen .* MTOData.Problems(prob).maxFE ./ MTOData.Problems(prob).T;
+                for rep = 1:MTOData.Reps
+                    result.ConvergeData.Y(row, algo, rep, :) = Obj(rep, :);
+                    result.ConvergeData.X(row, algo, rep, :) = [1:gen] ./ gen .* MTOData.Problems(prob).maxFE ./ MTOData.Problems(prob).T;
+                end
             end
             row = row + 1;
         end

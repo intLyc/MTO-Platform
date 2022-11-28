@@ -74,11 +74,11 @@ function result = IGD_Plus(MTOData, varargin)
                     end
                 end
                 result.TableData(row, algo, :) = igdp(:, end);
-                result.ConvergeData.Y(row, algo, :) = mean(igdp(:, :), 1);
-                result.ConvergeData.X(row, algo, :) = [1:gen] ./ gen .* MTOData.Problems(prob).maxFE ./ MTOData.Problems(prob).T;
-
-                [~, rank] = sort(igdp(:, end));
-                result.ParetoData.Obj{row, algo} = squeeze(BestObj{rank(ceil(end / 2))}(:, :));
+                for rep = 1:MTOData.Reps
+                    result.ConvergeData.Y(row, algo, rep, :) = igdp(rep, :);
+                    result.ConvergeData.X(row, algo, rep, :) = [1:gen] ./ gen .* MTOData.Problems(prob).maxFE ./ MTOData.Problems(prob).T;
+                    result.ParetoData.Obj{row, algo, rep} = squeeze(BestObj{rep}(:, :));
+                end
             end
             result.ParetoData.Optimum{row}(:, :) = optimum{task};
             row = row + 1;

@@ -50,8 +50,10 @@ function result = Min_Obj(MTOData, varargin)
                 MinObj(rep, :) = min(Obj_temp, [], 1);
             end
             result.TableData(prob, algo, :) = MinObj(:, end);
-            result.ConvergeData.Y(prob, algo, :) = mean(MinObj(:, :), 1);
-            result.ConvergeData.X(prob, algo, :) = [1:gen] ./ gen .* MTOData.Problems(prob).maxFE;
+            for rep = 1:MTOData.Reps
+                result.ConvergeData.Y(row, algo, rep, :) = MinObj(rep, :);
+                result.ConvergeData.X(row, algo, rep, :) = [1:gen] ./ gen .* MTOData.Problems(prob).maxFE ./ MTOData.Problems(prob).T;
+            end
         end
     end
 end
