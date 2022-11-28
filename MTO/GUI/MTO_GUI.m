@@ -499,15 +499,17 @@ classdef MTO_GUI < matlab.apps.AppBase
             xlim_min = inf;
             xlim_max = 0;
             tasks_name = {};
-            for j = 1:size(result.ConvergeData.X, 1)
+            converge_x = result.ConvergeData.X;
+            converge_y = result.ConvergeData.Y;
+            for j = 1:size(converge_x, 1)
                 if j > length(app.DefaultMarkerList)
                     marker = '';
                 else
                     marker = app.DefaultMarkerList{j};
                 end
                 
-                y = squeeze(result.ConvergeData.Y(j, 1, :))';
-                x = squeeze(result.ConvergeData.X(j, 1, :))';
+                y = squeeze(converge_y(j, 1, 1, :))';
+                x = squeeze(converge_x(j, 1, 1, :))';
                 p = plot(app.TUIAxes, x, y, ['-', marker]);
                 p.LineWidth = app.DefaultLineWidth;
                 indices = round(length(y)/app.DefaultMarkerNum);
@@ -560,8 +562,8 @@ classdef MTO_GUI < matlab.apps.AppBase
                     hold(app.TUIAxes, 'on');
                     
                     % draw population
-                    x = squeeze(result.ParetoData.Obj{j, 1}(:, 1));
-                    y = squeeze(result.ParetoData.Obj{j, 1}(:, 2));
+                    x = squeeze(result.ParetoData.Obj{j, 1, 1}(:, 1));
+                    y = squeeze(result.ParetoData.Obj{j, 1, 1}(:, 2));
                     s = scatter(app.TUIAxes, x, y);
                     s.MarkerEdgeColor = color_list(j,:);
                     s.MarkerFaceAlpha = 0.65;
@@ -1070,6 +1072,98 @@ classdef MTO_GUI < matlab.apps.AppBase
             
             % save data
             save([dir_name, file_name], 'MTOData');
+        end
+        
+        function NewResults = DReduceResults(app, Results, N, M)
+            results_num = size(Results(1, 1, 1).CV, 2);
+            if results_num <= N
+                NewResults = Results;
+                return;
+            end
+            % process CV
+            NewResults = [];
+            for i = 1:size(Results, 1)
+                for j = 1:size(Results, 2)
+                    for k = 1:size(Results, 3)
+                        NewResults(i,j,k).CV(:,:,:) = app.DReduceResultNum(Results(i,j,k).CV(:,:,:), 2, 3, N);
+                        if M == 1
+                            NewResults(i,j,k).Obj(:,:,:) = app.DReduceResultNum(Results(i,j,k).Obj(:,:,:), 2, 3, N);
+                        else
+                            for t = 1:size(Results(i,j,k).CV, 1)
+                                NewResults(i,j,k).Obj{t} = app.DReduceResultNum(Results(i,j,k).Obj{t}, 1, 3, N);
+                            end
+                        end
+                    end
+                end
+            end
+        end
+        
+        function NewResult = DReduceResultNum(app, Result, D, Dim, N)
+            Gap = size(Result,D) ./ (N);
+            if Dim == 3
+                if D == 1
+                    NewResult = Result(1:N,:,:);
+                elseif D == 2
+                    NewResult = Result(:,1:N,:);
+                end
+            elseif Dim == 4
+                if D == 4
+                    NewResult = Result(:,:,:,1:N);
+                end
+            end
+            
+            idx = 1;
+            i = 1;
+            while i <= size(Result,D)
+                if i >= ((idx) * Gap)
+                    if Dim == 3
+                        if D == 1
+                            NewResult(idx,:,:) = Result(i,:,:);
+                        elseif D == 2
+                            NewResult(:,idx,:) = Result(:,i,:);
+                        end
+                    elseif Dim == 4
+                        if D == 4
+                            NewResult(:,:,:,idx) = Result(:,:,:,i);
+                        end
+                    end
+                    idx = idx + 1;
+                else
+                    i = i + 1;
+                end
+                if idx > N
+                    break;
+                end
+            end
+            if Dim == 3
+                if D == 1
+                    NewResult(1,:,:) = Result(1,:,:);
+                    NewResult(end,:,:) = Result(end,:,:);
+                elseif D == 2
+                    NewResult(:,1,:) = Result(:,1,:);
+                    NewResult(:,end,:) = Result(:,end,:);
+                end
+            elseif Dim == 4
+                if D == 4
+                    NewResult(:,:,:,1) = Result(:,:,:,1);
+                    NewResult(:,:,:,end) = Result(:,:,:,end);
+                end
+            end
+            if idx - 1 < N
+                for x = idx - 1:N
+                    if Dim == 3
+                        if D == 1
+                            NewResult(x,:,:) = Result(end,:,:);
+                        elseif D == 2
+                            NewResult(:,x,:) = Result(:,end,:);
+                        end
+                    elseif Dim == 4
+                        if D == 4
+                            NewResult(:,:,:,x) = Result(:,:,:,end);
+                        end
+                    end
+                end
+            end
         end
     end
 
@@ -1893,6 +1987,19 @@ classdef MTO_GUI < matlab.apps.AppBase
                     MTOData.Problems = data_selected(i).NodeData.Problems;
                     MTOData.Results(1:length(MTOData.Problems),1:length(MTOData.Algorithms),1) = data_selected(i).NodeData.Results(:,:,rep);
                     MTOData.RunTimes(1:length(MTOData.Problems),1:length(MTOData.Algorithms),1) = data_selected(i).NodeData.RunTimes(:,:,rep);
+                    if isfield(MTOData, 'Metrics')
+                        MTOData.Metrics = data_selected(i).NodeData.Metrics;
+                        for m = 1:length(MTOData.Metrics)
+                            MTOData.Metrics(m).Result.TableData = MTOData.Metrics(m).Result.TableData(:,:,rep);
+                            if isfield(MTOData, 'ConvergeData')
+                                MTOData.Metrics(m).Result.ConvergeData.X = MTOData.Metrics(m).Result.ConvergeData.X(:,:,rep,:);
+                                MTOData.Metrics(m).Result.ConvergeData.Y = MTOData.Metrics(m).Result.ConvergeData.Y(:,:,rep,:);
+                            end
+                            if isfield(MTOData, 'ParetoData')
+                                MTOData.Metrics(m).Result.ParetoData.Obj = MTOData.Metrics(m).Result.ParetoData.Obj(:,:,rep);
+                            end
+                        end
+                    end
                     app.DputDataNode([data_selected(i).Text, ' (Split Rep: ', num2str(rep), ')'], MTOData);
                     drawnow;
                 end
@@ -1923,6 +2030,20 @@ classdef MTO_GUI < matlab.apps.AppBase
                     MTOData.Problems = data_selected(i).NodeData.Problems;
                     MTOData.Results(1:length(MTOData.Problems),1,1:MTOData.Reps) = data_selected(i).NodeData.Results(:,algo,:);
                     MTOData.RunTimes(1:length(MTOData.Problems),1,1:MTOData.Reps) = data_selected(i).NodeData.RunTimes(:,algo,:);
+                    if isfield(MTOData, 'Metrics')
+                        MTOData.Metrics = data_selected(i).NodeData.Metrics;
+                        for m = 1:length(MTOData.Metrics)
+                            MTOData.Metrics(m).Result.ColumnName = MTOData.Metrics(m).Result.ColumnName(algo);
+                            MTOData.Metrics(m).Result.TableData = MTOData.Metrics(m).Result.TableData(:,algo,:);
+                            if isfield(MTOData, 'ConvergeData')
+                                MTOData.Metrics(m).Result.ConvergeData.X = MTOData.Metrics(m).Result.ConvergeData.X(:,algo,:,:);
+                                MTOData.Metrics(m).Result.ConvergeData.Y = MTOData.Metrics(m).Result.ConvergeData.Y(:,algo,:,:);
+                            end
+                            if isfield(MTOData, 'ParetoData')
+                                MTOData.Metrics(m).Result.ParetoData.Obj = MTOData.Metrics(m).Result.ParetoData.Obj(:,algo,:);
+                            end
+                        end
+                    end
                     app.DputDataNode([data_selected(i).Text, ' (Split Algorithm: ', MTOData.Algorithms(1).Name, ')'], MTOData);
                     drawnow;
                 end
@@ -1953,6 +2074,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     MTOData.Problems(1) = data_selected(i).NodeData.Problems(prob);
                     MTOData.Results(1,1:length(MTOData.Algorithms),1:MTOData.Reps) = data_selected(i).NodeData.Results(prob,:,:);
                     MTOData.RunTimes(1,1:length(MTOData.Algorithms),1:MTOData.Reps) = data_selected(i).NodeData.RunTimes(prob,:,:);
+                    % problem can't split metric
                     app.DputDataNode([data_selected(i).Text, ' (Split Problem: ', MTOData.Problems(1).Name, ')'], MTOData);
                     drawnow;
                 end
@@ -1973,12 +2095,75 @@ classdef MTO_GUI < matlab.apps.AppBase
             MTOData.Reps = 0;
             MTOData.Algorithms = data_selected(1).NodeData.Algorithms;
             MTOData.Problems = data_selected(1).NodeData.Problems;
+            % merge results
+            results_num = [];
             for i = 1:length(data_selected)
+                results_num(i) = size(data_selected(i).NodeData.Results(1, 1, 1).CV, 2);
+            end
+            min_results_num = min(results_num);
+            M =  max([data_selected(i).NodeData.Problems.M]);
+            for i = 1:length(data_selected)
+                results_temp = app.DReduceResults(data_selected(i).NodeData.Results, min_results_num, M);
                 MTOData.Results(1:length(MTOData.Problems),1:length(MTOData.Algorithms),MTOData.Reps+1:MTOData.Reps+data_selected(i).NodeData.Reps) = ...
-                    data_selected(i).NodeData.Results(:,:,:);
+                    results_temp(:,:,:);
                 MTOData.RunTimes(1:length(MTOData.Problems),1:length(MTOData.Algorithms),MTOData.Reps+1:MTOData.Reps+data_selected(i).NodeData.Reps) = ...
                     data_selected(i).NodeData.RunTimes(:,:,:);
                 MTOData.Reps = MTOData.Reps + data_selected(i).NodeData.Reps;
+            end
+            % merge metric
+            if isfield(data_selected(1).NodeData,'Metrics')
+                metric_name = {data_selected(1).NodeData.Metrics.Name};
+            else
+                metric_name = {};
+            end
+            for i = 2:length(data_selected)
+                metric_name = intersect(metric_name, {data_selected(i).NodeData.Metrics.Name});
+            end
+            for i = 1:length(metric_name)
+                idx = find(strcmp({data_selected(1).NodeData.Metrics.Name}, metric_name{i}));
+                MTOData.Metrics(i).Name = metric_name{i};
+                MTOData.Metrics(i).Result.Metric = data_selected(1).NodeData.Metrics(idx).Result.Metric;
+                MTOData.Metrics(i).Result.RowName = data_selected(1).NodeData.Metrics(idx).Result.RowName;
+                MTOData.Metrics(i).Result.ColumnName = data_selected(1).NodeData.Metrics(idx).Result.ColumnName;
+                reps = 0;
+                for j = 1:length(data_selected)
+                    idx = find(strcmp({data_selected(j).NodeData.Metrics.Name}, metric_name{i}));
+                    MTOData.Metrics(i).Result.TableData(1:length(MTOData.Metrics(i).Result.RowName),...
+                        1:length(MTOData.Metrics(i).Result.ColumnName),...
+                        reps+1:reps+data_selected(j).NodeData.Reps) = ...
+                        data_selected(j).NodeData.Metrics(idx).Result.TableData;
+                    reps = reps + data_selected(j).NodeData.Reps;
+                end
+                if isfield(data_selected(1).NodeData.Metrics(idx).Result, 'ConvergeData')
+                    reps = 0;
+                    for j = 1:length(data_selected)
+                        idx = find(strcmp({data_selected(j).NodeData.Metrics.Name}, metric_name{i}));
+                        temp_x = app.DReduceResultNum(data_selected(j).NodeData.Metrics(idx).Result.ConvergeData.X,4,4,min_results_num);
+                        temp_y = app.DReduceResultNum(data_selected(j).NodeData.Metrics(idx).Result.ConvergeData.Y,4,4,min_results_num);
+                        MTOData.Metrics(i).Result.ConvergeData.X(1:length(MTOData.Metrics(i).Result.RowName),...
+                            1:length(MTOData.Metrics(i).Result.ColumnName),...
+                            reps+1:reps+data_selected(j).NodeData.Reps,:) = ...
+                            temp_x(:,:,:,:);
+                        MTOData.Metrics(i).Result.ConvergeData.Y(1:length(MTOData.Metrics(i).Result.RowName),...
+                            1:length(MTOData.Metrics(i).Result.ColumnName),...
+                            reps+1:reps+data_selected(j).NodeData.Reps,:) = ...
+                            temp_y(:,:,:,:);
+                        reps = reps + data_selected(j).NodeData.Reps;
+                    end
+                end
+                if isfield(data_selected(1).NodeData.Metrics(idx).Result, 'ParetoData')
+                    idx = find(strcmp({data_selected(1).NodeData.Metrics.Name}, metric_name{i}));
+                    MTOData.Metrics(i).Result.ParetoData.Optimum = data_selected(1).NodeData.Metrics(idx).Result.ParetoData.Optimum;
+                    reps = 0;
+                    for j = 1:length(data_selected)
+                        idx = find(strcmp({data_selected(j).NodeData.Metrics.Name}, metric_name{i}));
+                        MTOData.Metrics(i).Result.ParetoData.Obj(1:length(MTOData.Metrics(i).Result.RowName),...
+                            1:length(MTOData.Metrics(i).Result.ColumnName),...
+                            reps+1:reps+data_selected(j).NodeData.Reps) = ...
+                            data_selected(j).NodeData.Metrics(idx).Result.ParetoData.Obj;
+                        reps = reps + data_selected(j).NodeData.Reps;
+                    end
+                end
             end
             
             app.DputDataNode('data (Merge Reps)', MTOData);
@@ -1999,14 +2184,78 @@ classdef MTO_GUI < matlab.apps.AppBase
             MTOData.Reps = data_selected(1).NodeData.Reps;
             MTOData.Problems = data_selected(1).NodeData.Problems;
             idx = 0;
+            % merge results
+            results_num = [];
             for i = 1:length(data_selected)
+                results_num(i) = size(data_selected(i).NodeData.Results(1, 1, 1).CV, 2);
+            end
+            min_results_num = min(results_num);
+            M =  max([data_selected(i).NodeData.Problems.M]);
+            for i = 1:length(data_selected)
+                results_temp = app.DReduceResults(data_selected(i).NodeData.Results, min_results_num, M);
                 MTOData.Algorithms(idx+1:idx+length(data_selected(i).NodeData.Algorithms)) = ...
                     data_selected(i).NodeData.Algorithms;
                 MTOData.Results(1:length(MTOData.Problems),idx+1:idx+length(data_selected(i).NodeData.Algorithms),1:MTOData.Reps) = ...
-                    data_selected(i).NodeData.Results(:,:,:);
+                    results_temp(:,:,:);
                 MTOData.RunTimes(1:length(MTOData.Problems),idx+1:idx+length(data_selected(i).NodeData.Algorithms),1:MTOData.Reps) = ...
                     data_selected(i).NodeData.RunTimes(:,:,:);
                 idx = idx + length(data_selected(i).NodeData.Algorithms);
+            end
+            % merge metric
+            if isfield(data_selected(1).NodeData,'Metrics')
+                metric_name = {data_selected(1).NodeData.Metrics.Name};
+            else
+                metric_name = {};
+            end
+            for i = 2:length(data_selected)
+                metric_name = intersect(metric_name, {data_selected(i).NodeData.Metrics.Name});
+            end
+            for i = 1:length(metric_name)
+                idx = find(strcmp({data_selected(1).NodeData.Metrics.Name}, metric_name{i}));
+                MTOData.Metrics(i).Name = metric_name{i};
+                MTOData.Metrics(i).Result.Metric = data_selected(1).NodeData.Metrics(idx).Result.Metric;
+                MTOData.Metrics(i).Result.RowName = data_selected(1).NodeData.Metrics(idx).Result.RowName;
+                algo = 0;
+                for j = 1:length(data_selected)
+                    idx = find(strcmp({data_selected(j).NodeData.Metrics.Name}, metric_name{i}));
+                    MTOData.Metrics(i).Result.ColumnName(algo+1:algo+length(data_selected(j).NodeData.Metrics(idx).Result.ColumnName)) = ...
+                        data_selected(j).NodeData.Metrics(idx).Result.ColumnName;
+                    MTOData.Metrics(i).Result.TableData(1:length(MTOData.Metrics(i).Result.RowName),...
+                        algo+1:algo+length(data_selected(j).NodeData.Metrics(idx).Result.ColumnName),...
+                        1:MTOData.Reps) = ...
+                        data_selected(j).NodeData.Metrics(idx).Result.TableData;
+                    algo = algo + length(data_selected(j).NodeData.Metrics(idx).Result.ColumnName);
+                end
+                if isfield(data_selected(1).NodeData.Metrics(idx).Result, 'ConvergeData')
+                    algo = 0;
+                    for j = 1:length(data_selected)
+                        idx = find(strcmp({data_selected(j).NodeData.Metrics.Name}, metric_name{i}));
+                        temp_x = app.DReduceResultNum(data_selected(j).NodeData.Metrics(idx).Result.ConvergeData.X,4,4,min_results_num);
+                        temp_y = app.DReduceResultNum(data_selected(j).NodeData.Metrics(idx).Result.ConvergeData.Y,4,4,min_results_num);
+                        MTOData.Metrics(i).Result.ConvergeData.X(1:length(MTOData.Metrics(i).Result.RowName),...
+                            algo+1:algo+length(data_selected(j).NodeData.Metrics(idx).Result.ColumnName),...
+                            1:MTOData.Reps,:) = ...
+                            temp_x(:,:,:,:);
+                        MTOData.Metrics(i).Result.ConvergeData.Y(1:length(MTOData.Metrics(i).Result.RowName),...
+                            algo+1:algo+length(data_selected(j).NodeData.Metrics(idx).Result.ColumnName),...
+                            1:MTOData.Reps,:) = ...
+                            temp_y(:,:,:,:);
+                        algo = algo + length(data_selected(j).NodeData.Metrics(idx).Result.ColumnName);
+                    end
+                end
+                if isfield(data_selected(1).NodeData.Metrics(idx).Result, 'ParetoData')
+                    idx = find(strcmp({data_selected(1).NodeData.Metrics.Name}, metric_name{i}));
+                    MTOData.Metrics(i).Result.ParetoData.Optimum = data_selected(1).NodeData.Metrics(idx).Result.ParetoData.Optimum;
+                    algo = 0;
+                    for j = 1:length(data_selected)
+                        idx = find(strcmp({data_selected(j).NodeData.Metrics.Name}, metric_name{i}));
+                        MTOData.Metrics(i).Result.ParetoData.Obj(1:length(MTOData.Metrics(i).Result.RowName),...
+                            algo+1:algo+length(data_selected(j).NodeData.Metrics(idx).Result.ColumnName),...
+                            1:MTOData.Reps) = ...
+                            data_selected(j).NodeData.Metrics(idx).Result.ParetoData.Obj;
+                        algo = algo + length(data_selected(j).NodeData.Metrics(idx).Result.ColumnName);
+                    end
+                end
             end
             
             app.DputDataNode('data (Merge Algorithms)', MTOData);
@@ -2027,14 +2276,78 @@ classdef MTO_GUI < matlab.apps.AppBase
             MTOData.Reps = data_selected(1).NodeData.Reps;
             MTOData.Algorithms = data_selected(1).NodeData.Algorithms;
             idx = 0;
+            % merge results
+            results_num = [];
             for i = 1:length(data_selected)
+                results_num(i) = size(data_selected(i).NodeData.Results(1, 1, 1).CV, 2);
+            end
+            min_results_num = min(results_num);
+            M =  max([data_selected(i).NodeData.Problems.M]);
+            for i = 1:length(data_selected)
+                results_temp = app.DReduceResults(data_selected(i).NodeData.Results, min_results_num, M);
                 MTOData.Problems(idx+1:idx+length(data_selected(i).NodeData.Problems)) = ...
                     data_selected(i).NodeData.Problems;
                 MTOData.Results(idx+1:idx+length(data_selected(i).NodeData.Problems),1:length(MTOData.Algorithms),1:MTOData.Reps) = ...
-                    data_selected(i).NodeData.Results(:,:,:);
+                    results_temp(:,:,:);
                 MTOData.RunTimes(idx+1:idx+length(data_selected(i).NodeData.Problems),1:length(MTOData.Algorithms),1:MTOData.Reps) = ...
                     data_selected(i).NodeData.RunTimes(:,:,:);
                 idx = idx + length(data_selected(i).NodeData.Problems);
+            end
+            % merge metric
+            if isfield(data_selected(1).NodeData,'Metrics')
+                metric_name = {data_selected(1).NodeData.Metrics.Name};
+            else
+                metric_name = {};
+            end
+            for i = 2:length(data_selected)
+                metric_name = intersect(metric_name, {data_selected(i).NodeData.Metrics.Name});
+            end
+            for i = 1:length(metric_name)
+                idx = find(strcmp({data_selected(1).NodeData.Metrics.Name}, metric_name{i}));
+                MTOData.Metrics(i).Name = metric_name{i};
+                MTOData.Metrics(i).Result.Metric = data_selected(1).NodeData.Metrics(idx).Result.Metric;
+                MTOData.Metrics(i).Result.ColumnName = data_selected(1).NodeData.Metrics(idx).Result.ColumnName;
+                prob = 0;
+                for j = 1:length(data_selected)
+                    idx = find(strcmp({data_selected(j).NodeData.Metrics.Name}, metric_name{i}));
+                    MTOData.Metrics(i).Result.RowName(prob+1:prob+length(data_selected(j).NodeData.Metrics(idx).Result.RowName)) = ...
+                        data_selected(j).NodeData.Metrics(idx).Result.RowName;
+                    MTOData.Metrics(i).Result.TableData(prob+1:prob+length(data_selected(j).NodeData.Metrics(idx).Result.RowName),...
+                        1:length(MTOData.Metrics(i).Result.ColumnName),...
+                        1:MTOData.Reps) = ...
+                        data_selected(j).NodeData.Metrics(idx).Result.TableData;
+                    prob = prob + length(data_selected(j).NodeData.Metrics(idx).Result.RowName);
+                end
+                if isfield(data_selected(1).NodeData.Metrics(idx).Result, 'ConvergeData')
+                    prob = 0;
+                    for j = 1:length(data_selected)
+                        idx = find(strcmp({data_selected(j).NodeData.Metrics.Name}, metric_name{i}));
+                        temp_x = app.DReduceResultNum(data_selected(j).NodeData.Metrics(idx).Result.ConvergeData.X,4,4,min_results_num);
+                        temp_y = app.DReduceResultNum(data_selected(j).NodeData.Metrics(idx).Result.ConvergeData.Y,4,4,min_results_num);
+                        MTOData.Metrics(i).Result.ConvergeData.X(prob+1:prob+length(data_selected(j).NodeData.Metrics(idx).Result.RowName),...
+                            1:length(MTOData.Metrics(i).Result.ColumnName),...
+                            1:MTOData.Reps,:) = ...
+                            temp_x(:,:,:,:);
+                        MTOData.Metrics(i).Result.ConvergeData.Y(prob+1:prob+length(data_selected(j).NodeData.Metrics(idx).Result.RowName),...
+                            1:length(MTOData.Metrics(i).Result.ColumnName),...
+                            1:MTOData.Reps,:) = ...
+                            temp_y(:,:,:,:);
+                        prob = prob + length(data_selected(j).NodeData.Metrics(idx).Result.RowName);
+                    end
+                end
+                if isfield(data_selected(1).NodeData.Metrics(idx).Result, 'ParetoData')
+                    prob = 0;
+                    for j = 1:length(data_selected)
+                        idx = find(strcmp({data_selected(j).NodeData.Metrics.Name}, metric_name{i}));
+                        MTOData.Metrics(i).Result.ParetoData.Optimum(prob+1:prob+length(data_selected(j).NodeData.Metrics(idx).Result.RowName)) = ...
+                            data_selected(j).NodeData.Metrics(idx).Result.ParetoData.Optimum;
+                        MTOData.Metrics(i).Result.ParetoData.Obj(prob+1:prob+length(data_selected(j).NodeData.Metrics(idx).Result.RowName),...
+                            1:length(MTOData.Metrics(i).Result.ColumnName),...
+                            1:MTOData.Reps) = ...
+                            data_selected(j).NodeData.Metrics(idx).Result.ParetoData.Obj;
+                        prob = prob + length(data_selected(j).NodeData.Metrics(idx).Result.RowName);
+                    end
+                end
             end
             
             app.DputDataNode('data (Merge Problems)', MTOData);
@@ -2157,12 +2470,12 @@ classdef MTO_GUI < matlab.apps.AppBase
                         marker = app.DefaultMarkerList{j};
                     end
                     
-                    y = squeeze(app.EResultConvergeData.Y(prob_list(i), algo_list(j), :))';
+                    y = squeeze(mean(app.EResultConvergeData.Y(prob_list(i), algo_list(j), :, :),3))';
                     if strcmp(app.EConvergeTypeDropDown.Value, 'Log')
                         y = log(y);
                     end
                     
-                    x = squeeze(app.EResultConvergeData.X(prob_list(i), algo_list(j), :))';
+                    x = squeeze(mean(app.EResultConvergeData.X(prob_list(i), algo_list(j), :, :),3))';
                     p = plot(ax, x, y, ['-', marker]);
                     p.LineWidth = app.DefaultLineWidth;
                     indices = round(length(y)/min(app.DefaultMarkerNum,length(y)));
@@ -2209,7 +2522,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                 fig = figure();
                 ax = axes(fig);
                 
-                M = size(app.EResultParetoData.Obj{prob_list(i),1}, 2);
+                M = size(app.EResultParetoData.Obj{prob_list(i),1,1}, 2);
                 if M == 2
                     if ~isempty(app.EResultParetoData.Optimum)
                         % draw optimum
@@ -2226,8 +2539,11 @@ classdef MTO_GUI < matlab.apps.AppBase
                     % draw each algorithm
                     color_list = colororder;
                     for j = 1:length(algo_list)
-                        x = squeeze(app.EResultParetoData.Obj{prob_list(i), algo_list(j)}(:, 1));
-                        y = squeeze(app.EResultParetoData.Obj{prob_list(i), algo_list(j)}(:, 2));
+                        metric_data = squeeze(app.EResultTableData(prob_list(i), algo_list(j), :));
+                        [~, rank] = sort(metric_data);
+                        mid_idx = rank(ceil(end / 2));
+                        x = squeeze(app.EResultParetoData.Obj{prob_list(i), algo_list(j), mid_idx}(:, 1));
+                        y = squeeze(app.EResultParetoData.Obj{prob_list(i), algo_list(j), mid_idx}(:, 2));
                         s = scatter(ax, x, y);
                         s.MarkerEdgeColor = color_list(j,:);
                         s.MarkerFaceAlpha = 0.65;
@@ -2263,9 +2579,12 @@ classdef MTO_GUI < matlab.apps.AppBase
                     % draw each algorithm
                     color_list = colororder;
                     for j = 1:length(algo_list)
-                        x = squeeze(app.EResultParetoData.Obj{prob_list(i), algo_list(j)}(:, 1));
-                        y = squeeze(app.EResultParetoData.Obj{prob_list(i), algo_list(j)}(:, 2));
-                        z = squeeze(app.EResultParetoData.Obj{prob_list(i), algo_list(j)}(:, 3));
+                        metric_data = squeeze(app.EResultTableData(prob_list(i), algo_list(j), :));
+                        [~, rank] = sort(metric_data);
+                        mid_idx = rank(ceil(end / 2));
+                        x = squeeze(app.EResultParetoData.Obj{prob_list(i), algo_list(j), mid_idx}(:, 1));
+                        y = squeeze(app.EResultParetoData.Obj{prob_list(i), algo_list(j), mid_idx}(:, 2));
+                        z = squeeze(app.EResultParetoData.Obj{prob_list(i), algo_list(j), mid_idx}(:, 3));
                         s = scatter3(ax, x, y, z);
                         s.MarkerEdgeColor = color_list(j,:);
                         s.MarkerFaceAlpha = 0.65;

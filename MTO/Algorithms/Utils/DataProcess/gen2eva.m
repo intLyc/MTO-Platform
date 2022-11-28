@@ -32,8 +32,10 @@ function Result = gen2eva(Result_Gen, FE_Gen, maxGen)
         end
         Result(k, 1) = Result_Gen(k, 1);
         Result(k, end) = Result_Gen(k, end);
-        if idx - 1 < length(maxGen)
-            Result(k, idx - 1:end) = Result_Gen(k, end);
+        if idx - 1 < maxGen
+            for x = idx - 1:maxGen
+                Result(k, x) = Result_Gen(k, end);
+            end
         end
     end
 end
