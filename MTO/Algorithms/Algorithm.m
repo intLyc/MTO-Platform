@@ -17,8 +17,7 @@ classdef Algorithm < handle
         Best % Best individual found (Single-objective)
         Result % Result after run
         Result_Num % Convergence Results Num
-
-        Save_Dec = false % Save Dec Flag
+        Save_Dec % Save Decision Variables Flag
     end
 
     methods
