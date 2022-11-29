@@ -44,7 +44,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         AlgorithmsLabel              matlab.ui.control.Label
         EProblemsListBox             matlab.ui.control.ListBox
         ProblemsLabel                matlab.ui.control.Label
-        ParallelDropDownLabel        matlab.ui.control.Label
+        ParallelLabel                matlab.ui.control.Label
         EParallelDropDown            matlab.ui.control.DropDown
         TaskLabel_2                  matlab.ui.control.Label
         ETaskTypeDropDown            matlab.ui.control.DropDown
@@ -57,6 +57,8 @@ classdef MTO_GUI < matlab.apps.AppBase
         EResultsNumEditField         matlab.ui.control.NumericEditField
         ERunTimesEditFieldLabel      matlab.ui.control.Label
         EResultsNumEditFieldLabel    matlab.ui.control.Label
+        SaveDecLabel                 matlab.ui.control.Label
+        ESaveDecDropDown             matlab.ui.control.DropDown
         EPanel2                      matlab.ui.container.Panel
         EP2GridLayout                matlab.ui.container.GridLayout
         EAlgorithmsTree              matlab.ui.container.Tree
@@ -258,6 +260,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EStartButton.Enable = value;
             app.ERepsEditField.Enable = value;
             app.EResultsNumEditField.Enable = value;
+            app.ESaveDecDropDown.Enable = value;
             app.EParallelDropDown.Enable = value;
             app.ETaskTypeDropDown.Enable = value;
             app.EObjectiveTypeDropDown.Enable = value;
@@ -1328,6 +1331,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             
             % run
             app.TAlgorithmTree.Children(1).NodeData.Result_Num = 50;
+            app.TAlgorithmTree.Children(1).NodeData.Save_Dec = 0;
             app.TAlgorithmTree.Children(1).NodeData.reset();
             app.TAlgorithmTree.Children(1).NodeData.run(app.TProblemTree.Children(1).NodeData);
             tmp = app.TAlgorithmTree.Children(1).NodeData.getResult(app.TProblemTree.Children(1).NodeData);
@@ -1549,6 +1553,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     % check pause and stop
                     algo_obj = app.EAlgorithmsTree.Children(algo).NodeData;
                     algo_obj.Result_Num = app.EResultsNumEditField.Value;
+                    algo_obj.Save_Dec = app.ESaveDecDropDown.Value;
                     prob_obj = app.EProblemsTree.Children(prob).NodeData;
                     app.EcheckPauseStopStatus();
                     if app.EParallelDropDown.Value == 1
@@ -1561,14 +1566,17 @@ classdef MTO_GUI < matlab.apps.AppBase
                             for t = 1:size(tmp, 1)
                                 for g = 1:size(tmp,2)
                                     if max(prob_obj.M) > 1
-                                        Results(prob, algo, rep).Obj{t}(g, :, :) = tmp(t, g).Obj(:, :);
+                                        Results(prob, algo, rep).Obj{t}(g, :, :) = tmp(t, g).Obj;
+                                        if isfield(tmp, 'Dec')
+                                            Results(prob, algo, rep).Dec(t, g, :, :) = tmp(t, g).Dec;
+                                        end
                                     else
-                                        Results(prob, algo, rep).Obj(t, g, :, :) = tmp(t, g).Obj(:, :);
+                                        Results(prob, algo, rep).Obj(t, g, :) = tmp(t, g).Obj;
+                                        if isfield(tmp, 'Dec')
+                                            Results(prob, algo, rep).Dec(t, g, :) = tmp(t, g).Dec;
+                                        end
                                     end
                                     Results(prob, algo, rep).CV(t, g, :) = tmp(t, g).CV;
-                                    if isfield(tmp, 'Dec')
-                                        Results(prob, algo, rep).Dec(t, g, :) = tmp(t, g).Dec;
-                                    end
                                 end
                             end
                             par_tool(rep) = Par.toc;
@@ -1584,14 +1592,17 @@ classdef MTO_GUI < matlab.apps.AppBase
                             for t = 1:size(tmp, 1)
                                 for g = 1:size(tmp,2)
                                     if max(prob_obj.M) > 1
-                                        Results(prob, algo, rep).Obj{t}(g, :, :) = tmp(t, g).Obj(:, :);
+                                        Results(prob, algo, rep).Obj{t}(g, :, :) = tmp(t, g).Obj;
+                                        if isfield(tmp, 'Dec')
+                                            Results(prob, algo, rep).Dec(t, g, :, :) = tmp(t, g).Dec;
+                                        end
                                     else
-                                        Results(prob, algo, rep).Obj(t, g, :, :) = tmp(t, g).Obj(:, :);
+                                        Results(prob, algo, rep).Obj(t, g, :) = tmp(t, g).Obj;
+                                        if isfield(tmp, 'Dec')
+                                            Results(prob, algo, rep).Dec(t, g, :) = tmp(t, g).Dec;
+                                        end
                                     end
                                     Results(prob, algo, rep).CV(t, g, :) = tmp(t, g).CV;
-                                    if isfield(tmp, 'Dec')
-                                        Results(prob, algo, rep).Dec(t, g, :) = tmp(t, g).Dec;
-                                    end
                                 end
                             end
                             t_temp(rep) = toc(tstart);
@@ -2717,7 +2728,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create MTOPlatformUIFigure and hide until all components are created
             app.MTOPlatformUIFigure = uifigure('Visible', 'off');
             app.MTOPlatformUIFigure.Color = [1 1 1];
-            app.MTOPlatformUIFigure.Position = [100 100 1146 685];
+            app.MTOPlatformUIFigure.Position = [100 100 1140 719];
             app.MTOPlatformUIFigure.Name = 'MTO Platform';
             app.MTOPlatformUIFigure.WindowStyle = 'modal';
 
@@ -3012,7 +3023,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create EP1GridLayout
             app.EP1GridLayout = uigridlayout(app.EPanel1);
             app.EP1GridLayout.ColumnWidth = {65, '1x', 40};
-            app.EP1GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x'};
+            app.EP1GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x'};
             app.EP1GridLayout.ColumnSpacing = 5;
             app.EP1GridLayout.RowSpacing = 7;
             app.EP1GridLayout.Padding = [0 0 0 0];
@@ -3025,7 +3036,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EProblemsAddButton.BackgroundColor = [1 1 1];
             app.EProblemsAddButton.FontWeight = 'bold';
             app.EProblemsAddButton.Tooltip = {'Add selected problems'};
-            app.EProblemsAddButton.Layout.Row = 8;
+            app.EProblemsAddButton.Layout.Row = 9;
             app.EProblemsAddButton.Layout.Column = 3;
             app.EProblemsAddButton.Text = 'Add';
 
@@ -3036,7 +3047,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EAlgorithmsAddButton.BackgroundColor = [1 1 1];
             app.EAlgorithmsAddButton.FontWeight = 'bold';
             app.EAlgorithmsAddButton.Tooltip = {'Add selected algorithms'};
-            app.EAlgorithmsAddButton.Layout.Row = 6;
+            app.EAlgorithmsAddButton.Layout.Row = 7;
             app.EAlgorithmsAddButton.Layout.Column = 3;
             app.EAlgorithmsAddButton.Text = 'Add';
 
@@ -3044,14 +3055,14 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EAlgorithmsListBox = uilistbox(app.EP1GridLayout);
             app.EAlgorithmsListBox.Items = {};
             app.EAlgorithmsListBox.Multiselect = 'on';
-            app.EAlgorithmsListBox.Layout.Row = 7;
+            app.EAlgorithmsListBox.Layout.Row = 8;
             app.EAlgorithmsListBox.Layout.Column = [1 3];
             app.EAlgorithmsListBox.Value = {};
 
             % Create AlgorithmsLabel
             app.AlgorithmsLabel = uilabel(app.EP1GridLayout);
             app.AlgorithmsLabel.FontWeight = 'bold';
-            app.AlgorithmsLabel.Layout.Row = 6;
+            app.AlgorithmsLabel.Layout.Row = 7;
             app.AlgorithmsLabel.Layout.Column = [1 2];
             app.AlgorithmsLabel.Text = 'Algorithms';
 
@@ -3059,23 +3070,23 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EProblemsListBox = uilistbox(app.EP1GridLayout);
             app.EProblemsListBox.Items = {};
             app.EProblemsListBox.Multiselect = 'on';
-            app.EProblemsListBox.Layout.Row = 9;
+            app.EProblemsListBox.Layout.Row = 10;
             app.EProblemsListBox.Layout.Column = [1 3];
             app.EProblemsListBox.Value = {};
 
             % Create ProblemsLabel
             app.ProblemsLabel = uilabel(app.EP1GridLayout);
             app.ProblemsLabel.FontWeight = 'bold';
-            app.ProblemsLabel.Layout.Row = 8;
+            app.ProblemsLabel.Layout.Row = 9;
             app.ProblemsLabel.Layout.Column = [1 2];
             app.ProblemsLabel.Text = 'Problems';
 
-            % Create ParallelDropDownLabel
-            app.ParallelDropDownLabel = uilabel(app.EP1GridLayout);
-            app.ParallelDropDownLabel.FontWeight = 'bold';
-            app.ParallelDropDownLabel.Layout.Row = 2;
-            app.ParallelDropDownLabel.Layout.Column = 1;
-            app.ParallelDropDownLabel.Text = 'Parallel';
+            % Create ParallelLabel
+            app.ParallelLabel = uilabel(app.EP1GridLayout);
+            app.ParallelLabel.FontWeight = 'bold';
+            app.ParallelLabel.Layout.Row = 3;
+            app.ParallelLabel.Layout.Column = 1;
+            app.ParallelLabel.Text = 'Parallel';
 
             % Create EParallelDropDown
             app.EParallelDropDown = uidropdown(app.EP1GridLayout);
@@ -3083,7 +3094,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EParallelDropDown.ItemsData = [0 1];
             app.EParallelDropDown.FontWeight = 'bold';
             app.EParallelDropDown.BackgroundColor = [1 1 1];
-            app.EParallelDropDown.Layout.Row = 2;
+            app.EParallelDropDown.Layout.Row = 3;
             app.EParallelDropDown.Layout.Column = [2 3];
             app.EParallelDropDown.Value = 0;
 
@@ -3091,7 +3102,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TaskLabel_2 = uilabel(app.EP1GridLayout);
             app.TaskLabel_2.FontWeight = 'bold';
             app.TaskLabel_2.Tooltip = {'Single-task EA Option'};
-            app.TaskLabel_2.Layout.Row = 3;
+            app.TaskLabel_2.Layout.Row = 4;
             app.TaskLabel_2.Layout.Column = 1;
             app.TaskLabel_2.Text = 'Task';
 
@@ -3102,7 +3113,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.ETaskTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @ETaskTypeDropDownValueChanged, true);
             app.ETaskTypeDropDown.FontWeight = 'bold';
             app.ETaskTypeDropDown.BackgroundColor = [1 1 1];
-            app.ETaskTypeDropDown.Layout.Row = 3;
+            app.ETaskTypeDropDown.Layout.Row = 4;
             app.ETaskTypeDropDown.Layout.Column = [2 3];
             app.ETaskTypeDropDown.Value = 'Multi-task';
 
@@ -3110,7 +3121,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.SpecialLabel = uilabel(app.EP1GridLayout);
             app.SpecialLabel.FontWeight = 'bold';
             app.SpecialLabel.Tooltip = {'Single-task EA Option'};
-            app.SpecialLabel.Layout.Row = 5;
+            app.SpecialLabel.Layout.Row = 6;
             app.SpecialLabel.Layout.Column = 1;
             app.SpecialLabel.Text = 'Special';
 
@@ -3120,7 +3131,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.ESpecialTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @ESpecialTypeDropDownValueChanged, true);
             app.ESpecialTypeDropDown.FontWeight = 'bold';
             app.ESpecialTypeDropDown.BackgroundColor = [1 1 1];
-            app.ESpecialTypeDropDown.Layout.Row = 5;
+            app.ESpecialTypeDropDown.Layout.Row = 6;
             app.ESpecialTypeDropDown.Layout.Column = [2 3];
             app.ESpecialTypeDropDown.Value = 'None';
 
@@ -3128,7 +3139,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.ObjectiveLabel_2 = uilabel(app.EP1GridLayout);
             app.ObjectiveLabel_2.FontWeight = 'bold';
             app.ObjectiveLabel_2.Tooltip = {'Single-task EA Option'};
-            app.ObjectiveLabel_2.Layout.Row = 4;
+            app.ObjectiveLabel_2.Layout.Row = 5;
             app.ObjectiveLabel_2.Layout.Column = 1;
             app.ObjectiveLabel_2.Text = 'Objective';
 
@@ -3139,7 +3150,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EObjectiveTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EObjectiveTypeDropDownValueChanged, true);
             app.EObjectiveTypeDropDown.FontWeight = 'bold';
             app.EObjectiveTypeDropDown.BackgroundColor = [1 1 1];
-            app.EObjectiveTypeDropDown.Layout.Row = 4;
+            app.EObjectiveTypeDropDown.Layout.Row = 5;
             app.EObjectiveTypeDropDown.Layout.Column = [2 3];
             app.EObjectiveTypeDropDown.Value = 'Single-objective';
 
@@ -3188,6 +3199,23 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EResultsNumEditFieldLabel.Layout.Row = 2;
             app.EResultsNumEditFieldLabel.Layout.Column = 1;
             app.EResultsNumEditFieldLabel.Text = 'No. of Results';
+
+            % Create SaveDecLabel
+            app.SaveDecLabel = uilabel(app.EP1GridLayout);
+            app.SaveDecLabel.FontWeight = 'bold';
+            app.SaveDecLabel.Layout.Row = 2;
+            app.SaveDecLabel.Layout.Column = 1;
+            app.SaveDecLabel.Text = 'Save Dec.';
+
+            % Create ESaveDecDropDown
+            app.ESaveDecDropDown = uidropdown(app.EP1GridLayout);
+            app.ESaveDecDropDown.Items = {'Disable', 'Enable'};
+            app.ESaveDecDropDown.ItemsData = [0 1];
+            app.ESaveDecDropDown.FontWeight = 'bold';
+            app.ESaveDecDropDown.BackgroundColor = [1 1 1];
+            app.ESaveDecDropDown.Layout.Row = 2;
+            app.ESaveDecDropDown.Layout.Column = [2 3];
+            app.ESaveDecDropDown.Value = 0;
 
             % Create EPanel2
             app.EPanel2 = uipanel(app.ExperimentsGridLayout);

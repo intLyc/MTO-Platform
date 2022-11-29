@@ -1,6 +1,6 @@
-function MTO_CMD(AlgoCell, ProbCell, Reps, Results_Num, ParFlag, SaveName)
+function MTO_CMD(AlgoCell, ProbCell, Reps, Par_Flag, Results_Num, Save_Dec, Save_Name)
     %% MTO Platform run with command line, save data in mat file
-    % Input: algorithms char cell, problems char cell, Reps, results num, parallel flag, save file name
+    % Input: algorithms char cell, problems char cell, no. of runs, parallel flag, no. of results, save decision variables flag, save file name
     % Output: none
 
     %------------------------------- Copyright --------------------------------
@@ -64,30 +64,30 @@ function MTO_CMD(AlgoCell, ProbCell, Reps, Results_Num, ParFlag, SaveName)
             disp(['Algorithm: ', char(AlgoObject{algo}.Name)]);
             algo_obj = AlgoObject{algo};
             algo_obj.Result_Num = Results_Num;
-            if ParFlag
+            algo_obj.Save_Dec = Save_Dec;
+            if Par_Flag
                 par_tool = Par(Reps);
                 parfor rep = 1:Reps
                     Par.tic
+                    algo_obj.reset();
                     algo_obj.run(ProbObject{prob});
                     tmp = algo_obj.getResult(ProbObject{prob});
                     for t = 1:size(tmp, 1)
                         for g = 1:size(tmp, 2)
                             if max(ProbObject{prob}.M) > 1
-                                Results(prob, algo, rep).Obj{t}(g, :, :) = tmp(t, g).Obj(:, :);
-                                Results(prob, algo, rep).CV{t}(g, :) = tmp(t, g).CV;
+                                Results(prob, algo, rep).Obj{t}(g, :, :) = tmp(t, g).Obj;
                                 if isfield(tmp, 'Dec')
-                                    Results(prob, algo, rep).Dec{t}(g, :) = tmp(t, g).Dec;
+                                    Results(prob, algo, rep).Dec(t, g, :, :) = tmp(t, g).Dec;
                                 end
                             else
-                                Results(prob, algo, rep).Obj(t, g, :, :) = tmp(t, g).Obj(:, :);
-                                Results(prob, algo, rep).CV(t, g, :) = tmp(t, g).CV;
+                                Results(prob, algo, rep).Obj(t, g, :) = tmp(t, g).Obj;
                                 if isfield(tmp, 'Dec')
                                     Results(prob, algo, rep).Dec(t, g, :) = tmp(t, g).Dec;
                                 end
                             end
+                            Results(prob, algo, rep).CV(t, g, :) = tmp(t, g).CV;
                         end
                     end
-                    algo_obj.reset();
                     par_tool(rep) = Par.toc;
                 end
                 Data.RunTimes(prob, algo, :) = [par_tool.ItStop] - [par_tool.ItStart];
@@ -95,22 +95,25 @@ function MTO_CMD(AlgoCell, ProbCell, Reps, Results_Num, ParFlag, SaveName)
                 t_temp = [];
                 for rep = 1:Reps
                     tstart = tic;
+                    algo_obj.reset();
                     algo_obj.run(ProbObject{prob});
                     tmp = algo_obj.getResult(ProbObject{prob});
                     for t = 1:size(tmp, 1)
                         for g = 1:size(tmp, 2)
                             if max(ProbObject{prob}.M) > 1
-                                Results(prob, algo, rep).Obj{t}(g, :, :) = tmp(t, g).Obj(:, :);
+                                Results(prob, algo, rep).Obj{t}(g, :, :) = tmp(t, g).Obj;
+                                if isfield(tmp, 'Dec')
+                                    Results(prob, algo, rep).Dec(t, g, :, :) = tmp(t, g).Dec;
+                                end
                             else
-                                Results(prob, algo, rep).Obj(t, g, :, :) = tmp(t, g).Obj(:, :);
+                                Results(prob, algo, rep).Obj(t, g, :) = tmp(t, g).Obj;
+                                if isfield(tmp, 'Dec')
+                                    Results(prob, algo, rep).Dec(t, g, :) = tmp(t, g).Dec;
+                                end
                             end
                             Results(prob, algo, rep).CV(t, g, :) = tmp(t, g).CV;
-                            if isfield(tmp, 'Dec')
-                                Results(prob, algo, rep).Dec(t, g, :) = tmp(t, g).Dec;
-                            end
                         end
                     end
-                    algo_obj.reset();
                     t_temp(rep) = toc(tstart);
                 end
                 Data.RunTimes(prob, algo, :) = t_temp;
@@ -126,5 +129,5 @@ function MTO_CMD(AlgoCell, ProbCell, Reps, Results_Num, ParFlag, SaveName)
     % save mat file
     Data.Results = MakeGenEqual(Results);
     MTOData = Data;
-    save(SaveName, 'MTOData');
+    save(Save_Name, 'MTOData');
 end
