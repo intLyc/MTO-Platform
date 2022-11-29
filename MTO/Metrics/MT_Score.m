@@ -25,8 +25,8 @@ function result = MT_Score(MTOData, varargin)
     % Data for Table
     result.TableData = [];
     % Data for Converge Plot
-    result.ConvergeData.X = [];
-    result.ConvergeData.Y = [];
+    % result.ConvergeData.X = [];
+    % result.ConvergeData.Y = [];
 
     for prob = 1:length(MTOData.Problems)
         if MTOData.Problems(prob).M ~= 1

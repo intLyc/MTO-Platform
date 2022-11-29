@@ -621,6 +621,9 @@ classdef MTO_GUI < matlab.apps.AppBase
                 case 'Reps'
                     app.EresetTable({app.EData.Problems.Name}, {app.EData.Algorithms.Name});
                     app.EupdateTableReps();
+                    app.EupdateTableData();
+                    app.EupdateTableTest();
+                    app.EupdateTableHighlight();
                 otherwise
                     is_calculate = true;
                     if isfield(app.EData, 'Metrics')
@@ -666,12 +669,17 @@ classdef MTO_GUI < matlab.apps.AppBase
         function EupdateTableReps(app)
             % update table reps per run
             
+            app.ETableData = app.ETableReps;
             app.EUITable.Data = sprintfc('%d', app.ETableReps);
             drawnow;
         end
         
         function EupdateTableData(app)
             % update table data
+            
+            if strcmp(app.EDataTypeDropDown.Value, 'Reps')
+                return;
+            end
             
             table_data = app.EResultTableData;
             show_type = app.EShowTypeDropDown.Value;
@@ -727,6 +735,10 @@ classdef MTO_GUI < matlab.apps.AppBase
         
         function EupdateTableTest(app)
             % update table test
+            
+            if strcmp(app.EDataTypeDropDown.Value, 'Reps')
+                return;
+            end
             
             table_data = app.EResultTableData;
             if isempty(app.EData)
@@ -787,22 +799,9 @@ classdef MTO_GUI < matlab.apps.AppBase
                 end
                 app.ETableTest{size(app.ETableData, 1)+1, algo} = sprintf('%d/%d/%d', sign_p);
             end
-            for algo = 1:size(app.ETableData, 2)
-                for row_i = 1:size(app.ETableData, 1)
-                    if size(app.ETableTest, 2) < algo
-                        app.EUITable.Data{row_i, algo} = app.ETableView{row_i, algo};
-                    else
-                        app.EUITable.Data{row_i, algo} = [app.ETableView{row_i, algo}, ' ', app.ETableTest{row_i, algo}];
-                    end
-                    drawnow;
-                end
-                if size(app.ETableTest, 2) < algo
-                    app.EUITable.Data{size(app.ETableData, 1)+1, algo} = '';
-                else
-                    app.EUITable.Data{size(app.ETableData, 1)+1, algo} = app.ETableTest{size(app.ETableData, 1)+1, algo};
-                end
-                drawnow;
-            end
+            app.EUITable.Data = cellstr(strcat(app.ETableView, " ", app.ETableTest(1:end-1, :)));
+            app.EUITable.Data(size(app.ETableData, 1)+1,:) = app.ETableTest(size(app.ETableData, 1)+1,:);
+            drawnow;
         end
         
         function EupdateTableHighlight(app)
@@ -813,10 +812,12 @@ classdef MTO_GUI < matlab.apps.AppBase
             high_color = uistyle('BackgroundColor', [0.67,0.95,0.67]);
             font_bold = uistyle('FontWeight', 'bold');
             low_color = uistyle('BackgroundColor', [1.00,0.60,0.60]);
-            if isempty(app.ETableData) || size(app.ETableData, 2) <= 1
+            if strcmp(app.EDataTypeDropDown.Value, 'Reps') || isempty(app.ETableData) || size(app.ETableData, 2) <= 1
                 drawnow;
                 return;
             end
+            best_matrix = [];
+            worst_matrix = [];
             for row_i = 1:size(app.ETableData, 1)
                 if strcmp(app.EHighlightTypeDropDown.Value, 'None')
                     drawnow;
@@ -830,34 +831,37 @@ classdef MTO_GUI < matlab.apps.AppBase
                     else
                         best_data = max(temp_data);
                     end
-                    temp_idx = temp_data == best_data;
-                    x = 1:length(temp_idx);
-                    x = x(temp_idx);
-                    for xx = 1:length(x)
-                        app.EUITable.addStyle(high_color, 'cell', [row_i, x(xx)]);
-                        app.EUITable.addStyle(font_bold, 'cell', [row_i, x(xx)]);
-                    end
+                    temp_idx = find(temp_data == best_data)';
+                    row_idx = ones(length(temp_idx),1) .* row_i;
+                    best_matrix = [best_matrix; [row_idx, temp_idx]];
                 end
                 % worst
                 if strcmp(app.EHighlightTypeDropDown.Value, 'Best&Worst')
                     isnan_temp = isnan(app.ETableData(row_i, :));
                     if sum(isnan_temp)
-                        x = 1:length(isnan_temp);
-                        x = x(isnan_temp);
-                        for xx = 1:length(x)
-                            app.EUITable.addStyle(low_color, 'cell', [row_i, x(xx)]);
-                        end
+                        temp_idx = find(isnan_temp)';
+                        row_idx = ones(length(temp_idx),1) .* row_i;
+                        worst_matrix = [worst_matrix; [row_idx, temp_idx]];
                     else
                         if app.EMetricMin
-                            [~, index] = max(app.ETableData(row_i, :));
+                            worst_data = max(app.ETableData(row_i, :));
                         else
-                            [~, index] = min(app.ETableData(row_i, :));
+                            worst_data = min(app.ETableData(row_i, :));
                         end
-                        app.EUITable.addStyle(low_color, 'cell', [row_i, index]);
+                        temp_idx = find(temp_data == worst_data)';
+                        row_idx = ones(length(temp_idx),1) .* row_i;
+                        worst_matrix = [worst_matrix; [row_idx, temp_idx]];
                     end
                 end
-                drawnow;
             end
+            if ~isempty(worst_matrix)
+                app.EUITable.addStyle(low_color, 'cell', worst_matrix);
+            end
+            if ~isempty(best_matrix)
+                app.EUITable.addStyle(high_color, 'cell', best_matrix);
+                app.EUITable.addStyle(font_bold, 'cell', best_matrix);
+            end
+            drawnow;
         end
         
         function EresetFormat(app)
@@ -1987,18 +1991,24 @@ classdef MTO_GUI < matlab.apps.AppBase
                     MTOData.Problems = data_selected(i).NodeData.Problems;
                     MTOData.Results(1:length(MTOData.Problems),1:length(MTOData.Algorithms),1) = data_selected(i).NodeData.Results(:,:,rep);
                     MTOData.RunTimes(1:length(MTOData.Problems),1:length(MTOData.Algorithms),1) = data_selected(i).NodeData.RunTimes(:,:,rep);
-                    if isfield(MTOData, 'Metrics')
+                    if isfield(data_selected(i).NodeData, 'Metrics')
+                        del_metric_idx = [];
                         MTOData.Metrics = data_selected(i).NodeData.Metrics;
                         for m = 1:length(MTOData.Metrics)
+                            if (size(MTOData.Metrics(m).Result.TableData,3) == 1 && rep > 1) || isempty(MTOData.Metrics(m).Result.TableData)
+                                del_metric_idx = [del_metric_idx, m];
+                                continue;
+                            end
                             MTOData.Metrics(m).Result.TableData = MTOData.Metrics(m).Result.TableData(:,:,rep);
-                            if isfield(MTOData, 'ConvergeData')
+                            if isfield(MTOData.Metrics(m).Result, 'ConvergeData')
                                 MTOData.Metrics(m).Result.ConvergeData.X = MTOData.Metrics(m).Result.ConvergeData.X(:,:,rep,:);
                                 MTOData.Metrics(m).Result.ConvergeData.Y = MTOData.Metrics(m).Result.ConvergeData.Y(:,:,rep,:);
                             end
-                            if isfield(MTOData, 'ParetoData')
+                            if isfield(MTOData.Metrics(m).Result, 'ParetoData')
                                 MTOData.Metrics(m).Result.ParetoData.Obj = MTOData.Metrics(m).Result.ParetoData.Obj(:,:,rep);
                             end
                         end
+                        MTOData.Metrics(del_metric_idx) = [];
                     end
                     app.DputDataNode([data_selected(i).Text, ' (Split Rep: ', num2str(rep), ')'], MTOData);
                     drawnow;
@@ -2030,19 +2040,25 @@ classdef MTO_GUI < matlab.apps.AppBase
                     MTOData.Problems = data_selected(i).NodeData.Problems;
                     MTOData.Results(1:length(MTOData.Problems),1,1:MTOData.Reps) = data_selected(i).NodeData.Results(:,algo,:);
                     MTOData.RunTimes(1:length(MTOData.Problems),1,1:MTOData.Reps) = data_selected(i).NodeData.RunTimes(:,algo,:);
-                    if isfield(MTOData, 'Metrics')
+                    if isfield(data_selected(i).NodeData, 'Metrics')
+                        del_metric_idx = [];
                         MTOData.Metrics = data_selected(i).NodeData.Metrics;
                         for m = 1:length(MTOData.Metrics)
+                            if isempty(MTOData.Metrics(m).Result.TableData)
+                                del_metric_idx = [del_metric_idx, m];
+                                continue;
+                            end
                             MTOData.Metrics(m).Result.ColumnName = MTOData.Metrics(m).Result.ColumnName(algo);
                             MTOData.Metrics(m).Result.TableData = MTOData.Metrics(m).Result.TableData(:,algo,:);
-                            if isfield(MTOData, 'ConvergeData')
+                            if isfield(MTOData.Metrics(m).Result, 'ConvergeData')
                                 MTOData.Metrics(m).Result.ConvergeData.X = MTOData.Metrics(m).Result.ConvergeData.X(:,algo,:,:);
                                 MTOData.Metrics(m).Result.ConvergeData.Y = MTOData.Metrics(m).Result.ConvergeData.Y(:,algo,:,:);
                             end
-                            if isfield(MTOData, 'ParetoData')
+                            if isfield(MTOData.Metrics(m).Result, 'ParetoData')
                                 MTOData.Metrics(m).Result.ParetoData.Obj = MTOData.Metrics(m).Result.ParetoData.Obj(:,algo,:);
                             end
                         end
+                        MTOData.Metrics(del_metric_idx) = [];
                     end
                     app.DputDataNode([data_selected(i).Text, ' (Split Algorithm: ', MTOData.Algorithms(1).Name, ')'], MTOData);
                     drawnow;
@@ -2068,13 +2084,43 @@ classdef MTO_GUI < matlab.apps.AppBase
                     uiconfirm(app.MTOPlatformUIFigure, msg, 'error', 'Icon','warning');
                     continue;
                 end
+                task = [data_selected(i).NodeData.Problems.T];
                 for prob = 1:length(data_selected(i).NodeData.Problems)
                     MTOData.Reps = data_selected(i).NodeData.Reps;
                     MTOData.Algorithms = data_selected(i).NodeData.Algorithms;
                     MTOData.Problems(1) = data_selected(i).NodeData.Problems(prob);
                     MTOData.Results(1,1:length(MTOData.Algorithms),1:MTOData.Reps) = data_selected(i).NodeData.Results(prob,:,:);
                     MTOData.RunTimes(1,1:length(MTOData.Algorithms),1:MTOData.Reps) = data_selected(i).NodeData.RunTimes(prob,:,:);
-                    % problem can't split metric
+                    if isfield(data_selected(i).NodeData, 'Metrics')
+                        del_metric_idx = [];
+                        MTOData.Metrics = data_selected(i).NodeData.Metrics;
+                        for m = 1:length(MTOData.Metrics)
+                            if isempty(MTOData.Metrics(m).Result.TableData)
+                                del_metric_idx = [del_metric_idx, m];
+                                continue;
+                            end
+                            if length(MTOData.Metrics(m).Result.RowName) == length(data_selected(i).NodeData.Problems)
+                                idx = prob;
+                                idx2 = prob;
+                            elseif length(MTOData.Metrics(m).Result.RowName) == sum(task)
+                                idx = sum(task(1:prob-1))+1;
+                                idx2 = idx+task(prob)-1;
+                            else
+                                return;
+                            end
+                            MTOData.Metrics(m).Result.RowName = MTOData.Metrics(m).Result.RowName(idx:idx2);
+                            MTOData.Metrics(m).Result.TableData = MTOData.Metrics(m).Result.TableData(idx:idx2,:,:);
+                            if isfield(MTOData.Metrics(m).Result, 'ConvergeData')
+                                MTOData.Metrics(m).Result.ConvergeData.X = MTOData.Metrics(m).Result.ConvergeData.X(idx:idx2,:,:,:);
+                                MTOData.Metrics(m).Result.ConvergeData.Y = MTOData.Metrics(m).Result.ConvergeData.Y(idx:idx2,:,:,:);
+                            end
+                            if isfield(MTOData.Metrics(m).Result, 'ParetoData')
+                                MTOData.Metrics(m).Result.ParetoData.Optimum = MTOData.Metrics(m).Result.ParetoData.Optimum(idx:idx2);
+                                MTOData.Metrics(m).Result.ParetoData.Obj = MTOData.Metrics(m).Result.ParetoData.Obj(idx:idx2,:,:);
+                            end
+                        end
+                        MTOData.Metrics(del_metric_idx) = [];
+                    end
                     app.DputDataNode([data_selected(i).Text, ' (Split Problem: ', MTOData.Problems(1).Name, ')'], MTOData);
                     drawnow;
                 end
@@ -2117,9 +2163,15 @@ classdef MTO_GUI < matlab.apps.AppBase
                 metric_name = {};
             end
             for i = 2:length(data_selected)
-                metric_name = intersect(metric_name, {data_selected(i).NodeData.Metrics.Name});
+                if isfield(data_selected(i).NodeData,'Metrics')
+                    metric_name = intersect(metric_name, {data_selected(i).NodeData.Metrics.Name});
+                else
+                    metric_name = intersect(metric_name, {});
+                end
             end
+            del_metric_idx = [];
             for i = 1:length(metric_name)
+                flag = true;
                 idx = find(strcmp({data_selected(1).NodeData.Metrics.Name}, metric_name{i}));
                 MTOData.Metrics(i).Name = metric_name{i};
                 MTOData.Metrics(i).Result.Metric = data_selected(1).NodeData.Metrics(idx).Result.Metric;
@@ -2128,12 +2180,21 @@ classdef MTO_GUI < matlab.apps.AppBase
                 reps = 0;
                 for j = 1:length(data_selected)
                     idx = find(strcmp({data_selected(j).NodeData.Metrics.Name}, metric_name{i}));
+                    if size(data_selected(j).NodeData.Metrics(idx).Result.TableData,3) == 1 && data_selected(j).NodeData.Reps > 1
+                        del_metric_idx = [del_metric_idx, i];
+                        flag = false;
+                        break;
+                    end
                     MTOData.Metrics(i).Result.TableData(1:length(MTOData.Metrics(i).Result.RowName),...
                         1:length(MTOData.Metrics(i).Result.ColumnName),...
                         reps+1:reps+data_selected(j).NodeData.Reps) = ...
                         data_selected(j).NodeData.Metrics(idx).Result.TableData;
                     reps = reps + data_selected(j).NodeData.Reps;
                 end
+                if ~flag
+                    continue;
+                end
+                idx = find(strcmp({data_selected(1).NodeData.Metrics.Name}, metric_name{i}));
                 if isfield(data_selected(1).NodeData.Metrics(idx).Result, 'ConvergeData')
                     reps = 0;
                     for j = 1:length(data_selected)
@@ -2151,6 +2212,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                         reps = reps + data_selected(j).NodeData.Reps;
                     end
                 end
+                idx = find(strcmp({data_selected(1).NodeData.Metrics.Name}, metric_name{i}));
                 if isfield(data_selected(1).NodeData.Metrics(idx).Result, 'ParetoData')
                     idx = find(strcmp({data_selected(1).NodeData.Metrics.Name}, metric_name{i}));
                     MTOData.Metrics(i).Result.ParetoData.Optimum = data_selected(1).NodeData.Metrics(idx).Result.ParetoData.Optimum;
@@ -2165,6 +2227,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     end
                 end
             end
+            MTOData.Metrics(del_metric_idx) = [];
             
             app.DputDataNode('data (Merge Reps)', MTOData);
             drawnow;
@@ -2208,15 +2271,27 @@ classdef MTO_GUI < matlab.apps.AppBase
                 metric_name = {};
             end
             for i = 2:length(data_selected)
-                metric_name = intersect(metric_name, {data_selected(i).NodeData.Metrics.Name});
+                if isfield(data_selected(i).NodeData,'Metrics')
+                    metric_name = intersect(metric_name, {data_selected(i).NodeData.Metrics.Name});
+                else
+                    metric_name = intersect(metric_name, {});
+                end
             end
+            del_metric_idx = [];
             for i = 1:length(metric_name)
+                flag = true;
                 idx = find(strcmp({data_selected(1).NodeData.Metrics.Name}, metric_name{i}));
                 MTOData.Metrics(i).Name = metric_name{i};
                 MTOData.Metrics(i).Result.Metric = data_selected(1).NodeData.Metrics(idx).Result.Metric;
                 MTOData.Metrics(i).Result.RowName = data_selected(1).NodeData.Metrics(idx).Result.RowName;
                 algo = 0;
                 for j = 1:length(data_selected)
+                    idx = find(strcmp({data_selected(j).NodeData.Metrics.Name}, metric_name{i}));
+                    if size(data_selected(j).NodeData.Metrics(idx).Result.TableData,3) == 1 && data_selected(j).NodeData.Reps > 1
+                        del_metric_idx = [del_metric_idx, i];
+                        flag = false;
+                        break;
+                    end
                     idx = find(strcmp({data_selected(j).NodeData.Metrics.Name}, metric_name{i}));
                     MTOData.Metrics(i).Result.ColumnName(algo+1:algo+length(data_selected(j).NodeData.Metrics(idx).Result.ColumnName)) = ...
                         data_selected(j).NodeData.Metrics(idx).Result.ColumnName;
@@ -2226,6 +2301,10 @@ classdef MTO_GUI < matlab.apps.AppBase
                         data_selected(j).NodeData.Metrics(idx).Result.TableData;
                     algo = algo + length(data_selected(j).NodeData.Metrics(idx).Result.ColumnName);
                 end
+                if ~flag
+                    continue;
+                end
+                idx = find(strcmp({data_selected(1).NodeData.Metrics.Name}, metric_name{i}));
                 if isfield(data_selected(1).NodeData.Metrics(idx).Result, 'ConvergeData')
                     algo = 0;
                     for j = 1:length(data_selected)
@@ -2243,6 +2322,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                         algo = algo + length(data_selected(j).NodeData.Metrics(idx).Result.ColumnName);
                     end
                 end
+                idx = find(strcmp({data_selected(1).NodeData.Metrics.Name}, metric_name{i}));
                 if isfield(data_selected(1).NodeData.Metrics(idx).Result, 'ParetoData')
                     idx = find(strcmp({data_selected(1).NodeData.Metrics.Name}, metric_name{i}));
                     MTOData.Metrics(i).Result.ParetoData.Optimum = data_selected(1).NodeData.Metrics(idx).Result.ParetoData.Optimum;
@@ -2257,6 +2337,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     end
                 end
             end
+            MTOData.Metrics(del_metric_idx) = [];
             
             app.DputDataNode('data (Merge Algorithms)', MTOData);
             drawnow;
@@ -2300,9 +2381,15 @@ classdef MTO_GUI < matlab.apps.AppBase
                 metric_name = {};
             end
             for i = 2:length(data_selected)
-                metric_name = intersect(metric_name, {data_selected(i).NodeData.Metrics.Name});
+                if isfield(data_selected(i).NodeData,'Metrics')
+                    metric_name = intersect(metric_name, {data_selected(i).NodeData.Metrics.Name});
+                else
+                    metric_name = intersect(metric_name, {});
+                end
             end
+            del_metric_idx = [];
             for i = 1:length(metric_name)
+                flag = true;
                 idx = find(strcmp({data_selected(1).NodeData.Metrics.Name}, metric_name{i}));
                 MTOData.Metrics(i).Name = metric_name{i};
                 MTOData.Metrics(i).Result.Metric = data_selected(1).NodeData.Metrics(idx).Result.Metric;
@@ -2310,6 +2397,11 @@ classdef MTO_GUI < matlab.apps.AppBase
                 prob = 0;
                 for j = 1:length(data_selected)
                     idx = find(strcmp({data_selected(j).NodeData.Metrics.Name}, metric_name{i}));
+                    if size(data_selected(j).NodeData.Metrics(idx).Result.TableData,3) == 1 && data_selected(j).NodeData.Reps > 1
+                        del_metric_idx = [del_metric_idx, i];
+                        flag = false;
+                        break;
+                    end
                     MTOData.Metrics(i).Result.RowName(prob+1:prob+length(data_selected(j).NodeData.Metrics(idx).Result.RowName)) = ...
                         data_selected(j).NodeData.Metrics(idx).Result.RowName;
                     MTOData.Metrics(i).Result.TableData(prob+1:prob+length(data_selected(j).NodeData.Metrics(idx).Result.RowName),...
@@ -2318,6 +2410,10 @@ classdef MTO_GUI < matlab.apps.AppBase
                         data_selected(j).NodeData.Metrics(idx).Result.TableData;
                     prob = prob + length(data_selected(j).NodeData.Metrics(idx).Result.RowName);
                 end
+                if ~flag
+                    continue
+                end
+                idx = find(strcmp({data_selected(1).NodeData.Metrics.Name}, metric_name{i}));
                 if isfield(data_selected(1).NodeData.Metrics(idx).Result, 'ConvergeData')
                     prob = 0;
                     for j = 1:length(data_selected)
@@ -2335,6 +2431,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                         prob = prob + length(data_selected(j).NodeData.Metrics(idx).Result.RowName);
                     end
                 end
+                idx = find(strcmp({data_selected(1).NodeData.Metrics.Name}, metric_name{i}));
                 if isfield(data_selected(1).NodeData.Metrics(idx).Result, 'ParetoData')
                     prob = 0;
                     for j = 1:length(data_selected)
@@ -2349,6 +2446,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     end
                 end
             end
+            MTOData.Metrics(del_metric_idx) = [];
             
             app.DputDataNode('data (Merge Problems)', MTOData);
             drawnow;
@@ -3323,14 +3421,14 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create EDataTypeDropDown
             app.EDataTypeDropDown = uidropdown(app.EP3T1GridLayout);
-            app.EDataTypeDropDown.Items = {'Runs'};
+            app.EDataTypeDropDown.Items = {'Reps'};
             app.EDataTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EDataTypeDropDownValueChanged, true);
             app.EDataTypeDropDown.Tooltip = {'Show Type'};
             app.EDataTypeDropDown.FontWeight = 'bold';
             app.EDataTypeDropDown.BackgroundColor = [1 1 1];
             app.EDataTypeDropDown.Layout.Row = 1;
             app.EDataTypeDropDown.Layout.Column = 6;
-            app.EDataTypeDropDown.Value = 'Runs';
+            app.EDataTypeDropDown.Value = 'Reps';
 
             % Create EHighlightTypeDropDown
             app.EHighlightTypeDropDown = uidropdown(app.EP3T1GridLayout);
