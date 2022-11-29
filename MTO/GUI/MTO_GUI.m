@@ -2238,7 +2238,9 @@ classdef MTO_GUI < matlab.apps.AppBase
                     end
                 end
             end
-            MTOData.Metrics(del_metric_idx) = [];
+            if isfield(MTOData,'Metrics')
+                MTOData.Metrics(del_metric_idx) = [];
+            end
             
             app.DputDataNode('data (Merge Reps)', MTOData);
             drawnow;
@@ -2348,7 +2350,9 @@ classdef MTO_GUI < matlab.apps.AppBase
                     end
                 end
             end
-            MTOData.Metrics(del_metric_idx) = [];
+            if isfield(MTOData,'Metrics')
+                MTOData.Metrics(del_metric_idx) = [];
+            end
             
             app.DputDataNode('data (Merge Algorithms)', MTOData);
             drawnow;
@@ -2457,7 +2461,9 @@ classdef MTO_GUI < matlab.apps.AppBase
                     end
                 end
             end
-            MTOData.Metrics(del_metric_idx) = [];
+            if isfield(MTOData,'Metrics')
+                MTOData.Metrics(del_metric_idx) = [];
+            end
             
             app.DputDataNode('data (Merge Problems)', MTOData);
             drawnow;
