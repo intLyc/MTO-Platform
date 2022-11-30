@@ -50,24 +50,15 @@ function result = MT_Score_HV(MTOData, varargin)
         hv_result = HV(MTOData, Par_flag);
     end
 
-    % Calculate Objective
-    row = 1;
-    for prob = 1:length(MTOData.Problems)
-        for task = 1:MTOData.Problems(prob).T
-            for algo = 1:length(MTOData.Algorithms)
-                hv_matrix(row, algo, :) = hv_result.TableData(row, algo, :);
-            end
-            row = row + 1;
-        end
-    end
-
     % Calculate Multi-task Score
+    hv_matrix = hv_result.TableData;
+    hv_matrix(isnan(hv_matrix)) = 0;
     row = 1;
     for prob = 1:length(MTOData.Problems)
         score_temp = zeros(1, length(MTOData.Algorithms));
         for task = 1:MTOData.Problems(prob).T
             mean_task = mean(hv_matrix(row, :, :), 'all');
-            std_task = std(hv_matrix(row, :, :), 0, 'all');
+            std_task = max(std(hv_matrix(row, :, :), 0, 'all'), 1e-10);
             for algo = 1:length(MTOData.Algorithms)
                 score_temp(algo) = score_temp(algo) + mean((hv_matrix(row, algo, :) - mean_task) ./ std_task);
             end

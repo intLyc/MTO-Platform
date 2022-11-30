@@ -50,18 +50,9 @@ function result = MT_Score_IGD(MTOData, varargin)
         igd_result = IGD(MTOData, Par_flag);
     end
 
-    % Calculate Objective
-    row = 1;
-    for prob = 1:length(MTOData.Problems)
-        for task = 1:MTOData.Problems(prob).T
-            for algo = 1:length(MTOData.Algorithms)
-                igd_matrix(row, algo, :) = igd_result.TableData(row, algo, :);
-            end
-            row = row + 1;
-        end
-    end
 
     % Calculate Multi-task Score
+    igd_matrix = igd_result.TableData;
     row = 1;
     for prob = 1:length(MTOData.Problems)
         score_temp = zeros(1, length(MTOData.Algorithms));

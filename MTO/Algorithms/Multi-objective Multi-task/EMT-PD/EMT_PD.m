@@ -113,6 +113,8 @@ classdef EMT_PD < Algorithm
                     offspring(count).Dec = GA_Mutation(offspring(count).Dec, Algo.MuM);
                     offspring(count).Dec(offspring(count).Dec > 1) = 1;
                     offspring(count).Dec(offspring(count).Dec < 0) = 0;
+                    idx = find(isnan(offspring(count).Dec));
+                    offspring(count).Dec(idx) = rand(1, length(idx));
                     count = count + 1;
                 end
             end
