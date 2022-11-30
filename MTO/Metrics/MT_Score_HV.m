@@ -25,7 +25,7 @@ function result = MT_Score_HV(MTOData, varargin)
         Par_flag = varargin{1};
     end
 
-    result.Metric = 'Min';
+    result.Metric = 'Max';
     result.RowName = {};
     result.ColumnName = {};
     % Data for Table
