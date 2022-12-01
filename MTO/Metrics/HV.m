@@ -48,8 +48,19 @@ function result = HV(MTOData, varargin)
     % Calculate HV
     row = 1;
     for prob = 1:length(MTOData.Problems)
-        optimum = MTOData.Problems(prob).Optimum;
+        % Get Optimum
+        optimum = {};
+        % optimum = MTOData.Problems(prob).Optimum; % Real Pareto Front
         for task = 1:MTOData.Problems(prob).T
+            AllBestObj = [];
+            AllBestCV = [];
+            for algo = 1:length(MTOData.Algorithms)
+                for rep = 1:MTOData.Reps
+                    AllBestObj = [AllBestObj; squeeze(MTOData.Results(prob, algo, rep).Obj{task}(end, :, :))];
+                    AllBestCV = [AllBestCV; squeeze(MTOData.Results(prob, algo, rep).CV(task, end, :))];
+                end
+            end
+            optimum{task} = getBestObj(AllBestObj, AllBestCV);
             for algo = 1:length(MTOData.Algorithms)
                 gen = size(MTOData.Results(prob, algo, 1).Obj{task}, 1);
                 hv = zeros(MTOData.Reps, gen);
