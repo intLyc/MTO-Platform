@@ -12,21 +12,21 @@ function population = Initialization_One(Algo, Prob, t, Individual_Class, vararg
 
     n = numel(varargin);
     if n == 0
-        gene_type = 'unified'; % unified [0, 1]
+        N = Prob.N;
     elseif n == 1
-        gene_type = varargin{1};
+        N = varargin{1};
     else
         return;
     end
 
-    for i = 1:Prob.N
+    for i = 1:N
         population(i) = Individual_Class();
-        switch gene_type
-            case 'unified'
-                population(i).Dec = rand(1, max(Prob.D));
-            case 'real'
-                population(i).Dec = (Prob.Ub{t} - Prob.Lb{t}) .* rand(1, max(Prob.D)) + Prob.Lb{t};
-        end
+        % switch gene_type
+        %     case 'unified'
+        population(i).Dec = rand(1, max(Prob.D));
+        %     case 'real'
+        %         population(i).Dec = (Prob.Ub{t} - Prob.Lb{t}) .* rand(1, max(Prob.D)) + Prob.Lb{t};
+        % end
     end
     population = Algo.Evaluation(population, Prob, t);
 end
