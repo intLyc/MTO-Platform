@@ -1,8 +1,6 @@
 classdef MOEA_D < Algorithm
     % <Single-task> <Multi-objective> <None>
 
-    % The code implementation is referenced from PlatEMO(https://github.com/BIMK/PlatEMO).
-
     %------------------------------- Reference --------------------------------
     % @article{Zhang2007MOEAD,
     %   title      = {MOEA/D: A Multiobjective Evolutionary Algorithm Based on Decomposition},
@@ -21,6 +19,16 @@ classdef MOEA_D < Algorithm
     % research purposes. All publications which use this platform or any code
     % in the platform should acknowledge the use of "MTO-Platform" and cite
     % or footnote "https://github.com/intLyc/MTO-Platform"
+    %--------------------------------------------------------------------------
+
+    % The code implementation is referenced from PlatEMO(https://github.com/BIMK/PlatEMO).
+    %------------------------------- Copyright --------------------------------
+    % Copyright (c) 2022 BIMK Group. You are free to use the PlatEMO for
+    % research purposes. All publications which use this platform or any code
+    % in the platform should acknowledge the use of "PlatEMO" and reference "Ye
+    % Tian, Ran Cheng, Xingyi Zhang, and Yaochu Jin, PlatEMO: A MATLAB platform
+    % for evolutionary multi-objective optimization [educational forum], IEEE
+    % Computational Intelligence Magazine, 2017, 12(4): 73-87".
     %--------------------------------------------------------------------------
 
     properties (SetAccess = private)
@@ -44,6 +52,7 @@ classdef MOEA_D < Algorithm
         end
 
         function run(Algo, Prob)
+            % Initialize
             for t = 1:Prob.T
                 % Generate the weight vectors
                 [W{t}, N{t}] = UniformPoint(Prob.N, Prob.M(t));
@@ -53,11 +62,9 @@ classdef MOEA_D < Algorithm
                 B{t} = pdist2(W{t}, W{t});
                 [~, B{t}] = sort(B{t}, 2);
                 B{t} = B{t}(:, 1:DT{t});
-            end
 
-            % Initialize
-            population = Initialization(Algo, Prob, Individual);
-            for t = 1:Prob.T
+                population{t} = Initialization_One(Algo, Prob, t, Individual, N{t});
+
                 Z{t} = min(population{t}.Objs, [], 1);
             end
 
