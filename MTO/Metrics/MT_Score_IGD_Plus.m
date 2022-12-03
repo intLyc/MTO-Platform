@@ -1,7 +1,7 @@
-function result = MT_Score_IGD(MTOData, varargin)
+function result = MT_Score_IGD_Plus(MTOData, varargin)
     % <Metric>
 
-    % Multi-task Score on IGD
+    % Multi-task Score on IGD+
 
     %------------------------------- Reference --------------------------------
     % @Article{Da2017CEC2017-MTSO,
@@ -40,26 +40,26 @@ function result = MT_Score_IGD(MTOData, varargin)
     result.ColumnName = {MTOData.Algorithms.Name};
 
     if isfield(MTOData, 'Metrics')
-        idx = find(strcmp({MTOData.Metrics.Name}, 'IGD'));
+        idx = find(strcmp({MTOData.Metrics.Name}, 'IGD_Plus'));
         if ~isempty(idx)
-            igd_result = MTOData.Metrics(idx).Result;
+            igdp_result = MTOData.Metrics(idx).Result;
         else
-            igd_result = IGD(MTOData, Par_flag);
+            igdp_result = IGD_Plus(MTOData, Par_flag);
         end
     else
-        igd_result = IGD(MTOData, Par_flag);
+        igdp_result = IGD_Plus(MTOData, Par_flag);
     end
 
     % Calculate Multi-task Score
-    igd_matrix = igd_result.TableData;
+    igdp_matrix = igdp_result.TableData;
     row = 1;
     for prob = 1:length(MTOData.Problems)
         score_temp = zeros(1, length(MTOData.Algorithms));
         for task = 1:MTOData.Problems(prob).T
-            mean_task = mean(igd_matrix(row, :, :), 'all');
-            std_task = std(igd_matrix(row, :, :), 0, 'all');
+            mean_task = mean(igdp_matrix(row, :, :), 'all');
+            std_task = std(igdp_matrix(row, :, :), 0, 'all');
             for algo = 1:length(MTOData.Algorithms)
-                score_temp(algo) = score_temp(algo) + mean((igd_matrix(row, algo, :) - mean_task) ./ std_task);
+                score_temp(algo) = score_temp(algo) + mean((igdp_matrix(row, algo, :) - mean_task) ./ std_task);
             end
             row = row + 1;
         end
