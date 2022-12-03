@@ -27,7 +27,7 @@ function Gfunction = evalGfunction(shiftVector, rotationMatrix, x, gType, Lb, Ub
         case 'Rosenbrock'
             t = 0;
             for i = 1:length(x) - 1
-                t = t + 100 * (x(i)^2 - x(i + 1))^2 + (1 - x(i)^2);
+                t = t + 100 * (x(i)^2 - x(i + 1))^2 + (1 - x(i))^2;
             end
             Gfunction = t;
         case 'Ackley'
