@@ -78,8 +78,8 @@ function Tasks = benchmark_WCCI20_MaTMO(Problem, task_size)
             hType = {'concave'};
         case 8
             Dim = 50;
-            Lb = {-100 .* ones(1, Dim), -50 .* ones(1, Dim), -50 .* ones(1, Dim), -50 .* ones(1, Dim), -0.5 .* ones(1, Dim), -100 .* ones(1, Dim)};
-            Ub = {100 .* ones(1, Dim), 50 .* ones(1, Dim), 50 .* ones(1, Dim), 50 .* ones(1, Dim), 0.5 .* ones(1, Dim), 100 .* ones(1, Dim)};
+            Lb = {-100 .* ones(1, Dim), -50 .* ones(1, Dim), -50 .* ones(1, Dim), -50 .* ones(1, Dim), -0.5 .* ones(1, Dim)};
+            Ub = {100 .* ones(1, Dim), 50 .* ones(1, Dim), 50 .* ones(1, Dim), 50 .* ones(1, Dim), 0.5 .* ones(1, Dim)};
             Lb{1}(1) = 0; Lb{2}(1) = 0; Lb{3}(1) = 0; Lb{4}(1) = 0; Lb{5}(1) = 0;
             Ub{1}(1) = 1; Ub{2}(1) = 1; Ub{3}(1) = 1; Ub{4}(1) = 1; Ub{5}(1) = 1;
             tType = 'ZDT';
@@ -88,8 +88,8 @@ function Tasks = benchmark_WCCI20_MaTMO(Problem, task_size)
             hType = {'convex'};
         case 9
             Dim = 50;
-            Lb = {-50 .* ones(1, Dim), -50 .* ones(1, Dim), -50 .* ones(1, Dim), -100 .* ones(1, Dim), -0.5 .* ones(1, Dim), -100 .* ones(1, Dim)};
-            Ub = {50 .* ones(1, Dim), 50 .* ones(1, Dim), 50 .* ones(1, Dim), 100 .* ones(1, Dim), 0.5 .* ones(1, Dim), 100 .* ones(1, Dim)};
+            Lb = {-50 .* ones(1, Dim), -50 .* ones(1, Dim), -50 .* ones(1, Dim), -100 .* ones(1, Dim), -0.5 .* ones(1, Dim)};
+            Ub = {50 .* ones(1, Dim), 50 .* ones(1, Dim), 50 .* ones(1, Dim), 100 .* ones(1, Dim), 0.5 .* ones(1, Dim)};
             Lb{1}(1) = 0; Lb{2}(1) = 0; Lb{3}(1) = 0; Lb{4}(1) = 0; Lb{5}(1) = 0;
             Ub{1}(1) = 1; Ub{2}(1) = 1; Ub{3}(1) = 1; Ub{4}(1) = 1; Ub{5}(1) = 1;
             tType = 'ZDT';
@@ -98,8 +98,8 @@ function Tasks = benchmark_WCCI20_MaTMO(Problem, task_size)
             hType = {'convex'};
         case 10
             Dim = 50;
-            Lb = {-100 .* ones(1, Dim), -50 .* ones(1, Dim), -50 .* ones(1, Dim), -50 .* ones(1, Dim), -100 .* ones(1, Dim), -0.5 .* ones(1, Dim), -100 .* ones(1, Dim)};
-            Ub = {100 .* ones(1, Dim), 50 .* ones(1, Dim), 50 .* ones(1, Dim), 50 .* ones(1, Dim), 100 .* ones(1, Dim), 0.5 .* ones(1, Dim), 100 .* ones(1, Dim)};
+            Lb = {-100 .* ones(1, Dim), -50 .* ones(1, Dim), -50 .* ones(1, Dim), -50 .* ones(1, Dim), -100 .* ones(1, Dim), -0.5 .* ones(1, Dim)};
+            Ub = {100 .* ones(1, Dim), 50 .* ones(1, Dim), 50 .* ones(1, Dim), 50 .* ones(1, Dim), 100 .* ones(1, Dim), 0.5 .* ones(1, Dim)};
             Lb{1}(1) = 0; Lb{2}(1) = 0; Lb{3}(1) = 0; Lb{4}(1) = 0; Lb{5}(1) = 0; Lb{6}(1) = 0;
             Ub{1}(1) = 1; Ub{2}(1) = 1; Ub{3}(1) = 1; Ub{4}(1) = 1; Ub{5}(1) = 1; Ub{6}(1) = 1;
             tType = 'ZDT';
