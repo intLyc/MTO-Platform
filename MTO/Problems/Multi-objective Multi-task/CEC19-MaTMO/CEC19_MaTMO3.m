@@ -55,6 +55,7 @@ classdef CEC19_MaTMO3 < Problem
         function optimum = getOptimum(Prob)
             N = 10000;
             for t = 1:Prob.T
+                % concave
                 optimum{t}(:, 1) = linspace(0, 1, N)';
                 optimum{t}(:, 2) = 1 - optimum{t}(:, 1).^2;
             end

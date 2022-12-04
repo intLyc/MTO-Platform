@@ -55,6 +55,7 @@ classdef CEC19_MaTMO4 < Problem
         function optimum = getOptimum(Prob)
             N = 10000; M = 2;
             for t = 1:Prob.T
+                % circle
                 optimum{t} = UniformPoint(N, M);
                 optimum{t} = optimum{t} ./ repmat(sqrt(sum(optimum{t}.^2, 2)), 1, M);
             end
