@@ -16,6 +16,7 @@ function score = getHV(PopObj, optimum)
         [N, M] = size(PopObj);
         fmin = min(min(PopObj, [], 1), zeros(1, M));
         fmax = max(optimum, [], 1);
+        fmax(fmax <= fmin) = fmin(fmax <= fmin) + 1e-6;
         PopObj = (PopObj - repmat(fmin, N, 1)) ./ repmat((fmax - fmin) * 1.1, N, 1);
         PopObj(any(PopObj > 1, 2), :) = [];
         RefPoint = ones(1, M);
