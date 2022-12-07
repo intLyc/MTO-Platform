@@ -36,14 +36,16 @@ classdef MOEA_D_DE < Algorithm
         NR = 2
         F = 0.5
         CR = 0.9
+        MuM = 15
     end
 
     methods
         function Parameter = getParameter(Algo)
             Parameter = {'Delta: Probability of choosing parents locally', num2str(Algo.Delta), ...
-                        'NR: Maximum number of solutions replaced by each offspring', num2str(Algo.Delta), ...
-                        'F:Mutation Factor', num2str(Algo.F), ...
-                        'CR: Crossover Rate', num2str(Algo.CR)};
+                             'NR: Maximum number of solutions replaced by each offspring', num2str(Algo.Delta), ...
+                             'F:Mutation Factor', num2str(Algo.F), ...
+                             'CR: Crossover Rate', num2str(Algo.CR), ...
+                             'MuM: Polynomial Mutation', num2str(Algo.MuM)};
         end
 
         function Algo = setParameter(Algo, Parameter)
@@ -52,6 +54,7 @@ classdef MOEA_D_DE < Algorithm
             Algo.NR = str2double(Parameter{i}); i = i + 1;
             Algo.F = str2double(Parameter{i}); i = i + 1;
             Algo.CR = str2double(Parameter{i}); i = i + 1;
+            Algo.MuM = str2double(Parameter{i}); i = i + 1;
         end
 
         function run(Algo, Prob)
@@ -102,6 +105,7 @@ classdef MOEA_D_DE < Algorithm
 
             offspring.Dec = population(1).Dec + Algo.F * (population(2).Dec - population(3).Dec);
             offspring.Dec = DE_Crossover(offspring.Dec, population(1).Dec, Algo.CR);
+            offspring.Dec = GA_Mutation(offspring.Dec, Algo.MuM);
 
             offspring.Dec(offspring.Dec > 1) = 1;
             offspring.Dec(offspring.Dec < 0) = 0;
