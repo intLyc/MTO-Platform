@@ -1,7 +1,7 @@
-function result = MT_Score(MTOData, varargin)
-    % <Metric>
+function result = MTS_Obj(MTOData, varargin)
+    % <Metric> <Single-objective>
 
-    % Multi-task Score
+    % Multi-task Score on Objective
 
     %------------------------------- Reference --------------------------------
     % @Article{Da2017CEC2017-MTSO,

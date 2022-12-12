@@ -1,5 +1,5 @@
 function result = Run_Time(MTOData, varargin)
-    % <Metric>
+    % <Metric> <Single-objective/Multi-objective>
 
     % Run Time
 

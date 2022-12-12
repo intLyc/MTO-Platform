@@ -1,7 +1,7 @@
-function result = Min_Obj(MTOData, varargin)
-    % <Metric>
+function result = Comp_Obj(MTOData, varargin)
+    % <Metric> <Single-objective>
 
-    % Minimal Objective Value of All Tasks
+    % Competitive Objective Value of All Tasks
 
     %------------------------------- Reference --------------------------------
     % @Article{Li2022CompetitiveMTO,

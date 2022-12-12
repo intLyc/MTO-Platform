@@ -1,5 +1,5 @@
-function result = MT_Score_IGD(MTOData, varargin)
-    % <Metric>
+function result = MTS_IGD(MTOData, varargin)
+    % <Metric> <Multi-objective>
 
     % Multi-task Score on IGD
 

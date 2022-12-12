@@ -1,5 +1,5 @@
 function result = HV(MTOData, varargin)
-    % <Metric>
+    % <Metric> <Multi-objective>
 
     % Hypervolume (HV)
 

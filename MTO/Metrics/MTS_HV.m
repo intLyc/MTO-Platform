@@ -1,5 +1,5 @@
-function result = MT_Score_HV(MTOData, varargin)
-    % <Metric>
+function result = MTS_HV(MTOData, varargin)
+    % <Metric> <Multi-objective>
 
     % Multi-task Score on HV
 

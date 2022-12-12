@@ -1,5 +1,5 @@
-function result = IGD_Plus(MTOData, varargin)
-    % <Metric>
+function result = IGDp(MTOData, varargin)
+    % <Metric> <Multi-objective>
 
     % Inverted Generational Distance Plus (IGD+)
 

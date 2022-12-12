@@ -1,5 +1,5 @@
 function result = Obj(MTOData, varargin)
-    % <Metric>
+    % <Metric> <Single-objective>
 
     % Objective Value
 
