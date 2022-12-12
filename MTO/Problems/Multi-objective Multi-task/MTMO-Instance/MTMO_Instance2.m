@@ -34,7 +34,7 @@ classdef MTMO_Instance2 < Problem
             Prob.T = 2;
             Prob.M(1) = 2;
             Prob.D(1) = 10;
-            Prob.Fnc{1} = @(x)ZDT4_R.getFnc(x, 1);
+            Prob.Fnc{1} = @(x)ZDT4_RC.getFnc(x, 1);
             Prob.Lb{1} = -5 * ones(1, Prob.D(1));
             Prob.Ub{1} = 5 * ones(1, Prob.D(1));
             Prob.Lb{1}(1) = 0;
@@ -42,7 +42,7 @@ classdef MTMO_Instance2 < Problem
 
             Prob.M(2) = 2;
             Prob.D(2) = 10;
-            Prob.Fnc{2} = @(x)ZDT4_G.getFnc(x, M);
+            Prob.Fnc{2} = @(x)ZDT4_A.getFnc(x, M);
             Prob.Lb{2} = -32 * ones(1, Prob.D(2));
             Prob.Ub{2} = 32 * ones(1, Prob.D(2));
             Prob.Lb{2}(1) = 0;
