@@ -1,4 +1,7 @@
-function Tasks = benchmark_SCP(Nmin, Nmax)
+classdef SCP < Problem
+    % <Multi-task> <Single-objective> <None/Competitive>
+
+    % Sensor Coverage Problem
 
     %------------------------------- Reference --------------------------------
     % Reference 1
@@ -30,20 +33,53 @@ function Tasks = benchmark_SCP(Nmin, Nmax)
     % or footnote "https://github.com/intLyc/MTO-Platform"
     %--------------------------------------------------------------------------
 
-    load Adata
-    K = Nmax - Nmin + 1;
-    for i = 1:K
-        Tasks(i).Dim = (Nmin + (i - 1)) * 3; % dimensionality of Task 1
-        Tasks(i).Fnc = @(x)obj_func(x, A, Tasks(i).Dim);
-        Tasks(i).Lb = -1 * ones(1, Tasks(i).Dim);
-        Tasks(i).Ub = 1 * ones(1, Tasks(i).Dim);
-        index = [3:3:Tasks(i).Dim];
-        Tasks(i).Lb(index) = 0.1;
-        Tasks(i).Ub(index) = 0.25;
+    properties
+        Nmin = 25
+        Nmax = 35
+    end
+
+    methods
+        function Prob = SCP(name)
+            Prob = Prob@Problem(name);
+            Prob.maxFE = 1000 * 50 * (Prob.Nmax - Prob.Nmin + 1);
+        end
+
+        function parameter = getParameter(Prob)
+            parameter = {'Nmin', num2str(Prob.Nmin), ...
+                             'Nmax', num2str(Prob.Nmax)};
+            parameter = [Prob.getRunParameter(), parameter];
+        end
+
+        function Prob = setParameter(Prob, Parameter)
+            nmin = str2double(Parameter{3});
+            nmax = str2double(Parameter{4});
+            if Prob.Nmin == nmin && Prob.Nmax == nmax
+                Prob.setRunParameter(Parameter(1:2));
+            else
+                Prob.Nmin = nmin; Prob.Nmax = nmax;
+                Prob.maxFE = 1000 * 50 * (Prob.Nmax - Prob.Nmin + 1);
+                Prob.setRunParameter({Parameter{1}, num2str(Prob.maxFE)});
+            end
+        end
+
+        function setTasks(Prob)
+            load SCP_Adata
+            Prob.T = Prob.Nmax - Prob.Nmin + 1;
+            for t = 1:Prob.T
+                Prob.M(t) = 1;
+                Prob.D(t) = (Prob.Nmin + (t - 1)) * 3;
+                Prob.Fnc{t} = @(x)SCP_func(x, A, Prob.D(t));
+                Prob.Lb{t} = -ones(1, Prob.D(t));
+                Prob.Ub{t} = ones(1, Prob.D(t));
+                index = 3:3:Prob.D(t);
+                Prob.Lb{t}(index) = 0.1;
+                Prob.Ub{t}(index) = 0.25;
+            end
+        end
     end
 end
 
-function [Obj, Con] = obj_func(x, A, dim)
+function [Obj, Con] = SCP_func(x, A, dim)
     a = 1000; b = 10; c0 = 1;
     x = x(1:dim);
     k = dim / 3;
@@ -52,7 +88,7 @@ function [Obj, Con] = obj_func(x, A, dim)
     isconverage = (d <= repmat(x(:, 3)', size(A, 1), 1));
     maxisconverage = max(isconverage, [], 2);
     convarage_ratio = sum(maxisconverage) / (size(A, 1));
-    f = a * (1 - convarage_ratio) + c0 * k + sum(b * x(:, 3).^2);
+    f = a * (1 - convarage_ratio) + c0 * k + sum(b * x(:, 3) .^ 2);
     Obj = f;
     Con = 0;
 end
