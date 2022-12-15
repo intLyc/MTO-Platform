@@ -22,6 +22,7 @@ classdef CAL_SHADE < Algorithm
     properties (SetAccess = private)
         P = 0.2
         H = 10
+        R = 18
         EC_Top = 0.2
         EC_Tc = 0.8
         EC_Cp = 5
@@ -30,16 +31,18 @@ classdef CAL_SHADE < Algorithm
     methods
         function Parameter = getParameter(Algo)
             Parameter = {'P: 100p% top as pbest', num2str(Algo.P), ...
-                        'H: success memory size', num2str(Algo.H), ...
-                        'EC_Top', num2str(Algo.EC_Top), ...
-                        'EC_Tc', num2str(Algo.EC_Tc), ...
-                        'EC_Cp', num2str(Algo.EC_Cp)};
+                             'H: success memory size', num2str(Algo.H), ...
+                             'R: multiplier of init pop size', num2str(Algo.R), ...
+                             'EC_Top', num2str(Algo.EC_Top), ...
+                             'EC_Tc', num2str(Algo.EC_Tc), ...
+                             'EC_Cp', num2str(Algo.EC_Cp)};
         end
 
         function Algo = setParameter(Algo, Parameter)
             i = 1;
             Algo.P = str2double(Parameter{i}); i = i + 1;
             Algo.H = str2double(Parameter{i}); i = i + 1;
+            Algo.R = str2double(Parameter{i}); i = i + 1;
             Algo.EC_Top = str2double(Parameter{i}); i = i + 1;
             Algo.EC_Tc = str2double(Parameter{i}); i = i + 1;
             Algo.EC_Cp = str2double(Parameter{i}); i = i + 1;
@@ -51,6 +54,7 @@ classdef CAL_SHADE < Algorithm
             Nmin = 4;
             for t = 1:Prob.T
                 % initialize Parameter
+                Ninit(t) = round(Algo.R .* Prob.D(t));
                 n = ceil(Algo.EC_Top * length(population{t}));
                 cv_temp = [population{t}.CV];
                 [~, idx] = sort(cv_temp);
@@ -62,8 +66,8 @@ classdef CAL_SHADE < Algorithm
             end
 
             while Algo.notTerminated(Prob)
-                N = round((Nmin - Prob.N) / Prob.maxFE * Algo.FE + Prob.N);
                 for t = 1:Prob.T
+                    N = round((Nmin - Ninit(t)) / Prob.maxFE * Algo.FE + Ninit(t));
                     % Calculate individual F and CR
                     for i = 1:length(population{t})
                         idx = randi(Algo.H);
@@ -82,7 +86,7 @@ classdef CAL_SHADE < Algorithm
 
                     % calculate epsilon
                     if Algo.FE < Algo.EC_Tc * Prob.maxFE
-                        Ep = Ep0{t} * ((1 - Algo.FE / (Algo.EC_Tc * Prob.maxFE))^Algo.EC_Cp);
+                        Ep = Ep0{t} * ((1 - Algo.FE / (Algo.EC_Tc * Prob.maxFE)) ^ Algo.EC_Cp);
                     else
                         Ep = 0;
                     end
@@ -105,7 +109,7 @@ classdef CAL_SHADE < Algorithm
                     dif = dif ./ sum(dif);
                     % update MF MCR
                     if ~isempty(SF)
-                        MF{t}(Hidx{t}) = sum(dif .* (SF.^2)) / sum(dif .* SF);
+                        MF{t}(Hidx{t}) = sum(dif .* (SF .^ 2)) / sum(dif .* SF);
                         MCR{t}(Hidx{t}) = sum(dif .* SCR);
                     else
                         MF{t}(Hidx{t}) = MF{t}(mod(Hidx{t} + Algo.H - 2, Algo.H) + 1);

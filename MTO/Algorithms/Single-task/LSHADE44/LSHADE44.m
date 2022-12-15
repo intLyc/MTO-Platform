@@ -22,19 +22,21 @@ classdef LSHADE44 < Algorithm
     properties (SetAccess = private)
         P = 0.2
         H = 10
+        R = 18
     end
 
     methods
         function Parameter = getParameter(Algo)
             Parameter = {'P: 100p% top as pbest', num2str(Algo.P), ...
-                        'H: success memory size', num2str(Algo.H)};
+                             'H: success memory size', num2str(Algo.H), ...
+                             'R: multiplier of init pop size', num2str(Algo.R)};
         end
 
         function Algo = setParameter(Algo, Parameter)
             i = 1;
             Algo.P = str2double(Parameter{i}); i = i + 1;
             Algo.H = str2double(Parameter{i}); i = i + 1;
-            Algo.arc_rate = str2double(Parameter{i}); i = i + 1;
+            Algo.R = str2double(Parameter{i}); i = i + 1;
         end
 
         function run(Algo, Prob)
@@ -46,6 +48,7 @@ classdef LSHADE44 < Algorithm
             n0 = 2;
             delta = 1 / (5 * STNum);
             for t = 1:Prob.T
+                Ninit(t) = round(Algo.R .* Prob.D(t));
                 STRecord{t} = zeros(1, STNum) + n0;
                 for k = 1:STNum
                     Hidx{t, k} = 1;
@@ -56,8 +59,8 @@ classdef LSHADE44 < Algorithm
             end
 
             while Algo.notTerminated(Prob)
-                N = round((Nmin - Prob.N) / Prob.maxFE * Algo.FE + Prob.N);
                 for t = 1:Prob.T
+                    N = round((Nmin - Ninit(t)) / Prob.maxFE * Algo.FE + Ninit(t));
                     % Calculate individual F and CR and ST
                     roulette = STRecord{t} / sum(STRecord{t});
                     for i = 1:length(population{t})
@@ -111,7 +114,7 @@ classdef LSHADE44 < Algorithm
                         dif = dif ./ sum(dif);
                         % update MF MCR
                         if ~isempty(SF)
-                            MF{t, k}(Hidx{t, k}) = sum(dif .* (SF.^2)) / sum(dif .* SF);
+                            MF{t, k}(Hidx{t, k}) = sum(dif .* (SF .^ 2)) / sum(dif .* SF);
                             MCR{t, k}(Hidx{t, k}) = sum(dif .* SCR);
                         else
                             MF{t, k}(Hidx{t, k}) = MF{t, k}(mod(Hidx{t, k} + Algo.H - 2, Algo.H) + 1);
