@@ -44,6 +44,7 @@ function result = Comp_Obj(MTOData, varargin)
             gen = size(MTOData.Results(prob, algo, 1).Obj, 2);
             MinObj = zeros(MTOData.Reps, gen);
             for rep = 1:MTOData.Reps
+                Obj_temp = []; CV_temp = [];
                 Obj_temp(:, :) = MTOData.Results(prob, algo, rep).Obj(:, :);
                 CV_temp(:, :) = MTOData.Results(prob, algo, rep).CV(:, :);
                 Obj_temp(CV_temp > 0) = NaN;
