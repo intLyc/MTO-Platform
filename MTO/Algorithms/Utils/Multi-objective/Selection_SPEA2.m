@@ -1,4 +1,4 @@
-function [population, Fitness] = Selection_SPEA2(population, N)
+function [population, Fitness] = Selection_SPEA2(population, N, Epsilon)
 % This code is copy from PlatEMO(https://github.com/BIMK/PlatEMO).
 
 % The environmental selection of SPEA2
@@ -12,8 +12,16 @@ function [population, Fitness] = Selection_SPEA2(population, N)
 % Computational Intelligence Magazine, 2017, 12(4): 73-87".
 %--------------------------------------------------------------------------
 
+if nargin == 2
+    Ep = 0;
+else
+    Ep = Epsilon;
+end
+
 %% Calculate the fitness of each solution
-Fitness = CalFitness(population.Objs, population.CVs);
+CVs = population.CVs;
+CVs(CVs < Ep) = 0; % Epsilon Constraint
+Fitness = CalFitness(population.Objs, CVs);
 
 %% Environmental selection
 Next = Fitness < 1;
