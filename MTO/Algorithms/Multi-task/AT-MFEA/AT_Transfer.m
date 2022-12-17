@@ -33,9 +33,9 @@
 %    solution_transfer : a solution to be transferred to the target domain
 
 function solution_transfer = AT_Transfer(source_solution, mu_s, Sigma_s, mu_t, Sigma_t)
-    Lsi_l = chol(inv(Sigma_s));
-    Lci_l = chol(inv(Sigma_t));
-    Am_l = inv(Lci_l') * Lsi_l;
-    bm_l = mu_t' - Am_l * mu_s';
-    solution_transfer = transpose(Am_l * source_solution' + bm_l);
+Lsi_l = chol(inv(Sigma_s));
+Lci_l = chol(inv(Sigma_t));
+Am_l = inv(Lci_l') * Lsi_l;
+bm_l = mu_t' - Am_l * mu_s';
+solution_transfer = transpose(Am_l * source_solution' + bm_l);
 end
