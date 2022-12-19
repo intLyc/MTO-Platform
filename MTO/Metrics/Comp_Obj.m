@@ -53,7 +53,7 @@ for prob = 1:length(MTOData.Problems)
         result.TableData(prob, algo, :) = MinObj(:, end);
         for rep = 1:MTOData.Reps
             result.ConvergeData.Y(prob, algo, rep, :) = MinObj(rep, :);
-            result.ConvergeData.X(prob, algo, rep, :) = [1:gen] ./ gen .* MTOData.Problems(prob).maxFE ./ MTOData.Problems(prob).T;
+            result.ConvergeData.X(prob, algo, rep, :) = [1:gen] ./ gen .* MTOData.Problems(prob).maxFE;
         end
     end
 end

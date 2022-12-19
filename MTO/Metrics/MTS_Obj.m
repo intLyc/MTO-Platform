@@ -41,15 +41,14 @@ row = 1;
 for prob = 1:length(MTOData.Problems)
     for task = 1:MTOData.Problems(prob).T
         for algo = 1:length(MTOData.Algorithms)
-            gen = size(MTOData.Results(prob, algo, 1).Obj, 2);
-            Obj = zeros(MTOData.Reps, gen);
-            CV = zeros(MTOData.Reps, gen);
+            Obj = zeros(1, MTOData.Reps);
+            CV = zeros(1, MTOData.Reps);
             for rep = 1:MTOData.Reps
-                Obj(rep, :) = MTOData.Results(prob, algo, rep).Obj(task, :);
-                CV(rep, :) = MTOData.Results(prob, algo, rep).CV(task, :);
+                Obj(rep) = MTOData.Results(prob, algo, rep).Obj(task, end);
+                CV(rep) = MTOData.Results(prob, algo, rep).CV(task, end);
             end
             Obj(CV > 0) = NaN;
-            obj_matrix(row, algo, :, :) = Obj;
+            obj_matrix(row, algo, :) = Obj;
         end
         row = row + 1;
     end
@@ -58,22 +57,15 @@ end
 % Calculate Multi-task Score
 row = 1;
 for prob = 1:length(MTOData.Problems)
-    gen = size(MTOData.Results(prob, 1, 1).Obj, 2);
-    score_temp = zeros(length(MTOData.Algorithms), gen);
+    score_temp = zeros(1, length(MTOData.Algorithms));
     for task = 1:MTOData.Problems(prob).T
-        for g = 1:gen
-            mean_task = nanmean(obj_matrix(row, :, :, g), 'all');
-            std_task = std(obj_matrix(row, :, :, g), 0, 'all');
-            for algo = 1:length(MTOData.Algorithms)
-                score_temp(algo, g) = score_temp(algo, g) + nanmean((obj_matrix(row, algo, :, g) - mean_task) ./ std_task);
-            end
+        mean_task = nanmean(obj_matrix(row, :, :), 'all');
+        std_task = std(obj_matrix(row, :, :), 0, 'all');
+        for algo = 1:length(MTOData.Algorithms)
+            score_temp(algo, g) = score_temp(algo) + nanmean((obj_matrix(row, algo, :) - mean_task) ./ std_task);
         end
         row = row + 1;
     end
-    result.TableData(prob, :, 1) = score_temp(:, end);
-    % for algo = 1:length(MTOData.Algorithms)
-    %     result.ConvergeData.Y(prob, algo, 1, :) = score_temp(algo, :);
-    %     result.ConvergeData.X(prob, algo, 1, :) = [1:gen] ./ gen .* MTOData.Problems(prob).maxFE ./ MTOData.Problems(prob).T;
-    % end
+    result.TableData(prob, :, 1) = score_temp;
 end
 end

@@ -97,7 +97,7 @@ for prob = 1:length(MTOData.Problems)
         result.TableData(prob, algo, :) = hv(:, end);
         for rep = 1:MTOData.Reps
             result.ConvergeData.Y(prob, algo, rep, :) = hv(rep, :);
-            result.ConvergeData.X(prob, algo, rep, :) = [1:gen] ./ gen .* MTOData.Problems(prob).maxFE ./ MTOData.Problems(prob).T;
+            result.ConvergeData.X(prob, algo, rep, :) = [1:gen] ./ gen .* MTOData.Problems(prob).maxFE;
             result.ParetoData.Obj{prob, algo, rep} = squeeze(BestObj{rep}(:, :));
         end
         result.ParetoData.Optimum{prob}(:, :) = optimum;
