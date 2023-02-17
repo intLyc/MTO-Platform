@@ -42,11 +42,11 @@ methods
             cmu{t} = min(1 - c1{t}, 2 * (mu_eff - 2 + 1 / mu_eff) / ((Prob.D(t) + 2)^2 + 2 * mu_eff / 2));
             hth{t} = (1.4 + 2 / (Prob.D(t) + 1)) * ENN{t};
             % Initialization
-            Mdec{t} = unifrnd(0, 1);
+            Mdec{t} = unifrnd(zeros(1, Prob.D(t)), ones(1, Prob.D(t)));
             ps{t} = zeros(1, Prob.D(t));
             pc{t} = zeros(1, Prob.D(t));
             C{t} = eye(Prob.D(t));
-            sigma{t} = 0.1;
+            sigma{t} = 0.1 * ones(1, Prob.D(t));
             for i = 1:Prob.N
                 population{t}(i) = Individual();
             end
