@@ -74,7 +74,7 @@ methods
             Pop = varargin{2};
         end
 
-        if max(Prob.M) == 1 && isempty(Algo.Best)
+        if Algo.FE == 0
             flag = true;
             return;
         end
