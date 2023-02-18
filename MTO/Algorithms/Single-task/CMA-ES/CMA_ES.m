@@ -78,7 +78,7 @@ methods
                 C{t} = (1 - c1{t} - cmu{t}) * C{t} + c1{t} * (pc{t}' * pc{t} + delta * C{t}) + cmu{t} * Pstep' * diag(w) * Pstep;
 
                 C{t} = triu(C{t}) + triu(C{t}, 1)';
-                [~, E] = eig(C{t});
+                [V, E] = eig(C{t});
                 if any(diag(E) < 0)
                     C{t} = V * max(E, 0) / V;
                 end
