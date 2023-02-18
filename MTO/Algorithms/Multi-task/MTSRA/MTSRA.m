@@ -57,7 +57,7 @@ methods
         population = Initialization(Algo, Prob, Individual_DE);
         RMP = Algo.RMP0 * ones(Prob.T, Prob.T);
         delta_rmp = Prob.N / Prob.maxFE;
-        delta_rmp = delta_rmp * (Prob.T * 2 - Prob.T);
+        delta_rmp = delta_rmp * (Prob.T^2 - Prob.T);
         for t = 1:Prob.T
             MF{t} = 0.5 .* ones(1, Algo.H);
             MCR{t} = 0.5 * ones(1, Algo.H);
