@@ -66,8 +66,8 @@ methods
                 [~, rank] = sortrows([population{t}.CVs, population{t}.Objs], [1, 2]);
 
                 % Update mean
-                Pstep = Pstep(rank, :);
-                Mstep = w * Pstep(1:mu, :);
+                Pstep = Pstep(rank(1:mu), :);
+                Mstep = w * Pstep;
                 Mdec{t} = Mdec{t} + sigma{t} .* Mstep;
                 % Update parameters
                 ps{t} = (1 - cs{t}) * ps{t} + sqrt(cs{t} * (2 - cs{t}) * mu_eff) * Mstep / chol(C{t})';
@@ -75,13 +75,14 @@ methods
                 hs = norm(ps{t}) / sqrt(1 - (1 - cs{t})^(2 * (ceil(Prob.maxFE / (Prob.N * Prob.T)) + 1))) < hth{t};
                 delta = (1 - hs) * cc{t} * (2 - cc{t});
                 pc{t} = (1 - cc{t}) * pc{t} + hs * sqrt(cc{t} * (2 - cc{t}) * mu_eff) * Mstep;
-                C{t} = (1 - c1{t} - cmu{t}) * C{t} + c1{t} * (pc{t}' * pc{t} + delta * C{t});
-                for i = 1:mu
-                    C{t} = C{t} + cmu{t} * w(i) * Pstep(i, :)' * Pstep(i, :);
-                end
-                [V, E] = eig(C{t});
+                C{t} = (1 - c1{t} - cmu{t}) * C{t} + c1{t} * (pc{t}' * pc{t} + delta * C{t}) + cmu{t} * Pstep' * diag(w) * Pstep;
+
+                [~, E] = eig(C{t});
                 if any(diag(E) < 0)
-                    C{t} = V * max(E, 0) / V;
+                    C{t} = triu(C{t}) + triu(C{t}, 1)';
+                    [V, E] = eig(C{t});
+                    E = sqrt(diag(E));
+                    C{t} = V * diag(E.^-1) * V';
                 end
             end
         end
