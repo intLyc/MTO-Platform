@@ -72,7 +72,7 @@ methods
                 % Update parameters
                 ps{t} = (1 - cs{t}) * ps{t} + sqrt(cs{t} * (2 - cs{t}) * mu_eff) * Mstep / chol(C{t})';
                 sigma{t} = sigma{t} * exp(cs{t} / ds{t} * (norm(ps{t}) / ENN{t} - 1))^0.3;
-                hs = norm(ps{t}) / sqrt(1 - (1 - cs{t})^(2 * (ceil(Prob.maxFE / (Prob.N * Prob.T)) + 1))) < hth{t};
+                hs = norm(ps{t}) / sqrt(1 - (1 - cs{t})^(2 * (ceil(Algo.FE / (Prob.N * Prob.T)) + 1))) < hth{t};
                 delta = (1 - hs) * cc{t} * (2 - cc{t});
                 pc{t} = (1 - cc{t}) * pc{t} + hs * sqrt(cc{t} * (2 - cc{t}) * mu_eff) * Mstep;
                 C{t} = (1 - c1{t} - cmu{t}) * C{t} + c1{t} * (pc{t}' * pc{t} + delta * C{t}) + cmu{t} * Pstep' * diag(w) * Pstep;
