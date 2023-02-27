@@ -35,6 +35,10 @@ if type == 1
 elseif type == 2
     bestfeas = min(Obj);
     cv_max = max(CV);
-    f = bestfeas + abs(Obj - bestfeas) .* abs(CV ./ cv_max);
+    if cv_max == 0
+        f = Obj;
+    else
+        f = bestfeas + abs(Obj - bestfeas) .* abs(CV ./ cv_max);
+    end
 end
 end

@@ -98,6 +98,8 @@ methods
     function [Pop, Flag] = Evaluation(Algo, Pop, Prob, t)
         for i = 1:length(Pop)
             x = (Prob.Ub{t} - Prob.Lb{t}) .* Pop(i).Dec(1:Prob.D(t)) + Prob.Lb{t};
+            x(x > Prob.Ub{t}) = Prob.Ub{t}(x > Prob.Ub{t});
+            x(x < Prob.Lb{t}) = Prob.Lb{t}(x < Prob.Lb{t});
             [Obj, Con] = Prob.Fnc{t}(x);
             CV = sum(Con);
             Pop(i).Obj = Obj;
