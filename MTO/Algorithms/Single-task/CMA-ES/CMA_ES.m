@@ -61,6 +61,7 @@ methods
                     population{t}(i).Dec = Mdec{t} + sigma{t} .* Pstep(i, :);
                     population{t}(i).Dec(population{t}(i).Dec > 1) = 1;
                     population{t}(i).Dec(population{t}(i).Dec < 0) = 0;
+                    Pstep(i, :) = (population{t}(i).Dec - Mdec{t}) ./ sigma{t};
                 end
                 population{t} = Algo.Evaluation(population{t}, Prob, t);
                 [~, rank] = sortrows([population{t}.CVs, population{t}.Objs], [1, 2]);
@@ -72,7 +73,7 @@ methods
                 % Update parameters
                 ps{t} = (1 - cs{t}) * ps{t} + sqrt(cs{t} * (2 - cs{t}) * mu_eff) * Mstep / chol(C{t})';
                 sigma{t} = sigma{t} * exp(cs{t} / ds{t} * (norm(ps{t}) / ENN{t} - 1))^0.3;
-                hs = norm(ps{t}) / sqrt(1 - (1 - cs{t})^(2 * (ceil(Algo.FE / (Prob.N * Prob.T)) + 1))) < hth{t};
+                hs = norm(ps{t}) / sqrt(1 - (1 - cs{t})^(2 * (ceil((Algo.FE - (t - 1) * Prob.N) / (Prob.N * Prob.T)) + 1))) < hth{t};
                 delta = (1 - hs) * cc{t} * (2 - cc{t});
                 pc{t} = (1 - cc{t}) * pc{t} + hs * sqrt(cc{t} * (2 - cc{t}) * mu_eff) * Mstep;
                 C{t} = (1 - c1{t} - cmu{t}) * C{t} + c1{t} * (pc{t}' * pc{t} + delta * C{t}) + cmu{t} * Pstep' * diag(w) * Pstep;
