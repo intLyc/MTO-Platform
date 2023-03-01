@@ -62,7 +62,7 @@ for prob = 1:length(MTOData.Problems)
         mean_task = nanmean(obj_matrix(row, :, :), 'all');
         std_task = std(obj_matrix(row, :, :), 0, 'all');
         for algo = 1:length(MTOData.Algorithms)
-            score_temp(algo, g) = score_temp(algo) + nanmean((obj_matrix(row, algo, :) - mean_task) ./ std_task);
+            score_temp(algo) = score_temp(algo) + nanmean((obj_matrix(row, algo, :) - mean_task) ./ std_task);
         end
         row = row + 1;
     end
