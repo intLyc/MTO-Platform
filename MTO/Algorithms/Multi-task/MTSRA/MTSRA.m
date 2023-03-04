@@ -84,13 +84,7 @@ methods
             end
 
             % Determine the a task based on the selection probability using roulette wheel method
-            r = rand;
-            for t = 1:Prob.T
-                if r <= sum(pro(Algo.Gen, 1:t))
-                    k = t;
-                    break;
-                end
-            end
+            k = RouletteSelection(pro(Algo.Gen, :));
 
             % randomly select communicate task
             task_list = 1:Prob.T; task_list(k) = [];
