@@ -67,8 +67,8 @@ methods
                         tmp_pop = population{k}(transfer_idx);
                         transfer_pop = [transfer_pop, tmp_pop];
                     end
-                    [~, replace_idx] = sortrows([population{t}.CVs, population{t}.Objs], [1, 2]);
-                    parent(replace_idx(1:length(transfer_pop))) = transfer_pop;
+                    [~, rank] = sortrows([population{t}.CVs, population{t}.Objs], [1, 2]);
+                    parent(rank(end - length(transfer_pop) + 1:end)) = transfer_pop;
                 end
                 % Generation
                 offspring = Algo.Generation(parent);
