@@ -1,4 +1,4 @@
-function result = Comp_Obj(MTOData, varargin)
+function result = Obj_Comp(MTOData, varargin)
 % <Metric> <Single-objective>
 
 % Competitive Objective Value of All Tasks

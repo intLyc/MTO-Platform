@@ -1,4 +1,4 @@
-function result = MTS_IGDp(MTOData, varargin)
+function result = IGDp_MTS(MTOData, varargin)
 % <Metric> <Multi-objective>
 
 % Multi-task Score on IGD+

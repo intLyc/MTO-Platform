@@ -1,16 +1,7 @@
-function result = MTS_Obj(MTOData, varargin)
+function result = Obj_NBR(MTOData, varargin)
 % <Metric> <Single-objective>
 
-% Multi-task Score on Objective
-
-%------------------------------- Reference --------------------------------
-% @Article{Da2017CEC2017-MTSO,
-%   author     = {Da, Bingshui and Ong, Yew-Soon and Feng, Liang and Qin, A Kai and Gupta, Abhishek and Zhu, Zexuan and Ting, Chuan-Kang and Tang, Ke and Yao, Xin},
-%   journal    = {arXiv preprint arXiv:1706.03470},
-%   title      = {Evolutionary Multitasking for Single-objective Continuous Optimization: Benchmark Problems, Performance Metric, and Baseline Results},
-%   year       = {2017},
-% }
-%--------------------------------------------------------------------------
+% Number of Best Result for All Tasks - Objective
 
 %------------------------------- Copyright --------------------------------
 % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
@@ -19,7 +10,7 @@ function result = MTS_Obj(MTOData, varargin)
 % or footnote "https://github.com/intLyc/MTO-Platform"
 %--------------------------------------------------------------------------
 
-result.Metric = 'Min';
+result.Metric = 'Max';
 result.RowName = {};
 result.ColumnName = {};
 % Data for Table
@@ -48,24 +39,21 @@ for prob = 1:length(MTOData.Problems)
                 CV(rep) = MTOData.Results(prob, algo, rep).CV(task, end);
             end
             Obj(CV > 0) = NaN;
-            obj_matrix(row, algo, :) = Obj;
+            obj_matrix(row, algo) = nanmean(Obj);
         end
         row = row + 1;
     end
 end
 
-% Calculate Multi-task Score
+% Calculate Number of Best Result
 row = 1;
 for prob = 1:length(MTOData.Problems)
-    score_temp = zeros(1, length(MTOData.Algorithms));
+    number_temp = zeros(1, length(MTOData.Algorithms));
     for task = 1:MTOData.Problems(prob).T
-        mean_task = nanmean(obj_matrix(row, :, :), 'all');
-        std_task = std(obj_matrix(row, :, :), 0, 'all');
-        for algo = 1:length(MTOData.Algorithms)
-            score_temp(algo) = score_temp(algo) + nanmean((obj_matrix(row, algo, :) - mean_task) ./ std_task);
-        end
+        [~, algo] = min(obj_matrix(row, :));
+        number_temp(algo) = number_temp(algo) + 1;
         row = row + 1;
     end
-    result.TableData(prob, :, 1) = score_temp;
+    result.TableData(prob, :, 1) = number_temp;
 end
 end

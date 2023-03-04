@@ -1,7 +1,7 @@
-function result = Comp_IGD(MTOData, varargin)
+function result = IGDp_Comp(MTOData, varargin)
 % <Metric> <Multi-objective>
 
-% Competitive IGD of All Tasks
+% Competitive IGD+ of All Tasks
 
 %------------------------------- Reference --------------------------------
 % @Article{Li2022CompetitiveMTO,
@@ -58,7 +58,7 @@ for prob = 1:length(MTOData.Problems)
     optimum = getBestObj(AllOptimum, AllCV);
     for algo = 1:length(MTOData.Algorithms)
         gen = size(MTOData.Results(prob, algo, 1).Obj{1}, 1);
-        igd = zeros(MTOData.Reps, gen);
+        igdp = zeros(MTOData.Reps, gen);
         BestObj = {};
         if Par_flag
             parfor rep = 1:MTOData.Reps
@@ -71,7 +71,7 @@ for prob = 1:length(MTOData.Problems)
                         CV = [CV; CV_t];
                     end
                     BestObj{rep} = getBestObj(Obj, CV);
-                    igd(rep, g) = getIGD(BestObj{rep}, optimum);
+                    igdp(rep, g) = getIGDp(BestObj{rep}, optimum);
                 end
             end
         else
@@ -85,13 +85,13 @@ for prob = 1:length(MTOData.Problems)
                         CV = [CV; CV_t];
                     end
                     BestObj{rep} = getBestObj(Obj, CV);
-                    igd(rep, g) = getIGD(BestObj{rep}, optimum);
+                    igdp(rep, g) = getIGDp(BestObj{rep}, optimum);
                 end
             end
         end
-        result.TableData(prob, algo, :) = igd(:, end);
+        result.TableData(prob, algo, :) = igdp(:, end);
         for rep = 1:MTOData.Reps
-            result.ConvergeData.Y(prob, algo, rep, :) = igd(rep, :);
+            result.ConvergeData.Y(prob, algo, rep, :) = igdp(rep, :);
             result.ConvergeData.X(prob, algo, rep, :) = [1:gen] ./ gen .* MTOData.Problems(prob).maxFE;
             result.ParetoData.Obj{prob, algo, rep} = squeeze(BestObj{rep}(:, :));
         end

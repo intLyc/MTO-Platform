@@ -1,7 +1,7 @@
-function result = MTS_IGD(MTOData, varargin)
-% <Metric> <Multi-objective>
+function result = Obj_MTS(MTOData, varargin)
+% <Metric> <Single-objective>
 
-% Multi-task Score on IGD
+% Multi-task Score on Objective
 
 %------------------------------- Reference --------------------------------
 % @Article{Da2017CEC2017-MTSO,
@@ -19,50 +19,53 @@ function result = MTS_IGD(MTOData, varargin)
 % or footnote "https://github.com/intLyc/MTO-Platform"
 %--------------------------------------------------------------------------
 
-Par_flag = false;
-if length(varargin) >= 1
-    % Parallel Calculate
-    Par_flag = varargin{1};
-end
-
 result.Metric = 'Min';
 result.RowName = {};
 result.ColumnName = {};
 % Data for Table
 result.TableData = [];
+% Data for Converge Plot
+% result.ConvergeData.X = [];
+% result.ConvergeData.Y = [];
 
 for prob = 1:length(MTOData.Problems)
-    if MTOData.Problems(prob).M <= 1
+    if MTOData.Problems(prob).M ~= 1
         return;
     end
 end
 result.RowName = {MTOData.Problems.Name};
 result.ColumnName = {MTOData.Algorithms.Name};
 
-if isfield(MTOData, 'Metrics')
-    idx = find(strcmp({MTOData.Metrics.Name}, 'IGD'));
-    if ~isempty(idx)
-        igd_result = MTOData.Metrics(idx).Result;
-    else
-        igd_result = IGD(MTOData, Par_flag);
+% Calculate Objective
+row = 1;
+for prob = 1:length(MTOData.Problems)
+    for task = 1:MTOData.Problems(prob).T
+        for algo = 1:length(MTOData.Algorithms)
+            Obj = zeros(1, MTOData.Reps);
+            CV = zeros(1, MTOData.Reps);
+            for rep = 1:MTOData.Reps
+                Obj(rep) = MTOData.Results(prob, algo, rep).Obj(task, end);
+                CV(rep) = MTOData.Results(prob, algo, rep).CV(task, end);
+            end
+            Obj(CV > 0) = NaN;
+            obj_matrix(row, algo, :) = Obj;
+        end
+        row = row + 1;
     end
-else
-    igd_result = IGD(MTOData, Par_flag);
 end
 
 % Calculate Multi-task Score
-igd_matrix = igd_result.TableData;
 row = 1;
 for prob = 1:length(MTOData.Problems)
     score_temp = zeros(1, length(MTOData.Algorithms));
     for task = 1:MTOData.Problems(prob).T
-        mean_task = mean(igd_matrix(row, :, :), 'all');
-        std_task = std(igd_matrix(row, :, :), 0, 'all');
+        mean_task = nanmean(obj_matrix(row, :, :), 'all');
+        std_task = std(obj_matrix(row, :, :), 0, 'all');
         for algo = 1:length(MTOData.Algorithms)
-            score_temp(algo) = score_temp(algo) + mean((igd_matrix(row, algo, :) - mean_task) ./ std_task);
+            score_temp(algo) = score_temp(algo) + nanmean((obj_matrix(row, algo, :) - mean_task) ./ std_task);
         end
         row = row + 1;
     end
-    result.TableData(prob, :, 1) = score_temp(:);
+    result.TableData(prob, :, 1) = score_temp;
 end
 end
