@@ -51,7 +51,7 @@ methods
         RMP(logical(eye(size(RMP)))) = (1 - Algo.RMP0);
 
         while Algo.notTerminated(Prob)
-            for k = Prob.T
+            for k = 1:Prob.T
                 [offspring, r1_task] = Algo.Generation(population, RMP, k);
                 % Evaluation
                 offspring = Algo.Evaluation(offspring, Prob, k);
@@ -104,13 +104,7 @@ methods
             rnd = randperm(length(population{k}), 3);
             x1 = rnd(1); x2 = rnd(2); x3 = rnd(3);
 
-            r = rand();
-            for t = 1:length(population)
-                if r <= sum(RMP(k, 1:t))
-                    r1_task(i) = t;
-                    break;
-                end
-            end
+            r1_task(i) = RouletteSelection(RMP(k, :));
 
             offspring(i).Dec = population{r1_task(i)}(x1).Dec + Algo.F * (population{k}(x2).Dec - population{k}(x3).Dec);
             offspring(i).Dec = DE_Crossover(offspring(i).Dec, population{k}(i).Dec, Algo.CR);
