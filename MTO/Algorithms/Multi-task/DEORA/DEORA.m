@@ -73,13 +73,7 @@ methods
                 % The selection probability
                 prob(Algo.Gen, :) = Algo.Pmin / Prob.T + (1 - Algo.Pmin) * mean_R ./ (sum(mean_R));
                 % Determine the a task based on the selection probability using roulette wheel method
-                r = rand;
-                for t = 1:Prob.T
-                    if r <= sum(prob(Algo.Gen, 1:t))
-                        k = t;
-                        break;
-                    end
-                end
+                k = RouletteSelection(prob(Algo.Gen, :));
             end
 
             [offspring, r1_task] = Algo.Generation(population, RMP, k);
@@ -134,13 +128,7 @@ methods
             rnd = randperm(length(population{k}), 3);
             x1 = rnd(1); x2 = rnd(2); x3 = rnd(3);
 
-            r = rand();
-            for t = 1:length(population)
-                if r <= sum(RMP(k, 1:t))
-                    r1_task(i) = t;
-                    break;
-                end
-            end
+            r1_task(i) = RouletteSelection(RMP(k, :));
 
             offspring(i).Dec = population{r1_task(i)}(x1).Dec + Algo.F * (population{k}(x2).Dec - population{k}(x3).Dec);
             offspring(i).Dec = DE_Crossover(offspring(i).Dec, population{k}(i).Dec, Algo.CR);
