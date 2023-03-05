@@ -1,7 +1,7 @@
 function result = Obj_MTS(MTOData, varargin)
 % <Metric> <Single-objective>
 
-% Multi-task Score on Objective
+%  Objective - Multi-task Score
 
 %------------------------------- Reference --------------------------------
 % @Article{Da2017CEC2017-MTSO,
@@ -25,8 +25,8 @@ result.ColumnName = {};
 % Data for Table
 result.TableData = [];
 % Data for Converge Plot
-% result.ConvergeData.X = [];
-% result.ConvergeData.Y = [];
+result.ConvergeData.X = [];
+result.ConvergeData.Y = [];
 
 for prob = 1:length(MTOData.Problems)
     if MTOData.Problems(prob).M ~= 1
@@ -41,14 +41,15 @@ row = 1;
 for prob = 1:length(MTOData.Problems)
     for task = 1:MTOData.Problems(prob).T
         for algo = 1:length(MTOData.Algorithms)
-            Obj = zeros(1, MTOData.Reps);
-            CV = zeros(1, MTOData.Reps);
+            gen = size(MTOData.Results(prob, algo, 1).Obj, 2);
+            Obj = zeros(MTOData.Reps, gen);
+            CV = zeros(MTOData.Reps, gen);
             for rep = 1:MTOData.Reps
-                Obj(rep) = MTOData.Results(prob, algo, rep).Obj(task, end);
-                CV(rep) = MTOData.Results(prob, algo, rep).CV(task, end);
+                Obj(rep, :) = MTOData.Results(prob, algo, rep).Obj(task, :);
+                CV(rep, :) = MTOData.Results(prob, algo, rep).CV(task, :);
             end
             Obj(CV > 0) = NaN;
-            obj_matrix(row, algo, :) = Obj;
+            ObjMat(row, algo, :, :) = Obj;
         end
         row = row + 1;
     end
@@ -57,15 +58,22 @@ end
 % Calculate Multi-task Score
 row = 1;
 for prob = 1:length(MTOData.Problems)
-    score_temp = zeros(1, length(MTOData.Algorithms));
+    UObj = [];
     for task = 1:MTOData.Problems(prob).T
-        mean_task = nanmean(obj_matrix(row, :, :), 'all');
-        std_task = std(obj_matrix(row, :, :), 0, 'all');
-        for algo = 1:length(MTOData.Algorithms)
-            score_temp(algo) = score_temp(algo) + nanmean((obj_matrix(row, algo, :) - mean_task) ./ std_task);
+        for gen = 1:size(ObjMat, 4)
+            mean_task = nanmean(ObjMat(row, :, :, gen), 'all');
+            std_task = std(ObjMat(row, :, :, gen), 0, 'all');
+            UObj(task, :, :, gen) = (ObjMat(row, :, :, gen) - mean_task) ./ std_task;
         end
         row = row + 1;
     end
-    result.TableData(prob, :, 1) = score_temp;
+    for algo = 1:length(MTOData.Algorithms)
+        gen = size(MTOData.Results(prob, algo, 1).Obj, 2);
+        result.TableData(prob, algo, :) = mean(UObj(:, algo, :, end), 1);
+        for rep = 1:MTOData.Reps
+            result.ConvergeData.Y(prob, algo, rep, :) = mean(UObj(:, algo, rep, :), 1);
+            result.ConvergeData.X(prob, algo, rep, :) = [1:gen] ./ gen .* MTOData.Problems(prob).maxFE ./ MTOData.Problems(prob).T;
+        end
+    end
 end
 end
