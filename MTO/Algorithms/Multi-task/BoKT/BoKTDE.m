@@ -20,60 +20,47 @@ classdef BoKTDE < Algorithm
 %--------------------------------------------------------------------------
 
 properties (SetAccess = private)
-    sigma = 0.9
+    Sigma = 0.9
     F = 0.5
     CR = 0.7
 end
 
 methods
     function Parameter = getParameter(Algo)
-        Parameter = {'Sigma: Decay rate', num2str(Algo.sigma), ...
+        Parameter = {'Sigma: Decay rate', num2str(Algo.Sigma), ...
                 'F: Scale factor', num2str(Algo.F), ...
                 'CR: Crossover rate', num2str(Algo.CR)};
     end
 
     function setParameter(Algo, Parameter)
         i = 1;
-        Algo.sigma = str2double(Parameter{i}); i = i + 1;
+        Algo.Sigma = str2double(Parameter{i}); i = i + 1;
         Algo.F = str2double(Parameter{i}); i = i + 1;
         Algo.CR = str2double(Parameter{i}); i = i + 1;
     end
 
     function run(Algo, Prob)
-        % Initialize
-        ntask = Prob.T;
-        lambda = 0.5 * ones(1, ntask);
+        % Initialization
+        population = Initialization(Algo, Prob, Individual);
+        lambda = 0.5 * ones(1, Prob.T);
         dim = max(Prob.D);
-        pop = Initialization(Algo, Prob, Individual);
-        archive = cell(ntask, ntask);
-        for i = 1:ntask
-            [~, best_index] = min(pop{i}.Objs);
-            b_x = pop{i}(best_index);
-            for j = 1:ntask
-                if i == j
-                    archive{i, j} = b_x;
+        archive = cell(Prob.T, Prob.T);
+        for t = 1:Prob.T
+            [~, best_index] = min(population{t}.Objs);
+            b_x = population{t}(best_index);
+            for k = 1:Prob.T
+                if t == k
+                    archive{t, k} = b_x;
                 else
-                    Algo.Evaluation(b_x, Prob, j);
-                    archive{i, j} = b_x;
+                    Algo.Evaluation(b_x, Prob, k);
+                    archive{t, k} = b_x;
                 end
             end
         end
         task_center = {};
         task_best = {};
 
-        % save_gap = 10000;
-        % cur_gap = 0;
-
         while Algo.notTerminated(Prob)
-            % if Algo.FE >= cur_gap
-            %     data = [];
-            %     for t = 1:ntask
-            %         data = [data, min(pop{t}.Objs)];
-            %     end
-            %     disp(['fes:', num2str(Algo.FE), ' avgfit: ', num2str(mean(data))]);
-            %     cur_gap = cur_gap + save_gap;
-            % end
-
             case1 = 0;
             case2 = 0;
             case3 = 0;
@@ -81,106 +68,105 @@ methods
             total2 = 0;
             total3 = 0;
             % renew the archive
-            for t = 1:ntask
-                [~, best_index] = min(pop{t}.Objs);
-                b_x = pop{t}(best_index);
-                rt = randi(ntask);
+            for t = 1:Prob.T
+                [~, best_index] = min(population{t}.Objs);
+                b_x = population{t}(best_index);
+                rt = randi(Prob.T);
                 while rt == t
-                    rt = randi(ntask);
+                    rt = randi(Prob.T);
                 end
                 b_x = Algo.Evaluation(b_x, Prob, rt);
                 if b_x.Obj < archive{t, rt}.Obj
                     archive{t, rt} = b_x;
                 end
-                if b_x.Obj < min(pop{rt}.Objs)
-                    [~, rt_worst] = max(pop{rt}.Objs);
-                    pop{rt}(rt_worst) = b_x;
+                if b_x.Obj < min(population{rt}.Objs)
+                    [~, rt_worst] = max(population{rt}.Objs);
+                    population{rt}(rt_worst) = b_x;
                 end
             end
             % find task center and task best
-            for t = 1:ntask
-                task_center{t} = mean(pop{t}.Decs, 1);
-                [~, i_best] = min(pop{t}.Objs);
-                task_best{t} = pop{t}(i_best).Dec;
+            for t = 1:Prob.T
+                task_center{t} = mean(population{t}.Decs, 1);
+                [~, i_best] = min(population{t}.Objs);
+                task_best{t} = population{t}(i_best).Dec;
             end
 
-            pos_obj = zeros(ntask, ntask);
-            dis_obj = zeros(ntask, ntask);
-            pos_rank = zeros(ntask, ntask);
-            dis_rank = zeros(ntask, ntask);
+            pos_obj = zeros(Prob.T, Prob.T);
+            dis_obj = zeros(Prob.T, Prob.T);
+            pos_rank = zeros(Prob.T, Prob.T);
+            dis_rank = zeros(Prob.T, Prob.T);
             %pos rank
-            for i = 1:ntask
-                for j = 1:ntask
-                    if i == j
-                        pos_obj(j, i) = inf;
+            for t = 1:Prob.T
+                for k = 1:Prob.T
+                    if t == k
+                        pos_obj(k, t) = inf;
                     else
-                        pos_obj(j, i) = archive{j, i}.Obj;
+                        pos_obj(k, t) = archive{k, t}.Obj;
                     end
                 end
             end
-            for i = 1:ntask
-                [~, temp_rank] = sort(pos_obj(:, i), 'ascend');
-                for j = 1:ntask
-                    pos_rank(temp_rank(j), i) = j - 1;
+            for t = 1:Prob.T
+                [~, temp_rank] = sort(pos_obj(:, t), 'ascend');
+                for k = 1:Prob.T
+                    pos_rank(temp_rank(k), t) = k - 1;
                 end
             end
             %dis
             mean_list = {};
             cov_list = {};
-            for i = 1:ntask
-                cur_pop = pop{i}.Decs;
-                for j = 1:Prob.N
-                    cur_pop(j, :) = cur_pop(j, :) - task_center{i};
+            for t = 1:Prob.T
+                cur_population = population{t}.Decs;
+                for i = 1:Prob.N
+                    cur_population(i, :) = cur_population(i, :) - task_center{t};
                 end
-                mean_list{i} = mean(cur_pop)';
-                covi = cov(cur_pop);
-                cov_list{i} = covi;
+                mean_list{t} = mean(cur_population)';
+                covi = cov(cur_population);
+                cov_list{t} = covi;
             end
 
-            for i = 1:ntask
-                for j = i:ntask
-                    if i == j
-                        dis_obj(i, j) = inf;
+            for t = 1:Prob.T
+                for k = t:Prob.T
+                    if t == k
+                        dis_obj(t, k) = inf;
                     else
-                        dis_obj(i, j) = 0.5 * (mvgkl(mean_list{i}, mean_list{j}, cov_list{i}, cov_list{j}) + mvgkl(mean_list{j}, mean_list{i}, cov_list{j}, cov_list{i}));
-                        dis_obj(j, i) = dis_obj(i, j);
+                        dis_obj(t, k) = 0.5 * (mvgkl(mean_list{t}, mean_list{k}, cov_list{t}, cov_list{k}) + mvgkl(mean_list{k}, mean_list{t}, cov_list{k}, cov_list{t}));
+                        dis_obj(k, t) = dis_obj(t, k);
                     end
                 end
             end
 
-            for i = 1:ntask
-                [~, temp_rank] = sort(dis_obj(:, i), 'ascend');
-                for j = 1:ntask
-                    dis_rank(temp_rank(j), i) = j - 1;
+            for t = 1:Prob.T
+                [~, temp_rank] = sort(dis_obj(:, t), 'ascend');
+                for k = 1:Prob.T
+                    dis_rank(temp_rank(k), t) = k - 1;
                 end
             end
             %find non dominate task
             level1 = {};
-            for i = 1:ntask
-                obj1 = pos_obj(:, i);
-                obj2 = dis_obj(:, i);
+            for t = 1:Prob.T
+                obj1 = pos_obj(:, t);
+                obj2 = dis_obj(:, t);
                 cur_level1 = [];
-                for j = 1:length(obj1)
+                for i = 1:length(obj1)
                     mask = 0;
                     for z = 1:length(obj1)
-                        if z == j
+                        if z == i
                             continue;
                         end
-                        if ((obj1(z) <= obj1(j) && obj2(z) < obj2(j)) || (obj1(z) < obj1(j) && obj2(z) <= obj2(j)))
+                        if ((obj1(z) <= obj1(i) && obj2(z) < obj2(i)) || (obj1(z) < obj1(i) && obj2(z) <= obj2(i)))
                             mask = 1;
                         end
                     end
                     if mask == 0
-                        cur_level1 = [cur_level1, j];
+                        cur_level1 = [cur_level1, i];
                     end
                 end
-                level1{i} = cur_level1;
+                level1{t} = cur_level1;
             end
-            %%
             %evolutionary operation
-            for t = 1:ntask
-                Q = pop{t}.Decs;
-                childpop = pop{t};
+            for t = 1:Prob.T
+                Q = population{t}.Decs;
+                offspring = population{t};
                 strategy = 0;
                 rt = level1{t}(randi(length(level1{t})));
                 while rt == t
@@ -192,13 +178,13 @@ methods
                 elseif length(level1{t}) ~= 0
                     if pos_rank(rt, t) < dis_rank(rt, t)
                         strategy = 1;
-                        Q1 = pop{rt}.Decs;
+                        Q1 = population{rt}.Decs;
                         Q2 = [Q; Q1];
                     else
                         strategy = 2;
-                        Q1 = pop{rt}.Decs;
-                        for j = 1:Prob.N
-                            Q1(j, :) = Q1(j, :) - task_center{rt} + task_center{t};
+                        Q1 = population{rt}.Decs;
+                        for i = 1:Prob.N
+                            Q1(i, :) = Q1(i, :) - task_center{rt} + task_center{t};
                         end
                         Q2 = [Q; Q1];
                         q2m = mean(Q2, 1);
@@ -206,7 +192,7 @@ methods
                     end
                 end
 
-                for j = 1:Prob.N
+                for i = 1:Prob.N
                     if rand() < lambda(t) || strategy == 0
                         r1 = randi(size(Q, 1));
                         r2 = randi(size(Q, 1));
@@ -219,7 +205,7 @@ methods
                         x1 = Q(r1, :);
                         x2 = Q(r2, :);
                         x3 = Q(r3, :);
-                        xi = Q(j, :);
+                        xi = Q(i, :);
                         u = xi;
                         drand = randi(dim);
                         v = x1 + Algo.F * (x2 - x3);
@@ -244,7 +230,7 @@ methods
                             x1 = Q2(r1, :);
                             x2 = Q2(r2, :);
                             x3 = Q2(r3, :);
-                            xi = Q(j, :);
+                            xi = Q(i, :);
                             u = xi;
                             drand = randi(dim);
                             v = x1 + Algo.F * (pbest - x1) + Algo.F * (x2 - x3);
@@ -262,18 +248,18 @@ methods
                             total3 = total3 + 1;
                         end
                     end
-                    childpop(j).Dec = u;
-                    childpop(i).Dec(childpop(i).Dec > 1) = 1;
-                    childpop(i).Dec(childpop(i).Dec < 0) = 0;
+                    offspring(i).Dec = u;
+                    offspring(i).Dec(offspring(i).Dec > 1) = 1;
+                    offspring(i).Dec(offspring(i).Dec < 0) = 0;
                 end
 
                 % Evaluation
-                childpop = Algo.Evaluation(childpop, Prob, t);
-                childpop = [childpop, pop{t}];
-                [~, rank] = sort(childpop.Objs, 'ascend');
+                offspring = Algo.Evaluation(offspring, Prob, t);
+                offspring = [offspring, population{t}];
+                [~, rank] = sort(offspring.Objs, 'ascend');
 
                 for i = 1:Prob.N
-                    pop{t}(i) = childpop(rank(i));
+                    population{t}(i) = offspring(rank(i));
                     if rank(i) <= Prob.N
                         if mask(rank(i)) == 0
                             case1 = case1 + 1;
@@ -285,12 +271,12 @@ methods
                     end
                 end
 
-                task_center{t} = mean(pop{t}.Decs);
-                [~, i_best] = min(pop{t}.Objs);
-                task_best{t} = pop{t}(i_best).Dec;
+                task_center{t} = mean(population{t}.Decs);
+                [~, i_best] = min(population{t}.Objs);
+                task_best{t} = population{t}(i_best).Dec;
                 rate1 = case1 / (total1 +1e-10);
                 rate2 = (case2 + case3) / (total2 + total3 +1e-10);
-                lambda(t) = Algo.sigma * lambda(t) + (1 - Algo.sigma) * (rate1 / (rate2 + rate1));
+                lambda(t) = Algo.Sigma * lambda(t) + (1 - Algo.Sigma) * (rate1 / (rate2 + rate1));
             end
         end
     end
