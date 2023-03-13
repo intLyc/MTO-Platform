@@ -1,4 +1,4 @@
-classdef SBO < Algorithm
+classdef SBGA < Algorithm
 % <Many-task> <Single-objective> <None/Constrained>
 
 %------------------------------- Reference --------------------------------
