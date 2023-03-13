@@ -47,22 +47,23 @@ methods
         w = w ./ sum(w);
         % Number of effective solutions
         mu_eff = 1 / sum(w.^2);
+        D = max(Prob.D);
         for t = 1:Prob.T
             % Step size control parameters
-            cs{t} = (mu_eff + 2) / (Prob.D(t) + mu_eff + 5);
-            ds{t} = 1 + cs{t} + 2 * max(sqrt((mu_eff - 1) / (Prob.D(t) + 1)) - 1, 0);
-            ENN{t} = sqrt(Prob.D(t)) * (1 - 1 / (4 * Prob.D(t)) + 1 / (21 * Prob.D(t)^2));
+            cs{t} = (mu_eff + 2) / (D + mu_eff + 5);
+            ds{t} = 1 + cs{t} + 2 * max(sqrt((mu_eff - 1) / (D + 1)) - 1, 0);
+            ENN{t} = sqrt(D) * (1 - 1 / (4 * D) + 1 / (21 * D^2));
             % Covariance update parameters
-            cc{t} = (4 + mu_eff / Prob.D(t)) / (4 + Prob.D(t) + 2 * mu_eff / Prob.D(t));
-            c1{t} = 2 / ((Prob.D(t) + 1.3)^2 + mu_eff);
-            cmu{t} = min(1 - c1{t}, 2 * (mu_eff - 2 + 1 / mu_eff) / ((Prob.D(t) + 2)^2 + 2 * mu_eff / 2));
-            hth{t} = (1.4 + 2 / (Prob.D(t) + 1)) * ENN{t};
+            cc{t} = (4 + mu_eff / D) / (4 + D + 2 * mu_eff / D);
+            c1{t} = 2 / ((D + 1.3)^2 + mu_eff);
+            cmu{t} = min(1 - c1{t}, 2 * (mu_eff - 2 + 1 / mu_eff) / ((D + 2)^2 + 2 * mu_eff / 2));
+            hth{t} = (1.4 + 2 / (D + 1)) * ENN{t};
             % Initialization
-            Mdec{t} = unifrnd(zeros(1, Prob.D(t)), ones(1, Prob.D(t)));
-            ps{t} = zeros(1, Prob.D(t));
-            pc{t} = zeros(1, Prob.D(t));
-            C{t} = eye(Prob.D(t));
-            sigma{t} = 0.1 * ones(1, Prob.D(t));
+            Mdec{t} = unifrnd(zeros(1, D), ones(1, D));
+            ps{t} = zeros(1, D);
+            pc{t} = zeros(1, D);
+            C{t} = eye(D);
+            sigma{t} = 0.1 * ones(1, D);
         end
 
         % Initialization
@@ -92,10 +93,10 @@ methods
                 t_idx = [population.MFFactor] == t;
                 find_idx = find(t_idx);
                 % Sample solutions
-                Pstep{t} = zeros(Prob.N, Prob.D(t));
+                Pstep{t} = zeros(Prob.N, D);
                 for i = 1:Prob.N
                     offspring_t(i) = IndividualSBO();
-                    Pstep{t}(i, :) = mvnrnd(zeros(1, Prob.D(t)), C{t});
+                    Pstep{t}(i, :) = mvnrnd(zeros(1, D), C{t});
                     offspring_t(i).Dec = Mdec{t} + sigma{t} .* Pstep{t}(i, :);
                     offspring_t(i).Dec(offspring_t(i).Dec > 1) = 1;
                     offspring_t(i).Dec(offspring_t(i).Dec < 0) = 0;
