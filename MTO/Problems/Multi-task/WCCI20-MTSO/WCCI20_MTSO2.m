@@ -11,7 +11,7 @@ classdef WCCI20_MTSO2 < Problem
     methods
         function Prob = WCCI20_MTSO2(varargin)
             Prob = Prob@Problem(varargin);
-            Prob.maxFE = 1000 * 100;
+            Prob.maxFE = 1000 * 200;
         end
 
         function setTasks(Prob)
