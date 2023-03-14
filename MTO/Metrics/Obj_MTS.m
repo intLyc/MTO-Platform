@@ -72,7 +72,7 @@ for prob = 1:length(MTOData.Problems)
         result.TableData(prob, algo, :) = mean(UObj(:, algo, :, end), 1);
         for rep = 1:MTOData.Reps
             result.ConvergeData.Y(prob, algo, rep, :) = mean(UObj(:, algo, rep, :), 1);
-            result.ConvergeData.X(prob, algo, rep, :) = [1:gen] ./ gen .* MTOData.Problems(prob).maxFE ./ MTOData.Problems(prob).T;
+            result.ConvergeData.X(prob, algo, rep, :) = [1:gen] ./ gen .* MTOData.Problems(prob).maxFE;
         end
     end
 end
