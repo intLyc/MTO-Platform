@@ -16,8 +16,9 @@ Con = 0;
 end
 
 function Gfunction = evalGfunction(shiftVector, rotationMatrix, x, gType, Lb, Ub)
-x = x * rotationMatrix;
-x = x - shiftVector;
+
+x = (rotationMatrix * (x - shiftVector)')';
+
 % Check Boundary
 x(x < Lb) = Lb(x < Lb);
 x(x > Ub) = Ub(x > Ub);
