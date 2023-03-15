@@ -40,30 +40,31 @@ methods
     end
 
     function run(Algo, Prob)
-        % Number of parents
-        mu = round(Prob.N / 2);
-        % Parent weights
-        w = log(mu + 0.5) - log(1:mu);
-        w = w ./ sum(w);
-        % Number of effective solutions
-        mu_eff = 1 / sum(w.^2);
         D = max(Prob.D);
+        mu = round(Prob.N / 2); % effective solutions number
+        weights = log(mu + 0.5) - log(1:mu);
+        weights = weights ./ sum(weights); % weights
+        mueff = 1 / sum(weights.^2); % variance effective selection mass
+        chiN = sqrt(D) * (1 - 1 / (4 * D) + 1 / (21 * D^2));
+        hth = (1.4 + 2 / (D + 1)) * chiN;
         for t = 1:Prob.T
             % Step size control parameters
-            cs{t} = (mu_eff + 2) / (D + mu_eff + 5);
-            ds{t} = 1 + cs{t} + 2 * max(sqrt((mu_eff - 1) / (D + 1)) - 1, 0);
-            ENN{t} = sqrt(D) * (1 - 1 / (4 * D) + 1 / (21 * D^2));
+            cs{t} = (mueff + 2) / (D + mueff + 5);
+            damps{t} = 1 + cs{t} + 2 * max(sqrt((mueff - 1) / (D + 1)) - 1, 0);
             % Covariance update parameters
-            cc{t} = (4 + mu_eff / D) / (4 + D + 2 * mu_eff / D);
-            c1{t} = 2 / ((D + 1.3)^2 + mu_eff);
-            cmu{t} = min(1 - c1{t}, 2 * (mu_eff - 2 + 1 / mu_eff) / ((D + 2)^2 + 2 * mu_eff / 2));
-            hth{t} = (1.4 + 2 / (D + 1)) * ENN{t};
+            cc{t} = (4 + mueff / D) / (4 + D + 2 * mueff / D);
+            c1{t} = 2 / ((D + 1.3)^2 + mueff);
+            cmu{t} = min(1 - c1{t}, 2 * (mueff - 2 + 1 / mueff) / ((D + 2)^2 + 2 * mueff / 2));
             % Initialization
-            Mdec{t} = unifrnd(zeros(1, D), ones(1, D));
-            ps{t} = zeros(1, D);
-            pc{t} = zeros(1, D);
-            C{t} = eye(D);
-            sigma{t} = 0.1 * ones(1, D);
+            mDec{t} = unifrnd(zeros(1, D), ones(1, D));
+            ps{t} = zeros(D, 1);
+            pc{t} = zeros(D, 1);
+            MB{t} = eye(D, D);
+            MD{t} = ones(D, 1);
+            C{t} = MB{t} * diag(MD{t}.^2) * MB{t}';
+            invsqrtC{t} = MB{t} * diag(MD{t}.^-1) * MB{t}';
+            sigma{t} = 0.1;
+            eigenFE{t} = 0;
         end
 
         % Initialization
@@ -93,14 +94,11 @@ methods
                 t_idx = [population.MFFactor] == t;
                 find_idx = find(t_idx);
                 % Sample solutions
-                Pstep{t} = zeros(Prob.N, D);
                 for i = 1:Prob.N
                     offspring_t(i) = IndividualSBO();
-                    Pstep{t}(i, :) = mvnrnd(zeros(1, D), C{t});
-                    offspring_t(i).Dec = Mdec{t} + sigma{t} .* Pstep{t}(i, :);
+                    offspring_t(i).Dec = mDec{t} + sigma{t} * (MB{t} * (MD{t} .* randn(D, 1)))';
                     offspring_t(i).Dec(offspring_t(i).Dec > 1) = 1;
                     offspring_t(i).Dec(offspring_t(i).Dec < 0) = 0;
-                    Pstep{t}(i, :) = (offspring_t(i).Dec - Mdec{t}) ./ sigma{t};
 
                     offspring_t(i).MFFactor = t;
                     offspring_t(i).BelongT = t;
@@ -137,22 +135,27 @@ methods
                     offspring(find_idx(rank(i))).rankC = i;
                 end
 
-                % Update mean
-                Pstep{t} = Pstep{t}(rank(1:mu), :);
-                Mstep = w * Pstep{t};
-                Mdec{t} = Mdec{t} + sigma{t} .* Mstep;
-                % Update parameters
-                ps{t} = (1 - cs{t}) * ps{t} + sqrt(cs{t} * (2 - cs{t}) * mu_eff) * Mstep / chol(C{t})';
-                sigma{t} = sigma{t} * exp(cs{t} / ds{t} * (norm(ps{t}) / ENN{t} - 1))^0.3;
-                hs = norm(ps{t}) / sqrt(1 - (1 - cs{t})^(2 * (ceil((Algo.FE - (t - 1) * Prob.N) / (Prob.N * Prob.T)) + 1))) < hth{t};
-                delta = (1 - hs) * cc{t} * (2 - cc{t});
-                pc{t} = (1 - cc{t}) * pc{t} + hs * sqrt(cc{t} * (2 - cc{t}) * mu_eff) * Mstep;
-                C{t} = (1 - c1{t} - cmu{t}) * C{t} + c1{t} * (pc{t}' * pc{t} + delta * C{t}) + cmu{t} * Pstep{t}' * diag(w) * Pstep{t};
+                offspring_t = offspring(t_idx);
+                % Update mean decision variables
+                oldDec = mDec{t};
+                mDec{t} = weights * offspring_t(rank(1:mu)).Decs;
+                % Update evolution paths
+                ps{t} = (1 - cs{t}) * ps{t} + sqrt(cs{t} * (2 - cs{t}) * mueff) * invsqrtC{t} * (mDec{t} - oldDec)' / sigma{t};
+                hsig = norm(ps{t}) / sqrt(1 - (1 - cs{t})^(2 * (ceil((Algo.FE - Prob.N * (t - 1)) / (Prob.N * Prob.T)) + 1))) < hth;
+                pc{t} = (1 - cc{t}) * pc{t} + hsig * sqrt(cc{t} * (2 - cc{t}) * mueff) * (mDec{t} - oldDec)' / sigma{t};
+                % Update covariance matrix
+                artmp = (offspring_t(rank(1:mu)).Decs - repmat(oldDec, mu, 1))' / sigma{t};
+                delta = (1 - hsig) * cc{t} * (2 - cc{t});
+                C{t} = (1 - c1{t} - cmu{t}) * C{t} + c1{t} * (pc{t} * pc{t}' + delta * C{t}) + cmu{t} * artmp * diag(weights) * artmp';
+                % Update step size
+                sigma{t} = sigma{t} * exp(cs{t} / damps{t} * (norm(ps{t}) / chiN - 1))^0.3;
 
-                C{t} = triu(C{t}) + triu(C{t}, 1)';
-                [V, E] = eig(C{t});
-                if any(diag(E) < 0)
-                    C{t} = V * max(E, 0) / V;
+                if (Algo.FE - Prob.N * (t - 1)) - eigenFE{t} > (Prob.N * Prob.T) / (c1{t} + cmu{t}) / D / 10 % to achieve O(N^2)
+                    eigenFE{t} = Algo.FE;
+                    C{t} = triu(C{t}) + triu(C{t}, 1)'; % enforce symmetry
+                    [MB{t}, MD{t}] = eig(C{t}); % eigen decomposition, B==normalized eigenvectors
+                    MD{t} = sqrt(diag(MD{t})); % D contains standard deviations now
+                    invsqrtC{t} = MB{t} * diag(MD{t}.^-1) * MB{t}';
                 end
 
                 % selection
