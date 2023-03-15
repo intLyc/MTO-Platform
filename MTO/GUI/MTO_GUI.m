@@ -2678,19 +2678,6 @@ classdef MTO_GUI < matlab.apps.AppBase
                     title(ax, strrep(app.EUITable.RowName(prob_list(i)), '_', '\_'))
                     grid(ax, 'on');
                 elseif M == 3
-                    %                     if ~isempty(app.EResultParetoData.Optimum)
-                    %                         % draw optimum
-                    %                         x = squeeze(app.EResultParetoData.Optimum{prob_list(i)}(:, 1));
-                    %                         y = squeeze(app.EResultParetoData.Optimum{prob_list(i)}(:, 2));
-                    %                         z = squeeze(app.EResultParetoData.Optimum{prob_list(i)}(:, 3));
-                    %                         s = scatter3(ax, x, y, z);
-                    %                         s.MarkerEdgeColor = 'none';
-                    %                         s.MarkerFaceAlpha = 0.65;
-                    %                         s.MarkerFaceColor = [.2,.2,.2];
-                    %                         s.SizeData = 5;
-                    %                         hold(ax, 'on');
-                    %                     end
-                    
                     % draw each algorithm
                     color_list = colororder;
                     for j = 1:length(algo_list)
@@ -2712,13 +2699,48 @@ classdef MTO_GUI < matlab.apps.AppBase
                     ylabel(ax, '$f_2$', 'interpreter', 'latex');
                     zlabel(ax, '$f_3$', 'interpreter', 'latex');
                     
-                    %                     if ~isempty(app.EResultParetoData.Optimum)
-                    %                         legend(ax, ['Pareto Front'; strrep(app.EUITable.ColumnName(algo_list), '_', '\_')], 'Location', 'best');
-                    %                     else
-                    legend(ax, strrep(app.EUITable.ColumnName(algo_list), '_', '\_'), 'Location', 'best');
-                    %                     end
+                    if length(algo_list) > 1
+                        legend(ax, strrep(app.EUITable.ColumnName(algo_list), '_', '\_'), 'Location', 'best');
+                    end
                     title(ax, strrep(app.EUITable.RowName(prob_list(i)), '_', '\_'))
                     view(ax,[135 30]);
+                    grid(ax, 'on');
+                else % M > 3
+                    % draw each algorithm
+                    color_list = colororder;
+                    min_data = []; max_data = [];
+                    for j = 1:size(app.EResultTableData, 2)
+                        metric_data = squeeze(app.EResultTableData(prob_list(i), j, :));
+                        [~, rank] = sort(metric_data);
+                        mid_idx = rank(ceil(end / 2));
+                        
+                        data = app.EResultParetoData.Obj{prob_list(i), j, mid_idx};
+                        min_data = min([data; min_data],[],1);
+                        max_data = max([data; max_data],[],1);
+                    end
+                    for j = 1:length(algo_list)
+                        metric_data = squeeze(app.EResultTableData(prob_list(i), algo_list(j), :));
+                        [~, rank] = sort(metric_data);
+                        mid_idx = rank(ceil(end / 2));
+                        
+                        % Unify
+                        data = app.EResultParetoData.Obj{prob_list(i), algo_list(j), mid_idx};
+                        data = (data - min_data) ./ (max_data - min_data);
+                        for k = 1:size(app.EResultParetoData.Obj{prob_list(i), algo_list(j), mid_idx}, 1)
+                            p(j) = plot(ax, data(k,:));
+                            p(j).Color = color_list(j,:);
+                            p(j).LineWidth = 1.5;
+                            hold(ax, 'on');
+                        end
+                    end
+                    
+                    ylim([0,1]);
+                    xlabel(ax, 'Dimension', 'interpreter', 'latex');
+                    ylabel(ax, 'Unified $f$', 'interpreter', 'latex');
+                    if length(algo_list) > 1
+                        legend(ax, p, strrep(app.EUITable.ColumnName(algo_list), '_', '\_'), 'Location', 'best');
+                    end
+                    title(ax, strrep(app.EUITable.RowName(prob_list(i)), '_', '\_'))
                     grid(ax, 'on');
                 end
             end
