@@ -1620,10 +1620,10 @@ classdef MTO_GUI < matlab.apps.AppBase
                 % save temporary data
                 MTOData.Results = MakeGenEqual(Results);
                 MTOData.Problems = problems_temp(1:prob);
-                % save('MTOData_Temp', 'MTOData');
+                save('MTOData_Temp', 'MTOData');
                 app.EData = MTOData;
             end
-            save('MTOData_Temp', 'MTOData');
+%             save('MTOData_Temp', 'MTOData');
             
             tEnd = toc(tStart);
             msg = ['All Use Time: ', char(duration([0, 0, tEnd]))];
