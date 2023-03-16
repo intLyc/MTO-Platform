@@ -1,5 +1,5 @@
 classdef MTEA_AD < Algorithm
-% <Multi-task> <Single-objective> <None/Constrained>
+% <Multi-task/Many-task> <Single-objective> <None/Constrained>
 
 %------------------------------- Reference --------------------------------
 % @Article{Wang2021MTEA-AD,
