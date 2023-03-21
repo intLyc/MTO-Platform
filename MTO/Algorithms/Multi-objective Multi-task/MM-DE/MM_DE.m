@@ -73,14 +73,14 @@ methods
                 % calculate individual F and CR
                 for i = 1:length(population{t})
                     population{t}(i).F = cauchyrnd(uF{t}, 0.1);
-                    while (population{t}(i).F <= 0.1)
+                    while (population{t}(i).F <= 0)
                         population{t}(i).F = cauchyrnd(uF{t}, 0.1);
                     end
                     population{t}(i).F(population{t}(i).F > 1) = 1;
 
                     population{t}(i).CR = normrnd(uCR{t}, 0.1);
                     population{t}(i).CR(population{t}(i).CR > 1) = 1;
-                    population{t}(i).CR(population{t}(i).CR < 0.1) = 0.1;
+                    population{t}(i).CR(population{t}(i).CR < 0) = 0;
                 end
 
                 % Generation
