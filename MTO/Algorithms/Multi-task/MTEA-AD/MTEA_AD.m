@@ -57,11 +57,11 @@ methods
                         NL = epsilon(t);
                     end
 
+                    kpool = 1:Prob.T; kpool(kpool == t) = [];
+                    kpool = kpool(randperm(Prob.T - 1, min(Prob.T - 1, 10))); % Reduce time complexity in many-task
                     his_pop_dec = [];
-                    for k = 1:Prob.T
-                        if k ~= t
-                            his_pop_dec = [his_pop_dec; population{k}.Decs];
-                        end
+                    for k = kpool
+                        his_pop_dec = [his_pop_dec; population{k}.Decs];
                     end
 
                     tfsol = Algo.learn_anomaly_detection(offspring.Decs, his_pop_dec, NL);
