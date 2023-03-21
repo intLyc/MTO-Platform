@@ -34,8 +34,8 @@ for prob = 1:length(MTOData.Problems)
         Obj = zeros(MTOData.Reps, MTOData.Problems(prob).T, gen);
         CV = zeros(MTOData.Reps, MTOData.Problems(prob).T, gen);
         for rep = 1:MTOData.Reps
-            Obj(rep, :, :) = MTOData.Results(prob, algo, rep).Obj(1:MTOData.Problems(prob).T, :);
-            CV(rep, :, :) = MTOData.Results(prob, algo, rep).CV(1:MTOData.Problems(prob).T, :);
+            Obj(rep, 1:MTOData.Problems(prob).T, :) = MTOData.Results(prob, algo, rep).Obj(1:MTOData.Problems(prob).T, :);
+            CV(rep, 1:MTOData.Problems(prob).T, :) = MTOData.Results(prob, algo, rep).CV(1:MTOData.Problems(prob).T, :);
         end
         Obj(CV > 0) = NaN;
         AObj = squeeze(mean(Obj, 2));
