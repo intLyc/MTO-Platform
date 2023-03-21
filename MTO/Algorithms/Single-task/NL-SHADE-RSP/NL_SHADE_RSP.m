@@ -1,5 +1,5 @@
-classdef LSHADE < Algorithm
-% <Single-task> <Single-objective> <None/Constrained>
+classdef NL_SHADE_RSP < Algorithm
+% <Single-task> <Single-objective> <None>
 
 %------------------------------- Reference --------------------------------
 % @InProceedings{Tanabe2014LSHADE,
@@ -20,23 +20,29 @@ classdef LSHADE < Algorithm
 %--------------------------------------------------------------------------
 
 properties (SetAccess = private)
-    P = 0.1
-    H = 100
+    Pmax = 0.4
+    Pmin = 0.2
+    H = 5
     R = 18
+    A = 2.1
 end
 
 methods
     function Parameter = getParameter(Algo)
-        Parameter = {'P: 100p% top as pbest', num2str(Algo.P), ...
+        Parameter = {'Pmax: max of 100p% top as pbest', num2str(Algo.Pmax), ...
+                'Pmin: min of 100p% top as pbest', num2str(Algo.Pmin), ...
                 'H: success memory size', num2str(Algo.H), ...
-                'R: multiplier of init pop size', num2str(Algo.R)};
+                'R: multiplier of init pop size', num2str(Algo.R), ...
+                'A: archive size', num2str(Algo.A)};
     end
 
     function Algo = setParameter(Algo, Parameter)
         i = 1;
-        Algo.P = str2double(Parameter{i}); i = i + 1;
+        Algo.Pmax = str2double(Parameter{i}); i = i + 1;
+        Algo.Pmin = str2double(Parameter{i}); i = i + 1;
         Algo.H = str2double(Parameter{i}); i = i + 1;
         Algo.R = str2double(Parameter{i}); i = i + 1;
+        Algo.A = str2double(Parameter{i}); i = i + 1;
     end
 
     function run(Algo, Prob)
@@ -50,42 +56,58 @@ methods
             MF{t} = 0.5 .* ones(Algo.H, 1);
             MCR{t} = 0.5 .* ones(Algo.H, 1);
             archive{t} = Individual_DE.empty();
+            pA(t) = 0.5;
         end
 
         while Algo.notTerminated(Prob)
             for t = 1:Prob.T
-                N = round((Nmin - Ninit(t)) / Prob.maxFE * Algo.FE + Ninit(t));
+                N = round((Nmin - Ninit(t)) * (Algo.FE / Prob.maxFE)^(1 - Algo.FE / Prob.maxFE) + Ninit(t));
+                P = round((Algo.Pmin - Algo.Pmax) / Prob.maxFE * Algo.FE + Algo.Pmax);
                 % Calculate individual F and CR
+                Fpool = []; CRpool = [];
                 for i = 1:length(population{t})
                     idx = randi(Algo.H);
                     uF = MF{t}(idx);
-                    population{t}(i).F = uF + 0.1 * tan(pi * (rand() - 0.5));
-                    while (population{t}(i).F <= 0)
-                        population{t}(i).F = uF + 0.1 * tan(pi * (rand() - 0.5));
+                    Fpool(i) = uF + 0.1 * tan(pi * (rand() - 0.5));
+                    while (Fpool(i) <= 0)
+                        Fpool(i) = uF + 0.1 * tan(pi * (rand() - 0.5));
                     end
-                    population{t}(i).F(population{t}(i).F > 1) = 1;
-
                     uCR = MCR{t}(idx);
-                    population{t}(i).CR = normrnd(uCR, 0.1);
-                    population{t}(i).CR(population{t}(i).CR > 1) = 1;
-                    population{t}(i).CR(population{t}(i).CR < 0) = 0;
+                    CRpool(i) = normrnd(uCR, 0.1);
+                end
+                Fpool(Fpool > 1) = 1;
+                CRpool(CRpool > 1) = 1;
+                CRpool(CRpool < 0) = 0;
+                [~, rank] = sort(population{t}.Objs);
+                population{t} = population{t}(rank);
+                [~, rank] = sort(CRpool);
+                CRpool = CRpool(rank);
+                for i = 1:length(population{t})
+                    population{t}(i).F = Fpool(i);
+                    population{t}(i).CR = CRpool(i);
+                end
+                if Algo.FE < 0.5 * Prob.maxFE
+                    CRb = 0;
+                else
+                    CRb = 2 * (Algo.FE - 0.5) / Prob.maxFE;
                 end
 
                 % Generation
-                union = [population{t}, archive{t}];
-                offspring = Algo.Generation(population{t}, union);
+                [offspring, arc_flag] = Algo.Generation(population{t}, archive{t}, P, pA(t), CRb);
                 % Evaluation
                 offspring = Algo.Evaluation(offspring, Prob, t);
                 % Selection
                 [~, replace] = Selection_Tournament(population{t}, offspring);
 
+                % Calculate probability of archive use
+                delta_fa = mean(population{t}(replace & arc_flag).Objs' - offspring(replace & arc_flag).Objs');
+                delta_fp = mean(population{t}(replace & ~arc_flag).Objs' - offspring(replace & ~arc_flag).Objs');
+                pA(t) = min(0.9, max(0.1, delta_fa / (delta_fa + delta_fp)));
+
                 % Calculate SF SCR
                 SF = [population{t}(replace).F];
                 SCR = [population{t}(replace).CR];
-                dif = population{t}(replace).CVs' - offspring(replace).CVs';
-                dif_obj = population{t}(replace).Objs' - offspring(replace).Objs';
-                dif_obj(dif_obj < 0) = 0;
-                dif(dif <= 0) = dif_obj(dif <= 0);
+                dif = population{t}(replace).Objs' - offspring(replace).Objs';
                 dif = dif ./ sum(dif);
                 % update MF MCR
                 if ~isempty(SF)
@@ -99,26 +121,27 @@ methods
 
                 % Update archive
                 archive{t} = [archive{t}, population{t}(replace)];
-                if length(archive{t}) > N
-                    archive{t} = archive{t}(randperm(length(archive{t}), N));
+                if length(archive{t}) > round(Algo.A * N)
+                    archive{t} = archive{t}(randperm(length(archive{t}), round(Algo.A * N)));
                 end
 
                 population{t}(replace) = offspring(replace);
 
                 % Linear Population Size Reduction
                 if length(population{t}) > N
-                    [~, rank] = sortrows([population{t}.CVs, population{t}.Objs], [1, 2]);
+                    [~, rank] = sort(population{t}.Objs);
                     population{t} = population{t}(rank(1:N));
                 end
             end
         end
     end
 
-    function offspring = Generation(Algo, population, union)
+    function [offspring, arc_flag] = Generation(Algo, population, archive, P, pA, CRb)
         % get top 100p% individuals
-        [~, rank] = sortrows([population.CVs, population.Objs], [1, 2]);
-        pop_pbest = rank(1:max(round(Algo.P * length(population)), 1));
+        [~, rank] = sort(population.Objs);
+        pop_pbest = rank(1:max(round(P * length(population)), 1));
 
+        arc_flag = false(1, length(population));
         for i = 1:length(population)
             offspring(i) = population(i);
 
@@ -127,15 +150,28 @@ methods
             while x1 == i || x1 == pbest
                 x1 = randi(length(population));
             end
-            x2 = randi(length(union));
-            while x2 == i || x2 == x1 || x2 == pbest
-                x2 = randi(length(union));
+
+            if ~isempty(archive) && rand() < pA % use archive
+                arc_flag(i) = true;
+                x2 = randi(length(archive));
+                offspring(i).Dec = population(i).Dec + ...
+                    population(i).F * (population(pbest).Dec - population(i).Dec) + ...
+                    population(i).F * (population(x1).Dec - archive(x2).Dec);
+            else
+                x2 = randi(length(population));
+                while x2 == i || x2 == x1 || x2 == pbest
+                    x2 = randi(length(population));
+                end
+                offspring(i).Dec = population(i).Dec + ...
+                    population(i).F * (population(pbest).Dec - population(i).Dec) + ...
+                    population(i).F * (population(x1).Dec - population(x2).Dec);
             end
 
-            offspring(i).Dec = population(i).Dec + ...
-                population(i).F * (population(pbest).Dec - population(i).Dec) + ...
-                population(i).F * (population(x1).Dec - union(x2).Dec);
-            offspring(i).Dec = DE_Crossover(offspring(i).Dec, population(i).Dec, population(i).CR);
+            if rand() < 0.5
+                offspring(i).Dec = DE_Crossover(offspring(i).Dec, population(i).Dec, CRb);
+            else
+                offspring(i).Dec = DE_Crossover_Exp(offspring(i).Dec, population(i).Dec, population(i).CR);
+            end
 
             % offspring(i).Dec(offspring(i).Dec > 1) = 1;
             % offspring(i).Dec(offspring(i).Dec < 0) = 0;

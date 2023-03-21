@@ -23,13 +23,15 @@ properties (SetAccess = private)
     P = 0.2
     H = 10
     R = 18
+    A = 2.1
 end
 
 methods
     function Parameter = getParameter(Algo)
         Parameter = {'P: 100p% top as pbest', num2str(Algo.P), ...
                 'H: success memory size', num2str(Algo.H), ...
-                'R: multiplier of init pop size', num2str(Algo.R)};
+                'R: multiplier of init pop size', num2str(Algo.R), ...
+                'A: archive size', num2str(Algo.A)};
     end
 
     function Algo = setParameter(Algo, Parameter)
@@ -37,6 +39,7 @@ methods
         Algo.P = str2double(Parameter{i}); i = i + 1;
         Algo.H = str2double(Parameter{i}); i = i + 1;
         Algo.R = str2double(Parameter{i}); i = i + 1;
+        Algo.A = str2double(Parameter{i}); i = i + 1;
     end
 
     function run(Algo, Prob)
@@ -124,8 +127,8 @@ methods
                 end
 
                 archive{t} = [archive{t}, population{t}(replace)];
-                if length(archive{t}) > N
-                    archive{t} = archive{t}(randperm(length(archive{t}), N));
+                if length(archive{t}) > round(Algo.A * N)
+                    archive{t} = archive{t}(randperm(length(archive{t}), round(Algo.A * N)));
                 end
 
                 population{t}(replace) = offspring(replace);
