@@ -2,13 +2,13 @@ classdef NL_SHADE_RSP < Algorithm
 % <Single-task> <Single-objective> <None>
 
 %------------------------------- Reference --------------------------------
-% @InProceedings{Tanabe2014LSHADE,
-%   title     = {Improving the Search Performance of Shade Using Linear Population Size Reduction},
-%   author    = {Tanabe, Ryoji and Fukunaga, Alex S.},
-%   booktitle = {2014 IEEE Congress on Evolutionary Computation (CEC)},
-%   year      = {2014},
-%   pages     = {1658-1665},
-%   doi       = {10.1109/CEC.2014.6900380},
+% @InProceedings{Stanovov2021NL-SHADE-RSP,
+%   title      = {NL-SHADE-RSP Algorithm with Adaptive Archive and Selective Pressure for CEC 2021 Numerical Optimization},
+%   author     = {Stanovov, Vladimir and Akhmedova, Shakhnaz and Semenkin, Eugene},
+%   booktitle  = {2021 IEEE Congress on Evolutionary Computation (CEC)},
+%   year       = {2021},
+%   pages      = {809-816},
+%   doi        = {10.1109/CEC45853.2021.9504959},
 % }
 %--------------------------------------------------------------------------
 
