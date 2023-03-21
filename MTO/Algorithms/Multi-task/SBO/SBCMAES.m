@@ -56,7 +56,6 @@ methods
             c1{t} = 2 / ((D + 1.3)^2 + mueff);
             cmu{t} = min(1 - c1{t}, 2 * (mueff - 2 + 1 / mueff) / ((D + 2)^2 + 2 * mueff / 2));
             % Initialization
-            mDec{t} = unifrnd(zeros(1, D), ones(1, D));
             ps{t} = zeros(D, 1);
             pc{t} = zeros(D, 1);
             MB{t} = eye(D, D);
@@ -77,6 +76,7 @@ methods
                 population_temp{t}(rank(i)).MFFactor = t;
                 population_temp{t}(rank(i)).BelongT = t;
             end
+            mDec{t} = weights * population_temp{t}(rank(1:mu)).Decs;
             population = [population, population_temp{t}];
         end
 
