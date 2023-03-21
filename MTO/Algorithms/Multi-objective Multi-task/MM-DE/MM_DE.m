@@ -76,10 +76,10 @@ methods
                     while (population{t}(i).F <= 0.1)
                         population{t}(i).F = cauchyrnd(uF{t}, 0.1);
                     end
-                    population{t}(i).F(population{t}(i).F > 2) = 2;
+                    population{t}(i).F(population{t}(i).F > 1) = 1;
 
                     population{t}(i).CR = normrnd(uCR{t}, 0.1);
-                    population{t}(i).CR(population{t}(i).CR > 0.9) = 0.9;
+                    population{t}(i).CR(population{t}(i).CR > 1) = 1;
                     population{t}(i).CR(population{t}(i).CR < 0.1) = 0.1;
                 end
 
@@ -181,7 +181,7 @@ methods
 
             % Decision Variables Mutation and Crossover
             offspring(i).Dec = population(i).Dec + ...
-            population(i).F * (population(rbest).Dec - population(i).Dec) + ...
+                population(i).F * (population(rbest).Dec - population(i).Dec) + ...
                 population(i).F * (population(x1).Dec - population(x2).Dec);
             offspring(i).Dec = DE_Crossover(offspring(i).Dec, population(i).Dec, population(i).CR);
 
@@ -194,7 +194,7 @@ methods
 
             % Region Mutation and Crossover
             offspring(i).Reg = population(i).Reg + ...
-            population(i).F * (population(rbest).Reg - population(i).Reg) + ...
+                population(i).F * (population(rbest).Reg - population(i).Reg) + ...
                 population(i).F * (population(x1).Reg - population(x2).Reg);
             offspring(i).Reg = DE_Crossover(offspring(i).Reg, population(i).Reg, population(i).CR);
 
