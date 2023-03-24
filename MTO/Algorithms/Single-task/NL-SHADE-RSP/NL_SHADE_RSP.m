@@ -47,11 +47,10 @@ methods
 
     function run(Algo, Prob)
         % Initialization
-        population = Initialization(Algo, Prob, Individual_DE);
         Nmin = 4;
         for t = 1:Prob.T
-            % initialize Parameter
             Ninit(t) = round(Algo.R .* Prob.D(t));
+            population{t} = Initialization_One(Algo, Prob, t, Individual_DE, Ninit(t));
             Hidx{t} = 1;
             MF{t} = 0.5 .* ones(Algo.H, 1);
             MCR{t} = 0.5 .* ones(Algo.H, 1);

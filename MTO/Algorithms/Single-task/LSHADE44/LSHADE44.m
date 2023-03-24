@@ -44,14 +44,13 @@ methods
 
     function run(Algo, Prob)
         % Initialization
-        population = Initialization(Algo, Prob, Individual_DE44);
         Nmin = 4;
-        % initialize Parameter
         STNum = 4;
         n0 = 2;
         delta = 1 / (5 * STNum);
         for t = 1:Prob.T
             Ninit(t) = round(Algo.R .* Prob.D(t));
+            population{t} = Initialization_One(Algo, Prob, t, Individual_DE44, Ninit(t));
             STRecord{t} = zeros(1, STNum) + n0;
             for k = 1:STNum
                 Hidx{t, k} = 1;
