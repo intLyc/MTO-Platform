@@ -97,8 +97,6 @@ methods
                 for i = 1:Prob.N
                     offspring_t(i) = IndividualSBO();
                     offspring_t(i).Dec = mDec{t} + sigma{t} * (MB{t} * (MD{t} .* randn(D, 1)))';
-                    offspring_t(i).Dec(offspring_t(i).Dec > 1) = 1;
-                    offspring_t(i).Dec(offspring_t(i).Dec < 0) = 0;
 
                     offspring_t(i).MFFactor = t;
                     offspring_t(i).BelongT = t;
@@ -154,6 +152,9 @@ methods
                     eigenFE{t} = Algo.FE;
                     C{t} = triu(C{t}) + triu(C{t}, 1)'; % enforce symmetry
                     [MB{t}, MD{t}] = eig(C{t}); % eigen decomposition, B==normalized eigenvectors
+                    if min(diag(MD{t})) < 0
+                        error('The covariance matrix is not positive definite!')
+                    end
                     MD{t} = sqrt(diag(MD{t})); % D contains standard deviations now
                     invsqrtC{t} = MB{t} * diag(MD{t}.^-1) * MB{t}';
                 end
