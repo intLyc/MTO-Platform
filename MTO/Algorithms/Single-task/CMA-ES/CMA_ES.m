@@ -59,8 +59,6 @@ methods
                 % Sample solutions
                 for i = 1:lambda
                     sample{t}(i).Dec = mDec{t} + sigma{t} * (B{t} * (D{t} .* randn(n{t}, 1)))';
-                    sample{t}(i).Dec(sample{t}(i).Dec > 1) = 1;
-                    sample{t}(i).Dec(sample{t}(i).Dec < 0) = 0;
                 end
                 sample{t} = Algo.Evaluation(sample{t}, Prob, t);
                 [~, rank] = sortrows([sample{t}.CVs, sample{t}.Objs], [1, 2]);
@@ -83,6 +81,9 @@ methods
                     eigenFE{t} = Algo.FE;
                     C{t} = triu(C{t}) + triu(C{t}, 1)'; % enforce symmetry
                     [B{t}, D{t}] = eig(C{t}); % eigen decomposition, B==normalized eigenvectors
+                    if min(diag(D{t})) < 0
+                        error('The covariance matrix is not positive definite!')
+                    end
                     D{t} = sqrt(diag(D{t})); % D contains standard deviations now
                     invsqrtC{t} = B{t} * diag(D{t}.^-1) * B{t}';
                 end
