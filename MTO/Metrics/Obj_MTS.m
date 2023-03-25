@@ -63,7 +63,11 @@ for prob = 1:length(MTOData.Problems)
         for gen = 1:size(ObjMat, 4)
             mean_task = nanmean(ObjMat(row, :, :, gen), 'all');
             std_task = std(ObjMat(row, :, :, gen), 0, 'all');
-            UObj(task, :, :, gen) = (ObjMat(row, :, :, gen) - mean_task) ./ (std_task + 1e-10);
+            if std_task == 0
+                UObj(task, :, :, gen) = 0;
+            else
+                UObj(task, :, :, gen) = (ObjMat(row, :, :, gen) - mean_task) ./ std_task;
+            end
         end
         row = row + 1;
     end
