@@ -38,14 +38,14 @@ methods
             c1{t} = 2 / ((n{t} + 1.3)^2 + mueff);
             cmu{t} = min(1 - c1{t}, 2 * (mueff - 2 + 1 / mueff) / ((n{t} + 2)^2 + 2 * mueff / 2));
             % Initialization
-            mDec{t} = unifrnd(zeros(1, n{t}), ones(1, n{t}));
+            mDec{t} = mean(unifrnd(zeros(lambda, n{t}), ones(lambda, n{t})));
             ps{t} = zeros(n{t}, 1);
             pc{t} = zeros(n{t}, 1);
             B{t} = eye(n{t}, n{t});
             D{t} = ones(n{t}, 1);
             C{t} = B{t} * diag(D{t}.^2) * B{t}';
             invsqrtC{t} = B{t} * diag(D{t}.^-1) * B{t}';
-            sigma{t} = 0.1;
+            sigma{t} = 0.3;
             eigenFE{t} = 0;
             chiN{t} = sqrt(n{t}) * (1 - 1 / (4 * n{t}) + 1 / (21 * n{t}^2));
             hth{t} = (1.4 + 2 / (n{t} + 1)) * chiN{t};
@@ -75,7 +75,7 @@ methods
                 delta = (1 - hsig) * cc{t} * (2 - cc{t});
                 C{t} = (1 - c1{t} - cmu{t}) * C{t} + c1{t} * (pc{t} * pc{t}' + delta * C{t}) + cmu{t} * artmp * diag(weights) * artmp';
                 % Update step size
-                sigma{t} = sigma{t} * exp(cs{t} / damps{t} * (norm(ps{t}) / chiN{t} - 1))^0.3;
+                sigma{t} = sigma{t} * exp(cs{t} / damps{t} * (norm(ps{t}) / chiN{t} - 1));
 
                 if (Algo.FE - lambda * (t - 1)) - eigenFE{t} > (lambda * Prob.T) / (c1{t} + cmu{t}) / n{t} / 10 % to achieve O(N^2)
                     eigenFE{t} = Algo.FE;

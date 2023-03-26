@@ -62,7 +62,7 @@ methods
             MD{t} = ones(D, 1);
             C{t} = MB{t} * diag(MD{t}.^2) * MB{t}';
             invsqrtC{t} = MB{t} * diag(MD{t}.^-1) * MB{t}';
-            sigma{t} = 0.1;
+            sigma{t} = 0.3;
             eigenFE{t} = 0;
         end
 
@@ -146,7 +146,7 @@ methods
                 delta = (1 - hsig) * cc{t} * (2 - cc{t});
                 C{t} = (1 - c1{t} - cmu{t}) * C{t} + c1{t} * (pc{t} * pc{t}' + delta * C{t}) + cmu{t} * artmp * diag(weights) * artmp';
                 % Update step size
-                sigma{t} = sigma{t} * exp(cs{t} / damps{t} * (norm(ps{t}) / chiN - 1))^0.3;
+                sigma{t} = sigma{t} * exp(cs{t} / damps{t} * (norm(ps{t}) / chiN - 1));
 
                 if (Algo.FE - Prob.N * (t - 1)) - eigenFE{t} > (Prob.N * Prob.T) / (c1{t} + cmu{t}) / D / 10 % to achieve O(N^2)
                     eigenFE{t} = Algo.FE;
