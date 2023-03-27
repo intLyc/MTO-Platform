@@ -1,6 +1,8 @@
 classdef BoKTDE < Algorithm
 % <Many-task> <Single-objective> <None>
 
+% Provided by Jiang, Yi
+
 %------------------------------- Reference --------------------------------
 % @Article{Jiang2022BoKT,
 %   author   = {Jiang, Yi and Zhan, Zhi-Hui and Tan, Kay Chen and Zhang, Jun},

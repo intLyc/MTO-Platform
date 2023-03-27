@@ -1,5 +1,7 @@
 function kl = mvgkl(m1, m2, S1, S2)
 
+% Provided by Jiang, Yi
+
 S1 = S1 +1e-6 * eye(size(S1));
 S2 = S2 +1e-6 * eye(size(S1));
 % d-variate Gaussian
