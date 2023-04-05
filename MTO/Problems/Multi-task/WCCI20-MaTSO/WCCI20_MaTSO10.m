@@ -38,7 +38,10 @@ classdef WCCI20_MaTSO10 < Problem
                 Prob.T = Prob.defaultT;
             end
             Tasks = benchmark_WCCI20_MaTSO(10, T);
-            Prob.T = length(Tasks);
+            Prob.D = [];
+            Prob.Fnc = {};
+            Prob.Lb = {};
+            Prob.Ub = {};
             for t = 1:Prob.T
                 Prob.D(t) = Tasks(t).Dim;
                 Prob.Fnc{t} = Tasks(t).Fnc;
