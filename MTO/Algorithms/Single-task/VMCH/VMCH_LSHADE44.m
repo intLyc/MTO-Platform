@@ -24,6 +24,8 @@ classdef VMCH_LSHADE44 < Algorithm
 properties (SetAccess = private)
     P = 0.2
     H = 10
+    R = 18
+    A = 2.1
 
     EC_Top = 0.2
     EC_Alpha = 0.8
@@ -36,6 +38,8 @@ methods
     function Parameter = getParameter(Algo)
         Parameter = {'P: 100p% top as pbest', num2str(Algo.P), ...
                 'H: success memory size', num2str(Algo.H), ...
+                'R: multiplier of init pop size', num2str(Algo.R), ...
+                'A: archive size', num2str(Algo.A), ...
                 'EC_Top', num2str(Algo.EC_Top), ...
                 'EC_Alpha', num2str(Algo.EC_Alpha), ...
                 'EC_Cp', num2str(Algo.EC_Cp), ...
@@ -56,15 +60,15 @@ methods
 
     function run(Algo, Prob)
         % Initialization
-        population = Initialization(Algo, Prob, Individual_DE44);
         Nmin = 4;
-        % initialize Parameter
         CHnum = 5;
         STnum = 4;
         n0 = 2;
         delta = 1 / (5 * STnum);
         for t = 1:Prob.T
-            % initialize Parameter
+            Ninit(t) = round(Algo.R .* Prob.D(t));
+            population{t} = Initialization_One(Algo, Prob, t, Individual_DE44, Ninit(t));
+
             n = ceil(Algo.EC_Top * length(population{t}));
             cv_temp = [population{t}.CV];
             [~, idx] = sort(cv_temp);
@@ -82,8 +86,8 @@ methods
         end
 
         while Algo.notTerminated(Prob)
-            N = round((Nmin - Prob.N) / Prob.maxFE * Algo.FE + Prob.N);
             for t = 1:Prob.T
+                N = round((Nmin - Ninit(t)) / Prob.maxFE * Algo.FE + Ninit(t));
                 % Update Epsilon
                 fea_percent = sum([population{t}.CV] <= 0) / length(population{t});
                 if fea_percent < 1
@@ -244,8 +248,8 @@ methods
                 end
 
                 archive{t} = [archive{t}, population{t}(replace)];
-                if length(archive{t}) > N
-                    archive{t} = archive{t}(randperm(length(archive{t}), N));
+                if length(archive{t}) > round(Algo.A * N)
+                    archive{t} = archive{t}(randperm(length(archive{t}), round(Algo.A * N)));
                 end
 
                 population{t}(replace) = offspring(replace);
