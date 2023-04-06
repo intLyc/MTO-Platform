@@ -79,18 +79,18 @@ methods
 
                 if (Algo.FE - lambda * (t - 1)) - eigenFE{t} > (lambda * Prob.T) / (c1{t} + cmu{t}) / n{t} / 10 % to achieve O(N^2)
                     eigenFE{t} = Algo.FE;
-                    C{t} = triu(C{t}) + triu(C{t}, 1)'; % enforce symmetry
-                    [B{t}, D{t}] = eig(C{t}); % eigen decomposition, B==normalized eigenvectors
-                    if min(diag(D{t})) < 0
+                    if all(~isnan(C{t}), 'all') && all(~isinf(C{t}), 'all')
+                        C{t} = triu(C{t}) + triu(C{t}, 1)'; % enforce symmetry
+                        [B{t}, D{t}] = eig(C{t}); % eigen decomposition, B==normalized eigenvectors
+                        D{t} = sqrt(diag(D{t})); % D contains standard deviations now
+                    else
                         disp('Restart')
                         ps{t} = zeros(n{t}, 1);
                         pc{t} = zeros(n{t}, 1);
                         B{t} = eye(n{t}, n{t});
                         D{t} = ones(n{t}, 1);
                         C{t} = B{t} * diag(D{t}.^2) * B{t}';
-                        sigma{t} = min(max(2 * sigma{t}, 0.01), 0.3);
-                    else
-                        D{t} = sqrt(diag(D{t})); % D contains standard deviations now
+                        sigma{t} = 0.3;
                     end
                     invsqrtC{t} = B{t} * diag(D{t}.^-1) * B{t}';
                 end
