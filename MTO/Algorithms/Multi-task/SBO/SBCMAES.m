@@ -150,12 +150,19 @@ methods
 
                 if (Algo.FE - Prob.N * (t - 1)) - eigenFE{t} > (Prob.N * Prob.T) / (c1{t} + cmu{t}) / D / 10 % to achieve O(N^2)
                     eigenFE{t} = Algo.FE;
-                    C{t} = triu(C{t}) + triu(C{t}, 1)'; % enforce symmetry
-                    [MB{t}, MD{t}] = eig(C{t}); % eigen decomposition, B==normalized eigenvectors
-                    if min(diag(MD{t})) < 0
-                        error('The covariance matrix is not positive definite!')
+                    if all(~isnan(C{t}), 'all') && all(~isinf(C{t}), 'all')
+                        C{t} = triu(C{t}) + triu(C{t}, 1)'; % enforce symmetry
+                        [MB{t}, MD{t}] = eig(C{t}); % eigen decomposition, B==normalized eigenvectors
+                        MD{t} = sqrt(diag(MD{t})); % D contains standard deviations now
+                    else
+                        disp('Restart')
+                        ps{t} = zeros(D, 1);
+                        pc{t} = zeros(D, 1);
+                        MB{t} = eye(D, D);
+                        MD{t} = ones(D, 1);
+                        C{t} = MB{t} * diag(MD{t}.^2) * MB{t}';
+                        sigma{t} = 0.3;
                     end
-                    MD{t} = sqrt(diag(MD{t})); % D contains standard deviations now
                     invsqrtC{t} = MB{t} * diag(MD{t}.^-1) * MB{t}';
                 end
 
