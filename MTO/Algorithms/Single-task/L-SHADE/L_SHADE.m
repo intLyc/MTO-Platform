@@ -49,8 +49,8 @@ methods
             Ninit(t) = round(Algo.R .* Prob.D(t));
             population{t} = Initialization_One(Algo, Prob, t, Individual_DE, Ninit(t));
             Hidx{t} = 1;
-            MF{t} = 0.2 .* ones(Algo.H, 1);
-            MCR{t} = 0.2 .* ones(Algo.H, 1);
+            MF{t} = 0.5 .* ones(Algo.H, 1);
+            MCR{t} = 0.5 .* ones(Algo.H, 1);
             archive{t} = Individual_DE.empty();
         end
 
