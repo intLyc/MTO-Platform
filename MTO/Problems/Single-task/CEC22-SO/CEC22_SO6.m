@@ -11,7 +11,7 @@ classdef CEC22_SO6 < Problem
 methods
     function Prob = CEC22_SO6(varargin)
         Prob = Prob@Problem(varargin);
-        Prob.maxFE = 20000 * Prob.D;
+        Prob.maxFE = 200 * 1000;
     end
 
     function Parameter = getParameter(Prob)
@@ -21,33 +21,27 @@ methods
 
     function Prob = setParameter(Prob, Parameter)
         D = str2double(Parameter{3});
-        if D > 20
-            D = 20;
-        elseif D > 10 && D < 20
+        if D < 20
             D = 10;
-        elseif D < 2
-            D = 2;
+        else
+            D = 20;
         end
         if Prob.D == D
             Prob.setRunParameter(Parameter(1:2));
         else
             Prob.D = D;
-            Prob.maxFE = 20000 * Prob.D;
+            if Prob.D == 10
+                Prob.maxFE = 200 * 1000;
+            else
+                Prob.maxFE = 1000 * 1000;
+            end
             Prob.setRunParameter({Parameter{1}, num2str(Prob.maxFE)});
         end
     end
 
     function setTasks(Prob)
         if isempty(Prob.D)
-            D = Prob.defaultD;
-            if D > 20
-                D = 20;
-            elseif D > 10 && D < 20
-                D = 10;
-            elseif D < 2
-                D = 2;
-            end
-            Prob.D = D;
+            Prob.D = 10;
         end
         Tasks(1) = benchmark_CEC22_SO(6, Prob.D);
         Prob.T = 1;
