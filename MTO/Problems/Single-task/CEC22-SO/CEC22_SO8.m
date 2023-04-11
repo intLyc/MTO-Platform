@@ -11,7 +11,11 @@ classdef CEC22_SO8 < Problem
 methods
     function Prob = CEC22_SO8(varargin)
         Prob = Prob@Problem(varargin);
-        Prob.maxFE = 200 * 1000;
+        if Prob.D == 10
+            Prob.maxFE = 200 * 1000;
+        else
+            Prob.maxFE = 1000 * 1000;
+        end
     end
 
     function Parameter = getParameter(Prob)
@@ -41,7 +45,13 @@ methods
 
     function setTasks(Prob)
         if isempty(Prob.D)
-            Prob.D = 10;
+            D = Prob.defaultD;
+            if D < 20
+                D = 10;
+            else
+                D = 20;
+            end
+            Prob.D = D;
         end
         Tasks(1) = benchmark_CEC22_SO(8, Prob.D);
         Prob.T = 1;
