@@ -60,8 +60,7 @@ methods
                 for i = 1:lambda
                     sample{t}(i).Dec = mDec{t} + sigma{t} * (B{t} * (D{t} .* randn(n{t}, 1)))';
                 end
-                sample{t} = Algo.Evaluation(sample{t}, Prob, t);
-                [~, rank] = sortrows([sample{t}.CVs, sample{t}.Objs], [1, 2]);
+                rank = Algo.EvaluationAndSort(sample{t}, Prob, t);
 
                 % Update mean decision variables
                 oldDec = mDec{t};
@@ -104,6 +103,21 @@ methods
                 end
             end
         end
+    end
+
+    function rank = EvaluationAndSort(Algo, sample, Prob, t)
+        %% Boundary Constraint
+        boundCVs = zeros(length(sample), 1);
+        for i = 1:length(sample)
+            % Boundary Constraint Violation
+            tempDec = sample(i).Dec;
+            tempDec(tempDec < 0) = 0;
+            tempDec(tempDec > 1) = 1;
+            boundCVs(i) = sum((sample(i).Dec - tempDec).^2);
+        end
+        sample = Algo.Evaluation(sample, Prob, t);
+        boundCVs(boundCVs > 0) = boundCVs(boundCVs > 0) + max(sample.CVs);
+        [~, rank] = sortrows([sample.CVs + boundCVs, sample.Objs], [1, 2]);
     end
 end
 end
