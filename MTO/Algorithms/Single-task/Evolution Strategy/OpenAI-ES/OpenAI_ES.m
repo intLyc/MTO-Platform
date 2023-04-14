@@ -2,7 +2,14 @@ classdef OpenAI_ES < Algorithm
 % <Single-task> <Single-objective> <None>
 
 %------------------------------- Reference --------------------------------
-
+% @Misc{Salimans2017OpenAI-ES,
+%   title         = {Evolution Strategies as a Scalable Alternative to Reinforcement Learning},
+%   author        = {Tim Salimans and Jonathan Ho and Xi Chen and Szymon Sidor and Ilya Sutskever},
+%   year          = {2017},
+%   archiveprefix = {arXiv},
+%   eprint        = {1703.03864},
+%   primaryclass  = {stat.ML},
+% }
 %--------------------------------------------------------------------------
 
 %------------------------------- Copyright --------------------------------
