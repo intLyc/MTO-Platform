@@ -15,7 +15,7 @@ methods
     end
 
     function setTasks(Prob)
-        Tasks = benchmark_CEC21_MTMO(2);
+        Tasks = benchmark_CEC21_MTMO(1);
         Prob.T = length(Tasks);
         for t = 1:Prob.T
             Prob.M(t) = 2;
