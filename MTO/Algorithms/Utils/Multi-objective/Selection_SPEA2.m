@@ -1,4 +1,4 @@
-function [population, Fitness] = Selection_SPEA2(population, N, Epsilon)
+function [population, Fitness, eliminater] = Selection_SPEA2(population, N, Epsilon)
 % This code is copy from PlatEMO(https://github.com/BIMK/PlatEMO).
 
 % The environmental selection of SPEA2
@@ -34,6 +34,7 @@ elseif sum(Next) > N
     Next(Temp(Del)) = false;
 end
 % population for next generation
+eliminater = population(~Next);
 population = population(Next);
 Fitness = Fitness(Next);
 % Sort the population
