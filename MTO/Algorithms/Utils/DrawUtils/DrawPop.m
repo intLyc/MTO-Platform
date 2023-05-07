@@ -8,13 +8,12 @@ classdef DrawPop < handle
 %--------------------------------------------------------------------------
 
 properties (SetAccess = private)
-    tiled
     fig
-    ax_list
+    tiled
 end
 
 methods
-    function obj = init(obj, Algo, Prob)
+    function obj = DrawPop(Algo, Prob)
         obj.fig = figure();
         obj.tiled = tiledlayout('flow');
         obj.tiled.TileSpacing = 'compact';
