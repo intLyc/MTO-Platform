@@ -1,4 +1,4 @@
-classdef DrawPop < handle
+classdef DrawPopDec < handle
 
 %------------------------------- Copyright --------------------------------
 % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
@@ -13,7 +13,7 @@ properties (SetAccess = private)
 end
 
 methods
-    function obj = DrawPop(Algo, Prob)
+    function obj = DrawPopDec(Algo, Prob)
         obj.fig = figure();
         obj.tiled = tiledlayout('flow');
         obj.tiled.TileSpacing = 'compact';
