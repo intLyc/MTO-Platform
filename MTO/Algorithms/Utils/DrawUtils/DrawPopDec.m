@@ -10,6 +10,7 @@ classdef DrawPopDec < handle
 properties (SetAccess = private)
     fig
     tiled
+    hplot
 end
 
 methods
@@ -24,15 +25,13 @@ methods
         for t = 1:Prob.T
             nexttile
         end
-    end
 
-    function obj = update(obj, Prob, Pop)
         for t = 1:Prob.T
             cla(obj.tiled.Children(end - t + 1))
-            for i = 1:length(Pop{t})
-                p = plot(obj.tiled.Children(end - t + 1), Pop{t}(i).Dec);
-                p.Color = [0.2, 0.2, 0.2];
-                p.LineWidth = 1;
+            for i = 1:Prob.N
+                obj.hplot{t}{i} = plot(obj.tiled.Children(end - t + 1), 0);
+                obj.hplot{t}{i}.Color = [.2, .2, .2];
+                obj.hplot{t}{i}.LineWidth = 1;
                 hold(obj.tiled.Children(end - t + 1), 'on');
             end
             xlim(obj.tiled.Children(end - t + 1), [1, max(Prob.D)]);
@@ -42,13 +41,10 @@ methods
         end
     end
 
-    function obj = special(obj, Prob, SPop, color)
+    function obj = update(obj, Prob, Pop)
         for t = 1:Prob.T
-            for i = 1:length(SPop{t})
-                p = plot(obj.tiled.Children(end - t + 1), SPop{t}(i).Dec);
-                p.Color = color;
-                p.LineWidth = 1;
-                hold(obj.tiled.Children(end - t + 1), 'on');
+            for i = 1:Prob.N
+                set(obj.hplot{t}{i}, 'YData', Pop{t}(i).Dec)
             end
             drawnow;
         end
