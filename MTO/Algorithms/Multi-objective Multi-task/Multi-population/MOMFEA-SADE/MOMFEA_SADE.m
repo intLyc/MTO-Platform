@@ -93,6 +93,13 @@ methods
             pop_Dec{t} = population{t}.Decs;
         end
 
+        x1_task = other_task(randi(length(other_task)));
+        x1_Dec_other = Algo.domainAdaption(pop_Dec{t}, pop_Dec{x1_task}, randi(length(population{t}), 1, length(population{t})));
+        x2_task = other_task(randi(length(other_task)));
+        x2_Dec_other = Algo.domainAdaption(pop_Dec{t}, pop_Dec{x2_task}, randi(length(population{t}), 1, length(population{t})));
+        x3_task = other_task(randi(length(other_task)));
+        x3_Dec_other = Algo.domainAdaption(pop_Dec{t}, pop_Dec{x3_task}, randi(length(population{t}), 1, length(population{t})));
+
         for i = 1:length(population{t})
             offspring(i) = population{t}(i);
             A = randperm(length(population{t}), 4);
@@ -100,21 +107,17 @@ methods
             CR = Algo.LCR + rand() .* (Algo.UCR - Algo.LCR);
 
             if rand() < Algo.RMP % Random Mating
-                x1_task = other_task(randi(length(other_task)));
-                x1_Dec = Algo.domainAdaption(pop_Dec{t}, pop_Dec{x1_task}, x1);
-                x2_task = other_task(randi(length(other_task)));
-                x2_Dec = Algo.domainAdaption(pop_Dec{t}, pop_Dec{x2_task}, x2);
-                x3_task = other_task(randi(length(other_task)));
+                x1_Dec = x1_Dec_other(i, :);
+                x2_Dec = x2_Dec_other(i, :);
+                x3_Dec = x3_Dec_other(i, :);
                 switch DE_Pool(i)
                     case 1 % DE/best/1/bin
                         offspring(i).Dec = population{t}(Best{t}(randi(length(Best{t})))).Dec + Algo.F1 * (x1_Dec - x2_Dec);
                         offspring(i).Dec = DE_Crossover(offspring(i).Dec, population{t}(i).Dec, CR);
                     case 2 % DE/rand/1/bin
-                        x3_Dec = Algo.domainAdaption(pop_Dec{t}, pop_Dec{x3_task}, x3);
                         offspring(i).Dec = x1_Dec + Algo.F1 * (x2_Dec - x3_Dec);
                         offspring(i).Dec = DE_Crossover(offspring(i).Dec, population{t}(i).Dec, CR);
                     case 3 % DE/current-to-rand/1
-                        x3_Dec = Algo.domainAdaption(pop_Dec{t}, pop_Dec{x3_task}, x3);
                         offspring(i).Dec = population{t}(i).Dec + Algo.F2 * (x1_Dec - population{t}(i).Dec) + Algo.F1 * (x2_Dec - x3_Dec);
                 end
             else
