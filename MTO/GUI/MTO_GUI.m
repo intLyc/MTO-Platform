@@ -2678,6 +2678,19 @@ classdef MTO_GUI < matlab.apps.AppBase
                     title(ax, strrep(app.EUITable.RowName(prob_list(i)), '_', '\_'))
                     grid(ax, 'on');
                 elseif M == 3
+                    if ~isempty(app.EResultParetoData.Optimum)
+                        % draw optimum
+                        x = squeeze(app.EResultParetoData.Optimum{prob_list(i)}(:, 1));
+                        y = squeeze(app.EResultParetoData.Optimum{prob_list(i)}(:, 2));
+                        z = squeeze(app.EResultParetoData.Optimum{prob_list(i)}(:, 3));
+                        s = scatter3(ax, x, y, z);
+                        s.MarkerEdgeColor = 'none';
+                        s.MarkerFaceAlpha = 0.65;
+                        s.MarkerFaceColor = [.5,.5,.5];
+                        s.SizeData = 3;
+                        hold(ax, 'on');
+                    end
+                    
                     % draw each algorithm
                     color_list = colororder;
                     for j = 1:length(algo_list)
