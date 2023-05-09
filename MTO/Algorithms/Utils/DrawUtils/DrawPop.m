@@ -42,6 +42,18 @@ methods
         end
     end
 
+    function obj = special(obj, Prob, SPop, color)
+        for t = 1:Prob.T
+            for i = 1:length(SPop{t})
+                p = plot(obj.tiled.Children(end - t + 1), SPop{t}(i).Dec);
+                p.Color = color;
+                p.LineWidth = 1;
+                hold(obj.tiled.Children(end - t + 1), 'on');
+            end
+            drawnow;
+        end
+    end
+
     function obj = close(obj)
         close(obj.fig)
     end
