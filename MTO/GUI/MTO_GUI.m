@@ -2675,6 +2675,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     else
                         legend(ax, strrep(app.EUITable.ColumnName(algo_list), '_', '\_'), 'Location', 'best');
                     end
+                    
                     title(ax, strrep(app.EUITable.RowName(prob_list(i)), '_', '\_'))
                     grid(ax, 'on');
                 elseif M == 3
@@ -2712,9 +2713,12 @@ classdef MTO_GUI < matlab.apps.AppBase
                     ylabel(ax, '$f_2$', 'interpreter', 'latex');
                     zlabel(ax, '$f_3$', 'interpreter', 'latex');
                     
-                    if length(algo_list) > 1
+                    if ~isempty(app.EResultParetoData.Optimum)
+                        legend(ax, ['Pareto Front'; strrep(app.EUITable.ColumnName(algo_list), '_', '\_')], 'Location', 'best');
+                    else
                         legend(ax, strrep(app.EUITable.ColumnName(algo_list), '_', '\_'), 'Location', 'best');
                     end
+                    
                     title(ax, strrep(app.EUITable.RowName(prob_list(i)), '_', '\_'))
                     view(ax,[135 30]);
                     grid(ax, 'on');
