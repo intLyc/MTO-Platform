@@ -107,6 +107,11 @@ methods
             offspring(count).Dec = GA_Mutation(offspring(count).Dec, Algo.MuM);
             offspring(count + 1).Dec = GA_Mutation(offspring(count + 1).Dec, Algo.MuM);
 
+            swap_indicator = (rand(1, length(population(p1).Dec)) < 0.5);
+            temp = offspring(count).Dec(swap_indicator);
+            offspring(count).Dec(swap_indicator) = offspring(count + 1).Dec(swap_indicator);
+            offspring(count + 1).Dec(swap_indicator) = temp;
+
             for x = count:count + 1
                 offspring(x).Dec(offspring(x).Dec > 1) = 1;
                 offspring(x).Dec(offspring(x).Dec < 0) = 0;
