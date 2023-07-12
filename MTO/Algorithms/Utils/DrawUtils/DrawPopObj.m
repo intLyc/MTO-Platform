@@ -83,7 +83,7 @@ methods
         end
     end
 
-    function obj = update(obj, Prob, Pop)
+    function obj = update(obj, Algo, Prob, Pop)
         for t = 1:Prob.T
             M = Prob.M(t);
             Obj = Pop{t}.Objs;
@@ -99,6 +99,7 @@ methods
             end
             drawnow;
         end
+        title(obj.tiled, [Algo.Name, ' on ', Prob.Name, ' Gen=', num2str(Algo.Gen)]);
     end
 
     function obj = close(obj)
