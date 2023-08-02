@@ -121,10 +121,11 @@ methods
     function offspring = Generation(Algo, population)
         for i = 1:length(population)
             offspring(i) = population(i);
-            A = randperm(length(population), 4);
-            A(A == i) = []; x1 = A(1); x2 = A(2); x3 = A(3);
-
-            offspring(i).Dec = population(x1).Dec + population(i).F * (population(x2).Dec - population(x3).Dec);
+            x2 = randi(length(population));
+            while x2 == i
+                x2 = randi(length(population));
+            end
+            offspring(i).Dec = population(i).Dec + population(i).F * (population(x2).Dec - population(i).Dec);
             offspring(i).Dec = DE_Crossover(offspring(i).Dec, population(i).Dec, population(i).CR);
 
             rand_Dec = rand(1, length(offspring(i).Dec));
