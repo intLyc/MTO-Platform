@@ -1,5 +1,5 @@
 classdef OpenAI_ES < Algorithm
-% <Single-task> <Single-objective> <None>
+% <Single-task> <Single-objective> <None/Constrained>
 
 %------------------------------- Reference --------------------------------
 % @Misc{Salimans2017OpenAI-ES,
@@ -19,12 +19,31 @@ classdef OpenAI_ES < Algorithm
 % or footnote "https://github.com/intLyc/MTO-Platform"
 %--------------------------------------------------------------------------
 
+properties (SetAccess = private)
+    alpha0 = 0.1
+    sigma0 = 0.1
+    adjustGen = 100
+end
+
 methods
+    function Parameter = getParameter(Algo)
+        Parameter = {'alpha0', num2str(Algo.alpha0), ...
+                'sigma0', num2str(Algo.sigma0), ...
+                'adjustGen', num2str(Algo.adjustGen)};
+    end
+
+    function Algo = setParameter(Algo, Parameter)
+        i = 1;
+        Algo.alpha0 = str2double(Parameter{i}); i = i + 1;
+        Algo.sigma0 = str2double(Parameter{i}); i = i + 1;
+        Algo.adjustGen = str2double(Parameter{i}); i = i + 1;
+    end
+
     function run(Algo, Prob)
         for t = 1:Prob.T
-            sigma{t} = 0.1;
-            alpha{t} = 0.01;
-            x{t} = unifrnd(zeros(Prob.D(t), 1), ones(Prob.D(t), 1));
+            alpha{t} = Algo.alpha0;
+            sigma{t} = Algo.sigma0;
+            x{t} = mean(unifrnd(zeros(max(Prob.D), Prob.N), ones(max(Prob.D), Prob.N)), 2);
             for i = 1:Prob.N
                 sample{t}(i) = Individual();
             end
@@ -43,7 +62,7 @@ methods
 
                 xold = x{t};
                 x{t} = x{t} + alpha{t} / (Prob.N * sigma{t}) * Z{t} * A;
-                if mod(Algo.Gen, 100) == 0
+                if mod(Algo.Gen, Algo.adjustGen) == 0
                     % Adaptive sigma and alpha
                     sigma{t} = min(median(abs(x{t} - xold)), 1);
                     alpha{t} = sigma{t}^2;
@@ -64,7 +83,10 @@ methods
             tempDec(tempDec > 1) = 1;
             boundCVs(i) = sum((sample(i).Dec - tempDec).^2);
         end
-        fitness =- (sample.Objs +1e-6 * boundCVs);
+        CVs = sample.CVs;
+        boundCVs(boundCVs > 0) = boundCVs(boundCVs > 0) + max(CVs);
+        CVs = CVs + boundCVs;
+        fitness =- (1e6 * CVs + sample.Objs);
     end
 end
 end
