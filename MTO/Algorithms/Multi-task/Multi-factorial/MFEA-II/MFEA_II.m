@@ -1,5 +1,5 @@
 classdef MFEA_II < Algorithm
-% <Multi-task> <Single-objective> <None>
+% <Multi-task> <Single-objective> <None/Constrained>
 
 %------------------------------- Reference --------------------------------
 % @Article{Bali2020MFEA2,
