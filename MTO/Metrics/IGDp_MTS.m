@@ -40,14 +40,14 @@ result.RowName = {MTOData.Problems.Name};
 result.ColumnName = {MTOData.Algorithms.Name};
 
 if isfield(MTOData, 'Metrics')
-    idx = find(strcmp({MTOData.Metrics.Name}, 'IGD_Plus'));
+    idx = find(strcmp({MTOData.Metrics.Name}, 'IGDp'));
     if ~isempty(idx)
         igdp_result = MTOData.Metrics(idx).Result;
     else
-        igdp_result = IGD_Plus(MTOData, Par_flag);
+        igdp_result = IGDp(MTOData, Par_flag);
     end
 else
-    igdp_result = IGD_Plus(MTOData, Par_flag);
+    igdp_result = IGDp(MTOData, Par_flag);
 end
 
 % Calculate Multi-task Score
