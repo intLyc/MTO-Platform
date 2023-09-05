@@ -61,12 +61,14 @@ methods
             if Algo.Gen < 4
                 AMP(1:Prob.T) = Algo.AMP0;
             else
-                x1 = [Algo.Result(:, Algo.Gen - 1).Obj];
-                x2 = [Algo.Result(:, Algo.Gen - 2).Obj];
-                x3 = [Algo.Result(:, Algo.Gen - 3).Obj];
-                temp1 = x2 - x1;
-                temp2 = x3 - x2;
-                AMP = temp1 ./ (temp1 + temp2);
+                for t = 1:Prob.T
+                    x1 = mean(sqrt(sum(Algo.Result(t, Algo.Gen - 1).Obj.^2, 2)));
+                    x2 = mean(sqrt(sum(Algo.Result(t, Algo.Gen - 2).Obj.^2, 2)));
+                    x3 = mean(sqrt(sum(Algo.Result(t, Algo.Gen - 3).Obj.^2, 2)));
+                    temp1 = x2 - x1;
+                    temp2 = x3 - x2;
+                    AMP(t) = temp1 ./ (temp1 + temp2);
+                end
                 AMP(isnan(AMP)) = Algo.AMP0;
             end
 
