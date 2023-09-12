@@ -9,9 +9,9 @@
 [![GitHub forks](https://img.shields.io/github/forks/intLyc/MTO-Platform?style=social)](#mto-platform)
 [![GitHub watchers](https://img.shields.io/github/watchers/intLyc/MTO-Platform?style=social)](#mto-platform)
 
-[-> 中文介绍 <-](#中文介绍)
+[-> Chinese Introduction <-](#中文介绍)
 
-**QQ讨论群: 862974231**
+**QQ Group: 862974231**
 
 **Author: Yanchi Li**
 
@@ -157,6 +157,8 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 
 
 # 中文介绍
+
+**QQ群: 862974231**
 
 **作者: 李延炽**
 
