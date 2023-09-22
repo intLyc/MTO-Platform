@@ -41,8 +41,8 @@ methods
             shape{t} = shape{t} / sum(shape{t});
 
             % initialize
-            x{t} = unifrnd(zeros(Prob.D(t), 1), ones(Prob.D(t), 1)); % expectation
-            A{t} = Algo.sigma0 * eye(Prob.D(t)); % covariance matrix
+            x{t} = mean(unifrnd(zeros(Prob.D(t), Prob.N), ones(Prob.D(t), Prob.N)), 2); % expectation
+            A{t} = Algo.sigma0 * eye(Prob.D(t)); % A*A' = C = covariance matrix
             weights{t} = zeros(1, Prob.N);
             for i = 1:Prob.N
                 sample{t}(i) = Individual();
@@ -53,7 +53,7 @@ methods
             for t = 1:Prob.T
                 % step 1: sampling & importance mixing
                 Z{t} = randn(Prob.D(t), Prob.N);
-                X{t} = repmat(x{t}, 1, Prob.N) + expA * Z{t};
+                X{t} = repmat(x{t}, 1, Prob.N) + A{t} * Z{t};
                 for i = 1:Prob.N
                     sample{t}(i).Dec = X{t}(:, i)';
                 end
@@ -63,12 +63,12 @@ methods
                 weights{t}(rank{t}) = shape{t};
 
                 % step 3: compute the gradient for x and A
-                dx = etax{t} * expA * (Z{t} * weights{t}');
-                dA = etaA{t} * (repmat(weights{t}, Prob.D(t), 1) .* Z{t}) * Z{t}' - sum(weights{t}) * eye(Prob.D(t));
+                dx = etax{t} * A{t} * (Z{t} * weights{t}');
+                dA = etaA{t} * ((repmat(weights{t}, Prob.D(t), 1) .* Z{t}) * Z{t}' - sum(weights{t}) * eye(Prob.D(t)));
 
                 % step 4: compute the update
                 x{t} = x{t} + dx;
-                A{t} = expm(A{t} + dA);
+                A{t} = A{t} * expm(dA);
             end
         end
     end
