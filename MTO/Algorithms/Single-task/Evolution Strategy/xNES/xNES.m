@@ -20,7 +20,19 @@ classdef xNES < Algorithm
 % or footnote "https://github.com/intLyc/MTO-Platform"
 %--------------------------------------------------------------------------
 
+properties (SetAccess = private)
+    sigma0 = 0.3
+end
+
 methods
+    function Parameter = getParameter(Algo)
+        Parameter = {'sigma0', num2str(Algo.sigma0)};
+    end
+
+    function Algo = setParameter(Algo, Parameter)
+        Algo.sigma0 = str2double(Parameter{1});
+    end
+
     function run(Algo, Prob)
         for t = 1:Prob.T
             etax{t} = 1;
@@ -29,8 +41,8 @@ methods
             shape{t} = shape{t} / sum(shape{t});
 
             % initialize
-            x{t} = unifrnd(zeros(Prob.D(t), 1), ones(Prob.D(t), 1));
-            A{t} = -eye(Prob.D(t));
+            x{t} = unifrnd(zeros(Prob.D(t), 1), ones(Prob.D(t), 1)); % expectation
+            A{t} = Algo.sigma0 * eye(Prob.D(t)); % covariance matrix
             weights{t} = zeros(1, Prob.N);
             for i = 1:Prob.N
                 sample{t}(i) = Individual();
@@ -39,8 +51,6 @@ methods
 
         while Algo.notTerminated(Prob)
             for t = 1:Prob.T
-                expA = expm(A{t});
-
                 % step 1: sampling & importance mixing
                 Z{t} = randn(Prob.D(t), Prob.N);
                 X{t} = repmat(x{t}, 1, Prob.N) + expA * Z{t};
@@ -52,14 +62,13 @@ methods
                 rank{t} = Algo.EvaluationAndSort(sample{t}, Prob, t);
                 weights{t}(rank{t}) = shape{t};
 
-                % step 3: compute the gradient for C and x
-                G = (repmat(weights{t}, Prob.D(t), 1) .* Z{t}) * Z{t}' - sum(weights{t}) * eye(Prob.D(t));
+                % step 3: compute the gradient for x and A
                 dx = etax{t} * expA * (Z{t} * weights{t}');
-                dA = etaA{t} * G;
+                dA = etaA{t} * (repmat(weights{t}, Prob.D(t), 1) .* Z{t}) * Z{t}' - sum(weights{t}) * eye(Prob.D(t));
 
                 % step 4: compute the update
                 x{t} = x{t} + dx;
-                A{t} = A{t} + dA;
+                A{t} = expm(A{t} + dA);
             end
         end
     end
