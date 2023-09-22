@@ -30,7 +30,7 @@ methods
 
             % initialize
             x{t} = unifrnd(zeros(Prob.D(t), 1), ones(Prob.D(t), 1));
-            A{t} = zeros(Prob.D(t));
+            A{t} = -eye(Prob.D(t)); % zeros(max(Prob.D));
             weights{t} = zeros(1, Prob.N);
             for i = 1:Prob.N
                 sample{t}(i) = Individual();
