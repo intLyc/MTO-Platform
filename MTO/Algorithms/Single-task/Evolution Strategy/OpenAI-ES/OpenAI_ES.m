@@ -21,7 +21,7 @@ classdef OpenAI_ES < Algorithm
 
 properties (SetAccess = private)
     alpha0 = 0.1
-    sigma0 = 0.1
+    sigma0 = 0.3
     adjustGen = 100
 end
 
@@ -43,7 +43,11 @@ methods
         for t = 1:Prob.T
             alpha{t} = Algo.alpha0;
             sigma{t} = Algo.sigma0;
-            x{t} = mean(unifrnd(zeros(max(Prob.D), Prob.N), ones(max(Prob.D), Prob.N)), 2);
+            shape{t} = max(0.0, log(Prob.N / 2 + 1.0) - log(1:Prob.N));
+            shape{t} = shape{t} / sum(shape{t});
+
+            x{t} = mean(unifrnd(zeros(Prob.D(t), Prob.N), ones(Prob.D(t), Prob.N)), 2);
+            weights{t} = zeros(1, Prob.N);
             for i = 1:Prob.N
                 sample{t}(i) = Individual();
             end
@@ -51,29 +55,30 @@ methods
 
         while Algo.notTerminated(Prob)
             for t = 1:Prob.T
+                % sampling
                 Z{t} = randn(Prob.D(t), Prob.N);
                 X{t} = repmat(x{t}, 1, Prob.N) + sigma{t} * Z{t};
                 for i = 1:Prob.N
                     sample{t}(i).Dec = X{t}(:, i)';
                 end
-                sample{t} = Algo.Evaluation(sample{t}, Prob, t);
-                fitness = Algo.getFitness(sample{t});
-                A = (fitness - mean(fitness)) / std(fitness);
 
+                % fitness reshaping
+                rank{t} = Algo.EvaluationAndSort(sample{t}, Prob, t);
+                weights{t}(rank{t}) = shape{t};
+
+                % compute the update
                 xold = x{t};
-                x{t} = x{t} + alpha{t} / (Prob.N * sigma{t}) * Z{t} * A;
+                x{t} = x{t} + alpha{t} / (Prob.N * sigma{t}) * Z{t} * weights{t}';
                 if mod(Algo.Gen, Algo.adjustGen) == 0
                     % Adaptive sigma and alpha
                     sigma{t} = min(median(abs(x{t} - xold)), 1);
                     alpha{t} = sigma{t}^2;
                 end
-                x{t}(x{t} < 0) = 0;
-                x{t}(x{t} > 1) = 1;
             end
         end
     end
 
-    function fitness = getFitness(Algo, sample)
+    function rank = EvaluationAndSort(Algo, sample, Prob, t)
         %% Boundary Constraint
         boundCVs = zeros(length(sample), 1);
         for i = 1:length(sample)
@@ -83,10 +88,9 @@ methods
             tempDec(tempDec > 1) = 1;
             boundCVs(i) = sum((sample(i).Dec - tempDec).^2);
         end
-        CVs = sample.CVs;
-        boundCVs(boundCVs > 0) = boundCVs(boundCVs > 0) + max(CVs);
-        CVs = CVs + boundCVs;
-        fitness =- (1e6 * CVs + sample.Objs);
+        sample = Algo.Evaluation(sample, Prob, t);
+        boundCVs(boundCVs > 0) = boundCVs(boundCVs > 0) + max(sample.CVs);
+        [~, rank] = sortrows([sample.CVs + boundCVs, sample.Objs], [1, 2]);
     end
 end
 end
