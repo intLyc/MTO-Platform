@@ -44,7 +44,7 @@ methods
             alpha{t} = Algo.alpha0;
             sigma{t} = Algo.sigma0;
             shape{t} = max(0.0, log(Prob.N / 2 + 1.0) - log(1:Prob.N));
-            shape{t} = shape{t} / sum(shape{t});
+            shape{t} = shape{t} / sum(shape{t}) - 1 / Prob.N;
 
             x{t} = mean(unifrnd(zeros(Prob.D(t), Prob.N), ones(Prob.D(t), Prob.N)), 2);
             weights{t} = zeros(1, Prob.N);

@@ -39,7 +39,7 @@ methods
             etas{t} = (9 + 3 * log(Prob.D(t))) / (5 * Prob.D(t) * sqrt(Prob.D(t)));
             etaB{t} = etas{t};
             shape{t} = max(0.0, log(Prob.N / 2 + 1.0) - log(1:Prob.N));
-            shape{t} = shape{t} / sum(shape{t});
+            shape{t} = shape{t} / sum(shape{t}) - 1 / Prob.N;
 
             % initialize
             x{t} = mean(unifrnd(zeros(Prob.D(t), Prob.N), ones(Prob.D(t), Prob.N)), 2);
