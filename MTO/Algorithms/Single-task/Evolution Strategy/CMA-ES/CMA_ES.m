@@ -20,8 +20,19 @@ classdef CMA_ES < Algorithm
 % in the platform should acknowledge the use of "MTO-Platform" and cite
 % or footnote "https://github.com/intLyc/MTO-Platform"
 %--------------------------------------------------------------------------
+properties (SetAccess = private)
+    sigma0 = 0.3
+end
 
 methods
+    function Parameter = getParameter(Algo)
+        Parameter = {'sigma0', num2str(Algo.sigma0)};
+    end
+
+    function Algo = setParameter(Algo, Parameter)
+        Algo.sigma0 = str2double(Parameter{1});
+    end
+
     function run(Algo, Prob)
         lambda = Prob.N; % sample points number
         mu = round(lambda / 2); % effective solutions number
@@ -45,7 +56,7 @@ methods
             D{t} = ones(n{t}, 1);
             C{t} = B{t} * diag(D{t}.^2) * B{t}';
             invsqrtC{t} = B{t} * diag(D{t}.^-1) * B{t}';
-            sigma{t} = 0.3;
+            sigma{t} = Algo.sigma0;
             eigenFE{t} = 0;
             chiN{t} = sqrt(n{t}) * (1 - 1 / (4 * n{t}) + 1 / (21 * n{t}^2));
             hth{t} = (1.4 + 2 / (n{t} + 1)) * chiN{t};
