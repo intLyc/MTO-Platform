@@ -2,7 +2,7 @@ classdef xNES < Algorithm
 % <Single-task> <Single-objective> <None/Constrained>
 
 %------------------------------- Reference --------------------------------
-% @Article{Wierstra2014Natural,
+% @Article{Wierstra2014NES,
 %   title      = {Natural Evolution Strategies},
 %   author     = {Daan Wierstra and Tom Schaul and Tobias Glasmachers and Yi Sun and Jan Peters and J\"{u}rgen Schmidhuber},
 %   journal    = {Journal of Machine Learning Research},
@@ -36,13 +36,15 @@ methods
     function run(Algo, Prob)
         for t = 1:Prob.T
             etax{t} = 1;
-            etaA{t} = 0.5 * min(1.0 / Prob.D(t), 0.25);
+            etas{t} = (9 + 3 * log(Prob.D(t))) / (5 * Prob.D(t) * sqrt(Prob.D(t)));
+            etaB{t} = etas{t};
             shape{t} = max(0.0, log(Prob.N / 2 + 1.0) - log(1:Prob.N));
             shape{t} = shape{t} / sum(shape{t});
 
             % initialize
-            x{t} = mean(unifrnd(zeros(Prob.D(t), Prob.N), ones(Prob.D(t), Prob.N)), 2); % expectation
-            A{t} = Algo.sigma0 * eye(Prob.D(t)); % A*A' = C = covariance matrix
+            x{t} = mean(unifrnd(zeros(Prob.D(t), Prob.N), ones(Prob.D(t), Prob.N)), 2);
+            s{t} = Algo.sigma0;
+            B{t} = eye(Prob.D(t)); % B = A/s; A*A' = C = covariance matrix
             weights{t} = zeros(1, Prob.N);
             for i = 1:Prob.N
                 sample{t}(i) = Individual();
@@ -53,7 +55,7 @@ methods
             for t = 1:Prob.T
                 % step 1: sampling & importance mixing
                 Z{t} = randn(Prob.D(t), Prob.N);
-                X{t} = repmat(x{t}, 1, Prob.N) + A{t} * Z{t};
+                X{t} = repmat(x{t}, 1, Prob.N) + s{t} * B{t} * Z{t};
                 for i = 1:Prob.N
                     sample{t}(i).Dec = X{t}(:, i)';
                 end
@@ -62,13 +64,17 @@ methods
                 rank{t} = Algo.EvaluationAndSort(sample{t}, Prob, t);
                 weights{t}(rank{t}) = shape{t};
 
-                % step 3: compute the gradient for x and A
-                dx = etax{t} * A{t} * (Z{t} * weights{t}');
-                dA = etaA{t} * ((repmat(weights{t}, Prob.D(t), 1) .* Z{t}) * Z{t}' - sum(weights{t}) * eye(Prob.D(t)));
+                % step 3: compute the gradient for x, s, and B
+                dx = etax{t} * s{t} * B{t} * (Z{t} * weights{t}');
+                JM = (repmat(weights{t}, Prob.D(t), 1) .* Z{t}) * Z{t}' - sum(weights{t}) * eye(Prob.D(t));
+                Js = trace(JM) / Prob.D(t);
+                ds = 0.5 * etas{t} * Js;
+                dB = 0.5 * etaB{t} * (JM - Js * eye(Prob.D(t)));
 
                 % step 4: compute the update
                 x{t} = x{t} + dx;
-                A{t} = A{t} * expm(dA);
+                s{t} = s{t} * exp(ds);
+                B{t} = B{t} * expm(dB);
             end
         end
     end
