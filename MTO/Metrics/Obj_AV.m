@@ -38,7 +38,7 @@ for prob = 1:length(MTOData.Problems)
             CV(rep, 1:MTOData.Problems(prob).T, :) = MTOData.Results(prob, algo, rep).CV(1:MTOData.Problems(prob).T, :);
         end
         Obj(CV > 0) = NaN;
-        AObj = squeeze(mean(Obj, 2));
+        AObj = reshape(mean(Obj, 2), size(Obj, 1), size(Obj, 3));
         result.TableData(prob, algo, :) = AObj(:, end);
         for rep = 1:MTOData.Reps
             result.ConvergeData.Y(prob, algo, rep, :) = AObj(rep, :);
