@@ -11,7 +11,7 @@ classdef CEC19_MaTSO3 < Problem
     methods
         function Prob = CEC19_MaTSO3(varargin)
             Prob = Prob@Problem(varargin);
-            Prob.maxFE = 1000 * 100 * Prob.T;
+            Prob.maxFE = 1000 * 50 * Prob.T;
         end
 
         function Parameter = getParameter(Prob)
