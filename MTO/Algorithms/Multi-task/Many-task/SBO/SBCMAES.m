@@ -25,18 +25,21 @@ classdef SBCMAES < Algorithm
 properties (SetAccess = private)
     Benefit = 0.25
     Harm = 0.5
+    sigma0 = 0.3
 end
 
 methods
     function Parameter = getParameter(Algo)
         Parameter = {'Benefit: Beneficial factor', num2str(Algo.Benefit), ...
-                'Harm: Harmful factor', num2str(Algo.Harm)};
+                'Harm: Harmful factor', num2str(Algo.Harm), ...
+                'sigma0', num2str(Algo.sigma0)};
     end
 
     function Algo = setParameter(Algo, Parameter)
         i = 1;
         Algo.Benefit = str2double(Parameter{i}); i = i + 1;
         Algo.Harm = str2double(Parameter{i}); i = i + 1;
+        Algo.sigma0 = str2double(Parameter{i}); i = i + 1;
     end
 
     function run(Algo, Prob)
@@ -62,22 +65,20 @@ methods
             MD{t} = ones(D, 1);
             C{t} = MB{t} * diag(MD{t}.^2) * MB{t}';
             invsqrtC{t} = MB{t} * diag(MD{t}.^-1) * MB{t}';
-            sigma{t} = 0.3;
+            sigma{t} = Algo.sigma0;
             eigenFE{t} = 0;
         end
 
         % Initialization
-        population_temp = Initialization(Algo, Prob, IndividualSBO);
-        population = IndividualSBO.empty();
+        population = Initialization(Algo, Prob, IndividualSBO);
         for t = 1:Prob.T
-            [~, rank] = sortrows([population_temp{t}.CVs, population_temp{t}.Objs], [1, 2]);
-            for i = 1:length(population_temp{t})
-                population_temp{t}(rank(i)).rankO = i;
-                population_temp{t}(rank(i)).MFFactor = t;
-                population_temp{t}(rank(i)).BelongT = t;
+            [~, rank] = sortrows([population{t}.CVs, population{t}.Objs], [1, 2]);
+            for i = 1:length(population{t})
+                population{t}(rank(i)).rankO = i;
+                population{t}(rank(i)).MFFactor = t;
+                population{t}(rank(i)).BelongT = t;
             end
-            mDec{t} = weights * population_temp{t}(rank(1:mu)).Decs;
-            population = [population, population_temp{t}];
+            mDec{t} = weights * population{t}(rank(1:mu)).Decs;
         end
 
         RIJ = 0.5 * ones(Prob.T, Prob.T); % transfer rates
@@ -89,25 +90,18 @@ methods
         AIJ = ones(Prob.T, Prob.T); % Harm and neutral
 
         while Algo.notTerminated(Prob)
-            offspring = IndividualSBO.empty();
+            offspring = population;
             for t = 1:Prob.T
-                t_idx = [population.MFFactor] == t;
-                find_idx = find(t_idx);
-                % Sample solutions
-                for i = 1:Prob.N
-                    offspring_t(i) = IndividualSBO();
-                    offspring_t(i).Dec = mDec{t} + sigma{t} * (MB{t} * (MD{t} .* randn(D, 1)))';
-
-                    offspring_t(i).MFFactor = t;
-                    offspring_t(i).BelongT = t;
-                    offspring_t(i).rankO = population(find_idx(i)).rankO;
+                % generation
+                for i = 1:length(population{t})
+                    offspring{t}(i).Dec = mDec{t} + sigma{t} * (MB{t} * (MD{t} .* randn(D, 1)))';
+                    offspring{t}(i).MFFactor = t;
+                    offspring{t}(i).BelongT = t;
+                    offspring{t}(i).rankO = population{t}(i).rankO;
                 end
-                offspring = [offspring, offspring_t];
             end
 
             for t = 1:Prob.T
-                t_idx = [offspring.MFFactor] == t;
-                find_idx = find(t_idx);
                 % knowledge transfer
                 [~, transfer_task] = max(RIJ(t, [1:t - 1, t + 1:end])); % find transferred task
                 if transfer_task >= t
@@ -117,32 +111,29 @@ methods
                     Si = floor(Prob.N * RIJ(t, transfer_task)); % transfer quantity
                     ind1 = randperm(Prob.N, Si);
                     ind2 = randperm(Prob.N, Si);
-                    this_pos = find(t_idx);
-                    trans_pos = find([offspring.MFFactor] == transfer_task);
                     for i = 1:Si
-                        offspring(this_pos(ind1(i))).Dec = offspring(trans_pos(ind2(i))).Dec;
-                        offspring(this_pos(ind1(i))).BelongT = transfer_task;
+                        offspring{t}(ind1(i)).Dec = offspring{transfer_task}(ind2(i)).Dec;
+                        offspring{t}(ind1(i)).BelongT = transfer_task;
                     end
                 end
 
                 % Evaluation
-                offspring(t_idx) = Algo.Evaluation(offspring(t_idx), Prob, t);
-
-                [~, rank] = sortrows([offspring(t_idx).CVs, offspring(t_idx).Objs], [1, 2]);
+                offspring{t} = Algo.Evaluation(offspring{t}, Prob, t);
+                [~, rank] = sortrows([offspring{t}.CVs, offspring{t}.Objs], [1, 2]);
                 for i = 1:length(rank)
-                    offspring(find_idx(rank(i))).rankC = i;
+                    offspring{t}(rank(i)).rankC = i;
                 end
 
-                offspring_t = offspring(t_idx);
+                % Update CMA variables
                 % Update mean decision variables
                 oldDec = mDec{t};
-                mDec{t} = weights * offspring_t(rank(1:mu)).Decs;
+                mDec{t} = weights * offspring{t}(rank(1:mu)).Decs;
                 % Update evolution paths
                 ps{t} = (1 - cs{t}) * ps{t} + sqrt(cs{t} * (2 - cs{t}) * mueff) * invsqrtC{t} * (mDec{t} - oldDec)' / sigma{t};
                 hsig = norm(ps{t}) / sqrt(1 - (1 - cs{t})^(2 * (ceil((Algo.FE - Prob.N * (t - 1)) / (Prob.N * Prob.T)) + 1))) < hth;
                 pc{t} = (1 - cc{t}) * pc{t} + hsig * sqrt(cc{t} * (2 - cc{t}) * mueff) * (mDec{t} - oldDec)' / sigma{t};
                 % Update covariance matrix
-                artmp = (offspring_t(rank(1:mu)).Decs - repmat(oldDec, mu, 1))' / sigma{t};
+                artmp = (offspring{t}(rank(1:mu)).Decs - repmat(oldDec, mu, 1))' / sigma{t};
                 delta = (1 - hsig) * cc{t} * (2 - cc{t});
                 C{t} = (1 - c1{t} - cmu{t}) * C{t} + c1{t} * (pc{t} * pc{t}' + delta * C{t}) + cmu{t} * artmp * diag(weights) * artmp';
                 % Update step size
@@ -163,7 +154,6 @@ methods
                         end
                     end
                     if restart
-                        disp('Restart')
                         ps{t} = zeros(D, 1);
                         pc{t} = zeros(D, 1);
                         MB{t} = eye(D, D);
@@ -175,39 +165,38 @@ methods
                 end
 
                 % selection
-                population_temp = [population(t_idx), offspring(t_idx)];
-                [~, rank] = sortrows([population_temp.CVs, population_temp.Objs], [1, 2]);
-                population(t_idx) = population_temp(rank(1:Prob.N));
-                [~, rank] = sortrows([population(t_idx).CVs, population(t_idx).Objs], [1, 2]);
+                population{t} = [population{t}, offspring{t}];
+                [~, rank] = sortrows([population{t}.CVs, population{t}.Objs], [1, 2]);
+                population{t} = population{t}(rank(1:Prob.N));
+                rank = 1:Prob.N;
                 for i = 1:length(rank)
-                    population(find_idx(rank(i))).rankO = i;
+                    population{t}(rank(i)).rankO = i;
                 end
             end
 
             for t = 1:Prob.T
                 % update symbiosis
-                t_idx = find([offspring.MFFactor] == t & [offspring.BelongT] ~= t);
-                find_idx = find(t_idx);
-                rankC = [offspring(t_idx).rankC];
-                rankO = [offspring(t_idx).rankO];
-                for k = 1:length(t_idx)
+                idx = find([offspring{t}.BelongT] ~= t);
+                rankC = [offspring{t}(idx).rankC];
+                rankO = [offspring{t}(idx).rankO];
+                for k = 1:length(idx)
                     if rankC(k) < Prob.N * Algo.Benefit
                         if rankO(k) < Prob.N * Algo.Benefit
-                            MIJ(t, offspring(find_idx(k)).BelongT) = MIJ(t, offspring(find_idx(k)).BelongT) + 1;
+                            MIJ(t, offspring{t}(idx(k)).BelongT) = MIJ(t, offspring{t}(idx(k)).BelongT) + 1;
                         elseif rankO(k) > Prob.N * (1 - Algo.Harm)
-                            PIJ(t, offspring(find_idx(k)).BelongT) = PIJ(t, offspring(find_idx(k)).BelongT) + 1;
+                            PIJ(t, offspring{t}(idx(k)).BelongT) = PIJ(t, offspring{t}(idx(k)).BelongT) + 1;
                         else
-                            OIJ(t, offspring(find_idx(k)).BelongT) = OIJ(t, offspring(find_idx(k)).BelongT) + 1;
+                            OIJ(t, offspring{t}(idx(k)).BelongT) = OIJ(t, offspring{t}(idx(k)).BelongT) + 1;
                         end
                     elseif rankC(k) > Prob.N * (1 - Algo.Harm)
                         if rankO(k) > Prob.N * (1 - Algo.Harm)
-                            CIJ(t, offspring(find_idx(k)).BelongT) = CIJ(t, offspring(find_idx(k)).BelongT) + 1;
+                            CIJ(t, offspring{t}(idx(k)).BelongT) = CIJ(t, offspring{t}(idx(k)).BelongT) + 1;
                         end
                     else
                         if rankO(k) > Prob.N * (1 - Algo.Harm)
-                            AIJ(t, offspring(find_idx(k)).BelongT) = AIJ(t, offspring(find_idx(k)).BelongT) + 1;
+                            AIJ(t, offspring{t}(idx(k)).BelongT) = AIJ(t, offspring{t}(idx(k)).BelongT) + 1;
                         elseif rankO(k) >= Prob.N * Algo.Benefit && rankO(k) <= Prob.N * (1 - Algo.Harm)
-                            NIJ(t, offspring(find_idx(k)).BelongT) = NIJ(t, offspring(find_idx(k)).BelongT) + 1;
+                            NIJ(t, offspring{t}(idx(k)).BelongT) = NIJ(t, offspring{t}(idx(k)).BelongT) + 1;
                         end
                     end
                 end
