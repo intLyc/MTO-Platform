@@ -47,16 +47,14 @@ methods
 
     function run(Algo, Prob)
         % Initialization
-        population_temp = Initialization(Algo, Prob, IndividualSBO);
-        population = IndividualSBO.empty();
+        population = Initialization(Algo, Prob, IndividualSBO);
         for t = 1:Prob.T
-            rank = NSGA2Sort(population_temp{t});
-            for i = 1:length(population_temp{t})
-                population_temp{t}(rank(i)).rankO = i;
-                population_temp{t}(rank(i)).MFFactor = t;
-                population_temp{t}(rank(i)).BelongT = t;
+            rank = NSGA2Sort(population{t});
+            for i = 1:length(population{t})
+                population{t}(rank(i)).rankO = i;
+                population{t}(rank(i)).MFFactor = t;
+                population{t}(rank(i)).BelongT = t;
             end
-            population = [population, population_temp{t}];
         end
 
         RIJ = 0.5 * ones(Prob.T, Prob.T); % transfer rates
@@ -67,24 +65,19 @@ methods
         PIJ = ones(Prob.T, Prob.T); % Benefit and Harm
         AIJ = ones(Prob.T, Prob.T); % Harm and neutral
 
-        while Algo.notTerminated(Prob, population_temp)
-            offspring = IndividualSBO.empty();
+        while Algo.notTerminated(Prob, population)
+            offspring = population;
             for t = 1:Prob.T
-                t_idx = [population.MFFactor] == t;
-                find_idx = find(t_idx);
                 % generation
-                offspring_t = Algo.Generation(population(t_idx));
-                for i = 1:length(offspring_t)
-                    offspring_t(i).MFFactor = t;
-                    offspring_t(i).BelongT = t;
-                    offspring_t(i).rankO = population(find_idx(i)).rankO;
+                offspring{t} = Algo.Generation(population{t});
+                for i = 1:length(offspring{t})
+                    offspring{t}(i).MFFactor = t;
+                    offspring{t}(i).BelongT = t;
+                    offspring{t}(i).rankO = population{t}(i).rankO;
                 end
-                offspring = [offspring, offspring_t];
             end
 
             for t = 1:Prob.T
-                t_idx = [offspring.MFFactor] == t;
-                find_idx = find(t_idx);
                 % knowledge transfer
                 [~, transfer_task] = max(RIJ(t, [1:t - 1, t + 1:end])); % find transferred task
                 if transfer_task >= t
@@ -94,57 +87,51 @@ methods
                     Si = floor(Prob.N * RIJ(t, transfer_task)); % transfer quantity
                     ind1 = randperm(Prob.N, Si);
                     ind2 = randperm(Prob.N, Si);
-                    this_pos = find(t_idx);
-                    trans_pos = find([offspring.MFFactor] == transfer_task);
                     for i = 1:Si
-                        offspring(this_pos(ind1(i))).Dec = offspring(trans_pos(ind2(i))).Dec;
-                        offspring(this_pos(ind1(i))).BelongT = transfer_task;
+                        offspring{t}(ind1(i)).Dec = offspring{transfer_task}(ind2(i)).Dec;
+                        offspring{t}(ind1(i)).BelongT = transfer_task;
                     end
                 end
 
                 % Evaluation
-                offspring(t_idx) = Algo.Evaluation(offspring(t_idx), Prob, t);
-
-                rank = NSGA2Sort(offspring(t_idx));
+                offspring{t} = Algo.Evaluation(offspring{t}, Prob, t);
+                rank = NSGA2Sort(offspring{t});
                 for i = 1:length(rank)
-                    offspring(find_idx(rank(i))).rankC = i;
+                    offspring{t}(rank(i)).rankC = i;
                 end
 
                 % selection
-                population_temp{t} = [population(t_idx), offspring(t_idx)];
-                rank = NSGA2Sort(population_temp{t});
-                population_temp{t} = population_temp{t}(rank(1:Prob.N));
-                population(t_idx) = population_temp{t};
-                rank = NSGA2Sort(population_temp{t});
-                for i = 1:length(find_idx)
-                    population(find_idx(rank(i))).rankO = i;
+                population{t} = [population{t}, offspring{t}];
+                rank = NSGA2Sort(population{t});
+                population{t} = population{t}(rank(1:Prob.N));
+                rank = 1:Prob.N;
+                for i = 1:length(rank)
+                    population{t}(rank(i)).rankO = i;
                 end
             end
-
             for t = 1:Prob.T
                 % update symbiosis
-                t_idx = find([offspring.MFFactor] == t & [offspring.BelongT] ~= t);
-                find_idx = find(t_idx);
-                rankC = [offspring(t_idx).rankC];
-                rankO = [offspring(t_idx).rankO];
-                for k = 1:length(t_idx)
+                idx = find([offspring{t}.BelongT] ~= t);
+                rankC = [offspring{t}(idx).rankC];
+                rankO = [offspring{t}(idx).rankO];
+                for k = 1:length(idx)
                     if rankC(k) < Prob.N * Algo.Benefit
                         if rankO(k) < Prob.N * Algo.Benefit
-                            MIJ(t, offspring(find_idx(k)).BelongT) = MIJ(t, offspring(find_idx(k)).BelongT) + 1;
+                            MIJ(t, offspring{t}(idx(k)).BelongT) = MIJ(t, offspring{t}(idx(k)).BelongT) + 1;
                         elseif rankO(k) > Prob.N * (1 - Algo.Harm)
-                            PIJ(t, offspring(find_idx(k)).BelongT) = PIJ(t, offspring(find_idx(k)).BelongT) + 1;
+                            PIJ(t, offspring{t}(idx(k)).BelongT) = PIJ(t, offspring{t}(idx(k)).BelongT) + 1;
                         else
-                            OIJ(t, offspring(find_idx(k)).BelongT) = OIJ(t, offspring(find_idx(k)).BelongT) + 1;
+                            OIJ(t, offspring{t}(idx(k)).BelongT) = OIJ(t, offspring{t}(idx(k)).BelongT) + 1;
                         end
                     elseif rankC(k) > Prob.N * (1 - Algo.Harm)
                         if rankO(k) > Prob.N * (1 - Algo.Harm)
-                            CIJ(t, offspring(find_idx(k)).BelongT) = CIJ(t, offspring(find_idx(k)).BelongT) + 1;
+                            CIJ(t, offspring{t}(idx(k)).BelongT) = CIJ(t, offspring{t}(idx(k)).BelongT) + 1;
                         end
                     else
                         if rankO(k) > Prob.N * (1 - Algo.Harm)
-                            AIJ(t, offspring(find_idx(k)).BelongT) = AIJ(t, offspring(find_idx(k)).BelongT) + 1;
+                            AIJ(t, offspring{t}(idx(k)).BelongT) = AIJ(t, offspring{t}(idx(k)).BelongT) + 1;
                         elseif rankO(k) >= Prob.N * Algo.Benefit && rankO(k) <= Prob.N * (1 - Algo.Harm)
-                            NIJ(t, offspring(find_idx(k)).BelongT) = NIJ(t, offspring(find_idx(k)).BelongT) + 1;
+                            NIJ(t, offspring{t}(idx(k)).BelongT) = NIJ(t, offspring{t}(idx(k)).BelongT) + 1;
                         end
                     end
                 end
