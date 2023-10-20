@@ -13,9 +13,18 @@
 
 **QQ Group: 862974231**
 
-**Author: Yanchi Li**
-
 **Email: int_lyc@cug.edu.cn**
+
+**Reference:**
+
+```
+@Article{Li2023MToP,  
+  title      = {MToP: A MATLAB Platform for Evolutionary Multitask Optimization},  
+  author     = {Yanchi Li and Wenyin Gong and Fei Ming and Tingyu Zhang and Shuijia Li},  
+  year       = {2023},  
+  url        = {https://github.com/intLyc/MTO-Platform}  
+}
+```
 
 ## Introduction
 
@@ -160,9 +169,18 @@ The Multi-Task Optimization Platform (MTO Platform) is inspired by [PlatEMO](htt
 
 **QQ群: 862974231**
 
-**作者: 李延炽**
-
 **邮箱: int_lyc@cug.edu.cn**
+
+**引用：**
+
+```
+@Article{Li2023MToP,  
+  title      = {MToP: A MATLAB Platform for Evolutionary Multitask Optimization},  
+  author     = {Yanchi Li and Wenyin Gong and Fei Ming and Tingyu Zhang and Shuijia Li},  
+  year       = {2023},  
+  url        = {https://github.com/intLyc/MTO-Platform}  
+}
+```
 
 ## 简介
 
