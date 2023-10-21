@@ -1,7 +1,7 @@
 function result = Obj_NBR(MTOData, varargin)
 % <Metric> <Single-objective>
 
-% Number of Best Result for All Tasks - Objective
+% Number of Best Results for All Tasks - Objective
 
 %------------------------------- Copyright --------------------------------
 % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for

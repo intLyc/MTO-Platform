@@ -1,7 +1,7 @@
-function result = Obj_Comp(MTOData, varargin)
+function result = Obj_CMT(MTOData, varargin)
 % <Metric> <Single-objective>
 
-% Competitive Objective Value of All Tasks
+% Minimum Objective Value of All Tasks (for Competitive Multitasking Optimization)
 
 %------------------------------- Reference --------------------------------
 % @Article{Li2022CompetitiveMTO,
