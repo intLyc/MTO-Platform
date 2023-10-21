@@ -34,15 +34,15 @@ for prob = 1:length(MTOData.Problems)
         Obj = zeros(MTOData.Reps, MTOData.Problems(prob).T, gen);
         CV = zeros(MTOData.Reps, MTOData.Problems(prob).T, gen);
         for rep = 1:MTOData.Reps
-            Obj(rep, 1:MTOData.Problems(prob).T, :) = MTOData.Results(prob, algo, rep).Obj(1:MTOData.Problems(prob).T, :);
-            CV(rep, 1:MTOData.Problems(prob).T, :) = MTOData.Results(prob, algo, rep).CV(1:MTOData.Problems(prob).T, :);
+            Obj(rep, 1:MTOData.Problems(prob).T, 1:gen) = MTOData.Results(prob, algo, rep).Obj(1:MTOData.Problems(prob).T, 1:gen);
+            CV(rep, 1:MTOData.Problems(prob).T, 1:gen) = MTOData.Results(prob, algo, rep).CV(1:MTOData.Problems(prob).T, 1:gen);
         end
         Obj(CV > 0) = NaN;
         AObj = reshape(mean(Obj, 2), size(Obj, 1), size(Obj, 3));
-        result.TableData(prob, algo, :) = AObj(:, end);
+        result.TableData(prob, algo, 1:MTOData.Reps) = AObj(1:MTOData.Reps, end);
         for rep = 1:MTOData.Reps
-            result.ConvergeData.Y(prob, algo, rep, :) = AObj(rep, :);
-            result.ConvergeData.X(prob, algo, rep, :) = [1:gen] ./ gen .* MTOData.Problems(prob).maxFE;
+            result.ConvergeData.Y(prob, algo, rep, 1:gen) = AObj(rep, 1:gen);
+            result.ConvergeData.X(prob, algo, rep, 1:gen) = [1:gen] ./ gen .* MTOData.Problems(prob).maxFE;
         end
     end
 end

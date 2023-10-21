@@ -45,11 +45,11 @@ for prob = 1:length(MTOData.Problems)
             Obj = zeros(MTOData.Reps, gen);
             CV = zeros(MTOData.Reps, gen);
             for rep = 1:MTOData.Reps
-                Obj(rep, :) = MTOData.Results(prob, algo, rep).Obj(task, :);
-                CV(rep, :) = MTOData.Results(prob, algo, rep).CV(task, :);
+                Obj(rep, 1:gen) = MTOData.Results(prob, algo, rep).Obj(task, :);
+                CV(rep, 1:gen) = MTOData.Results(prob, algo, rep).CV(task, :);
             end
             Obj(CV > 0) = NaN;
-            ObjMat(row, algo, :, :) = Obj;
+            ObjMat(row, algo, 1:MTOData.Reps, 1:gen) = Obj;
         end
         row = row + 1;
     end
@@ -59,23 +59,24 @@ end
 row = 1;
 for prob = 1:length(MTOData.Problems)
     UObj = [];
+    AlgoNum = length(MTOData.Algorithms);
     for task = 1:MTOData.Problems(prob).T
         for gen = 1:size(ObjMat, 4)
             mean_task = nanmean(ObjMat(row, :, :, gen), 'all');
             std_task = std(ObjMat(row, :, :, gen), 0, 'all');
             if std_task == 0
-                UObj(task, :, :, gen) = 0;
+                UObj(task, 1:AlgoNum, 1:MTOData.Reps, gen) = 0;
             else
-                UObj(task, :, :, gen) = (ObjMat(row, :, :, gen) - mean_task) ./ std_task;
+                UObj(task, 1:AlgoNum, 1:MTOData.Reps, gen) = (ObjMat(row, 1:AlgoNum, 1:MTOData.Reps, gen) - mean_task) ./ std_task;
             end
         end
         row = row + 1;
     end
     for algo = 1:length(MTOData.Algorithms)
         gen = size(MTOData.Results(prob, algo, 1).Obj, 2);
-        result.TableData(prob, algo, :) = mean(UObj(:, algo, :, end), 1);
+        result.TableData(prob, algo, :) = mean(UObj(1:MTOData.Problems(prob).T, algo, 1:MTOData.Reps, end), 1);
         for rep = 1:MTOData.Reps
-            result.ConvergeData.Y(prob, algo, rep, :) = mean(UObj(:, algo, rep, :), 1);
+            result.ConvergeData.Y(prob, algo, rep, :) = mean(UObj(1:MTOData.Problems(prob).T, algo, rep, 1:gen), 1);
             result.ConvergeData.X(prob, algo, rep, :) = [1:gen] ./ gen .* MTOData.Problems(prob).maxFE;
         end
     end

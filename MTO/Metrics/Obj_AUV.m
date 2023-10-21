@@ -42,7 +42,7 @@ for prob = 1:length(MTOData.Problems)
                 CV(rep, :) = MTOData.Results(prob, algo, rep).CV(task, :);
             end
             Obj(CV > 0) = NaN;
-            ObjMat(row, algo, :, :) = Obj;
+            ObjMat(row, algo, 1:MTOData.Reps, :) = Obj;
         end
         row = row + 1;
     end
@@ -51,18 +51,19 @@ end
 % Calculate Obj-UAV
 row = 1;
 for prob = 1:length(MTOData.Problems)
-    NObj = [];
+    UObj = [];
+    AlgoNum = length(MTOData.Algorithms);
     for task = 1:MTOData.Problems(prob).T
         min_task = min(ObjMat(row, :, :, :), [], 'all');
         max_task = max(ObjMat(row, :, :, :), [], 'all');
-        NObj(task, :, :, :) = (ObjMat(row, :, :, :) - min_task) / (max_task - min_task);
+        UObj(task, 1:AlgoNum, 1:MTOData.Reps, :) = (ObjMat(row, 1:AlgoNum, 1:MTOData.Reps, :) - min_task) / (max_task - min_task);
         row = row + 1;
     end
-    for algo = 1:length(MTOData.Algorithms)
+    for algo = 1:AlgoNum
         gen = size(MTOData.Results(prob, algo, 1).Obj, 2);
-        result.TableData(prob, algo, :) = mean(NObj(:, algo, :, end), 1);
+        result.TableData(prob, algo, :) = mean(UObj(1:MTOData.Problems(prob).T, algo, 1:MTOData.Reps, end), 1);
         for rep = 1:MTOData.Reps
-            result.ConvergeData.Y(prob, algo, rep, :) = mean(NObj(:, algo, rep, :), 1);
+            result.ConvergeData.Y(prob, algo, rep, :) = mean(UObj(1:MTOData.Problems(prob).T, algo, rep, 1:gen), 1);
             result.ConvergeData.X(prob, algo, rep, :) = [1:gen] ./ gen .* MTOData.Problems(prob).maxFE;
         end
     end

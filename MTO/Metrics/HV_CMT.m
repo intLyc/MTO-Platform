@@ -1,4 +1,4 @@
-function result = HV_Comp(MTOData, varargin)
+function result = HV_CMT(MTOData, varargin)
 % <Metric> <Multi-objective>
 
 % Competitive Hypervolume of All Tasks

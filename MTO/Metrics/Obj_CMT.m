@@ -45,15 +45,15 @@ for prob = 1:length(MTOData.Problems)
         MinObj = zeros(MTOData.Reps, gen);
         for rep = 1:MTOData.Reps
             Obj_temp = []; CV_temp = [];
-            Obj_temp(:, :) = MTOData.Results(prob, algo, rep).Obj(:, :);
-            CV_temp(:, :) = MTOData.Results(prob, algo, rep).CV(:, :);
+            Obj_temp(1:MTOData.Problems(prob).T, 1:gen) = MTOData.Results(prob, algo, rep).Obj(1:MTOData.Problems(prob).T, 1:gen);
+            CV_temp(1:MTOData.Problems(prob).T, 1:gen) = MTOData.Results(prob, algo, rep).CV(1:MTOData.Problems(prob).T, 1:gen);
             Obj_temp(CV_temp > 0) = NaN;
-            MinObj(rep, :) = min(Obj_temp, [], 1);
+            MinObj(rep, 1:gen) = min(Obj_temp, [], 1);
         end
-        result.TableData(prob, algo, :) = MinObj(:, end);
+        result.TableData(prob, algo, 1:MTOData.Reps) = MinObj(1:MTOData.Reps, end);
         for rep = 1:MTOData.Reps
-            result.ConvergeData.Y(prob, algo, rep, :) = MinObj(rep, :);
-            result.ConvergeData.X(prob, algo, rep, :) = [1:gen] ./ gen .* MTOData.Problems(prob).maxFE;
+            result.ConvergeData.Y(prob, algo, rep, 1:gen) = MinObj(rep, 1:gen);
+            result.ConvergeData.X(prob, algo, rep, 1:gen) = [1:gen] ./ gen .* MTOData.Problems(prob).maxFE;
         end
     end
 end
