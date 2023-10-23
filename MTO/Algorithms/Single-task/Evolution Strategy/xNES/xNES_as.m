@@ -90,6 +90,7 @@ methods
                 vs{t} = s{t} * exp(1.5 * ds);
                 s{t} = s{t} * exp(ds);
                 B{t} = B{t} * expm(dB);
+                B{t} = triu(B{t}) + triu(B{t}, 1)'; % enforce symmetry
             end
         end
     end
