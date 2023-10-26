@@ -41,20 +41,21 @@ methods
     end
 
     function run(Algo, Prob)
+        N = Prob.N;
         for t = 1:Prob.T
             etax{t} = 1;
             etas{t} = (3 + log(Prob.D(t))) / Prob.D(t); % for high-dimensional problems
             % etas{t} = (9 + 3 * log(Prob.D(t))) / (5 * Prob.D(t) * sqrt(Prob.D(t))); % for low-dimensional problems
             etaB{t} = etas{t};
-            shape{t} = max(0.0, log(Prob.N / 2 + 1.0) - log(1:Prob.N));
-            shape{t} = shape{t} / sum(shape{t}) - 1 / Prob.N;
+            shape{t} = max(0.0, log(N / 2 + 1.0) - log(1:N));
+            shape{t} = shape{t} / sum(shape{t}) - 1 / N;
 
             % initialize
-            x{t} = mean(unifrnd(zeros(Prob.D(t), Prob.N), ones(Prob.D(t), Prob.N)), 2);
+            x{t} = mean(unifrnd(zeros(Prob.D(t), N), ones(Prob.D(t), N)), 2);
             s{t} = Algo.sigma0;
             B{t} = eye(Prob.D(t)); % B = A/s; A*A' = C = covariance matrix
-            weights{t} = zeros(1, Prob.N);
-            for i = 1:Prob.N
+            weights{t} = zeros(1, N);
+            for i = 1:N
                 sample{t}(i) = Individual();
             end
         end
@@ -62,9 +63,9 @@ methods
         while Algo.notTerminated(Prob)
             for t = 1:Prob.T
                 % step 1: sampling & importance mixing
-                Z{t} = randn(Prob.D(t), Prob.N);
-                X{t} = repmat(x{t}, 1, Prob.N) + s{t} * B{t} * Z{t};
-                for i = 1:Prob.N
+                Z{t} = randn(Prob.D(t), N);
+                X{t} = repmat(x{t}, 1, N) + s{t} * B{t} * Z{t};
+                for i = 1:N
                     sample{t}(i).Dec = X{t}(:, i)';
                 end
 

@@ -44,7 +44,8 @@ methods
 
     function run(Algo, Prob)
         D = max(Prob.D);
-        mu = round(Prob.N / 2); % effective solutions number
+        lambda = Prob.N;
+        mu = round(lambda / 2); % effective solutions number
         weights = log(mu + 0.5) - log(1:mu);
         weights = weights ./ sum(weights); % weights
         mueff = 1 / sum(weights.^2); % variance effective selection mass
@@ -108,9 +109,9 @@ methods
                     transfer_task = transfer_task + 1;
                 end
                 if rand() < RIJ(t, transfer_task)
-                    Si = floor(Prob.N * RIJ(t, transfer_task)); % transfer quantity
-                    ind1 = randperm(Prob.N, Si);
-                    ind2 = randperm(Prob.N, Si);
+                    Si = floor(lambda * RIJ(t, transfer_task)); % transfer quantity
+                    ind1 = randperm(lambda, Si);
+                    ind2 = randperm(lambda, Si);
                     for i = 1:Si
                         offspring{t}(ind1(i)).Dec = offspring{transfer_task}(ind2(i)).Dec;
                         offspring{t}(ind1(i)).BelongT = transfer_task;
@@ -130,7 +131,7 @@ methods
                 mDec{t} = weights * offspring{t}(rank(1:mu)).Decs;
                 % Update evolution paths
                 ps{t} = (1 - cs{t}) * ps{t} + sqrt(cs{t} * (2 - cs{t}) * mueff) * invsqrtC{t} * (mDec{t} - oldDec)' / sigma{t};
-                hsig = norm(ps{t}) / sqrt(1 - (1 - cs{t})^(2 * (ceil((Algo.FE - Prob.N * (t - 1)) / (Prob.N * Prob.T)) + 1))) < hth;
+                hsig = norm(ps{t}) / sqrt(1 - (1 - cs{t})^(2 * (ceil((Algo.FE - lambda * (t - 1)) / (lambda * Prob.T)) + 1))) < hth;
                 pc{t} = (1 - cc{t}) * pc{t} + hsig * sqrt(cc{t} * (2 - cc{t}) * mueff) * (mDec{t} - oldDec)' / sigma{t};
                 % Update covariance matrix
                 artmp = (offspring{t}(rank(1:mu)).Decs - repmat(oldDec, mu, 1))' / sigma{t};
@@ -139,7 +140,7 @@ methods
                 % Update step size
                 sigma{t} = sigma{t} * exp(cs{t} / damps{t} * (norm(ps{t}) / chiN - 1));
 
-                if (Algo.FE - Prob.N * (t - 1)) - eigenFE{t} > (Prob.N * Prob.T) / (c1{t} + cmu{t}) / D / 10 % to achieve O(N^2)
+                if (Algo.FE - lambda * (t - 1)) - eigenFE{t} > (lambda * Prob.T) / (c1{t} + cmu{t}) / D / 10 % to achieve O(N^2)
                     eigenFE{t} = Algo.FE;
                     restart = false;
                     if ~(all(~isnan(C{t}), 'all') && all(~isinf(C{t}), 'all'))
@@ -167,8 +168,8 @@ methods
                 % selection
                 population{t} = [population{t}, offspring{t}];
                 [~, rank] = sortrows([population{t}.CVs, population{t}.Objs], [1, 2]);
-                population{t} = population{t}(rank(1:Prob.N));
-                rank = 1:Prob.N;
+                population{t} = population{t}(rank(1:lambda));
+                rank = 1:lambda;
                 for i = 1:length(rank)
                     population{t}(rank(i)).rankO = i;
                 end
@@ -180,22 +181,22 @@ methods
                 rankC = [offspring{t}(idx).rankC];
                 rankO = [offspring{t}(idx).rankO];
                 for k = 1:length(idx)
-                    if rankC(k) < Prob.N * Algo.Benefit
-                        if rankO(k) < Prob.N * Algo.Benefit
+                    if rankC(k) < lambda * Algo.Benefit
+                        if rankO(k) < lambda * Algo.Benefit
                             MIJ(t, offspring{t}(idx(k)).BelongT) = MIJ(t, offspring{t}(idx(k)).BelongT) + 1;
-                        elseif rankO(k) > Prob.N * (1 - Algo.Harm)
+                        elseif rankO(k) > lambda * (1 - Algo.Harm)
                             PIJ(t, offspring{t}(idx(k)).BelongT) = PIJ(t, offspring{t}(idx(k)).BelongT) + 1;
                         else
                             OIJ(t, offspring{t}(idx(k)).BelongT) = OIJ(t, offspring{t}(idx(k)).BelongT) + 1;
                         end
-                    elseif rankC(k) > Prob.N * (1 - Algo.Harm)
-                        if rankO(k) > Prob.N * (1 - Algo.Harm)
+                    elseif rankC(k) > lambda * (1 - Algo.Harm)
+                        if rankO(k) > lambda * (1 - Algo.Harm)
                             CIJ(t, offspring{t}(idx(k)).BelongT) = CIJ(t, offspring{t}(idx(k)).BelongT) + 1;
                         end
                     else
-                        if rankO(k) > Prob.N * (1 - Algo.Harm)
+                        if rankO(k) > lambda * (1 - Algo.Harm)
                             AIJ(t, offspring{t}(idx(k)).BelongT) = AIJ(t, offspring{t}(idx(k)).BelongT) + 1;
-                        elseif rankO(k) >= Prob.N * Algo.Benefit && rankO(k) <= Prob.N * (1 - Algo.Harm)
+                        elseif rankO(k) >= lambda * Algo.Benefit && rankO(k) <= lambda * (1 - Algo.Harm)
                             NIJ(t, offspring{t}(idx(k)).BelongT) = NIJ(t, offspring{t}(idx(k)).BelongT) + 1;
                         end
                     end

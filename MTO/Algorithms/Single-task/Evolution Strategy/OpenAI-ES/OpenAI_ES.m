@@ -40,15 +40,16 @@ methods
     end
 
     function run(Algo, Prob)
+        N = Prob.N;
         for t = 1:Prob.T
             alpha{t} = Algo.alpha0;
             sigma{t} = Algo.sigma0;
-            shape{t} = max(0.0, log(Prob.N / 2 + 1.0) - log(1:Prob.N));
-            shape{t} = shape{t} / sum(shape{t}) - 1 / Prob.N;
+            shape{t} = max(0.0, log(N / 2 + 1.0) - log(1:N));
+            shape{t} = shape{t} / sum(shape{t}) - 1 / N;
 
-            x{t} = mean(unifrnd(zeros(Prob.D(t), Prob.N), ones(Prob.D(t), Prob.N)), 2);
-            weights{t} = zeros(1, Prob.N);
-            for i = 1:Prob.N
+            x{t} = mean(unifrnd(zeros(Prob.D(t), N), ones(Prob.D(t), N)), 2);
+            weights{t} = zeros(1, N);
+            for i = 1:N
                 sample{t}(i) = Individual();
             end
         end
@@ -56,9 +57,9 @@ methods
         while Algo.notTerminated(Prob)
             for t = 1:Prob.T
                 % sampling
-                Z{t} = randn(Prob.D(t), Prob.N);
-                X{t} = repmat(x{t}, 1, Prob.N) + sigma{t} * Z{t};
-                for i = 1:Prob.N
+                Z{t} = randn(Prob.D(t), N);
+                X{t} = repmat(x{t}, 1, N) + sigma{t} * Z{t};
+                for i = 1:N
                     sample{t}(i).Dec = X{t}(:, i)';
                 end
 
@@ -68,7 +69,7 @@ methods
 
                 % compute the update
                 xold = x{t};
-                x{t} = x{t} + alpha{t} / (Prob.N * sigma{t}) * Z{t} * weights{t}';
+                x{t} = x{t} + alpha{t} / (N * sigma{t}) * Z{t} * weights{t}';
                 if mod(Algo.Gen, Algo.adjustGen) == 0
                     % Adaptive sigma and alpha
                     sigma{t} = min(median(abs(x{t} - xold)), 1);

@@ -32,24 +32,25 @@ methods
     end
 
     function run(Algo, Prob)
+        N = Prob.N;
         normalize = @(v) v / sqrt(v' * v);
         for t = 1:Prob.T
             etax{t} = 1;
             etaa{t} = 0.1; % learning rate for the scale factor
             etac{t} = 0.1; % primary representation is <a,c,v>
-            shape{t} = max(0.0, log(Prob.N / 2 + 1.0) - log(1:Prob.N));
-            shape{t} = shape{t} / sum(shape{t}) - 1 / Prob.N;
+            shape{t} = max(0.0, log(N / 2 + 1.0) - log(1:N));
+            shape{t} = shape{t} / sum(shape{t}) - 1 / N;
 
             % initialize
-            x{t} = mean(unifrnd(zeros(Prob.D(t), Prob.N), ones(Prob.D(t), Prob.N)), 2);
+            x{t} = mean(unifrnd(zeros(Prob.D(t), N), ones(Prob.D(t), N)), 2);
             a{t} = log(Algo.sigma0); % fixed diagonal strength
             c{t} = 0;
             v{t} = normalize(randn(Prob.D(t), 1));
             r{t} = exp(c{t});
             u{t} = r{t} * v{t};
 
-            weights{t} = zeros(1, Prob.N);
-            for i = 1:Prob.N
+            weights{t} = zeros(1, N);
+            for i = 1:N
                 sample{t}(i) = Individual();
             end
         end
@@ -57,9 +58,9 @@ methods
         while Algo.notTerminated(Prob)
             for t = 1:Prob.T
                 % step 1: sampling
-                W{t} = randn(Prob.D(t), Prob.N) + u{t} * randn(1, Prob.N);
-                X{t} = repmat(x{t}, 1, Prob.N) + exp(a{t}) * W{t};
-                for i = 1:Prob.N
+                W{t} = randn(Prob.D(t), N) + u{t} * randn(1, N);
+                X{t} = repmat(x{t}, 1, N) + exp(a{t}) * W{t};
+                for i = 1:N
                     sample{t}(i).Dec = X{t}(:, i)';
                 end
 
