@@ -2,6 +2,13 @@ classdef xNES < Algorithm
 % <Single-task> <Single-objective> <None/Constrained>
 
 %------------------------------- Reference --------------------------------
+% @InProceedings{Glasmachers2010xNES,
+%   title      = {Exponential Natural Evolution Strategies},
+%   author     = {Glasmachers, Tobias and Schaul, Tom and Yi, Sun and Wierstra, Daan and Schmidhuber, J\"{u}rgen},
+%   booktitle  = {Proceedings of the 12th Annual Conference on Genetic and Evolutionary Computation},
+%   year       = {2010},
+%   pages      = {393–400},
+% }
 % @Article{Wierstra2014NES,
 %   title      = {Natural Evolution Strategies},
 %   author     = {Daan Wierstra and Tom Schaul and Tobias Glasmachers and Yi Sun and Jan Peters and J\"{u}rgen Schmidhuber},
