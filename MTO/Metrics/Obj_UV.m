@@ -1,7 +1,7 @@
-function result = Obj_AUV(MTOData, varargin)
+function result = Obj_UV(MTOData, varargin)
 % <Metric> <Single-objective>
 
-% Objective - Average Unified Value for all task
+% Objective - Unified Value for all task
 % UObj = (Obj - Min) / (Max - Min)
 % Min and Max are calculated from all algorithms and reps on a task
 
@@ -48,7 +48,7 @@ for prob = 1:length(MTOData.Problems)
     end
 end
 
-% Calculate Obj-UAV
+% Calculate Obj-UV
 row = 1;
 for prob = 1:length(MTOData.Problems)
     UObj = [];
