@@ -102,7 +102,6 @@ methods
                         end
                     end
                     if restart
-                        disp('Restart')
                         ps{t} = zeros(n{t}, 1);
                         pc{t} = zeros(n{t}, 1);
                         B{t} = eye(n{t}, n{t});
