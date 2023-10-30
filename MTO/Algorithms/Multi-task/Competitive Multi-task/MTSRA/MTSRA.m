@@ -110,6 +110,7 @@ methods
             end
 
             [offspring, flag] = Algo.Generation(population{k}, union, population{c}, c_union, RMP(k, c));
+            best_g = [Algo.Best{:}];
             offspring = Algo.Evaluation(offspring, Prob, k);
 
             replace = [population{k}.Obj] > [offspring.Obj];
@@ -149,7 +150,6 @@ methods
 
             % calculate the reward
             R_p = max((Obj_old - Obj_new) ./ (Obj_old), 0);
-            best_g = [Algo.Best{:}];
             R_b = max((min([best_g.Obj]) - min(Obj_new)) / min([best_g.Obj]), 0);
             % The main task
             HR(k, HR_idx(k)) = Algo.Alpha * R_b + (1 - Algo.Alpha) * (sum(R_p) / length(R_p));
