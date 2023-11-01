@@ -44,8 +44,7 @@ methods
         N = Prob.N;
         for t = 1:Prob.T
             etax{t} = 1;
-            etas{t} = (3 + log(Prob.D(t))) / Prob.D(t); % for high-dimensional problems
-            % etas{t} = (9 + 3 * log(Prob.D(t))) / (5 * Prob.D(t) * sqrt(Prob.D(t))); % for low-dimensional problems
+            etas{t} = (9 + 3 * log(Prob.D(t))) / (5 * Prob.D(t) * sqrt(Prob.D(t)));
             etaB{t} = etas{t};
             shape{t} = max(0.0, log(N / 2 + 1.0) - log(1:N));
             shape{t} = shape{t} / sum(shape{t}) - 1 / N;
