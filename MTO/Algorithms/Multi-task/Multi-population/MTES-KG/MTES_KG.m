@@ -7,6 +7,7 @@ classdef MTES_KG < Algorithm
 %   author   = {Li, Yanchi and Gong, Wenyin and Li, Shuijia},
 %   journal  = {IEEE Transactions on Evolutionary Computation},
 %   year     = {2023},
+%   doi      = {10.1109 / TEVC.2023.3330265},
 % }
 %--------------------------------------------------------------------------
 
