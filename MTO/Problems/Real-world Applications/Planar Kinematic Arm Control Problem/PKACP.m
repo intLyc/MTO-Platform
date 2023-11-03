@@ -80,6 +80,10 @@ methods
             save(file_name, 'task_para');
         end
 
+        Prob.D = [];
+        Prob.Lb = {};
+        Prob.Ub = {};
+        Prob.Fnc = {};
         for t = 1:Prob.T
             Prob.D(t) = Prob.Dim;
             Prob.Lb{t} = zeros(1, Prob.D(t));
