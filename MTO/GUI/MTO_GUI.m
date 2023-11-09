@@ -760,7 +760,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                 return;
             end
             
-            app.EUITable.RowName{size(app.ETableData, 1)+1} = '+/-/=';
+            app.EUITable.RowName{size(app.ETableData, 1)+1} = '+ / - / =';
             
             % Rank sum or Signed rank test
             for algo = 1:size(app.ETableData, 2)
@@ -801,7 +801,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                         sign_p(3) = sign_p(3) + 1;
                     end
                 end
-                app.ETableTest{size(app.ETableData, 1)+1, algo} = sprintf('%d/%d/%d', sign_p);
+                app.ETableTest{size(app.ETableData, 1)+1, algo} = sprintf('%d / %d / %d', sign_p);
             end
             app.EUITable.Data = cellstr(strcat(app.ETableView, " ", app.ETableTest(1:end-1, :)));
             app.EUITable.Data(size(app.ETableData, 1)+1,:) = app.ETableTest(size(app.ETableData, 1)+1,:);
