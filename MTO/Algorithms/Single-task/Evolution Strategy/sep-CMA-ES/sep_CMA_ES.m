@@ -49,6 +49,7 @@ methods
             % Covariance update parameters
             cc{t} = 4 / (4 + n{t});
             ccov{t} = (1 / mueff) * (2 / (n{t} + sqrt(2))^2) + (1 - 1 / mueff) * min(1, (2 * mueff - 1) / ((n{t} + 2)^2 + mueff));
+            ccov{t} = (n{t} + 2) / 3 * ccov{t};
             % Initialization
             mDec{t} = mean(unifrnd(zeros(lambda, n{t}), ones(lambda, n{t})));
             ps{t} = zeros(n{t}, 1);
