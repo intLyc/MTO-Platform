@@ -32,8 +32,8 @@ for k = 1:size(Result_Gen, 1)
     end
     Result(k, 1) = Result_Gen(k, 1);
     Result(k, end) = Result_Gen(k, end);
-    if idx - 1 < maxGen
-        for x = idx - 1:maxGen
+    if idx < maxGen
+        for x = idx:maxGen
             Result(k, x) = Result_Gen(k, end);
         end
     end
