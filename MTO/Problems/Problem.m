@@ -16,9 +16,9 @@ properties
 
     Name % (cell) Problems Name List
     T % (integer) Tasks number
+    N % (integer) Population size for each task
     M % (vector) Objective number for each task
     D % (vector) Dimension for each task
-    N % (vector) Population size for each task
     Fnc % (cell) Function for each task
     Lb % (cell) Lower Bound for each task
     Ub % (cell) Upper Bound for each task
