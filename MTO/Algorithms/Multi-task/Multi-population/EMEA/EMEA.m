@@ -28,7 +28,7 @@ properties (SetAccess = private)
     GA_MuC = 2
     GA_MuM = 5
     DE_F = 0.5
-    DE_CR = 0.9
+    DE_CR = 0.6
 end
 
 methods
@@ -50,7 +50,7 @@ methods
         Algo.GA_MuC = str2double(Parameter{i}); i = i + 1;
         Algo.GA_MuM = str2double(Parameter{i}); i = i + 1;
         Algo.DE_F = str2double(Parameter{i}); i = i + 1;
-        Algo.DE_CR = str2double(Parameter{i}); i = i + 1;
+        Algo.DE_CR = str2double(Parameter{i});
     end
 
     function run(Algo, Prob)
@@ -58,6 +58,14 @@ methods
 
         % Initialization
         population = Initialization(Algo, Prob, Individual);
+
+        init_pop_dec = {};
+        for t = 1:Prob.T
+            [~, rank] = sortrows([population{t}.CVs, population{t}.Objs], [1, 2]);
+            init_pop_dec{t} = population{t}(rank).Decs;
+            init_pop_dec{t} = init_pop_dec{t}(:, 1:Prob.D(t));
+            init_pop_dec{t} = (Prob.Ub{t} - Prob.Lb{t}) .* init_pop_dec{t} + Prob.Lb{t};
+        end
 
         while Algo.notTerminated(Prob)
             for t = 1:Prob.T
@@ -79,23 +87,17 @@ methods
                         if t == k
                             continue;
                         end
-                        [~, curr_rank] = sortrows([population{t}.CVs, population{t}.Objs], [1, 2]);
-                        curr_pop = population{t}(curr_rank);
-                        curr_pop_dec = curr_pop.Decs;
-                        curr_pop_dec = curr_pop_dec(:, 1:Prob.D(t));
 
+                        % extract best dec
                         [~, his_rank] = sortrows([population{k}.CVs, population{k}.Objs], [1, 2]);
-                        his_pop = population{k}(his_rank);
-                        his_pop_dec = his_pop.Decs;
-                        his_pop_dec = his_pop_dec(:, 1:Prob.D(k));
-                        his_best_dec = his_pop_dec(1:inject_num, :);
+                        his_pop_dec = population{k}(his_rank).Decs;
+                        his_best_dec = his_pop_dec(1:inject_num, 1:Prob.D(k));
 
                         % map to original
-                        curr_pop_dec = (Prob.Ub{t} - Prob.Lb{t}) .* curr_pop_dec + Prob.Lb{t};
-                        his_pop_dec = (Prob.Ub{k} - Prob.Lb{k}) .* his_pop_dec + Prob.Lb{k};
                         his_best_dec = (Prob.Ub{k} - Prob.Lb{k}) .* his_best_dec + Prob.Lb{k};
 
-                        inject = mDA(curr_pop_dec, his_pop_dec, his_best_dec);
+                        % autoencoding transfer
+                        inject = mDA(init_pop_dec{t}, init_pop_dec{k}, his_best_dec);
 
                         % mat to [0,1]
                         inject = (inject - Prob.Lb{t}) ./ (Prob.Ub{t} - Prob.Lb{t});
@@ -112,16 +114,8 @@ methods
                     offspring(replace_idx) = inject_pop;
                 end
 
-                % Evaluation
                 offspring = Algo.Evaluation(offspring, Prob, t);
-
-                % Selection
-                switch op
-                    case 'GA'
-                        population{t} = Selection_Elit(population{t}, offspring);
-                    case 'DE'
-                        population{t} = Selection_Tournament(population{t}, offspring);
-                end
+                population{t} = Selection_Elit(population{t}, offspring);
             end
         end
     end
