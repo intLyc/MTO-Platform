@@ -1,5 +1,5 @@
-function [Obj, Con] = Rosenbrock1(var, M, opt, opt_con)
-    % Rosenbrock function
+function [Obj, Con] = C_Rastrigin1(var, M, opt, opt_con)
+    % Rastrigin function
     %   - var: design variable vector
     %   - M: rotation matrix
     %   - opt: shift vector
@@ -8,17 +8,10 @@ function [Obj, Con] = Rosenbrock1(var, M, opt, opt_con)
 
     % Object
     x = (M * (var - opt(1:dim))')';
-    sumx = 0;
-    for ii = 1:(dim - 1)
-        xi = x(ii);
-        xnext = x(ii + 1);
-        new = 100 * (xnext - xi^2)^2 + (xi - 1)^2;
-        sumx = sumx + new;
+    Obj = 10 * dim;
+    for i = 1:dim
+        Obj = Obj + (x(i)^2 - 10 * (cos(2 * pi * x(i))));
     end
-    if dim == 1
-        sumx = 100 * (x(1) - x(1)^2)^2 + (x(1) - 1)^2;
-    end
-    Obj = sumx;
 
     % constraint
     x = 2 * (var - opt_con(1:dim));

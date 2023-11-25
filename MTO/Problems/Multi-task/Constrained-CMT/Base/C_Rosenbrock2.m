@@ -1,4 +1,4 @@
-function [Obj, Con] = Rosenbrock2(var, M, opt, opt_con)
+function [Obj, Con] = C_Rosenbrock2(var, M, opt, opt_con)
     % Rosenbrock function
     %   - var: design variable vector
     %   - M: rotation matrix

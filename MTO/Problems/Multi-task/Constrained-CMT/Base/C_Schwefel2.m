@@ -1,4 +1,4 @@
-function [Obj, Con] = Schwefel2(var, M, opt, opt_con)
+function [Obj, Con] = C_Schwefel2(var, M, opt, opt_con)
     % Schwefel function
     %   - var: design variable vector
     %   - M: rotation matrix

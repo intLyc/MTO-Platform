@@ -1,4 +1,4 @@
-function [Obj, Con] = Rastrigin4(var, M, opt, opt_con)
+function [Obj, Con] = C_Rastrigin2(var, M, opt, opt_con)
     % Rastrigin function
     %   - var: design variable vector
     %   - M: rotation matrix
@@ -15,9 +15,8 @@ function [Obj, Con] = Rastrigin4(var, M, opt, opt_con)
 
     % constraint
     x = 2 * (var - opt_con(1:dim));
-    h = -sum(x .* sin(0.1 * pi * x), 2);
+    g = sum(x.^2, 2) - 100 * dim;
 
-    h = abs(h) - 1e-4;
-    h(h < 0) = 0;
-    Con = h;
+    g(g < 0) = 0;
+    Con = g;
 end

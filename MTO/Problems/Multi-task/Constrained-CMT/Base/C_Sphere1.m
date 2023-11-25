@@ -1,5 +1,5 @@
-function [Obj, Con] = Rastrigin1(var, M, opt, opt_con)
-    % Rastrigin function
+function [Obj, Con] = C_Sphere1(var, M, opt, opt_con)
+    % Sphere function
     %   - var: design variable vector
     %   - M: rotation matrix
     %   - opt: shift vector
@@ -8,13 +8,10 @@ function [Obj, Con] = Rastrigin1(var, M, opt, opt_con)
 
     % Object
     x = (M * (var - opt(1:dim))')';
-    Obj = 10 * dim;
-    for i = 1:dim
-        Obj = Obj + (x(i)^2 - 10 * (cos(2 * pi * x(i))));
-    end
+    Obj = sum(x.^2, 'all');
 
     % constraint
-    x = 2 * (var - opt_con(1:dim));
+    x = var - opt_con(1:dim);
     g = sum(x.^2 - 5000 .* cos(0.1 .* pi .* x) - 4000, 2);
 
     g(g < 0) = 0;

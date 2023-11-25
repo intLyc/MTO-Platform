@@ -50,11 +50,11 @@ classdef CMT8 < Problem
                 Prob.D = ones(1, Prob.T) * Prob.defaultD;
             end
 
-            Prob.Fnc{1} = @(x)Griewank2(x, 1, 0 * ones(1, Prob.D(1)), -30 * ones(1, Prob.D(1)));
+            Prob.Fnc{1} = @(x)C_Griewank2(x, 1, 0 * ones(1, Prob.D(1)), -30 * ones(1, Prob.D(1)));
             Prob.Lb{1} = -100 * ones(1, Prob.D(1));
             Prob.Ub{1} = 100 * ones(1, Prob.D(1));
 
-            Prob.Fnc{2} = @(x)Weierstrass3(x, 1, 0 * ones(1, Prob.D(2)), 0.2 * ones(1, Prob.D(2)));
+            Prob.Fnc{2} = @(x)C_Weierstrass3(x, 1, 0 * ones(1, Prob.D(2)), 0.2 * ones(1, Prob.D(2)));
             Prob.Lb{2} = -0.5 * ones(1, Prob.D(2));
             Prob.Ub{2} = 0.5 * ones(1, Prob.D(2));
         end

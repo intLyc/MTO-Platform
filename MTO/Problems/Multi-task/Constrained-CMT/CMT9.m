@@ -50,11 +50,11 @@ classdef CMT9 < Problem
                 Prob.D = ones(1, Prob.T) * Prob.defaultD;
             end
 
-            Prob.Fnc{1} = @(x)Rastrigin4(x, 1, -10 * ones(1, Prob.D(1)), 0 * ones(1, Prob.D(1)));
+            Prob.Fnc{1} = @(x)C_Rastrigin4(x, 1, -10 * ones(1, Prob.D(1)), 0 * ones(1, Prob.D(1)));
             Prob.Lb{1} = -50 * ones(1, Prob.D(1));
             Prob.Ub{1} = 50 * ones(1, Prob.D(1));
 
-            Prob.Fnc{2} = @(x)Schwefel2(x, 1, 0 * ones(1, Prob.D(2)), 100 * ones(1, Prob.D(2)));
+            Prob.Fnc{2} = @(x)C_Schwefel2(x, 1, 0 * ones(1, Prob.D(2)), 100 * ones(1, Prob.D(2)));
             Prob.Lb{2} = -500 * ones(1, Prob.D(2));
             Prob.Ub{2} = 500 * ones(1, Prob.D(2));
         end

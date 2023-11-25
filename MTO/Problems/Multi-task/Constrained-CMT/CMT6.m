@@ -50,11 +50,11 @@ classdef CMT6 < Problem
                 Prob.D = ones(1, Prob.T) * Prob.defaultD;
             end
 
-            Prob.Fnc{1} = @(x)Ackley2(x, 1, 2 * ones(1, Prob.D(1)), 0 * ones(1, Prob.D(1)));
+            Prob.Fnc{1} = @(x)C_Ackley2(x, 1, 2 * ones(1, Prob.D(1)), 0 * ones(1, Prob.D(1)));
             Prob.Lb{1} = -50 * ones(1, Prob.D(1));
             Prob.Ub{1} = 50 * ones(1, Prob.D(1));
 
-            Prob.Fnc{2} = @(x)Weierstrass3(x, 1, 0.1 * ones(1, Prob.D(2)), 0 * ones(1, Prob.D(2)));
+            Prob.Fnc{2} = @(x)C_Weierstrass3(x, 1, 0.1 * ones(1, Prob.D(2)), 0 * ones(1, Prob.D(2)));
             Prob.Lb{2} = -0.5 * ones(1, Prob.D(2));
             Prob.Ub{2} = 0.5 * ones(1, Prob.D(2));
         end

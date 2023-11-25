@@ -50,11 +50,11 @@ classdef CMT3 < Problem
                 Prob.D = ones(1, Prob.T) * Prob.defaultD;
             end
 
-            Prob.Fnc{1} = @(x)Ackley2(x, 1, 42.096 * ones(1, Prob.D(1)), 40 * ones(1, Prob.D(1)));
+            Prob.Fnc{1} = @(x)C_Ackley2(x, 1, 42.096 * ones(1, Prob.D(1)), 40 * ones(1, Prob.D(1)));
             Prob.Lb{1} = -50 * ones(1, Prob.D(1));
             Prob.Ub{1} = 50 * ones(1, Prob.D(1));
 
-            Prob.Fnc{2} = @(x)Schwefel1(x, 1, 0 * ones(1, Prob.D(2)), 400 * ones(1, Prob.D(2)));
+            Prob.Fnc{2} = @(x)C_Schwefel1(x, 1, 0 * ones(1, Prob.D(2)), 400 * ones(1, Prob.D(2)));
             Prob.Lb{2} = -500 * ones(1, Prob.D(2));
             Prob.Ub{2} = 500 * ones(1, Prob.D(2));
         end

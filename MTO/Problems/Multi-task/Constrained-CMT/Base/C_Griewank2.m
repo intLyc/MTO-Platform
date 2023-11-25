@@ -1,4 +1,4 @@
-function [Obj, Con] = Griewank2(var, M, opt, opt_con)
+function [Obj, Con] = C_Griewank2(var, M, opt, opt_con)
     % GRIEWANK function
     %   - var: design variable vector
     %   - M: rotation matrix

@@ -1,5 +1,5 @@
-function [Obj, Con] = Schwefel1(var, M, opt, opt_con)
-    % Schwefel function
+function [Obj, Con] = C_Griewank1(var, M, opt, opt_con)
+    % GRIEWANK function
     %   - var: design variable vector
     %   - M: rotation matrix
     %   - opt: shift vector
@@ -8,14 +8,15 @@ function [Obj, Con] = Schwefel1(var, M, opt, opt_con)
 
     % Object
     x = (M * (var - opt(1:dim))')';
-    sumx = 0;
+    sum1 = 0; sum2 = 1;
     for i = 1:dim
-        sumx = sumx + x(i) * sin(sqrt(abs(x(i))));
+        sum1 = sum1 + x(i) * x(i);
+        sum2 = sum2 * cos(x(i) / (sqrt(i)));
     end
-    Obj = 418.9829 * dim - sumx;
+    Obj = 1 + 1/4000 * sum1 - sum2;
 
     % constraint
-    x = 0.2 * (var - opt_con(1:dim));
+    x = var - opt_con(1:dim);
     g = sum(x.^2 - 5000 .* cos(0.1 .* pi .* x) - 4000, 2);
 
     g(g < 0) = 0;

@@ -1,4 +1,4 @@
-function [Obj, Con] = Ackley2(var, M, opt, opt_con)
+function [Obj, Con] = C_Ackley2(var, M, opt, opt_con)
     % Ackley function
     %   - var: design variable vector
     %   - M: rotation matrix
