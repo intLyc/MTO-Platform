@@ -19,8 +19,8 @@
 
 ```
 @Article{Li2023MToP,  
-  title      = {MToP: A MATLAB Platform for Evolutionary Multitask Optimization},  
-  author     = {Yanchi Li and Wenyin Gong and Fei Ming and Tingyu Zhang and Shuijia Li},  
+  title      = {MToP: A MATLAB Optimization Platform for Evolutionary Multitasking},  
+  author     = {Yanchi Li and Wenyin Gong and Fei Ming and Tingyu Zhang and Shuijia Li and Qiong Gu},  
   year       = {2023},  
   url        = {https://github.com/intLyc/MTO-Platform}  
 }
