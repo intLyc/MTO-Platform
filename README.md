@@ -13,7 +13,7 @@ We introduce the multitask optimization platform, named **MToP**, for evolutiona
 - 30+ multitask evolutionary algorithms for multitask optimization
 - 30+ single-task evolutionary algorithms can handle multitask optimization problems
 - 150+ multitask optimization problem cases with real-world applications
-- 10+ performance metrics covering single- and multi-objective optimzation
+- 10+ performance metrics covering single- and multi-objective optimization
 
 MToP is a user-friendly tool with a graphical user interface that makes it easy to analyze results, export data, and plot schematics. More importantly, MToP is extensible, allowing users to develop new algorithms and define new problems.
 
