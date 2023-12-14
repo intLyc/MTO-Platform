@@ -4,10 +4,11 @@ function Result = gen2eva(Result_Gen, FE_Gen, maxGen)
 % Output: Result
 
 %------------------------------- Copyright --------------------------------
-% Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
-% research purposes. All publications which use this platform or any code
-% in the platform should acknowledge the use of "MTO-Platform" and cite
-% or footnote "https://github.com/intLyc/MTO-Platform"
+% Copyright (c) Yanchi Li. You are free to use the MToP for research
+% purposes. All publications which use this platform should acknowledge
+% the use of "MToP" or "MTO-Platform" and cite as "Y. Li, W. Gong, F. Ming,
+% T. Zhang, S. Li, and Q. Gu, MToP: A MATLAB Optimization Platform for
+% Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
 if length(Result_Gen) <= maxGen
