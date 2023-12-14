@@ -7,7 +7,7 @@ classdef CCEF_ECHT < Algorithm
 %   author   = {Li, Yanchi and Gong, Wenyin and Hu, Zhenzhen and Li, Shuijia},
 %   journal  = {IEEE Transactions on Systems, Man, and Cybernetics: Systems},
 %   year     = {2023},
-%   doi      = {},
+%   doi      = {10.1109/TSMC.2023.3343778},
 % }
 %--------------------------------------------------------------------------
 
