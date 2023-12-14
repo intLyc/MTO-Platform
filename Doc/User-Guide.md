@@ -1,7 +1,7 @@
 
 # User Guide
 
-[-> In Chinese <-](#中文介绍)
+[-> In Chinese <-](#中文指南)
 
 ### Run MTO Platform
 
