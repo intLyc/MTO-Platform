@@ -11,8 +11,8 @@ function Result = gen2eva(Result_Gen, FE_Gen, maxGen)
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-if length(Result_Gen) <= maxGen
-    maxGen = length(Result_Gen);
+if size(Result_Gen, 2) <= maxGen
+    maxGen = size(Result_Gen, 2);
 end
 
 Result = Result_Gen(:, 1:maxGen);
