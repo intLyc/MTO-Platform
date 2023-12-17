@@ -22,16 +22,25 @@ classdef EMT_GS < Algorithm
 
 properties (SetAccess = private)
     G = 10
+    lrD = 0.0002
+    lrG = 0.0003
+    BS = 10
 end
 
 methods
     function Parameter = getParameter(Algo)
-        Parameter = {'G: Training Gap', num2str(Algo.G)};
+        Parameter = {'G: Training Gap', num2str(Algo.G), ...
+                'lrD: Learning Rate D', num2str(Algo.lrD), ...
+                'lrG: Learning Rate G', num2str(Algo.lrG), ...
+                'BS: Batch Size', num2str(Algo.BS)};
     end
 
     function setParameter(Algo, Parameter)
         i = 1;
         Algo.G = str2double(Parameter{i}); i = i + 1;
+        Algo.lrD = str2double(Parameter{i}); i = i + 1;
+        Algo.lrG = str2double(Parameter{i}); i = i + 1;
+        Algo.BS = str2double(Parameter{i}); i = i + 1;
     end
 
     function run(Algo, Prob)
@@ -50,10 +59,10 @@ methods
                 if t == k
                     continue;
                 end
-                [GANOff{t, k}, GAN{t, k}, stGAN{t, k}, DIS{t, k}, stDIS{t, k}] = InitialGAN(population{t}.Decs, population{k}.Decs);
+                [GANOff{t, k}, GAN{t, k}, stGAN{t, k}, DIS{t, k}, stDIS{t, k}] = InitialGAN( ...
+                    population{t}.Decs, population{k}.Decs, Algo.lrD, Algo.lrG, Algo.BS);
             end
         end
-
         while Algo.notTerminated(Prob, population)
             for t = 1:Prob.T
                 for k = 1:Prob.T
@@ -62,7 +71,9 @@ methods
                     end
                     if mod(Algo.Gen, Algo.G) == 0
                         % Train GAN
-                        [GANOff{t, k}, GAN{t, k}, stGAN{t, k}, DIS{t, k}, stDIS{t, k}] = TrainGAN(population{t}.Decs, population{k}.Decs, GAN{t, k}, stGAN{t, k}, DIS{t, k}, stDIS{t, k});
+                        [GANOff{t, k}, GAN{t, k}, stGAN{t, k}, DIS{t, k}, stDIS{t, k}] = TrainGAN( ...
+                            population{t}.Decs, population{k}.Decs, GAN{t, k}, stGAN{t, k}, ...
+                            DIS{t, k}, stDIS{t, k}, Algo.lrD, Algo.lrG, Algo.BS);
                     else
                         if rand() < 0.5
                             GANOff{t, k} = GenerateGAN(population{k}.Decs, GAN{t, k}, stGAN{t, k});

@@ -1,7 +1,7 @@
 %% Basic Generative Adversarial Network
 %% Load Data
 
-function [output, paramsGen, stGen, paramsDis, stDis] = TrainGAN(tdata, fdata, paramsGen, stGen, paramsDis, stDis)
+function [output, paramsGen, stGen, paramsDis, stDis] = TrainGAN(tdata, fdata, paramsGen, stGen, paramsDis, stDis, lrD, lrG, BS)
 trainX = preprocess(tdata);
 dim = size(trainX, 1);
 noise_data = fdata(:, randperm(size(fdata, 2)));
@@ -9,8 +9,8 @@ noise_data = fdata(:, randperm(size(fdata, 2)));
 settings.noise = noise_data;
 settings.dim = dim;
 settings.latent_dim = dim;
-settings.batch_size = 10; settings.image_size = [dim, 1, 1];
-settings.lrD = 0.0002; settings.lrG = 0.0003; settings.beta1 = 0.7;
+settings.batch_size = BS; settings.image_size = [dim, 1, 1];
+settings.lrD = lrD; settings.lrG = lrG; settings.beta1 = 0.7;
 settings.beta2 = 0.9; settings.maxepochs = 2;
 
 %% Initialization
