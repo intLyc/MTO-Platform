@@ -8,9 +8,7 @@
 [![GitHub forks](https://img.shields.io/github/forks/intLyc/MTO-Platform?style=social)](#mto-platform)
 [![GitHub watchers](https://img.shields.io/github/watchers/intLyc/MTO-Platform?style=social)](#mto-platform)
 
-<img src="./Doc/ReadmeFigure/CMT-LandScape.png" width="200px">
-<img src="./Doc/ReadmeFigure/MaT-LandScape.png" width="200px">
-<img src="./Doc/ReadmeFigure/CpMT-LandScape.png" width="200px">
+<img src="./Doc/ReadmeFigure/CMT-LandScape.png" width="200px"><img src="./Doc/ReadmeFigure/MaT-LandScape.png" width="200px"><img src="./Doc/ReadmeFigure/CpMT-LandScape.png" width="200px">
 
 We introduce the multitask optimization platform, named **MToP**, for evolutionary multitasking:
 
