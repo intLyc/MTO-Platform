@@ -28,5 +28,6 @@ end
 
 function [Obj, Con] = get_func(x, index, g)
 Obj = cec22_test_func(x', index) - g;
-Con = 0;
+Obj = Obj';
+Con = zeros(size(x, 1), 1);
 end

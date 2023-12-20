@@ -14,7 +14,7 @@ properties
     Name % Algorithm Name
     FE % Function evaluations
     Gen % Generations
-    FE_Gen % FE in each generations
+    FE_Gen % FE in each Gen
     Best % Best individual found (Single-objective)
     Result % Result after run
     Result_Num % Convergence Results Num
@@ -58,7 +58,8 @@ methods
         if Algo.Save_Dec
             for t = 1:size(Result, 1)
                 for idx = 1:size(Result, 2)
-                    Result(t, idx).Dec = Prob.Lb{t} + Result(t, idx).Dec(:, 1:Prob.D(t)) .* (Prob.Ub{t} - Prob.Lb{t});
+                    Result(t, idx).Dec = Prob.Lb{t} + ...
+                        Result(t, idx).Dec(:, 1:Prob.D(t)) .* (Prob.Ub{t} - Prob.Lb{t});
                     Result(t, idx).Dec(:, Prob.D(t) + 1:max(Prob.D)) = NaN;
                 end
             end
@@ -97,16 +98,16 @@ methods
     end
 
     function [Pop, Flag] = Evaluation(Algo, Pop, Prob, t)
-        for i = 1:length(Pop)
-            x = (Prob.Ub{t} - Prob.Lb{t}) .* Pop(i).Dec(1:Prob.D(t)) + Prob.Lb{t};
-            x(x > Prob.Ub{t}) = Prob.Ub{t}(x > Prob.Ub{t});
-            x(x < Prob.Lb{t}) = Prob.Lb{t}(x < Prob.Lb{t});
-            [Obj, Con] = Prob.Fnc{t}(x);
-            CV = sum(Con);
-            Pop(i).Obj = Obj;
-            Pop(i).CV = CV;
+        lenPop = length(Pop);
+        PopDec = max(0, min(1, Pop.Decs));
+        x = repmat(Prob.Ub{t} - Prob.Lb{t}, lenPop, 1) .* ...
+            PopDec(:, 1:Prob.D(t)) + repmat(Prob.Lb{t}, lenPop, 1);
+        [Objs, Cons] = Prob.Fnc{t}(x);
+        for i = 1:lenPop
+            Pop(i).Obj = Objs(i, :);
+            Pop(i).CV = sum(Cons(i, :));
         end
-        Algo.FE = Algo.FE + length(Pop);
+        Algo.FE = Algo.FE + lenPop;
 
         if max(Prob.M) == 1 % Single-objective
             % Update Best

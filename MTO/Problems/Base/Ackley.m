@@ -13,20 +13,30 @@ function [Obj, Con] = Ackley(var, M, opt, g)
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-dim = length(var);
-var = (M * (var - opt)')';
-sum1 = 0; sum2 = 0;
+[ps, D] = size(var);
 
-for i = 1:dim
-    sum1 = sum1 + var(i) * var(i);
-    sum2 = sum2 + cos(2 * pi * var(i));
+if size(M, 1) == 1
+    M = M * eye(D);
+end
+if size(opt, 2) == 1
+    opt = opt * ones(1, D);
 end
 
-avgsum1 = sum1 / dim;
-avgsum2 = sum2 / dim;
+var = (M(1:D, 1:D) * (var - repmat(opt(1:D), ps, 1))')';
 
-Obj = -20 * exp(-0.2 * sqrt(avgsum1)) - exp(avgsum2) + 20 + exp(1);
+sum1 = zeros(ps, 1);
+sum2 = zeros(ps, 1);
+
+for i = 1:D
+    sum1 = sum1 + var(:, i) .* var(:, i);
+    sum2 = sum2 + cos(2 * pi .* var(:, i));
+end
+
+avgsum1 = sum1 ./ D;
+avgsum2 = sum2 ./ D;
+
+Obj = -20 * exp(-0.2 .* sqrt(avgsum1)) - exp(avgsum2) + 20 + exp(1);
 Obj = Obj + g;
 
-Con = 0;
+Con = zeros(ps, 1);
 end

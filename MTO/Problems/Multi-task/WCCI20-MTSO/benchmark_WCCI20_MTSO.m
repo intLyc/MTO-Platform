@@ -178,5 +178,6 @@ end
 
 function [Obj, Con] = get_func(x, fnc, index, task_id)
 Obj = cec14_func(x', fnc, index, task_id);
-Con = 0;
+Obj = Obj';
+Con = zeros(size(x, 1), 1);
 end

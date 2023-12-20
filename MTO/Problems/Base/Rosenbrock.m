@@ -1,4 +1,4 @@
-function [Obj, Con] = Rosenbrock(x, M, opt, g)
+function [Obj, Con] = Rosenbrock(var, M, opt, g)
 % ROSENBROCK function
 %   - var: design variable vector
 %   - M: rotation matrix
@@ -13,21 +13,29 @@ function [Obj, Con] = Rosenbrock(x, M, opt, g)
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-var = x;
-dim = length(var);
-var = (M * (var - opt)')';
-sum = 0;
-for ii = 1:(dim - 1)
-    xi = var(ii);
-    xnext = var(ii + 1);
-    new = 100 * (xnext - xi^2)^2 + (xi - 1)^2;
-    sum = sum + new;
+[ps, D] = size(var);
+
+if size(M, 1) == 1
+    M = M * eye(D);
 end
-if dim == 1
-    sum = 100 * (var(1) - var(1)^2)^2 + (var(1) - 1)^2;
+if size(opt, 2) == 1
+    opt = opt * ones(1, D);
 end
-Obj = sum;
+
+var = (M(1:D, 1:D) * (var - repmat(opt(1:D), ps, 1))')';
+
+sum1 = zeros(ps, 1);
+for ii = 1:(D - 1)
+    xi = var(:, ii);
+    xnext = var(:, ii + 1);
+    new = 100 * (xnext - xi.^2).^2 + (xi - 1).^2;
+    sum1 = sum1 + new;
+end
+if D == 1
+    sum1 = 100 * (var(:, 1) - var(:, 1).^2).^2 + (var(:, 1) - 1).^2;
+end
+Obj = sum1;
 Obj = Obj + g;
 
-Con = 0;
+Con = zeros(ps, 1);
 end

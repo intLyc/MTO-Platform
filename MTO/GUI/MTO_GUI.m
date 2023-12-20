@@ -2,138 +2,138 @@ classdef MTO_GUI < matlab.apps.AppBase
 
     % Properties that correspond to app components
     properties (Access = public)
-        MTOPlatformMToPUIFigure      matlab.ui.Figure
-        MTOPlatformGridLayout        matlab.ui.container.GridLayout
-        MTOPlatformTabGroup          matlab.ui.container.TabGroup
-        TestModuleTab                matlab.ui.container.Tab
-        TestGridLayout               matlab.ui.container.GridLayout
-        TPanel1                      matlab.ui.container.Panel
-        TP1GridLayout                matlab.ui.container.GridLayout
-        AlgorithmDropDownLabel       matlab.ui.control.Label
-        TAlgorithmDropDown           matlab.ui.control.DropDown
-        TAlgorithmTree               matlab.ui.container.Tree
-        TProblemTree                 matlab.ui.container.Tree
-        TProblemDropDown             matlab.ui.control.DropDown
-        ProblemDropDownLabel         matlab.ui.control.Label
-        TTaskTypeDropDown            matlab.ui.control.DropDown
-        TaskLabel                    matlab.ui.control.Label
-        SpecialLabel_2               matlab.ui.control.Label
-        TSpecialTypeDropDown         matlab.ui.control.DropDown
-        TObjectiveTypeDropDown       matlab.ui.control.DropDown
-        ObjectiveLabel               matlab.ui.control.Label
-        TPanel2                      matlab.ui.container.Panel
-        TP2GridLayout                matlab.ui.container.GridLayout
-        TP21GridLayout               matlab.ui.container.GridLayout
-        TShowTypeDropDown            matlab.ui.control.DropDown
-        TSaveButton                  matlab.ui.control.Button
-        TP24GridLayout               matlab.ui.container.GridLayout
-        TStartButton                 matlab.ui.control.Button
-        TResetButton                 matlab.ui.control.Button
-        TUIAxes                      matlab.ui.control.UIAxes
-        TPanel3                      matlab.ui.container.Panel
-        TP3GridLayout                matlab.ui.container.GridLayout
-        TOutputTextArea              matlab.ui.control.TextArea
-        MTOPlatformMToPv03byYanchiLiLabel  matlab.ui.control.Label
-        ExperimentModuleTab          matlab.ui.container.Tab
-        ExperimentsGridLayout        matlab.ui.container.GridLayout
-        EPanel1                      matlab.ui.container.Panel
-        EP1GridLayout                matlab.ui.container.GridLayout
-        EProblemsAddButton           matlab.ui.control.Button
-        EAlgorithmsAddButton         matlab.ui.control.Button
-        EAlgorithmsListBox           matlab.ui.control.ListBox
-        AlgorithmsLabel              matlab.ui.control.Label
-        EProblemsListBox             matlab.ui.control.ListBox
-        ProblemsLabel                matlab.ui.control.Label
-        ParallelLabel                matlab.ui.control.Label
-        EParallelDropDown            matlab.ui.control.DropDown
-        TaskLabel_2                  matlab.ui.control.Label
-        ETaskTypeDropDown            matlab.ui.control.DropDown
-        SpecialLabel                 matlab.ui.control.Label
-        ESpecialTypeDropDown         matlab.ui.control.DropDown
-        ObjectiveLabel_2             matlab.ui.control.Label
-        EObjectiveTypeDropDown       matlab.ui.control.DropDown
-        GridLayout5                  matlab.ui.container.GridLayout
-        ERepsEditField               matlab.ui.control.NumericEditField
-        EResultsNumEditField         matlab.ui.control.NumericEditField
-        ERunTimesEditFieldLabel      matlab.ui.control.Label
-        EResultsNumEditFieldLabel    matlab.ui.control.Label
-        SaveDecLabel                 matlab.ui.control.Label
-        ESaveDecDropDown             matlab.ui.control.DropDown
-        EPanel2                      matlab.ui.container.Panel
-        EP2GridLayout                matlab.ui.container.GridLayout
-        EAlgorithmsTree              matlab.ui.container.Tree
-        EProblemsTree                matlab.ui.container.Tree
-        GridLayout2                  matlab.ui.container.GridLayout
-        EStartButton                 matlab.ui.control.Button
-        EPauseButton                 matlab.ui.control.Button
-        EStopButton                  matlab.ui.control.Button
-        GridLayout3                  matlab.ui.container.GridLayout
-        ESelectedAlgorithmsLabel     matlab.ui.control.Label
-        EAlgorithmsDelButton         matlab.ui.control.Button
-        GridLayout4                  matlab.ui.container.GridLayout
-        ESelectedProblemsLabel       matlab.ui.control.Label
-        EProblemsDelButton           matlab.ui.control.Button
-        GridLayout                   matlab.ui.container.GridLayout
-        ESaveDataButton              matlab.ui.control.Button
-        ELoadDataButton              matlab.ui.control.Button
-        EPanel3                      matlab.ui.container.Panel
-        EP3GridLayout                matlab.ui.container.GridLayout
-        EP3TGridLayout               matlab.ui.container.GridLayout
-        EP3T1GridLayout              matlab.ui.container.GridLayout
-        ETestTypeDropDown            matlab.ui.control.DropDown
-        EAlgorithmDropDown           matlab.ui.control.DropDown
-        EShowTypeDropDown            matlab.ui.control.DropDown
-        EDataTypeDropDown            matlab.ui.control.DropDown
-        EHighlightTypeDropDown       matlab.ui.control.DropDown
-        ESaveTableButton             matlab.ui.control.Button
-        EDataFormatEditField         matlab.ui.control.EditField
-        EConvergeButton              matlab.ui.control.Button
-        EParetoButton                matlab.ui.control.Button
-        EConvergeTypeDropDown        matlab.ui.control.DropDown
-        EUITable                     matlab.ui.control.Table
-        DataProcessModuleTab         matlab.ui.container.Tab
-        DataProcessGridLayout        matlab.ui.container.GridLayout
-        DPanel1                      matlab.ui.container.Panel
-        DP1GridLayout                matlab.ui.container.GridLayout
-        DDataProcessModuleLabel      matlab.ui.control.Label
-        DP1Panel1                    matlab.ui.container.Panel
-        DP1P1GridLayout              matlab.ui.container.GridLayout
-        DLoadDataButton              matlab.ui.control.Button
-        DDeleteDataButton            matlab.ui.control.Button
-        DSaveDataButton              matlab.ui.control.Button
+        MTOPlatformMToPv11UIFigure      matlab.ui.Figure
+        MTOPlatformGridLayout           matlab.ui.container.GridLayout
+        MTOPlatformTabGroup             matlab.ui.container.TabGroup
+        TestModuleTab                   matlab.ui.container.Tab
+        TestGridLayout                  matlab.ui.container.GridLayout
+        TPanel1                         matlab.ui.container.Panel
+        TP1GridLayout                   matlab.ui.container.GridLayout
+        AlgorithmDropDownLabel          matlab.ui.control.Label
+        TAlgorithmDropDown              matlab.ui.control.DropDown
+        TAlgorithmTree                  matlab.ui.container.Tree
+        TProblemTree                    matlab.ui.container.Tree
+        TProblemDropDown                matlab.ui.control.DropDown
+        ProblemDropDownLabel            matlab.ui.control.Label
+        TTaskTypeDropDown               matlab.ui.control.DropDown
+        TaskLabel                       matlab.ui.control.Label
+        SpecialLabel_2                  matlab.ui.control.Label
+        TSpecialTypeDropDown            matlab.ui.control.DropDown
+        TObjectiveTypeDropDown          matlab.ui.control.DropDown
+        ObjectiveLabel                  matlab.ui.control.Label
+        TPanel2                         matlab.ui.container.Panel
+        TP2GridLayout                   matlab.ui.container.GridLayout
+        TP21GridLayout                  matlab.ui.container.GridLayout
+        TShowTypeDropDown               matlab.ui.control.DropDown
+        TSaveButton                     matlab.ui.control.Button
+        TP24GridLayout                  matlab.ui.container.GridLayout
+        TStartButton                    matlab.ui.control.Button
+        TResetButton                    matlab.ui.control.Button
+        TUIAxes                         matlab.ui.control.UIAxes
+        TPanel3                         matlab.ui.container.Panel
+        TP3GridLayout                   matlab.ui.container.GridLayout
+        TOutputTextArea                 matlab.ui.control.TextArea
+        MTOPlatformMToPbyYanchiLiLabel  matlab.ui.control.Label
+        ExperimentModuleTab             matlab.ui.container.Tab
+        ExperimentsGridLayout           matlab.ui.container.GridLayout
+        EPanel1                         matlab.ui.container.Panel
+        EP1GridLayout                   matlab.ui.container.GridLayout
+        EProblemsAddButton              matlab.ui.control.Button
+        EAlgorithmsAddButton            matlab.ui.control.Button
+        EAlgorithmsListBox              matlab.ui.control.ListBox
+        AlgorithmsLabel                 matlab.ui.control.Label
+        EProblemsListBox                matlab.ui.control.ListBox
+        ProblemsLabel                   matlab.ui.control.Label
+        ParallelLabel                   matlab.ui.control.Label
+        EParallelDropDown               matlab.ui.control.DropDown
+        TaskLabel_2                     matlab.ui.control.Label
+        ETaskTypeDropDown               matlab.ui.control.DropDown
+        SpecialLabel                    matlab.ui.control.Label
+        ESpecialTypeDropDown            matlab.ui.control.DropDown
+        ObjectiveLabel_2                matlab.ui.control.Label
+        EObjectiveTypeDropDown          matlab.ui.control.DropDown
+        GridLayout5                     matlab.ui.container.GridLayout
+        ERepsEditField                  matlab.ui.control.NumericEditField
+        EResultsNumEditField            matlab.ui.control.NumericEditField
+        ERunTimesEditFieldLabel         matlab.ui.control.Label
+        EResultsNumEditFieldLabel       matlab.ui.control.Label
+        SaveDecLabel                    matlab.ui.control.Label
+        ESaveDecDropDown                matlab.ui.control.DropDown
+        EPanel2                         matlab.ui.container.Panel
+        EP2GridLayout                   matlab.ui.container.GridLayout
+        EAlgorithmsTree                 matlab.ui.container.Tree
+        EProblemsTree                   matlab.ui.container.Tree
+        GridLayout2                     matlab.ui.container.GridLayout
+        EStartButton                    matlab.ui.control.Button
+        EPauseButton                    matlab.ui.control.Button
+        EStopButton                     matlab.ui.control.Button
+        GridLayout3                     matlab.ui.container.GridLayout
+        ESelectedAlgorithmsLabel        matlab.ui.control.Label
+        EAlgorithmsDelButton            matlab.ui.control.Button
+        GridLayout4                     matlab.ui.container.GridLayout
+        ESelectedProblemsLabel          matlab.ui.control.Label
+        EProblemsDelButton              matlab.ui.control.Button
+        GridLayout                      matlab.ui.container.GridLayout
+        ESaveDataButton                 matlab.ui.control.Button
+        ELoadDataButton                 matlab.ui.control.Button
+        EPanel3                         matlab.ui.container.Panel
+        EP3GridLayout                   matlab.ui.container.GridLayout
+        EP3TGridLayout                  matlab.ui.container.GridLayout
+        EP3T1GridLayout                 matlab.ui.container.GridLayout
+        ETestTypeDropDown               matlab.ui.control.DropDown
+        EAlgorithmDropDown              matlab.ui.control.DropDown
+        EShowTypeDropDown               matlab.ui.control.DropDown
+        EDataTypeDropDown               matlab.ui.control.DropDown
+        EHighlightTypeDropDown          matlab.ui.control.DropDown
+        ESaveTableButton                matlab.ui.control.Button
+        EDataFormatEditField            matlab.ui.control.EditField
+        EConvergeButton                 matlab.ui.control.Button
+        EParetoButton                   matlab.ui.control.Button
+        EConvergeTypeDropDown           matlab.ui.control.DropDown
+        EUITable                        matlab.ui.control.Table
+        DataProcessModuleTab            matlab.ui.container.Tab
+        DataProcessGridLayout           matlab.ui.container.GridLayout
+        DPanel1                         matlab.ui.container.Panel
+        DP1GridLayout                   matlab.ui.container.GridLayout
+        DDataProcessModuleLabel         matlab.ui.control.Label
+        DP1Panel1                       matlab.ui.container.Panel
+        DP1P1GridLayout                 matlab.ui.container.GridLayout
+        DLoadDataButton                 matlab.ui.control.Button
+        DDeleteDataButton               matlab.ui.control.Button
+        DSaveDataButton                 matlab.ui.control.Button
         DLoadDataorSelectandDeleteSaveDataLabel_3  matlab.ui.control.Label
         DLoadDataorSelectandDeleteSaveDataLabel_4  matlab.ui.control.Label
-        DP1Panel2                    matlab.ui.container.Panel
-        DP1P2GridLayout              matlab.ui.container.GridLayout
-        DSelectandSplitDataLabel     matlab.ui.control.Label
-        DRepsSplitButton             matlab.ui.control.Button
-        DAlgorithmsSplitButton       matlab.ui.control.Button
-        DProblemsSplitButton         matlab.ui.control.Button
-        DP1Panel3                    matlab.ui.container.Panel
-        DP1P3GridLayout              matlab.ui.container.GridLayout
-        DSelectandMergeDataLabel     matlab.ui.control.Label
-        DRepsMergeButton             matlab.ui.control.Button
-        DAlgorithmsMergeButton       matlab.ui.control.Button
-        DProblemsMergeButton         matlab.ui.control.Button
-        DP1Panel4                    matlab.ui.container.Panel
-        DP1P4GridLayout              matlab.ui.container.GridLayout
-        DUpandDownDataLabel          matlab.ui.control.Label
-        DUpButton                    matlab.ui.control.Button
-        DDownButton                  matlab.ui.control.Button
-        DDataProcessModuleLabel_2    matlab.ui.control.Label
-        DPanel2                      matlab.ui.container.Panel
-        DP2GridLayout                matlab.ui.container.GridLayout
-        DDataTree                    matlab.ui.container.Tree
-        SelectedAlgoContextMenu      matlab.ui.container.ContextMenu
-        SelectedAlgoSelectAllMenu    matlab.ui.container.Menu
-        DDataContextMenu             matlab.ui.container.ContextMenu
-        SelectedAlgoSelectAllMenu_2  matlab.ui.container.Menu
-        SelectedProbContextMenu      matlab.ui.container.ContextMenu
-        SelectedProbSelectAllMenu    matlab.ui.container.Menu
-        AlgorithmsContextMenu        matlab.ui.container.ContextMenu
-        AlgorithmsSelectAllMenu      matlab.ui.container.Menu
-        ProblemsContextMenu          matlab.ui.container.ContextMenu
-        ProblemsSelectAllMenu        matlab.ui.container.Menu
+        DP1Panel2                       matlab.ui.container.Panel
+        DP1P2GridLayout                 matlab.ui.container.GridLayout
+        DSelectandSplitDataLabel        matlab.ui.control.Label
+        DRepsSplitButton                matlab.ui.control.Button
+        DAlgorithmsSplitButton          matlab.ui.control.Button
+        DProblemsSplitButton            matlab.ui.control.Button
+        DP1Panel3                       matlab.ui.container.Panel
+        DP1P3GridLayout                 matlab.ui.container.GridLayout
+        DSelectandMergeDataLabel        matlab.ui.control.Label
+        DRepsMergeButton                matlab.ui.control.Button
+        DAlgorithmsMergeButton          matlab.ui.control.Button
+        DProblemsMergeButton            matlab.ui.control.Button
+        DP1Panel4                       matlab.ui.container.Panel
+        DP1P4GridLayout                 matlab.ui.container.GridLayout
+        DUpandDownDataLabel             matlab.ui.control.Label
+        DUpButton                       matlab.ui.control.Button
+        DDownButton                     matlab.ui.control.Button
+        DDataProcessModuleLabel_2       matlab.ui.control.Label
+        DPanel2                         matlab.ui.container.Panel
+        DP2GridLayout                   matlab.ui.container.GridLayout
+        DDataTree                       matlab.ui.container.Tree
+        SelectedAlgoContextMenu         matlab.ui.container.ContextMenu
+        SelectedAlgoSelectAllMenu       matlab.ui.container.Menu
+        DDataContextMenu                matlab.ui.container.ContextMenu
+        SelectedAlgoSelectAllMenu_2     matlab.ui.container.Menu
+        SelectedProbContextMenu         matlab.ui.container.ContextMenu
+        SelectedProbSelectAllMenu       matlab.ui.container.Menu
+        AlgorithmsContextMenu           matlab.ui.container.ContextMenu
+        AlgorithmsSelectAllMenu         matlab.ui.container.Menu
+        ProblemsContextMenu             matlab.ui.container.ContextMenu
+        ProblemsSelectAllMenu           matlab.ui.container.Menu
     end
 
     properties (Access = public)
@@ -181,12 +181,11 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.ProbLoad = sort_nat(app.ProbLoad);
         end
         
-        function readMetric(app)
+        function readMetric(app, label_str)
             % load the metrics
             
-            metric_table = app.readList('../Metrics', {'Metric'});
-            metric_table = sort_nat(metric_table);
-            app.EDataTypeDropDown.Items = ['Reps', metric_table];
+            app.MetricLoad = app.readList('../Metrics', {'Metric', label_str});
+            app.MetricLoad = sort_nat(app.MetricLoad);
         end
         
         function read_list = readList(app, folder_name, label_str)
@@ -238,6 +237,16 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EAlgorithmsListBox.ItemsData = app.AlgoLoad;
             app.EProblemsListBox.Items = strrep(app.ProbLoad, '_', '-');
             app.EProblemsListBox.ItemsData = app.ProbLoad;
+        end
+        
+        function EloadMetric(app, label_str)
+            % load the algorithms and problems in Experiment module
+            
+            app.readMetric(label_str);
+            app.EDataTypeDropDown.Items(:) = [];
+            items = ['Reps', app.MetricLoad];
+            app.EDataTypeDropDown.Items = strrep(items, '_', '-');
+            app.EDataTypeDropDown.ItemsData = items;
         end
         
         function TstartEnable(app, value)
@@ -365,6 +374,10 @@ classdef MTO_GUI < matlab.apps.AppBase
             switch type
                 case 'Tasks Figure (1D Unified)' % Tasks Figure (1D unified)
                     app.TupdateTasksFigure();
+                case 'Tasks Figure (2D Unified)' % Tasks Figure (2D unified)
+                    app.TupdateTasksFigure2D();
+                case 'Tasks Figure (2D Real)' % Tasks Figure (2D unified)
+                    app.TupdateTasksFigure2D();
                 case 'Tasks Figure (1D Real)' % Tasks Figure (1D real)
                     app.TupdateTasksFigure();
                 case 'Feasible Region (2D)' % Feasible Region (2D)
@@ -380,28 +393,20 @@ classdef MTO_GUI < matlab.apps.AppBase
             % update selected problem tasks figure in Test module
             try
                 x = 0:1/1000:1;
-                f = zeros(size(x));
                 
                 legend_cell = {};
                 plot_handle = {};
                 color = colororder;
                 for no = 1:app.TProblemTree.Children(1).NodeData.T
-                    for i = 1:length(x)
-                        minrange = app.TProblemTree.Children(1).NodeData.Lb{no}(1);
-                        maxrange = app.TProblemTree.Children(1).NodeData.Ub{no}(1);
-                        y = maxrange - minrange;
-                        vars = y .* x(i) + minrange;
-                        [ff, con] = app.TProblemTree.Children(1).NodeData.Fnc{no}(vars);
-                        if con > 0
-                            f(i) = NaN;
-                        else
-                            f(i) = ff;
-                        end
-                    end
+                    minrange = app.TProblemTree.Children(1).NodeData.Lb{no}(1);
+                    maxrange = app.TProblemTree.Children(1).NodeData.Ub{no}(1);
+                    vars = (maxrange - minrange) .* x' + minrange;
+                    [f, con] = app.TProblemTree.Children(1).NodeData.Fnc{no}(vars);
+                    f(sum(con, 2)>0, :) = NaN;
                     
-                    fmin = min(f);
-                    fmax = max(f);
                     if strcmp(app.TShowTypeDropDown.Value, 'Tasks Figure (1D Unified)') % unified
+                        fmin = min(f);
+                        fmax = max(f);
                         f = (f - fmin) / (fmax - fmin);
                     end
                     
@@ -432,6 +437,53 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
         end
         
+        function TupdateTasksFigure2D(app)
+            % update selected problem tasks figure in Test module
+            try
+                x = 0:1/99:1;
+                
+                legend_cell = {};
+                plot_handle = {};
+                
+                color = colororder;
+                for no = 1:app.TProblemTree.Children(1).NodeData.T
+                    minrange = app.TProblemTree.Children(1).NodeData.Lb{no}(1:2);
+                    maxrange = app.TProblemTree.Children(1).NodeData.Ub{no}(1:2);
+                    
+                    [vars1, vars2] = meshgrid(x);
+                    vars = [vars1(:), vars2(:)];
+                    vars = (maxrange - minrange) .* vars + minrange;
+                    [ff, con] = app.TProblemTree.Children(1).NodeData.Fnc{no}(vars);
+
+                    ff(sum(con, 2) > 0) = NaN;
+                    if strcmp(app.TShowTypeDropDown.Value, 'Tasks Figure (2D Unified)') % unified
+                        fmin = min(ff);
+                        fmax = max(ff);
+                        ff = (ff - fmin) / (fmax - fmin);
+                    end
+                    ff = reshape(ff, size(vars1));
+                    
+                    p1 = mesh(app.TUIAxes, vars1, vars2, ff);
+                    p1.FaceAlpha = 0.15;
+                    p1.FaceColor = color(mod(no-1, size(color, 1))+1, :);
+                    p1.EdgeColor = color(mod(no-1, size(color, 1))+1, :);
+                    p1.LineStyle = '-';
+                    hold(app.TUIAxes, 'on');
+                    
+                    legend_cell = [legend_cell, ['T', num2str(no)]];
+                    plot_handle = [plot_handle, p1];
+                end
+                xlim(app.TUIAxes, [0, 1]);
+                ylim(app.TUIAxes, [0, 1]);
+                legend(app.TUIAxes, plot_handle, legend_cell, 'Location', 'best');
+                xlabel(app.TUIAxes, 'X');
+                ylabel(app.TUIAxes, 'Y');
+                zlabel(app.TUIAxes, 'Obj');
+            catch ME
+                return;
+            end
+        end
+        
         function TupdateFeasibleRegion(app)
             % update selected problem tasks feasible region
             
@@ -447,31 +499,23 @@ classdef MTO_GUI < matlab.apps.AppBase
                 
                 color = colororder;
                 for no = 1:app.TProblemTree.Children(1).NodeData.T
-                    %x = x + (1/100)/3;
-                    %x = x(1:end-1);
-                    x1 = [];
-                    x2 = [];
-                    minrange = app.TProblemTree.Children(1).NodeData.Lb{no}(1);
-                    maxrange = app.TProblemTree.Children(1).NodeData.Ub{no}(1);
-                    y = maxrange - minrange;
+                    minrange = app.TProblemTree.Children(1).NodeData.Lb{no}(1:2);
+                    maxrange = app.TProblemTree.Children(1).NodeData.Ub{no}(1:2);
                     
-                    for i = 1:length(x)
-                        for j = 1:length(x)
-                            vars1 = y .* x(i) + minrange;
-                            vars2 = y .* x(j) + minrange;
-                            [ff, con] = app.TProblemTree.Children(1).NodeData.Fnc{no}([vars1, vars2]);
-                            if con <= 0
-                                x1 = [x1, x(i)];
-                                x2 = [x2, x(j)];
-                            end
-                        end
-                    end
+                    [vars1, vars2] = meshgrid(x);
+                    vars1 = vars1(:);
+                    vars2 = vars2(:);
+                    vars = [vars1, vars2];
+                    vars = (maxrange - minrange) .* vars + minrange;
+                    [~, con] = app.TProblemTree.Children(1).NodeData.Fnc{no}(vars);
                     
-                    p1 = scatter(app.TUIAxes, x1, x2, 6, 'filled');
+                    vars1(sum(con, 2) > 0) = [];
+                    vars2(sum(con, 2) > 0) = [];
+                    
+                    p1 = scatter(app.TUIAxes, vars1, vars2, 6, 'filled');
                     p1.MarkerFaceAlpha = 0.6;
                     p1.MarkerEdgeAlpha = 0.6;
                     p1.MarkerEdgeColor = color(mod(no-1, size(color, 1))+1, :);
-                    % p1.MarkerFaceColor = color(mod(no-1, size(color, 1))+1, :);
                     hold(app.TUIAxes, 'on');
                     
                     legend_cell = [legend_cell, ['T', num2str(no)]];
@@ -905,7 +949,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
             if data_num < 1
                 msg = 'Select at least 1 data node to split';
-                uiconfirm(app.MTOPlatformMToPUIFigure, msg, 'error', 'Icon','warning');
+                uiconfirm(app.MTOPlatformMToPv11UIFigure, msg, 'error', 'Icon','warning');
                 result = false;
                 return;
             end
@@ -930,7 +974,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
             if data_num < 2
                 msg = 'Select at least 2 data node to merge';
-                uiconfirm(app.MTOPlatformMToPUIFigure, msg, 'error', 'Icon','warning');
+                uiconfirm(app.MTOPlatformMToPv11UIFigure, msg, 'error', 'Icon','warning');
                 result = false;
                 return;
             end
@@ -947,7 +991,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             for i = 2:data_num
                 if data_selected(i).NodeData.Reps ~= reps
                     msg = 'The data''s reps not equal';
-                    uiconfirm(app.MTOPlatformMToPUIFigure, msg, 'error', 'Icon','warning');
+                    uiconfirm(app.MTOPlatformMToPv11UIFigure, msg, 'error', 'Icon','warning');
                     result = false;
                     return;
                 end
@@ -966,7 +1010,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                 % check algo length
                 if length(algorithms) ~= length(data_selected(i).NodeData.Algorithms)
                     msg = 'The data''s algorithms not equal';
-                    uiconfirm(app.MTOPlatformMToPUIFigure, msg, 'error', 'Icon','warning');
+                    uiconfirm(app.MTOPlatformMToPv11UIFigure, msg, 'error', 'Icon','warning');
                     result = false;
                     return;
                 end
@@ -974,14 +1018,14 @@ classdef MTO_GUI < matlab.apps.AppBase
                     % check algo name
                     if ~strcmp(data_selected(i).NodeData.Algorithms(algo).Name, algorithms(algo).Name)
                         msg = 'The data''s algorithms not equal';
-                        uiconfirm(app.MTOPlatformMToPUIFigure, msg, 'error', 'Icon','warning');
+                        uiconfirm(app.MTOPlatformMToPv11UIFigure, msg, 'error', 'Icon','warning');
                         result = false;
                         return;
                     end
                     % check algo para length
                     if length(algorithms(algo).Para) ~= length(data_selected(i).NodeData.Algorithms(algo).Para)
                         msg = 'The data''s algorithms not equal';
-                        uiconfirm(app.MTOPlatformMToPUIFigure, msg, 'error', 'Icon','warning');
+                        uiconfirm(app.MTOPlatformMToPv11UIFigure, msg, 'error', 'Icon','warning');
                         result = false;
                         return;
                     end
@@ -989,7 +1033,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                         % check algo para name
                         if ~strcmp(data_selected(i).NodeData.Algorithms(algo).Para{pa}, algorithms(algo).Para{pa})
                             msg = 'The data''s algorithms not equal';
-                            uiconfirm(app.MTOPlatformMToPUIFigure, msg, 'error', 'Icon','warning');
+                            uiconfirm(app.MTOPlatformMToPv11UIFigure, msg, 'error', 'Icon','warning');
                             result = false;
                             return;
                         end
@@ -1010,7 +1054,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                 % check prob length
                 if length(problems) ~= length(data_selected(i).NodeData.Problems)
                     msg = 'The data''s problems not equal';
-                    uiconfirm(app.MTOPlatformMToPUIFigure, msg, 'error', 'Icon','warning');
+                    uiconfirm(app.MTOPlatformMToPv11UIFigure, msg, 'error', 'Icon','warning');
                     result = false;
                     return;
                 end
@@ -1023,7 +1067,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                             data_selected(i).NodeData.Problems(prob).N ~= problems(prob).N || ...
                             data_selected(i).NodeData.Problems(prob).maxFE ~= problems(prob).maxFE
                     msg = 'The data''s problems not equal';
-                    uiconfirm(app.MTOPlatformMToPUIFigure, msg, 'error', 'Icon','warning');
+                    uiconfirm(app.MTOPlatformMToPv11UIFigure, msg, 'error', 'Icon','warning');
                     result = false;
                     return;
                     end
@@ -1073,7 +1117,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             
             % check selected file name
             [file_name, dir_name] = uiputfile('MTOData.mat');
-            figure(app.MTOPlatformMToPUIFigure);
+            figure(app.MTOPlatformMToPv11UIFigure);
             if file_name == 0
                 return;
             end
@@ -1187,7 +1231,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TupdateProblem();
             % app.TupdateUIAxes();
             app.EloadAlgoProb();
-            app.readMetric();
+            app.EloadMetric('none');
             app.MTOPlatformTabGroup.SelectedTab = app.ExperimentModuleTab;
         end
 
@@ -1495,13 +1539,13 @@ classdef MTO_GUI < matlab.apps.AppBase
             prob_num = length(app.EProblemsTree.Children);
             if algo_num == 0
                 msg = 'Please select the Algorithm first';
-                uiconfirm(app.MTOPlatformMToPUIFigure, msg, 'error', 'Icon','warning');
+                uiconfirm(app.MTOPlatformMToPv11UIFigure, msg, 'error', 'Icon','warning');
                 app.EstartEnable(true);
                 return;
             end
             if prob_num == 0
                 msg = 'Please select the Problem first';
-                uiconfirm(app.MTOPlatformMToPUIFigure, msg, 'error', 'Icon','warning');
+                uiconfirm(app.MTOPlatformMToPv11UIFigure, msg, 'error', 'Icon','warning');
                 app.EstartEnable(true);
                 return;
             end
@@ -1539,12 +1583,13 @@ classdef MTO_GUI < matlab.apps.AppBase
             MTOData.RunTimes = [];
             
             % reset table and convergence
+            app.EloadMetric('none');
             app.ETableReps = zeros(prob_num, algo_num);
             app.EupdateTableReps();
             app.EresetTable({MTOData.Problems.Name}, {MTOData.Algorithms.Name});
             app.EresetTableAlgorithmDropDown({MTOData.Algorithms.Name});
             % cla(app.EConvergenceTrendUIAxes, 'reset');
-            
+
             % main experiment loop
             tStart = tic;
             Results = [];
@@ -1624,11 +1669,20 @@ classdef MTO_GUI < matlab.apps.AppBase
                 save('MTOData_Temp', 'MTOData');
                 app.EData = MTOData;
             end
-%             save('MTOData_Temp', 'MTOData');
+            %             save('MTOData_Temp', 'MTOData');
+            
+            m = [MTOData.Problems.M];
+            if all(m==1)
+                app.EloadMetric('Single-objective')
+            elseif all(m>1)
+                app.EloadMetric('Multi-objective')
+            else
+                app.EloadMetric({'Single-objective', 'Multi-objective'})
+            end
             
             tEnd = toc(tStart);
             msg = ['All Use Time: ', char(duration([0, 0, tEnd]))];
-            uiconfirm(app.MTOPlatformMToPUIFigure, msg, 'success', 'Icon', 'success');
+            uiconfirm(app.MTOPlatformMToPv11UIFigure, msg, 'success', 'Icon', 'success');
             
             app.EstartEnable(true);
             app.EreloadTableData();
@@ -1671,7 +1725,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             algo_selected = app.EAlgorithmsTree.SelectedNodes;
             if isempty(algo_selected)
                 msg = 'Select Algorithm node in tree first';
-                uiconfirm(app.MTOPlatformMToPUIFigure, msg, 'error', 'Icon','warning');
+                uiconfirm(app.MTOPlatformMToPv11UIFigure, msg, 'error', 'Icon','warning');
             end
             
             for i = 1:length(algo_selected)
@@ -1725,7 +1779,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             prob_selected = app.EProblemsTree.SelectedNodes;
             if isempty(prob_selected)
                 msg = 'Select Problem node in tree first';
-                uiconfirm(app.MTOPlatformMToPUIFigure, msg, 'error', 'Icon','warning');
+                uiconfirm(app.MTOPlatformMToPv11UIFigure, msg, 'error', 'Icon','warning');
             end
             
             for i = 1:length(prob_selected)
@@ -1770,13 +1824,13 @@ classdef MTO_GUI < matlab.apps.AppBase
             % check data
             if isempty(app.EData)
                 msg = 'Please run experiment first';
-                uiconfirm(app.MTOPlatformMToPUIFigure, msg, 'error', 'Icon','warning');
+                uiconfirm(app.MTOPlatformMToPv11UIFigure, msg, 'error', 'Icon','warning');
                 return;
             end
             
             % check selected file name
             [file_name, dir_name] = uiputfile('MTOData.mat');
-            figure(app.MTOPlatformMToPUIFigure);
+            figure(app.MTOPlatformMToPv11UIFigure);
             if file_name == 0
                 return;
             end
@@ -1825,7 +1879,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             
             % select mat file
             [file_name, pathname] = uigetfile('*.mat', 'Select Data', './');
-            figure(app.MTOPlatformMToPUIFigure);
+            figure(app.MTOPlatformMToPv11UIFigure);
             
             % check selected ile_name
             if file_name == 0
@@ -1835,6 +1889,14 @@ classdef MTO_GUI < matlab.apps.AppBase
             % load data to app's parameter
             load([pathname, file_name], 'MTOData');
             app.EData = MTOData;
+            m = [app.EData.Problems.M];
+            if all(m==1)
+                app.EloadMetric('Single-objective')
+            elseif all(m>1)
+                app.EloadMetric('Multi-objective')
+            else
+                app.EloadMetric({'Single-objective', 'Multi-objective'})
+            end
             app.ETableReps = app.EData.Reps * ones([length(app.EData.Problems), length(app.EData.Algorithms)]);
             app.EresetTableAlgorithmDropDown({app.EData.Algorithms.Name});
             app.EreloadTableData();
@@ -1847,7 +1909,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % check selected file name
             filter = {'*.tex'; '*.xlsx';'*.csv';};
             [file_name, dir_name] = uiputfile(filter);
-            % figure(app.MTOPlatformMToPUIFigure);
+            % figure(app.MTOPlatformMToPv11UIFigure);
             if file_name == 0
                 return;
             end
@@ -1910,7 +1972,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % select mat file
             file_name_list = {};
             [file_name, pathname] = uigetfile('*.mat', 'select the data mat', './', 'MultiSelect', 'on');
-            figure(app.MTOPlatformMToPUIFigure);
+            figure(app.MTOPlatformMToPv11UIFigure);
             file_name_list = [file_name_list, file_name];
             
             % check selected file_name
@@ -1943,7 +2005,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
             if data_num == 0
                 msg = 'Select data node in tree first';
-                uiconfirm(app.MTOPlatformMToPUIFigure, msg, 'error', 'Icon','warning');
+                uiconfirm(app.MTOPlatformMToPv11UIFigure, msg, 'error', 'Icon','warning');
             end
             
             data_selected = data_selected(data_mark == 1);
@@ -1970,7 +2032,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
             if data_num == 0
                 msg = 'Select data node in tree first';
-                uiconfirm(app.MTOPlatformMToPUIFigure, msg, 'error', 'Icon','warning');
+                uiconfirm(app.MTOPlatformMToPv11UIFigure, msg, 'error', 'Icon','warning');
             end
             
             data_selected = data_selected(data_mark == 1);
@@ -1994,7 +2056,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             for i = 1:length(data_selected)
                 if data_selected(i).NodeData.Reps <= 1
                     msg = ['The ', data_selected(i).Text, '''s reps <= 1'];
-                    uiconfirm(app.MTOPlatformMToPUIFigure, msg, 'error', 'Icon','warning');
+                    uiconfirm(app.MTOPlatformMToPv11UIFigure, msg, 'error', 'Icon','warning');
                     continue;
                 end
                 for rep = 1:data_selected(i).NodeData.Reps
@@ -2043,7 +2105,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             for i = 1:length(data_selected)
                 if length(data_selected(i).NodeData.Algorithms) <= 1
                     msg = ['The ', data_selected(i).Text, '''s algorithms <= 1'];
-                    uiconfirm(app.MTOPlatformMToPUIFigure, msg, 'error', 'Icon','warning');
+                    uiconfirm(app.MTOPlatformMToPv11UIFigure, msg, 'error', 'Icon','warning');
                     continue;
                 end
                 for algo = 1:length(data_selected(i).NodeData.Algorithms)
@@ -2093,7 +2155,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             for i = 1:length(data_selected)
                 if length(data_selected(i).NodeData.Problems) <= 1
                     msg = ['The ', data_selected(i).Text, '''s problems <= 1'];
-                    uiconfirm(app.MTOPlatformMToPUIFigure, msg, 'error', 'Icon','warning');
+                    uiconfirm(app.MTOPlatformMToPv11UIFigure, msg, 'error', 'Icon','warning');
                     continue;
                 end
                 task = [data_selected(i).NodeData.Problems.T];
@@ -2771,15 +2833,14 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Create UIFigure and components
         function createComponents(app)
 
-            % Create MTOPlatformMToPUIFigure and hide until all components are created
-            app.MTOPlatformMToPUIFigure = uifigure('Visible', 'off');
-            app.MTOPlatformMToPUIFigure.Color = [1 1 1];
-            app.MTOPlatformMToPUIFigure.Position = [100 100 1060 756];
-            app.MTOPlatformMToPUIFigure.Name = 'MTO-Platform (MToP)';
-            app.MTOPlatformMToPUIFigure.WindowStyle = 'modal';
+            % Create MTOPlatformMToPv11UIFigure and hide until all components are created
+            app.MTOPlatformMToPv11UIFigure = uifigure('Visible', 'off');
+            app.MTOPlatformMToPv11UIFigure.Color = [1 1 1];
+            app.MTOPlatformMToPv11UIFigure.Position = [100 100 1067 761];
+            app.MTOPlatformMToPv11UIFigure.Name = 'MTO-Platform (MToP) v1.1';
 
             % Create MTOPlatformGridLayout
-            app.MTOPlatformGridLayout = uigridlayout(app.MTOPlatformMToPUIFigure);
+            app.MTOPlatformGridLayout = uigridlayout(app.MTOPlatformMToPv11UIFigure);
             app.MTOPlatformGridLayout.ColumnWidth = {'1x'};
             app.MTOPlatformGridLayout.RowHeight = {'1x'};
             app.MTOPlatformGridLayout.ColumnSpacing = 5;
@@ -2958,7 +3019,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create TShowTypeDropDown
             app.TShowTypeDropDown = uidropdown(app.TP21GridLayout);
-            app.TShowTypeDropDown.Items = {'Tasks Figure (1D Unified)', 'Tasks Figure (1D Real)', 'Feasible Region (2D)', 'Convergence', 'Pareto Front'};
+            app.TShowTypeDropDown.Items = {'Tasks Figure (1D Unified)', 'Tasks Figure (1D Real)', 'Tasks Figure (2D Unified)', 'Tasks Figure (2D Real)', 'Feasible Region (2D)', 'Convergence', 'Pareto Front'};
             app.TShowTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @TShowTypeDropDownValueChanged, true);
             app.TShowTypeDropDown.Tooltip = {'Show type'};
             app.TShowTypeDropDown.FontWeight = 'bold';
@@ -3039,13 +3100,13 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TOutputTextArea.Layout.Row = 1;
             app.TOutputTextArea.Layout.Column = 1;
 
-            % Create MTOPlatformMToPv03byYanchiLiLabel
-            app.MTOPlatformMToPv03byYanchiLiLabel = uilabel(app.TP3GridLayout);
-            app.MTOPlatformMToPv03byYanchiLiLabel.HorizontalAlignment = 'center';
-            app.MTOPlatformMToPv03byYanchiLiLabel.FontWeight = 'bold';
-            app.MTOPlatformMToPv03byYanchiLiLabel.Layout.Row = 2;
-            app.MTOPlatformMToPv03byYanchiLiLabel.Layout.Column = 1;
-            app.MTOPlatformMToPv03byYanchiLiLabel.Text = 'MTO-Platform (MToP) v0.3 by Yanchi Li';
+            % Create MTOPlatformMToPbyYanchiLiLabel
+            app.MTOPlatformMToPbyYanchiLiLabel = uilabel(app.TP3GridLayout);
+            app.MTOPlatformMToPbyYanchiLiLabel.HorizontalAlignment = 'center';
+            app.MTOPlatformMToPbyYanchiLiLabel.FontWeight = 'bold';
+            app.MTOPlatformMToPbyYanchiLiLabel.Layout.Row = 2;
+            app.MTOPlatformMToPbyYanchiLiLabel.Layout.Column = 1;
+            app.MTOPlatformMToPbyYanchiLiLabel.Text = 'MTO-Platform (MToP) by Yanchi Li';
 
             % Create ExperimentModuleTab
             app.ExperimentModuleTab = uitab(app.MTOPlatformTabGroup);
@@ -3832,7 +3893,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.DDataTree.Layout.Column = 1;
 
             % Create SelectedAlgoContextMenu
-            app.SelectedAlgoContextMenu = uicontextmenu(app.MTOPlatformMToPUIFigure);
+            app.SelectedAlgoContextMenu = uicontextmenu(app.MTOPlatformMToPv11UIFigure);
             app.SelectedAlgoContextMenu.ContextMenuOpeningFcn = createCallbackFcn(app, @SelectedAlgoContextMenuOpening, true);
             
             % Assign app.SelectedAlgoContextMenu
@@ -3844,7 +3905,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.SelectedAlgoSelectAllMenu.Text = 'Select All';
 
             % Create DDataContextMenu
-            app.DDataContextMenu = uicontextmenu(app.MTOPlatformMToPUIFigure);
+            app.DDataContextMenu = uicontextmenu(app.MTOPlatformMToPv11UIFigure);
             app.DDataContextMenu.ContextMenuOpeningFcn = createCallbackFcn(app, @DDataContextMenuOpening, true);
             
             % Assign app.DDataContextMenu
@@ -3856,7 +3917,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.SelectedAlgoSelectAllMenu_2.Text = 'Select All';
 
             % Create SelectedProbContextMenu
-            app.SelectedProbContextMenu = uicontextmenu(app.MTOPlatformMToPUIFigure);
+            app.SelectedProbContextMenu = uicontextmenu(app.MTOPlatformMToPv11UIFigure);
             
             % Assign app.SelectedProbContextMenu
             app.EProblemsTree.ContextMenu = app.SelectedProbContextMenu;
@@ -3868,7 +3929,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.SelectedProbSelectAllMenu.Text = 'Select All';
 
             % Create AlgorithmsContextMenu
-            app.AlgorithmsContextMenu = uicontextmenu(app.MTOPlatformMToPUIFigure);
+            app.AlgorithmsContextMenu = uicontextmenu(app.MTOPlatformMToPv11UIFigure);
             app.AlgorithmsContextMenu.ContextMenuOpeningFcn = createCallbackFcn(app, @AlgorithmsContextMenuOpening, true);
             
             % Assign app.AlgorithmsContextMenu
@@ -3880,7 +3941,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.AlgorithmsSelectAllMenu.Text = 'Select All';
 
             % Create ProblemsContextMenu
-            app.ProblemsContextMenu = uicontextmenu(app.MTOPlatformMToPUIFigure);
+            app.ProblemsContextMenu = uicontextmenu(app.MTOPlatformMToPv11UIFigure);
             
             % Assign app.ProblemsContextMenu
             app.EProblemsListBox.ContextMenu = app.ProblemsContextMenu;
@@ -3892,7 +3953,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.ProblemsSelectAllMenu.Text = 'Select All';
 
             % Show the figure after all components are created
-            app.MTOPlatformMToPUIFigure.Visible = 'on';
+            app.MTOPlatformMToPv11UIFigure.Visible = 'on';
         end
     end
 
@@ -3906,7 +3967,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             createComponents(app)
 
             % Register the app with App Designer
-            registerApp(app, app.MTOPlatformMToPUIFigure)
+            registerApp(app, app.MTOPlatformMToPv11UIFigure)
 
             % Execute the startup function
             runStartupFcn(app, @startupFcn)
@@ -3920,7 +3981,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         function delete(app)
 
             % Delete UIFigure when app is deleted
-            delete(app.MTOPlatformMToPUIFigure)
+            delete(app.MTOPlatformMToPv11UIFigure)
         end
     end
 end

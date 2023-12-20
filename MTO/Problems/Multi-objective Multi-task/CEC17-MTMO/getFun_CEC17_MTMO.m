@@ -131,5 +131,5 @@ switch Problem
 end
 
 Obj = f;
-Con = 0;
+Con = zeros(size(x, 1), 1);
 end

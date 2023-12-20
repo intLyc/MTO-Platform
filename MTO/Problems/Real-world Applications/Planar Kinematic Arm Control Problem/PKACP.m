@@ -96,14 +96,19 @@ methods
 end
 end
 
-function [fitness, con] = fitness_arm(angles, Amax, Lmax)
-angular_range = Amax / length(angles);
-lengths = ones(1, length(angles)) * Lmax / length(angles);
-target = 0.5 * ones(1, 2);
-command = (angles - 0.5) * angular_range * pi * 2;
-ef = fw_kinematics(command, lengths);
-fitness = sum((ef - target) .* (ef - target))^0.5;
-con = 0;
+function [Objs, Cons] = fitness_arm(angles_var, Amax, Lmax)
+Objs = [];
+for i = 1:size(angles_var, 1)
+    angles = angles_var(i, :);
+    angular_range = Amax / length(angles);
+    lengths = ones(1, length(angles)) * Lmax / length(angles);
+    target = 0.5 * ones(1, 2);
+    command = (angles - 0.5) * angular_range * pi * 2;
+    ef = fw_kinematics(command, lengths);
+    fitness = sum((ef - target) .* (ef - target))^0.5;
+    Objs(i, :) = fitness;
+end
+Cons = zeros(size(angles_var, 1), 1);
 end
 
 function [joint_xy] = fw_kinematics(p, lengths)

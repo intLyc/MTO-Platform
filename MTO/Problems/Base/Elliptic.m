@@ -1,4 +1,4 @@
-function [Obj, Con] = Elliptic(x, M, opt, g)
+function [Obj, Con] = Elliptic(var, M, opt, g)
 % Elliptic function
 %   - var: design variable vector
 %   - M: rotation matrix
@@ -13,15 +13,23 @@ function [Obj, Con] = Elliptic(x, M, opt, g)
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-var = x;
-dim = length(var);
-var = (M * (var - opt)')';
+[ps, D] = size(var);
+
+if size(M, 1) == 1
+    M = M * eye(D);
+end
+if size(opt, 2) == 1
+    opt = opt * ones(1, D);
+end
+
+var = (M(1:D, 1:D) * (var - repmat(opt(1:D), ps, 1))')';
+
 a = 1e+6;
-Obj = 0;
-for i = 1:dim
-    Obj = Obj + a.^((i - 1) / (dim - 1)) .* var(i).^2;
+Obj = zeros(ps, 1);
+for i = 1:D
+    Obj = Obj + a.^((i - 1) / (D - 1)) .* var(:, i).^2;
 end
 Obj = Obj + g;
 
-Con = 0;
+Con = zeros(ps, 1);
 end

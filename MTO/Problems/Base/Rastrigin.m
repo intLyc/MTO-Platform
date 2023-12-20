@@ -13,14 +13,23 @@ function [Obj, Con] = Rastrigin(var, M, opt, g)
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-dim = length(var);
-var = (M * (var - opt)')';
-Obj = 10 * dim;
+[ps, D] = size(var);
 
-for i = 1:dim
-    Obj = Obj + (var(i)^2 - 10 * (cos(2 * pi * var(i))));
+if size(M, 1) == 1
+    M = M * eye(D);
+end
+if size(opt, 2) == 1
+    opt = opt * ones(1, D);
+end
+
+var = (M(1:D, 1:D) * (var - repmat(opt(1:D), ps, 1))')';
+
+Obj = repmat(10 * D, ps, 1);
+
+for i = 1:D
+    Obj = Obj + (var(:, i).^2 - 10 * (cos(2 * pi * var(:, i))));
 end
 Obj = Obj + g;
 
-Con = 0;
+Con = zeros(ps, 1);
 end

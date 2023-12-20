@@ -13,17 +13,27 @@ function [Obj, Con] = Griewank(var, M, opt, g)
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-dim = length(var);
-var = (M * (var - opt)')'; %
-sum1 = 0; sum2 = 1;
+[ps, D] = size(var);
 
-for i = 1:dim
-    sum1 = sum1 + var(i) * var(i);
-    sum2 = sum2 * cos(var(i) / (sqrt(i)));
+if size(M, 1) == 1
+    M = M * eye(D);
+end
+if size(opt, 2) == 1
+    opt = opt * ones(1, D);
+end
+
+var = (M(1:D, 1:D) * (var - repmat(opt(1:D), ps, 1))')';
+
+sum1 = zeros(ps, 1);
+sum2 = ones(ps, 1);
+
+for i = 1:D
+    sum1 = sum1 + var(:, i) .* var(:, i);
+    sum2 = sum2 .* cos(var(:, i) ./ (sqrt(i)));
 end
 
 Obj = 1 +1/4000 * sum1 - sum2;
 Obj = Obj + g;
 
-Con = 0;
+Con = zeros(ps, 1);
 end

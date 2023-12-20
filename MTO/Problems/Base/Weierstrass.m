@@ -13,19 +13,26 @@ function [Obj, Con] = Weierstrass(var, M, opt, g)
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-D = length(var);
-var = (M * (var - opt)')';
+[ps, D] = size(var);
+
+if size(M, 1) == 1
+    M = M * eye(D);
+end
+if size(opt, 2) == 1
+    opt = opt * ones(1, D);
+end
+
+var = (M(1:D, 1:D) * (var - repmat(opt(1:D), ps, 1))')';
+
 a = 0.5;
 b = 3;
 kmax = 20;
-Obj = 0;
+Obj = zeros(ps, 1);
 
 for i = 1:D
-
     for k = 0:kmax
-        Obj = Obj + a^k * cos(2 * pi * b^k * (var(i) + 0.5));
+        Obj = Obj + a^k * cos(2 * pi * b^k * (var(:, i) + 0.5));
     end
-
 end
 
 for k = 0:kmax
@@ -33,5 +40,5 @@ for k = 0:kmax
 end
 Obj = Obj + g;
 
-Con = 0;
+Con = zeros(ps, 1);
 end

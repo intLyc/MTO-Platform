@@ -31,7 +31,6 @@ load([file_dir, 'O_matrix.mat']);
 D = [50, 50, 50, 50, 50, 40];
 Xmin = [-50, -100, -50, -50, -100, -0.5];
 Xmax = -Xmin;
-fnc_name = {'Rastrigin', 'Griewank', 'Sphere', 'Rosenbrock', 'Ackley', 'Weierstrass'};
 fbias = [0, 150, 100, 50, 25, 10];
 
 switch index

@@ -1,4 +1,4 @@
-function [Obj, Con] = Sphere(x, M, opt, g)
+function [Obj, Con] = Sphere(var, M, opt, g)
 % Sphere function
 %   - var: design variable vector
 %   - M: rotation matrix
@@ -13,15 +13,19 @@ function [Obj, Con] = Sphere(x, M, opt, g)
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-var = x;
-dim = length(var);
-var = (M * (var - opt)')';
-sum = 0;
-for i = 1:dim
-    sum = sum + var(i) * var(i);
+[ps, D] = size(var);
+
+if size(M, 1) == 1
+    M = M * eye(D);
 end
-Obj = sum;
+if size(opt, 2) == 1
+    opt = opt * ones(1, D);
+end
+
+var = (M(1:D, 1:D) * (var - repmat(opt(1:D), ps, 1))')';
+
+Obj = sum(var.^2, 2);
 Obj = Obj + g;
 
-Con = 0;
+Con = zeros(ps, 1);
 end

@@ -79,16 +79,20 @@ methods
 end
 end
 
-function [Obj, Con] = SCP_func(x, A, dim)
-a = 1000; b = 10; c0 = 1;
-x = x(1:dim);
-k = dim / 3;
-x = reshape(x, 3, k)';
-d = pdist2(A, x(:, 1:2));
-isconverage = (d <= repmat(x(:, 3)', size(A, 1), 1));
-maxisconverage = max(isconverage, [], 2);
-convarage_ratio = sum(maxisconverage) / (size(A, 1));
-f = a * (1 - convarage_ratio) + c0 * k + sum(b * x(:, 3).^2);
-Obj = f;
-Con = 0;
+function [Objs, Cons] = SCP_func(var, A, dim)
+Objs = [];
+for i = 1:size(var, 1)
+    x = var(i, :);
+    a = 1000; b = 10; c0 = 1;
+    x = x(1:dim);
+    k = dim / 3;
+    x = reshape(x, 3, k)';
+    d = pdist2(A, x(:, 1:2));
+    isconverage = (d <= repmat(x(:, 3)', size(A, 1), 1));
+    maxisconverage = max(isconverage, [], 2);
+    convarage_ratio = sum(maxisconverage) / (size(A, 1));
+    f = a * (1 - convarage_ratio) + c0 * k + sum(b * x(:, 3).^2);
+    Objs(i, :) = f;
+end
+Cons = zeros(size(var, 1), 1);
 end

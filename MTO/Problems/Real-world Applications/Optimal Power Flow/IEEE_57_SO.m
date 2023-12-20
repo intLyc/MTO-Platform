@@ -1,4 +1,4 @@
-function [Obj, Con] = IEEE_57_SO(x, case_idx)
+function [Objs, Cons] = IEEE_57_SO(var, case_idx)
 
 %------------------------------- Copyright --------------------------------
 % Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
@@ -7,98 +7,107 @@ function [Obj, Con] = IEEE_57_SO(x, case_idx)
 % or footnote "https://github.com/intLyc/MTO-Platform"
 %--------------------------------------------------------------------------
 
-Qbus = [18 25 53];
-Tbranch = [19 20 31 35 36 37 41 46 54 58 59 65 66 71 73 76 80];
+Objs = [];
+Cons = [];
+for i = 1:size(var, 1)
+    x = var(i, :);
 
-% Install Matpower first
-data = loadcase(Case_IEEE_57);
-data.gen(2:7, 2) = x(1:6);
-data.gen(1:7, 6) = x(7:13);
-data.bus(Qbus, 6) = x(14:16);
-data.branch(Tbranch, 9) = x(17:33);
+    Qbus = [18 25 53];
+    Tbranch = [19 20 31 35 36 37 41 46 54 58 59 65 66 71 73 76 80];
 
-mpopt = mpoption('pf.enforce_q_lims', 0, 'verbose', 0, 'out.all', 0);
-result = runpf(data, mpopt);
+    % Install Matpower first
+    data = loadcase(Case_IEEE_57);
+    data.gen(2:7, 2) = x(1:6);
+    data.gen(1:7, 6) = x(7:13);
+    data.bus(Qbus, 6) = x(14:16);
+    data.branch(Tbranch, 9) = x(17:33);
 
-rpowgen = [result.gen(1, 2), x(1:6)];
-costcoeff = data.gencost(:, 5:7);
+    mpopt = mpoption('pf.enforce_q_lims', 0, 'verbose', 0, 'out.all', 0);
+    result = runpf(data, mpopt);
 
-%Constraint finding
-Vmax = data.bus(:, 12);
-Vmin = data.bus(:, 13);
-genbus = data.gen(:, 1);
-pqbus = data.bus(:, 1);
-pqbus(genbus) = [];
+    rpowgen = [result.gen(1, 2), x(1:6)];
+    costcoeff = data.gencost(:, 5:7);
 
-Qmax = data.gen(:, 4) / data.baseMVA;
-Qmin = data.gen(:, 5) / data.baseMVA;
-QG = result.gen(:, 3) / data.baseMVA;
+    %Constraint finding
+    Vmax = data.bus(:, 12);
+    Vmin = data.bus(:, 13);
+    genbus = data.gen(:, 1);
+    pqbus = data.bus(:, 1);
+    pqbus(genbus) = [];
 
-PGSmax = data.gen(1, 9);
-PGSmin = data.gen(1, 10);
-PGS = result.gen(1, 2);
-PGSerr = (PGS < PGSmin) * (abs(PGSmin - PGS) / (PGSmax - PGSmin)) + (PGS > PGSmax) * (abs(PGSmax - PGS) / (PGSmax - PGSmin));
+    Qmax = data.gen(:, 4) / data.baseMVA;
+    Qmin = data.gen(:, 5) / data.baseMVA;
+    QG = result.gen(:, 3) / data.baseMVA;
 
-blimit = data.branch(:, 6);
-Slimit = sqrt(result.branch(:, 14).^2 + result.branch(:, 15).^2);
-Serr = sum((Slimit > blimit) .* abs(blimit - Slimit)) / data.baseMVA;
+    PGSmax = data.gen(1, 9);
+    PGSmin = data.gen(1, 10);
+    PGS = result.gen(1, 2);
+    PGSerr = (PGS < PGSmin) * (abs(PGSmin - PGS) / (PGSmax - PGSmin)) + (PGS > PGSmax) * (abs(PGSmax - PGS) / (PGSmax - PGSmin));
 
-% TO find the error in Qg of gen buses- inequality constraint
-Qerr = sum((QG < Qmin) .* (abs(Qmin - QG) ./ (Qmax - Qmin)) + (QG > Qmax) .* (abs(Qmax - QG) ./ (Qmax - Qmin)));
-% TO find the error in V of load buses-inequality constraint
-VI = result.bus(:, 8); %V of load buses-inequality constraint
-VI_complx = VI .* (cosd(result.bus(:, 9)) + 1i * sind(result.bus(:, 9)));
-vpvbus = VI_complx;
-vpqbus = VI_complx;
-vpvbus(pqbus) = [];
-vpqbus(genbus) = [];
-VI(genbus) = [];
-Vmax(genbus) = [];
-Vmin(genbus) = [];
-VIerr = sum((VI < Vmin) .* (abs(Vmin - VI) ./ (Vmax - Vmin)) + (VI > Vmax) .* (abs(Vmax - VI) ./ (Vmax - Vmin)));
+    blimit = data.branch(:, 6);
+    Slimit = sqrt(result.branch(:, 14).^2 + result.branch(:, 15).^2);
+    Serr = sum((Slimit > blimit) .* abs(blimit - Slimit)) / data.baseMVA;
 
-% Emission : gen_no. alpha beta gama omega miu d e
-emcoeff = [
-    1	0.04091 -0.05554 0.06490 0.0002 0.2857 18.0 0.037;
-    2	0.02543 -0.06047 0.05638 0.0005 0.3333 16.0 0.038;
-    3	0.06131 -0.05555 0.05151 0.00001 0.6667 13.5 0.041;
-    4 0.03491 -0.05754 0.0639 0.0003 0.2660 18.0 0.037;
-    5	0.04258 -0.05094 0.04586 0.000001 0.8000 14.0 0.040;
-    6 0.02754 -0.05847 0.05238 0.0004 0.2880 15.0 0.039;
-    7	0.05326 -0.03555 0.03380 0.0020 0.2000 12.0 0.045];
+    % TO find the error in Qg of gen buses- inequality constraint
+    Qerr = sum((QG < Qmin) .* (abs(Qmin - QG) ./ (Qmax - Qmin)) + (QG > Qmax) .* (abs(Qmax - QG) ./ (Qmax - Qmin)));
+    % TO find the error in V of load buses-inequality constraint
+    VI = result.bus(:, 8); %V of load buses-inequality constraint
+    VI_complx = VI .* (cosd(result.bus(:, 9)) + 1i * sind(result.bus(:, 9)));
+    vpvbus = VI_complx;
+    vpqbus = VI_complx;
+    vpvbus(pqbus) = [];
+    vpqbus(genbus) = [];
+    VI(genbus) = [];
+    Vmax(genbus) = [];
+    Vmin(genbus) = [];
+    VIerr = sum((VI < Vmin) .* (abs(Vmin - VI) ./ (Vmax - Vmin)) + (VI > Vmax) .* (abs(Vmax - VI) ./ (Vmax - Vmin)));
 
-Con = [Qerr, VIerr, Serr, PGSerr];
+    % Emission : gen_no. alpha beta gama omega miu d e
+    emcoeff = [
+        1	0.04091 -0.05554 0.06490 0.0002 0.2857 18.0 0.037;
+        2	0.02543 -0.06047 0.05638 0.0005 0.3333 16.0 0.038;
+        3	0.06131 -0.05555 0.05151 0.00001 0.6667 13.5 0.041;
+        4 0.03491 -0.05754 0.0639 0.0003 0.2660 18.0 0.037;
+        5	0.04258 -0.05094 0.04586 0.000001 0.8000 14.0 0.040;
+        6 0.02754 -0.05847 0.05238 0.0004 0.2880 15.0 0.039;
+        7	0.05326 -0.03555 0.03380 0.0020 0.2000 12.0 0.045];
 
-switch case_idx
-    case 1
-        % CASE 1: fuel cost
-        % be careful of sequence of coefficients, 2 versions of coefficients for 57-bus system
-        fuelcost = sum(costcoeff(:, 3) + costcoeff(:, 2) .* rpowgen' + costcoeff(:, 1) .* (rpowgen.^2)');
-        Obj = fuelcost;
-    case 2
-        % CASE 2: voltage stability
-        % BUS ADMITTANCE MATRICES
-        [Ybus, ~, ~] = makeYbus(data);
-        Ybuspq = Ybus;
-        Ybuspq(genbus, :) = [];
-        Ybuspvg = Ybuspq;
-        Ybuspq(:, genbus) = [];
-        Ybuspvg(:, pqbus) = [];
-        Fmat = -Ybuspq \ Ybuspvg;
-        Lind = abs(1 - (1 ./ vpqbus) .* (Fmat * vpvbus));
-        Lind_worst = max(Lind);
-        Obj = Lind_worst;
-    case 3
-        % CASE 3: emission
-        emission = sum(emcoeff(:, 2) + emcoeff(:, 3) .* rpowgen' / 100 + emcoeff(:, 4) .* (rpowgen.^2/100^2)' ...
-            +emcoeff(:, 5) .* exp(emcoeff(:, 6) .* rpowgen' / 100));
-        Obj = emission;
-    case 4
-        % CASE 4: real active power loss
-        ploss = sum(result.branch(:, 14) + result.branch(:, 16));
-        Obj = ploss;
-    case 5
-        % CASE 5: voltage deviation
-        VD = sum(abs(VI - 1));
-        Obj = VD;
+    Con = [Qerr, VIerr, Serr, PGSerr];
+
+    switch case_idx
+        case 1
+            % CASE 1: fuel cost
+            % be careful of sequence of coefficients, 2 versions of coefficients for 57-bus system
+            fuelcost = sum(costcoeff(:, 3) + costcoeff(:, 2) .* rpowgen' + costcoeff(:, 1) .* (rpowgen.^2)');
+            Obj = fuelcost;
+        case 2
+            % CASE 2: voltage stability
+            % BUS ADMITTANCE MATRICES
+            [Ybus, ~, ~] = makeYbus(data);
+            Ybuspq = Ybus;
+            Ybuspq(genbus, :) = [];
+            Ybuspvg = Ybuspq;
+            Ybuspq(:, genbus) = [];
+            Ybuspvg(:, pqbus) = [];
+            Fmat = -Ybuspq \ Ybuspvg;
+            Lind = abs(1 - (1 ./ vpqbus) .* (Fmat * vpvbus));
+            Lind_worst = max(Lind);
+            Obj = Lind_worst;
+        case 3
+            % CASE 3: emission
+            emission = sum(emcoeff(:, 2) + emcoeff(:, 3) .* rpowgen' / 100 + emcoeff(:, 4) .* (rpowgen.^2/100^2)' ...
+                +emcoeff(:, 5) .* exp(emcoeff(:, 6) .* rpowgen' / 100));
+            Obj = emission;
+        case 4
+            % CASE 4: real active power loss
+            ploss = sum(result.branch(:, 14) + result.branch(:, 16));
+            Obj = ploss;
+        case 5
+            % CASE 5: voltage deviation
+            VD = sum(abs(VI - 1));
+            Obj = VD;
+    end
+
+    Objs(i, :) = Obj;
+    Cons(i, :) = Con;
 end

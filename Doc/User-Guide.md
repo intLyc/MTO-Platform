@@ -33,9 +33,10 @@
 
 ### I. Test Module
 
-![Test Module Tasks](./ReadmeFigure/MTO-Platform%20Test%20Module.png)
-![Test Module Convergence](./ReadmeFigure/MTO-Platform%20Test%20Module%202.png)
-![Test Module Pareto](./ReadmeFigure/MTO-Platform%20Test%20Module%203.png)
+<img src="./ReadmeFigure/MTO-Platform%20Test%20Module.png" width="300px">
+<img src="./ReadmeFigure/MTO-Platform%20Test%20Module%202.png" width="300px">
+<img src="./ReadmeFigure/MTO-Platform%20Test%20Module%203.png" width="300px">
+<img src="./ReadmeFigure/MTO-Platform%20Test%20Module%204.png" width="300px">
 
 1. Algorithm selection
     - Select an algorithm to be displayed in the Algorithm Tree
@@ -47,15 +48,16 @@
     - Click the Start button
 4. Check the figure
     - Task Figure 1D (unified / real)
+    - Task Figure 2D (unified / real)
     - Feasible Region 2D
     - Obj Convergence
     - Pareto Front
 
 ### II. Experiment Module
 
-![Experiment Module Table](./ReadmeFigure/MTO-Platform%20Experiment%20Module.png)
-![Experiment Module Figure](./ReadmeFigure/MTO-Platform%20Experiment%20Module%202.png)
-![Experiment Module Pareto](./ReadmeFigure/MTO-Platform%20Experiment%20Module%203.png)
+<img src="./ReadmeFigure/MTO-Platform%20Experiment%20Module.png" width="400px">
+<img src="./ReadmeFigure/MTO-Platform%20Experiment%20Module%202.png" width="400px">
+<img src="./ReadmeFigure/MTO-Platform%20Experiment%20Module%203.png" width="400px">
 
 1. parameter settings
     - No. of Runs: Number of independent run times
@@ -157,9 +159,10 @@
 
 ### 一、测试模块
 
-![Test Module Tasks](./ReadmeFigure/MTO-Platform%20Test%20Module.png)
-![Test Module Convergence](./ReadmeFigure/MTO-Platform%20Test%20Module%202.png)
-![Test Module Pareto](./ReadmeFigure/MTO-Platform%20Test%20Module%203.png)
+<img src="./ReadmeFigure/MTO-Platform%20Test%20Module.png" width="300px">
+<img src="./ReadmeFigure/MTO-Platform%20Test%20Module%202.png" width="300px">
+<img src="./ReadmeFigure/MTO-Platform%20Test%20Module%203.png" width="300px">
+<img src="./ReadmeFigure/MTO-Platform%20Test%20Module%204.png" width="300px">
 
 1. 算法选择
     - 选取一个算法，显示在Algorithm Tree中
@@ -171,15 +174,16 @@
     - 点击Start按钮开始运行
 4. 查看图像
     - 问题1维图像（归一化/原始）
+    - 问题2维图像（归一化/原始）
     - 可行域2维图像
     - 收敛图，运行完后显示
     - Pareto前沿，运行完后显示
 
 ### 二、实验模块
 
-![Experiment Module Table](./ReadmeFigure/MTO-Platform%20Experiment%20Module.png)
-![Experiment Module Figure](./ReadmeFigure/MTO-Platform%20Experiment%20Module%202.png)
-![Experiment Module Pareto](./ReadmeFigure/MTO-Platform%20Experiment%20Module%203.png)
+<img src="./ReadmeFigure/MTO-Platform%20Experiment%20Module.png" width="400px">
+<img src="./ReadmeFigure/MTO-Platform%20Experiment%20Module%202.png" width="400px">
+<img src="./ReadmeFigure/MTO-Platform%20Experiment%20Module%203.png" width="400px">
 
 1. 参数设置
     - No. of Runs: 独立运行次数
