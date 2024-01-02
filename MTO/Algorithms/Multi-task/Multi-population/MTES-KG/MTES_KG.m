@@ -73,8 +73,8 @@ methods
                 sample{t}(i) = Individual();
             end
             mStep{t} = 0; % mean sample step
-            numExS{t} = []; % external sapmle number memory
-            sucExS{t} = []; % external sapmle success number memory
+            numExS{t} = []; % external sample number memory
+            sucExS{t} = []; % external sample success number memory
             tau(t) = Algo.tau0; % external sample number
             record_tau{t} = tau(t);
         end
