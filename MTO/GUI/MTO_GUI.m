@@ -2837,7 +2837,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.MTOPlatformMToPv11UIFigure = uifigure('Visible', 'off');
             app.MTOPlatformMToPv11UIFigure.Color = [1 1 1];
             app.MTOPlatformMToPv11UIFigure.Position = [100 100 1067 761];
-            app.MTOPlatformMToPv11UIFigure.Name = 'MTO-Platform (MToP) v1.1';
+            app.MTOPlatformMToPv11UIFigure.Name = 'MTO-Platform (MToP) v1.2';
 
             % Create MTOPlatformGridLayout
             app.MTOPlatformGridLayout = uigridlayout(app.MTOPlatformMToPv11UIFigure);
