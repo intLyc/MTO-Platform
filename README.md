@@ -24,6 +24,14 @@ MToP is a user-friendly tool with a graphical user interface that makes it easy 
 [**[Paper - Click Here]**](https://arxiv.org/abs/2312.08134) /
 [**[User Guide - Click Here]**](./Doc/User-Guide.md)
 
+## Release Highlights of MToP v1.2
+
+- Newly added algorithms:
+  - TRADE (single-objective many-task TCYB 2023)
+  - ASCMFDE (single-objective multitask TEVC 2021)
+- Add error value type of WCCI20-MTSO
+- Update Operator GA (SBX and polynomial mutation) with more advanced calculation methods. GA-based algorithms now have improved performance.
+
 ## Release Highlights of MToP v1.1
 
 - The speed of experimental execution is significantly increased, brought by the simultaneous evaluation of whole population decision variables
