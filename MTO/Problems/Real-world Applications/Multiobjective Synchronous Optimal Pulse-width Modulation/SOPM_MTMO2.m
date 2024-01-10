@@ -10,6 +10,7 @@ classdef SOPM_MTMO2 < Problem
 %   author   = {Li, Yanchi and Gong, Wenyin},
 %   journal  = {IEEE Transactions on Evolutionary Computation},
 %   year     = {2024},
+%   doi      = {10.1109/TEVC.2024.3353319},
 % }
 %--------------------------------------------------------------------------
 % @Article{Kumar2021RWMOP,
