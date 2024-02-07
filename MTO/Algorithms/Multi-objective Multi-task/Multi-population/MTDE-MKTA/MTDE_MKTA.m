@@ -7,6 +7,7 @@ classdef MTDE_MKTA < Algorithm
 %   author   = {Li, Yanchi and Gong, Wenyin},
 %   journal  = {IEEE Transactions on Evolutionary Computation},
 %   year     = {2024},
+%   doi      = {10.1109/TEVC.2024.3353319},
 % }
 %--------------------------------------------------------------------------
 
