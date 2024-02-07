@@ -28,6 +28,7 @@ MToP is a user-friendly tool with a graphical user interface that makes it easy 
 
 - Newly added algorithms:
   - MTDE-MKTA (multi-objective multitask TEVC 2024) with application problems
+  - KR-MTEA (multi/single-objective multitask INS 2023)
 - Fix some bugs.
 
 ## Release Highlights of MToP v1.2
