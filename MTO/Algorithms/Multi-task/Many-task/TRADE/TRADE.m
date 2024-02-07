@@ -151,9 +151,9 @@ methods
                 end
 
                 for t = 1:Prob.T
-                    mF(i) = poolF(randi(end));
-                    paramId(i) = randi(length(poolCr));
-                    mCr(i) = poolCr(paramId(i));
+                    mF(t) = poolF(randi(end));
+                    paramId(t) = randi(length(poolCr));
+                    mCr(t) = poolCr(paramId(t));
                 end
             end
 
