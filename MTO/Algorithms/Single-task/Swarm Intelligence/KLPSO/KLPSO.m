@@ -98,7 +98,7 @@ methods
 
                 % Train Model
                 if (trained{t} == 0)
-                    net{t} = newff(minmax(in_list{t}'), [16 16 Prob.D(t)], {'logsig' 'logsig' 'purelin'}, 'traingdx');
+                    net{t} = newff(minmax(in_list{t}'), [16 16 max(Prob.D)], {'logsig' 'logsig' 'purelin'}, 'traingdx');
                     net{t}.trainparam.show = 10;
                     net{t}.trainparam.epochs = Algo.EP;
                     net{t}.trainParam.lr = 0.1;
@@ -122,7 +122,7 @@ methods
             if (rand() < Algo.LR && trained == 1)
                 testInput = population(i).Dec';
                 Y = sim(net, testInput)';
-                offspring(i).Dec = population(i).Dec + 2 * rand() * Y;
+                population(i).Dec = population(i).Dec + 2 * rand() * Y;
             else
                 % Velocity update
                 population(i).V = W * population(i).V + ...
@@ -131,9 +131,7 @@ methods
                 % Position update
                 population(i).Dec = population(i).Dec + population(i).V;
             end
-
-            population(i).Dec(population(i).Dec > 1) = 1;
-            population(i).Dec(population(i).Dec < 0) = 0;
+            population(i).Dec = max(min(population(i).Dec, 1), 0);
         end
     end
 end

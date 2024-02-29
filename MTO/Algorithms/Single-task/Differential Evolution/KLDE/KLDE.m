@@ -69,7 +69,7 @@ methods
 
                 % Train Model
                 if (trained{t} == 0)
-                    net{t} = newff(minmax(in_list{t}'), [16 16 Prob.D(t)], {'logsig' 'logsig' 'purelin'}, 'traingdx');
+                    net{t} = newff(minmax(in_list{t}'), [16 16 max(Prob.D)], {'logsig' 'logsig' 'purelin'}, 'traingdx');
                     net{t}.trainparam.show = 10;
                     net{t}.trainparam.epochs = Algo.EP;
                     net{t}.trainParam.lr = 0.1;
@@ -102,9 +102,7 @@ methods
                 offspring(i).Dec = population(x1).Dec + Algo.F * (population(x2).Dec - population(x3).Dec);
             end
             offspring(i).Dec = DE_Crossover(offspring(i).Dec, population(i).Dec, Algo.CR);
-
-            offspring(i).Dec(offspring(i).Dec > 1) = 1;
-            offspring(i).Dec(offspring(i).Dec < 0) = 0;
+            population(i).Dec = max(min(population(i).Dec, 1), 0);
         end
     end
 end
