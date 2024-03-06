@@ -80,7 +80,11 @@ methods
                     sample{t}(i).Dec = mDec{t} + sigma{t} * (B{t} * (D{t} .* randn(n{t}, 1)))';
                 end
                 [rank{t}, sample{t}] = Algo.EvaluationAndSort(sample{t}, Prob, t);
-                ObjHist{t} = [ObjHist{t}, sample{t}(rank{t}(1)).Obj];
+                if isempty(ObjHist{t})
+                    ObjHist{t} = sample{t}(rank{t}(1)).Obj;
+                else
+                    ObjHist{t} = [ObjHist{t}, min(ObjHist{t}(end), sample{t}(rank{t}(1)).Obj)];
+                end
                 taskFE(t) = taskFE(t) + lambda{t};
 
                 % Update mean decision variables
