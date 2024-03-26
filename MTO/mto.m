@@ -11,6 +11,7 @@ function mto(varargin)
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
+cd(fileparts(mfilename('fullpath')));
 addpath(genpath('./Algorithms/'));
 addpath(genpath('./Problems/'));
 addpath(genpath('./Metrics/'));
