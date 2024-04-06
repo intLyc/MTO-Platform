@@ -70,7 +70,7 @@ methods
                 end
 
                 % step 2: fitness reshaping
-                rank{t} = Algo.EvaluationAndSort(sample{t}, Prob, t);
+                [sample{t}, rank{t}] = Algo.EvaluationAndSort(sample{t}, Prob, t);
                 weights{t}(rank{t}) = shape{t};
 
                 % step 3: compute the gradient for x, s, and B
@@ -89,7 +89,7 @@ methods
         end
     end
 
-    function rank = EvaluationAndSort(Algo, sample, Prob, t)
+    function [sample, rank] = EvaluationAndSort(Algo, sample, Prob, t)
         %% Boundary Constraint
         boundCVs = zeros(length(sample), 1);
         for i = 1:length(sample)

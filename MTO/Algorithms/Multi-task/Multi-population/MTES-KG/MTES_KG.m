@@ -124,7 +124,7 @@ methods
 
             %% Update algorithm parameters
             for t = 1:Prob.T
-                rank{t} = Algo.EvaluationAndSort(sample{t}, Prob, t);
+                [sample{t}, rank{t}] = Algo.EvaluationAndSort(sample{t}, Prob, t);
 
                 % Storage number and success of external samples
                 numExS{t}(Algo.Gen) = tau(t);
@@ -186,7 +186,7 @@ methods
         end
     end
 
-    function rank = EvaluationAndSort(Algo, sample, Prob, t)
+    function [sample, rank] = EvaluationAndSort(Algo, sample, Prob, t)
         %% Boundary constraint handling
         boundCVs = zeros(length(sample), 1);
         for i = 1:length(sample)

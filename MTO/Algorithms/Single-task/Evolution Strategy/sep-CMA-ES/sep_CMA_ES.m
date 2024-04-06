@@ -73,7 +73,7 @@ methods
                 for i = 1:lambda
                     sample{t}(i).Dec = mDec{t} + sigma{t} * (B{t} * (D{t} .* randn(n{t}, 1)))';
                 end
-                rank = Algo.EvaluationAndSort(sample{t}, Prob, t);
+                [sample{t}, rank] = Algo.EvaluationAndSort(sample{t}, Prob, t);
 
                 % Update mean decision variables
                 oldDec = mDec{t};
@@ -95,7 +95,7 @@ methods
         end
     end
 
-    function rank = EvaluationAndSort(Algo, sample, Prob, t)
+    function [sample, rank] = EvaluationAndSort(Algo, sample, Prob, t)
         %% Boundary Constraint
         boundCVs = zeros(length(sample), 1);
         for i = 1:length(sample)

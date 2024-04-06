@@ -79,7 +79,7 @@ methods
                 for i = 1:lambda{t}
                     sample{t}(i).Dec = mDec{t} + sigma{t} * (B{t} * (D{t} .* randn(n{t}, 1)))';
                 end
-                [rank{t}, sample{t}] = Algo.EvaluationAndSort(sample{t}, Prob, t);
+                [sample{t}, rank{t}] = Algo.EvaluationAndSort(sample{t}, Prob, t);
                 if isempty(ObjHist{t})
                     ObjHist{t} = sample{t}(rank{t}(1)).Obj;
                 else
@@ -135,7 +135,7 @@ methods
         end
     end
 
-    function [rank, sample] = EvaluationAndSort(Algo, sample, Prob, t)
+    function [sample, rank] = EvaluationAndSort(Algo, sample, Prob, t)
         %% Boundary Constraint
         boundCVs = zeros(length(sample), 1);
         for i = 1:length(sample)

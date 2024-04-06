@@ -64,7 +64,7 @@ methods
                     offspring(i).Dec = mDec{t} + d;
                 end
                 population{t} = offspring;
-                rank{t} = Algo.EvaluationAndSort(population{t}, Prob, t);
+                [population{t}, rank{t}] = Algo.EvaluationAndSort(population{t}, Prob, t);
 
                 x = [];
                 x(1, :, :) = population{t}(rank{t}(1:mu)).Decs;
@@ -84,7 +84,7 @@ methods
         end
     end
 
-    function rank = EvaluationAndSort(Algo, sample, Prob, t)
+    function [sample, rank] = EvaluationAndSort(Algo, sample, Prob, t)
         %% Boundary Constraint
         boundCVs = zeros(length(sample), 1);
         for i = 1:length(sample)
