@@ -55,10 +55,7 @@ methods
             mDec{t} = mean(unifrnd(zeros(lambda, n{t}), ones(lambda, n{t})));
             ps{t} = zeros(n{t}, 1);
             pc{t} = zeros(n{t}, 1);
-            B{t} = eye(n{t}, n{t});
-            D{t} = ones(n{t}, 1);
-            C{t} = B{t} * diag(D{t}.^2) * B{t}';
-            invsqrtC{t} = B{t} * diag(D{t}.^-1) * B{t}';
+            C{t} = ones(n{t}, 1);
             sigma{t} = Algo.sigma0;
             chiN{t} = sqrt(n{t}) * (1 - 1 / (4 * n{t}) + 1 / (21 * n{t}^2));
             hth{t} = (1.4 + 2 / (n{t} + 1)) * chiN{t};
@@ -71,7 +68,7 @@ methods
             for t = 1:Prob.T
                 % Sample solutions
                 for i = 1:lambda
-                    sample{t}(i).Dec = mDec{t} + sigma{t} * (B{t} * (D{t} .* randn(n{t}, 1)))';
+                    sample{t}(i).Dec = mDec{t} + sigma{t} * (sqrt(C{t}) .* randn(n{t}, 1))';
                 end
                 [sample{t}, rank] = Algo.EvaluationAndSort(sample{t}, Prob, t);
 
@@ -79,18 +76,15 @@ methods
                 oldDec = mDec{t};
                 mDec{t} = weights * sample{t}(rank(1:mu)).Decs;
                 % Update evolution paths
-                ps{t} = (1 - cs{t}) * ps{t} + sqrt(cs{t} * (2 - cs{t}) * mueff) * invsqrtC{t} * (mDec{t} - oldDec)' / sigma{t};
+                ps{t} = (1 - cs{t}) * ps{t} + sqrt(cs{t} * (2 - cs{t}) * mueff) * (mDec{t} - oldDec)' ./ sqrt(C{t}) / sigma{t};
                 hsig = norm(ps{t}) / sqrt(1 - (1 - cs{t})^(2 * (ceil((Algo.FE - lambda * (t - 1)) / (lambda * Prob.T)) + 1))) < hth{t};
                 pc{t} = (1 - cc{t}) * pc{t} + hsig * sqrt(cc{t} * (2 - cc{t}) * mueff) * (mDec{t} - oldDec)' / sigma{t};
                 % Update covariance matrix
                 artmp = (sample{t}(rank(1:mu)).Decs - repmat(oldDec, mu, 1))' / sigma{t};
                 delta = (1 - hsig) * cc{t} * (2 - cc{t});
-                C{t} = (1 - ccov{t}) * C{t} + (ccov{t} / mueff) * (pc{t} * pc{t}' + delta * C{t}) + ccov{t} * (1 - 1 / mueff) * artmp * diag(weights) * artmp';
+                C{t} = (1 - ccov{t}) * C{t} + (ccov{t} / mueff) * (pc{t}.^2 + delta * C{t}) + ccov{t} * (1 - 1 / mueff) * artmp.^2 * weights';
                 % Update step size
                 sigma{t} = sigma{t} * exp(cs{t} / damps{t} * (norm(ps{t}) / chiN{t} - 1));
-
-                D{t} = sqrt(diag(C{t})); % seperable decomposition
-                invsqrtC{t} = diag(D{t}.^-1);
             end
         end
     end
