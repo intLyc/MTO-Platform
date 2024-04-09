@@ -1,5 +1,11 @@
 classdef DrawPopObj < handle
 
+%% Draw Dynamic Population in Objective Space
+% Example:
+% dpo = DrawPopObj(Algo, Prob); % Initialize Object
+% while Algo.notTerminated(Prob, population) % Main Loop
+% dpo.update(Algo, Prob, population); % Dynamic Update Population
+
 %------------------------------- Copyright --------------------------------
 % Copyright (c) Yanchi Li. You are free to use the MToP for research
 % purposes. All publications which use this platform should acknowledge

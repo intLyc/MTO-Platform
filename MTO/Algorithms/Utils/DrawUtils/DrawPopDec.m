@@ -1,5 +1,11 @@
 classdef DrawPopDec < handle
 
+%% Draw Dynamic Population in Decision Space
+% Example:
+% dpd = DrawPopDec(Algo, Prob); % Initialize Object
+% while Algo.notTerminated(Prob, population) % Main Loop
+% dpd.update(Prob, population); % Dynamic Update Population
+
 %------------------------------- Copyright --------------------------------
 % Copyright (c) Yanchi Li. You are free to use the MToP for research
 % purposes. All publications which use this platform should acknowledge
