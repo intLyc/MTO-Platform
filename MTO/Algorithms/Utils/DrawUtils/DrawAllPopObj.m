@@ -1,5 +1,11 @@
 classdef DrawAllPopObj < handle
 
+%% Draw Dynamic Population of All Tasks in One Objective Space
+% Example:
+% dapo = DrawAllPopObj(Algo, Prob); % Initialize Object
+% while Algo.notTerminated(Prob, population) % Main Loop
+% dapo.update(Algo, Prob, population); % Dynamic Update Population
+
 %------------------------------- Copyright --------------------------------
 % Copyright (c) Yanchi Li. You are free to use the MToP for research
 % purposes. All publications which use this platform should acknowledge
