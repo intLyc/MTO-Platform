@@ -109,6 +109,14 @@ methods
                     population{t}(P(g_old >= g_new)) = offspring;
                 end
             end
+
+            if Algo.FE >= Prob.maxFE
+                for t = 1:Prob.T
+                    if N{t} < Prob.N % Fill population
+                        population{t}(N{t} + 1:Prob.N) = population{t}(1:Prob.N - N{t});
+                    end
+                end
+            end
         end
     end
 

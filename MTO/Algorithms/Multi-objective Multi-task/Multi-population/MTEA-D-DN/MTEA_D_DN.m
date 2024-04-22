@@ -121,6 +121,14 @@ methods
                     end
                 end
             end
+
+            if Algo.FE >= Prob.maxFE
+                for t = 1:Prob.T
+                    if N{t} < Prob.N % Fill population
+                        population{t}(N{t} + 1:Prob.N) = population{t}(1:Prob.N - N{t});
+                    end
+                end
+            end
         end
     end
 
