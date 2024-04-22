@@ -44,17 +44,23 @@ methods
             ylabel(obj.ax, '$f$', 'interpreter', 'latex');
         end
 
-        color = colororder;
+        alloptimum = [];
         for t = 1:Prob.T
-            if M == 2
-                % draw optimum
-                s = scatter(obj.ax, optimum{t}(:, 1), optimum{t}(:, 2));
-                s.MarkerEdgeColor = 'none';
-                s.MarkerFaceAlpha = 0.65;
-                s.MarkerFaceColor = [.2, .2, .2];
-                s.SizeData = 3;
-                hold(obj.ax, 'on');
+            alloptimum = [alloptimum; optimum{t}];
+        end
+        alloptimum = getBestObj(alloptimum, zeros(size(alloptimum, 1), 1));
 
+        color = colororder;
+        if M == 2
+            % draw optimum
+            s = scatter(obj.ax, alloptimum(:, 1), alloptimum(:, 2));
+            s.MarkerEdgeColor = 'none';
+            s.MarkerFaceAlpha = 0.65;
+            s.MarkerFaceColor = [.2, .2, .2];
+            s.SizeData = 3;
+            hold(obj.ax, 'on');
+
+            for t = 1:Prob.T
                 % draw objs
                 obj.hplot{t} = scatter(obj.ax, 0, 0);
                 obj.hplot{t}.MarkerEdgeColor = color(mod(t - 1, size(color, 1)) + 1, :);
@@ -62,15 +68,17 @@ methods
                 obj.hplot{t}.MarkerFaceColor = color(mod(t - 1, size(color, 1)) + 1, :);
                 obj.hplot{t}.SizeData = 40;
                 hold(obj.ax, 'on');
-            elseif M == 3
-                % draw optimum
-                s = scatter3(obj.ax, optimum{t}(:, 1), optimum{t}(:, 2), optimum{t}(:, 3));
-                s.MarkerEdgeColor = 'none';
-                s.MarkerFaceAlpha = 0.65;
-                s.MarkerFaceColor = [.5, .5, .5];
-                s.SizeData = 3;
-                hold(obj.ax, 'on');
+            end
+        elseif M == 3
+            % draw optimum
+            s = scatter3(obj.ax, alloptimum(:, 1), alloptimum(:, 2), alloptimum(:, 3));
+            s.MarkerEdgeColor = 'none';
+            s.MarkerFaceAlpha = 0.65;
+            s.MarkerFaceColor = [.5, .5, .5];
+            s.SizeData = 3;
+            hold(obj.ax, 'on');
 
+            for t = 1:Prob.T
                 % draw objs
                 obj.hplot{t} = scatter3(obj.ax, 0, 0, 0);
                 obj.hplot{t}.MarkerEdgeColor = color(mod(t - 1, size(color, 1)) + 1, :);
@@ -78,7 +86,9 @@ methods
                 obj.hplot{t}.MarkerFaceColor = color(mod(t - 1, size(color, 1)) + 1, :);
                 obj.hplot{t}.SizeData = 40;
                 hold(obj.ax, 'on');
-            else
+            end
+        else
+            for t = 1:Prob.T
                 obj.hplot{t} = {};
                 for i = 1:Prob.N
                     obj.hplot{t}{i} = plot(obj.ax, 0);
@@ -87,8 +97,8 @@ methods
                     hold(obj.ax, 'on');
                 end
             end
-            drawnow;
         end
+        drawnow;
     end
 
     function obj = update(obj, Algo, Prob, Pop)
@@ -129,4 +139,14 @@ methods
         close(obj.fig)
     end
 end
+end
+
+function BestObj = getBestObj(Obj, CV)
+Feasible = find(all(CV <= 0, 2));
+if isempty(Feasible)
+    Best = [];
+else
+    Best = NDSort(Obj(Feasible, :), 1) == 1;
+end
+BestObj = Obj(Feasible(Best), :);
 end
