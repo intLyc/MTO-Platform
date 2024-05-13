@@ -26,8 +26,12 @@ var = (M(1:D, 1:D) * (var - repmat(opt(1:D), ps, 1))')';
 
 a = 1e+6;
 Obj = zeros(ps, 1);
-for i = 1:D
-    Obj = Obj + a.^((i - 1) / (D - 1)) .* var(:, i).^2;
+if D == 1
+    Obj = a * var.^2;
+else
+    for i = 1:D
+        Obj = Obj + a.^((i - 1) / (D - 1)) .* var(:, i).^2;
+    end
 end
 Obj = Obj + g;
 
