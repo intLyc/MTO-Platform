@@ -97,7 +97,7 @@ methods
                             offspring = Algo.Evaluation(offspring, Prob, t);
                             pop_temp = [population{t}(STIdx), offspring];
                             rank = NSGA2Sort(pop_temp);
-                            population{t}(STIdx) = population{t}(rank(1:length(STIdx)));
+                            population{t}(STIdx) = pop_temp(rank(1:length(STIdx)));
                         case 2
                             offspring = Algo.Generation_DE(parent(STIdx));
                             offspring = Algo.Evaluation(offspring, Prob, t);
