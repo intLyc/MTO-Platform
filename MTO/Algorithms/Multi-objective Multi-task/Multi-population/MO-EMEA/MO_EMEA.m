@@ -60,7 +60,6 @@ methods
         for t = 1:Prob.T
             init_pop_dec{t} = population{t}.Decs;
             init_pop_dec{t} = init_pop_dec{t}(:, 1:Prob.D(t));
-            init_pop_dec{t} = (Prob.Ub{t} - Prob.Lb{t}) .* init_pop_dec{t} + Prob.Lb{t};
         end
 
         while Algo.notTerminated(Prob, population)
@@ -82,14 +81,8 @@ methods
                         his_pop_dec = population{k}.Decs;
                         his_best_dec = his_pop_dec(1:inject_num, 1:Prob.D(k));
 
-                        % map to original
-                        his_best_dec = (Prob.Ub{k} - Prob.Lb{k}) .* his_best_dec + Prob.Lb{k};
-
                         % autoencoding transfer
                         inject = mDA(init_pop_dec{t}, init_pop_dec{k}, his_best_dec);
-
-                        % mat to [0,1]
-                        inject = (inject - Prob.Lb{t}) ./ (Prob.Ub{t} - Prob.Lb{t});
 
                         for i = 1:size(inject, 1)
                             c = Individual();
