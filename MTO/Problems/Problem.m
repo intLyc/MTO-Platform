@@ -28,8 +28,10 @@ end
 
 methods
     function Prob = Problem(varargin)
-        if length(varargin) == 1
+        if nargin == 1 && ~isempty(varargin{1})
             Prob.Name = char(varargin{1});
+        else
+            Prob.Name = strrep(class(Prob), '_', '-');
         end
         Prob.M = 1;
         Prob.N = Prob.defaultN;

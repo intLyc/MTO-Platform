@@ -24,8 +24,10 @@ end
 methods
     function Algo = Algorithm(varargin)
         % Algorithm constructor, cannot be changed
-        if length(varargin) >= 1
+        if nargin == 1 && ~isempty(varargin{1})
             Algo.Name = varargin{1};
+        elseif nargin == 0
+            Algo.Name = strrep(class(Algo), '_', '-');
         end
         Algo.FE = 0;
         Algo.Gen = 1;
