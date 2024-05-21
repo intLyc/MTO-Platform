@@ -11,24 +11,32 @@ function MTO_CMD(AlgoCell, ProbCell, Reps, Par_Flag, Results_Num, Save_Dec, Save
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-if isa(AlgoCell, 'char')
+if ~isa(AlgoCell, 'cell')
     AlgoCell = {AlgoCell};
 end
-if isa(ProbCell, 'char')
+if ~isa(ProbCell, 'cell')
     ProbCell = {ProbCell};
 end
-AlgoCell = strrep(AlgoCell, '-', '_');
-ProbCell = strrep(ProbCell, '-', '_');
 
 % Create Algorithm and Problem Object cell
 AlgoObject = {};
 for algo = 1:length(AlgoCell)
-    eval(['algo_obj = ', AlgoCell{algo}, '(''', strrep(AlgoCell{algo}, '_', '-'), '''); ']);
+    if isa(AlgoCell{algo}, 'char')
+        AlgoCell{algo} = strrep(AlgoCell{algo}, '-', '_');
+        eval(['algo_obj = ', AlgoCell{algo}, '(''', strrep(AlgoCell{algo}, '_', '-'), '''); ']);
+    else
+        algo_obj = AlgoCell{algo};
+    end
     AlgoObject = [AlgoObject, {algo_obj}];
 end
 ProbObject = {};
 for prob = 1:length(ProbCell)
-    eval(['prob_obj = ', ProbCell{prob}, '(''', strrep(ProbCell{prob}, '_', '-'), '''); ']);
+    if isa(ProbCell{prob}, 'char')
+        ProbCell{prob} = strrep(ProbCell{prob}, '-', '_');
+        eval(['prob_obj = ', ProbCell{prob}, '(''', strrep(ProbCell{prob}, '_', '-'), '''); ']);
+    else
+        prob_obj = ProbCell{prob};
+    end
     ProbObject = [ProbObject, {prob_obj}];
 end
 
