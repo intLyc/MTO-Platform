@@ -25,7 +25,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         TP2GridLayout                   matlab.ui.container.GridLayout
         TP21GridLayout                  matlab.ui.container.GridLayout
         TShowTypeDropDown               matlab.ui.control.DropDown
-        TSaveButton                     matlab.ui.control.Button
+        TExportButton                   matlab.ui.control.Button
         TP24GridLayout                  matlab.ui.container.GridLayout
         TStartButton                    matlab.ui.control.Button
         TResetButton                    matlab.ui.control.Button
@@ -1424,15 +1424,22 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TstartEnable(true);
         end
 
-        % Button pushed function: TSaveButton
-        function TSaveButtonPushed(app, event)
-            % check selected file name
-            filter = {'*.eps'; '*.pdf';'*.png';};
-            [file_name, dir_name] = uiputfile(filter);
-            if file_name == 0
-                return;
-            end
-            exportgraphics(app.TUIAxes, [dir_name, file_name], 'ContentType', "vector");
+        % Button pushed function: TExportButton
+        function TExportButtonPushed(app, event)
+            f = figure();
+            axes2 = copyobj(app.TUIAxes, f);
+            set(axes2,'units','default','position','default');
+            set(axes2,'OuterPosition',[0,0,1,1]);
+%             set(0, 'defaultFigureRenderer', 'painters');set(groot, 'defaultFigureRenderer', 'painters');
+
+%            %% Unused
+%             % check selected file name
+%             filter = {'*.eps'; '*.pdf';'*.png';};
+%             [file_name, dir_name] = uiputfile(filter);
+%             if file_name == 0
+%                 return;
+%             end
+%             exportgraphics(app.TUIAxes, [dir_name, file_name], 'ContentType', "vector");
         end
 
         % Value changed function: ETaskTypeDropDown
@@ -2654,7 +2661,8 @@ classdef MTO_GUI < matlab.apps.AppBase
                     
                     y = squeeze(mean(app.EResultConvergeData.Y(prob_list(i), algo_list(j), :, :),3))';
                     if strcmp(app.EConvergeTypeDropDown.Value, 'Log')
-                        y = log(y);
+                        % y = log(y);
+                        set(ax, 'YScale', 'log');
                     end
                     
                     x = squeeze(mean(app.EResultConvergeData.X(prob_list(i), algo_list(j), :, :),3))';
@@ -2673,19 +2681,23 @@ classdef MTO_GUI < matlab.apps.AppBase
                     xlim_min = min(xlim_min, x(1));
                     hold(ax, 'on');
                 end
+                set(ax,'OuterPosition',[0,0,1,1]);
                 
                 if xlim_min ~= xlim_max
                     xlim(ax, [xlim_min, xlim_max]);
                 end
-                if strcmp(app.EConvergeTypeDropDown.Value, 'Log')
-                    ylabel(ax, ['Log - ', strrep(app.EDataTypeDropDown.Value, '_', ' ')]);
-                else
-                    ylabel(ax, strrep(app.EDataTypeDropDown.Value, '_', ' '));
-                end
+                % if strcmp(app.EConvergeTypeDropDown.Value, 'Log')
+                %     ylabel(ax, ['Log - ', strrep(app.EDataTypeDropDown.Value, '_', ' ')]);
+                % else
+                ylabel(ax, strrep(app.EDataTypeDropDown.Value, '_', ' '));
+                % end
                 xlabel(ax, 'Evaluation');
                 legend(ax, strrep(app.EUITable.ColumnName(algo_list), '_', '\_'), 'Location', 'best');
-                title(ax, strrep(app.EUITable.RowName(prob_list(i)), '_', '\_'))
+                title(ax, strrep(app.EUITable.RowName(prob_list(i)), '_', '\_'),'FontWeight','bold')
                 grid(ax, 'on');
+                set(0, 'defaultFigureRenderer', 'painters');set(groot, 'defaultFigureRenderer', 'painters');
+                set(ax,'FontWeight','bold'); set(get(fig,'Children'),'FontSize',10);
+                set(ax,'LooseInset',get(ax,'TightInset')+0.02)
             end
         end
 
@@ -2743,7 +2755,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                         legend(ax, strrep(app.EUITable.ColumnName(algo_list), '_', '\_'), 'Location', 'best');
                     end
                     
-                    title(ax, strrep(app.EUITable.RowName(prob_list(i)), '_', '\_'))
+                    title(ax, strrep(app.EUITable.RowName(prob_list(i)), '_', '\_'),'FontWeight','bold')
                     grid(ax, 'on');
                 elseif M == 3
                     if ~isempty(app.EResultParetoData.Optimum)
@@ -2786,7 +2798,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                         legend(ax, strrep(app.EUITable.ColumnName(algo_list), '_', '\_'), 'Location', 'best');
                     end
                     
-                    title(ax, strrep(app.EUITable.RowName(prob_list(i)), '_', '\_'))
+                    title(ax, strrep(app.EUITable.RowName(prob_list(i)), '_', '\_'),'FontWeight','bold')
                     view(ax,[135 30]);
                     grid(ax, 'on');
                 else % M > 3
@@ -2824,9 +2836,13 @@ classdef MTO_GUI < matlab.apps.AppBase
                     if length(algo_list) > 1
                         legend(ax, p, strrep(app.EUITable.ColumnName(algo_list), '_', '\_'), 'Location', 'best');
                     end
-                    title(ax, strrep(app.EUITable.RowName(prob_list(i)), '_', '\_'))
+                    title(ax, strrep(app.EUITable.RowName(prob_list(i)), '_', '\_'),'FontWeight','bold')
                     grid(ax, 'on');
                 end
+                set(ax,'OuterPosition',[0,0,1,1]);
+                set(0, 'defaultFigureRenderer', 'painters');set(groot, 'defaultFigureRenderer', 'painters');
+                set(ax,'FontWeight','bold'); set(get(fig,'Children'),'FontSize',10);
+                set(ax,'LooseInset',get(ax,'TightInset')+0.02)
             end
         end
     end
@@ -3032,16 +3048,16 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TShowTypeDropDown.Layout.Column = 3;
             app.TShowTypeDropDown.Value = 'Tasks Figure (1D Unified)';
 
-            % Create TSaveButton
-            app.TSaveButton = uibutton(app.TP21GridLayout, 'push');
-            app.TSaveButton.ButtonPushedFcn = createCallbackFcn(app, @TSaveButtonPushed, true);
-            app.TSaveButton.BusyAction = 'cancel';
-            app.TSaveButton.BackgroundColor = [1 1 1];
-            app.TSaveButton.FontWeight = 'bold';
-            app.TSaveButton.Tooltip = {''};
-            app.TSaveButton.Layout.Row = 1;
-            app.TSaveButton.Layout.Column = 2;
-            app.TSaveButton.Text = 'Save Figure';
+            % Create TExportButton
+            app.TExportButton = uibutton(app.TP21GridLayout, 'push');
+            app.TExportButton.ButtonPushedFcn = createCallbackFcn(app, @TExportButtonPushed, true);
+            app.TExportButton.BusyAction = 'cancel';
+            app.TExportButton.BackgroundColor = [1 1 1];
+            app.TExportButton.FontWeight = 'bold';
+            app.TExportButton.Tooltip = {''};
+            app.TExportButton.Layout.Row = 1;
+            app.TExportButton.Layout.Column = 2;
+            app.TExportButton.Text = 'Export Figure';
 
             % Create TP24GridLayout
             app.TP24GridLayout = uigridlayout(app.TP2GridLayout);
