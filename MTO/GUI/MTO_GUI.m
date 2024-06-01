@@ -1432,7 +1432,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             if file_name == 0
                 return;
             end
-            exportgraphics(app.TUIAxes, [dir_name, file_name]);
+            exportgraphics(app.TUIAxes, [dir_name, file_name], 'ContentType', "vector");
         end
 
         % Value changed function: ETaskTypeDropDown
