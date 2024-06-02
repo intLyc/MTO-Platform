@@ -44,6 +44,7 @@ methods
             xlim(obj.tiled.Children(end - t + 1), [1, max(Prob.D)]);
             ylim(obj.tiled.Children(end - t + 1), [0, 1]);
             title(obj.tiled.Children(end - t + 1), ['Task ', num2str(t)]);
+            grid(obj.tiled.Children(end - t + 1), 'on');
             drawnow;
         end
     end
