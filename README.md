@@ -24,6 +24,23 @@ MToP is a user-friendly tool with a graphical user interface that makes it easy 
 [**[Paper - Click Here]**](https://arxiv.org/abs/2312.08134) /
 [**[User Guide - Click Here]**](./Doc/User-Guide.md)
 
+## Release Highlights of MToP v1.4
+
+- **New features:**
+  **1. Draw dynamic Dec and Obj of populations during optimization in the Test Module**
+  **2. Pause and Stop buttons can now respond in time by clicking on both the Test and Experiment Module**
+  3. Figures sample numbers in the Test Module can be modified, and figures can be exported
+  4. Algorithm and Problem objects can be input in the command line running e.g. "mto(MFEA(), CMT1());"
+- New Algorithms:
+  - CEDA (Constrained Single-objective Multitask SWEC24)
+  - MTEA-D-TSD (Multi-objective Multitask GECCO24)
+  - Global-GA (Single-objective Single-task TEVC24)
+  - KLDE and KLPSO (Single-objective Single-task TEVC23)
+  - Other classical algorithms: RVEA (MO-ST), SMS-EMOA (MO-ST), IPOP-CMA-ES (SO-ST)
+- New Problems:
+  - Classical Single-Objective Functions with any dimension setting
+- Fix some bugs.
+
 ## Release Highlights of MToP v1.3
 
 - Newly added algorithms:
