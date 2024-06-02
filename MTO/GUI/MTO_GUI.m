@@ -21,14 +21,21 @@ classdef MTO_GUI < matlab.apps.AppBase
         TSpecialTypeDropDown            matlab.ui.control.DropDown
         TObjectiveTypeDropDown          matlab.ui.control.DropDown
         ObjectiveLabel                  matlab.ui.control.Label
+        DrawDecLabel                    matlab.ui.control.Label
+        TDrawDecDropDown                matlab.ui.control.DropDown
+        DrawObjLabel                    matlab.ui.control.Label
+        TDrawObjDropDown                matlab.ui.control.DropDown
         TPanel2                         matlab.ui.container.Panel
         TP2GridLayout                   matlab.ui.container.GridLayout
         TP21GridLayout                  matlab.ui.container.GridLayout
         TShowTypeDropDown               matlab.ui.control.DropDown
         TExportButton                   matlab.ui.control.Button
+        SampleNumberEditFieldLabel      matlab.ui.control.Label
+        SampleNumberEditField           matlab.ui.control.NumericEditField
         TP24GridLayout                  matlab.ui.container.GridLayout
         TStartButton                    matlab.ui.control.Button
-        TResetButton                    matlab.ui.control.Button
+        TStopButton                     matlab.ui.control.Button
+        TPauseButton                    matlab.ui.control.Button
         TUIAxes                         matlab.ui.control.UIAxes
         TPanel3                         matlab.ui.container.Panel
         TP3GridLayout                   matlab.ui.container.GridLayout
@@ -149,6 +156,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         
         % Test Module
         TData % data
+        TStopFlag
         
         % Experiment Module
         EData % data
@@ -170,7 +178,6 @@ classdef MTO_GUI < matlab.apps.AppBase
     end
     
     methods (Access = public)
-        
         function readAlgoProb(app, label_str)
             % load the algorithms and problems list
             
@@ -258,6 +265,8 @@ classdef MTO_GUI < matlab.apps.AppBase
             % in Test module
             
             app.TStartButton.Enable = value;
+            app.TPauseButton.Enable = ~value;
+            app.TStopButton.Enable = ~value;
             app.TTaskTypeDropDown.Enable = value;
             app.TObjectiveTypeDropDown.Enable = value;
             app.TSpecialTypeDropDown.Enable = value;
@@ -265,6 +274,8 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TAlgorithmTree.Enable = value;
             app.TProblemDropDown.Enable = value;
             app.TProblemTree.Enable = value;
+            app.TDrawDecDropDown.Enable = value;
+            app.TDrawObjDropDown.Enable = value;
         end
         
         function EstartEnable(app, value)
@@ -291,6 +302,16 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.ESaveDataButton.Enable = value;
             app.EPauseButton.Enable = ~value;
             app.EStopButton.Enable = ~value;
+        end
+        
+        function TcheckPauseStopStatus(app)
+            if app.TStopFlag
+                error('User Stop');
+            end
+            
+            if strcmp(app.TPauseButton.Text, 'Resume')
+                waitfor(app.TPauseButton,'Text', 'Pause');
+            end
         end
         
         function EcheckPauseStopStatus(app)
@@ -396,7 +417,8 @@ classdef MTO_GUI < matlab.apps.AppBase
         function TupdateTasksFigure(app)
             % update selected problem tasks figure in Test module
             try
-                x = 0:1/1000:1;
+                sample_number = app.SampleNumberEditField.Value;
+                x = 0:1/sample_number:1;
                 
                 legend_cell = {};
                 plot_handle = {};
@@ -444,7 +466,8 @@ classdef MTO_GUI < matlab.apps.AppBase
         function TupdateTasksFigure2D(app)
             % update selected problem tasks figure in Test module
             try
-                x = 0:1/99:1;
+                sample_number = app.SampleNumberEditField.Value;
+                x = 0:1/sample_number:1;
                 
                 legend_cell = {};
                 plot_handle = {};
@@ -496,7 +519,8 @@ classdef MTO_GUI < matlab.apps.AppBase
                     return;
                 end
                 
-                x = 0:1/150:1;
+                sample_number = app.SampleNumberEditField.Value;
+                x = 0:1/sample_number:1;
                 
                 legend_cell = {};
                 plot_handle = {};
@@ -1235,8 +1259,8 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TupdateProblem();
             % app.TupdateUIAxes();
             app.EloadAlgoProb();
-            app.EloadMetric('none');
             app.MTOPlatformTabGroup.SelectedTab = app.ExperimentModuleTab;
+            app.EloadMetric({'none'});
         end
 
         % Value changed function: TTaskTypeDropDown
@@ -1354,6 +1378,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             
             % off the start button
             app.TstartEnable(false);
+            app.TStopFlag = false;
             drawnow;
             
             % set data
@@ -1382,6 +1407,10 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TAlgorithmTree.Children(1).NodeData.Result_Num = 50;
             app.TAlgorithmTree.Children(1).NodeData.Save_Dec = 0;
             app.TAlgorithmTree.Children(1).NodeData.reset();
+            app.TAlgorithmTree.Children(1).NodeData.Check_Status_Fn = @app.TcheckPauseStopStatus;
+            app.TAlgorithmTree.Children(1).NodeData.Draw_Dec = app.TDrawDecDropDown.Value;
+            app.TAlgorithmTree.Children(1).NodeData.Draw_Obj = app.TDrawObjDropDown.Value;
+            app.TAlgorithmTree.Children(1).NodeData.drawInit(app.TProblemTree.Children(1).NodeData);
             app.TAlgorithmTree.Children(1).NodeData.run(app.TProblemTree.Children(1).NodeData);
             tmp = app.TAlgorithmTree.Children(1).NodeData.getResult(app.TProblemTree.Children(1).NodeData);
             for t = 1:size(tmp, 1)
@@ -1413,14 +1442,28 @@ classdef MTO_GUI < matlab.apps.AppBase
                 end
             end
             app.Toutput('-------------------------------------------');
+            scroll(app.TOutputTextArea,"bottom");
             
             app.TstartEnable(true);
         end
 
-        % Button pushed function: TResetButton
-        function TResetButtonPushed(app, event)
+        % Button pushed function: TPauseButton
+        function TPauseButtonPushed(app, event)
+            % pause or resume
+            
+            if strcmp(app.TPauseButton.Text, 'Pause')
+                app.TStopButton.Enable = 'off';
+                app.TPauseButton.Text = 'Resume';
+            else
+                app.TStopButton.Enable = 'on';
+                app.TPauseButton.Text = 'Pause';
+            end
+        end
+
+        % Button pushed function: TStopButton
+        function TStopButtonPushed(app, event)
+            app.TStopFlag = true;
             app.TData = [];
-            app.TupdateUIAxes();
             app.TstartEnable(true);
         end
 
@@ -1430,7 +1473,6 @@ classdef MTO_GUI < matlab.apps.AppBase
             axes2 = copyobj(app.TUIAxes, f);
             set(axes2,'units','default','position','default');
             set(axes2,'OuterPosition',[0,0,1,1]);
-%             set(0, 'defaultFigureRenderer', 'painters');set(groot, 'defaultFigureRenderer', 'painters');
 
 %            %% Unused
 %             % check selected file name
@@ -1614,12 +1656,30 @@ classdef MTO_GUI < matlab.apps.AppBase
                     prob_obj = app.EProblemsTree.Children(prob).NodeData;
                     app.EcheckPauseStopStatus();
                     if app.EParallelDropDown.Value == 1
-                        par_tool = Par(MTOData.Reps);
-                        parfor rep = 1:MTOData.Reps
-                            Par.tic
-                            algo_obj.reset();
-                            algo_obj.run(prob_obj);
-                            tmp = algo_obj.getResult(prob_obj);
+                        algo_obj.reset();
+                        algo_obj.Check_Status_Fn = @emptyFn;
+                        future(1:MTOData.Reps) = parallel.FevalFuture;
+                        for rep = 1:MTOData.Reps
+                            future(rep) = parfeval(@parRun,1,algo_obj,prob_obj);
+                        end
+                        tmp_cell = cell(1,MTOData.Reps);
+                        while ~all([future.Read])
+                            drawnow('limitrate');
+                            if strcmp(app.EPauseButton.Text, 'Resume')
+                                waitfor(app.EPauseButton,'Text', 'Pause');
+                            end
+                            if app.EStopFlag
+                                app.EstartEnable(true);
+                                cancel(future);
+                                error('User Stop');
+                            end
+                            [r,result] = fetchNext(future,0.01);
+                            if ~isempty(r)
+                                tmp_cell{r} = result;
+                            end
+                        end
+                        for rep=1:MTOData.Reps
+                            tmp = tmp_cell{rep};
                             for t = 1:size(tmp, 1)
                                 for g = 1:size(tmp,2)
                                     if max(prob_obj.M) > 1
@@ -1636,15 +1696,16 @@ classdef MTO_GUI < matlab.apps.AppBase
                                     Results(prob, algo, rep).CV(t, g, :) = tmp(t, g).CV;
                                 end
                             end
-                            par_tool(rep) = Par.toc;
+                            MTOData.RunTimes(prob, algo, rep) = seconds(future(rep).FinishDateTime - future(rep).StartDateTime);
                         end
-                        MTOData.RunTimes(prob, algo, :) = [par_tool.ItStop] - [par_tool.ItStart];
                     else
                         t_temp = [];
                         for rep = 1:MTOData.Reps
                             tstart = tic;
                             algo_obj.reset();
+                            algo_obj.Check_Status_Fn = @app.EcheckPauseStopStatus;
                             algo_obj.run(prob_obj);
+                            algo_obj.Check_Status_Fn = @emptyFn;
                             tmp = algo_obj.getResult(prob_obj);
                             for t = 1:size(tmp, 1)
                                 for g = 1:size(tmp,2)
@@ -1680,7 +1741,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                 save('MTOData_Temp', 'MTOData');
                 app.EData = MTOData;
             end
-            %             save('MTOData_Temp', 'MTOData');
+            % save('MTOData_Temp', 'MTOData');
             
             m = [MTOData.Problems.M];
             if all(m==1)
@@ -1688,7 +1749,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             elseif all(m>1)
                 app.EloadMetric('Multi-objective')
             else
-                app.EloadMetric({'Single-objective', 'Multi-objective'})
+                app.EloadMetric({'none'})
             end
             
             tEnd = toc(tStart);
@@ -2644,10 +2705,27 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
             
             prob_list = unique(app.ETableSelected(:, 1));
+            if length(prob_list) <= 15
+                weidth = 340;
+                height = 300;
+                weinum = 5;
+                fontsize = 10;
+            else
+                weidth = 250;
+                height = 220;
+                weinum = 7;
+                fontsize = 7;
+            end
+            position = [10,50,weidth,height];
             for i = 1:length(prob_list)
                 idx = find(app.ETableSelected(:, 1) == prob_list(i));
                 algo_list = app.ETableSelected(idx, 2);
-                fig = figure();
+                fig = figure('Position',position);
+                if position(1)<1600
+                    position = position + [weidth,0,0,0];
+                else
+                    position = position + [10-position(1),height+80,0,0];
+                end
                 ax = axes(fig);
                 xlim_min = inf;
                 xlim_max = 0;
@@ -2661,8 +2739,9 @@ classdef MTO_GUI < matlab.apps.AppBase
                     
                     y = squeeze(mean(app.EResultConvergeData.Y(prob_list(i), algo_list(j), :, :),3))';
                     if strcmp(app.EConvergeTypeDropDown.Value, 'Log')
-                        % y = log(y);
                         set(ax, 'YScale', 'log');
+                    elseif strcmp(app.EConvergeTypeDropDown.Value, 'Log Type2')
+                         y = log(y);
                     end
                     
                     x = squeeze(mean(app.EResultConvergeData.X(prob_list(i), algo_list(j), :, :),3))';
@@ -2686,17 +2765,16 @@ classdef MTO_GUI < matlab.apps.AppBase
                 if xlim_min ~= xlim_max
                     xlim(ax, [xlim_min, xlim_max]);
                 end
-                % if strcmp(app.EConvergeTypeDropDown.Value, 'Log')
-                %     ylabel(ax, ['Log - ', strrep(app.EDataTypeDropDown.Value, '_', ' ')]);
-                % else
-                ylabel(ax, strrep(app.EDataTypeDropDown.Value, '_', ' '));
-                % end
+                if strcmp(app.EConvergeTypeDropDown.Value, 'Log Type2')
+                    ylabel(ax, ['Log - ', strrep(app.EDataTypeDropDown.Value, '_', ' ')]);
+                else
+                    ylabel(ax, strrep(app.EDataTypeDropDown.Value, '_', ' '));
+                end
                 xlabel(ax, 'Evaluation');
                 legend(ax, strrep(app.EUITable.ColumnName(algo_list), '_', '\_'), 'Location', 'best');
                 title(ax, strrep(app.EUITable.RowName(prob_list(i)), '_', '\_'),'FontWeight','bold')
                 grid(ax, 'on');
-                set(0, 'defaultFigureRenderer', 'painters');set(groot, 'defaultFigureRenderer', 'painters');
-                set(ax,'FontWeight','bold'); set(get(fig,'Children'),'FontSize',10);
+                set(ax,'FontWeight','bold'); set(get(fig,'Children'),'FontSize',fontsize);
                 set(ax,'LooseInset',get(ax,'TightInset')+0.02)
             end
         end
@@ -2710,10 +2788,27 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
             
             prob_list = unique(app.ETableSelected(:, 1));
+            if length(prob_list) <= 15
+                weidth = 340;
+                height = 300;
+                weinum = 5;
+                fontsize = 10;
+            else
+                weidth = 250;
+                height = 220;
+                weinum = 7;
+                fontsize = 7;
+            end
+            position = [10,50,weidth,height];
             for i = 1:length(prob_list)
                 idx = find(app.ETableSelected(:, 1) == prob_list(i));
                 algo_list = app.ETableSelected(idx, 2);
-                fig = figure();
+                fig = figure('Position',position);
+                if position(1)<1600
+                    position = position + [weidth,0,0,0];
+                else
+                    position = position + [10-position(1),height+80,0,0];
+                end
                 ax = axes(fig);
                 
                 M = size(app.EResultParetoData.Obj{prob_list(i),1,1}, 2);
@@ -2840,10 +2935,14 @@ classdef MTO_GUI < matlab.apps.AppBase
                     grid(ax, 'on');
                 end
                 set(ax,'OuterPosition',[0,0,1,1]);
-                set(0, 'defaultFigureRenderer', 'painters');set(groot, 'defaultFigureRenderer', 'painters');
-                set(ax,'FontWeight','bold'); set(get(fig,'Children'),'FontSize',10);
+                set(ax,'FontWeight','bold'); set(get(fig,'Children'),'FontSize',fontsize);
                 set(ax,'LooseInset',get(ax,'TightInset')+0.02)
             end
+        end
+
+        % Value changed function: SampleNumberEditField
+        function SampleNumberEditFieldValueChanged(app, event)
+            app.TupdateUIAxes();
         end
     end
 
@@ -2856,7 +2955,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create MTOPlatformMToPv14UIFigure and hide until all components are created
             app.MTOPlatformMToPv14UIFigure = uifigure('Visible', 'off');
             app.MTOPlatformMToPv14UIFigure.Color = [1 1 1];
-            app.MTOPlatformMToPv14UIFigure.Position = [100 100 1067 761];
+            app.MTOPlatformMToPv14UIFigure.Position = [100 100 1046 755];
             app.MTOPlatformMToPv14UIFigure.Name = 'MTO-Platform (MToP) v1.4';
 
             % Create MTOPlatformGridLayout
@@ -2894,7 +2993,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create TP1GridLayout
             app.TP1GridLayout = uigridlayout(app.TPanel1);
             app.TP1GridLayout.ColumnWidth = {'fit', '1x'};
-            app.TP1GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x'};
+            app.TP1GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x'};
             app.TP1GridLayout.ColumnSpacing = 5;
             app.TP1GridLayout.RowSpacing = 7;
             app.TP1GridLayout.Padding = [0 0 0 0];
@@ -2903,7 +3002,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create AlgorithmDropDownLabel
             app.AlgorithmDropDownLabel = uilabel(app.TP1GridLayout);
             app.AlgorithmDropDownLabel.FontWeight = 'bold';
-            app.AlgorithmDropDownLabel.Layout.Row = 4;
+            app.AlgorithmDropDownLabel.Layout.Row = 6;
             app.AlgorithmDropDownLabel.Layout.Column = 1;
             app.AlgorithmDropDownLabel.Text = 'Algorithm';
 
@@ -2915,7 +3014,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TAlgorithmDropDown.Tooltip = {'Select algorithm'};
             app.TAlgorithmDropDown.FontWeight = 'bold';
             app.TAlgorithmDropDown.BackgroundColor = [1 1 1];
-            app.TAlgorithmDropDown.Layout.Row = 4;
+            app.TAlgorithmDropDown.Layout.Row = 6;
             app.TAlgorithmDropDown.Layout.Column = 2;
             app.TAlgorithmDropDown.Value = {};
 
@@ -2924,7 +3023,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TAlgorithmTree.Multiselect = 'on';
             app.TAlgorithmTree.NodeTextChangedFcn = createCallbackFcn(app, @TAlgorithmTreeNodeTextChanged, true);
             app.TAlgorithmTree.Editable = 'on';
-            app.TAlgorithmTree.Layout.Row = 5;
+            app.TAlgorithmTree.Layout.Row = 7;
             app.TAlgorithmTree.Layout.Column = [1 2];
 
             % Create TProblemTree
@@ -2932,7 +3031,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TProblemTree.Multiselect = 'on';
             app.TProblemTree.NodeTextChangedFcn = createCallbackFcn(app, @TProblemTreeNodeTextChanged, true);
             app.TProblemTree.Editable = 'on';
-            app.TProblemTree.Layout.Row = 7;
+            app.TProblemTree.Layout.Row = 9;
             app.TProblemTree.Layout.Column = [1 2];
 
             % Create TProblemDropDown
@@ -2943,14 +3042,14 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TProblemDropDown.Tooltip = {'Select problem'};
             app.TProblemDropDown.FontWeight = 'bold';
             app.TProblemDropDown.BackgroundColor = [1 1 1];
-            app.TProblemDropDown.Layout.Row = 6;
+            app.TProblemDropDown.Layout.Row = 8;
             app.TProblemDropDown.Layout.Column = 2;
             app.TProblemDropDown.Value = {};
 
             % Create ProblemDropDownLabel
             app.ProblemDropDownLabel = uilabel(app.TP1GridLayout);
             app.ProblemDropDownLabel.FontWeight = 'bold';
-            app.ProblemDropDownLabel.Layout.Row = 6;
+            app.ProblemDropDownLabel.Layout.Row = 8;
             app.ProblemDropDownLabel.Layout.Column = 1;
             app.ProblemDropDownLabel.Text = 'Problem';
 
@@ -3010,6 +3109,42 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.ObjectiveLabel.Layout.Column = 1;
             app.ObjectiveLabel.Text = 'Objective';
 
+            % Create DrawDecLabel
+            app.DrawDecLabel = uilabel(app.TP1GridLayout);
+            app.DrawDecLabel.FontWeight = 'bold';
+            app.DrawDecLabel.Tooltip = {'Single-task EA Option'};
+            app.DrawDecLabel.Layout.Row = 4;
+            app.DrawDecLabel.Layout.Column = 1;
+            app.DrawDecLabel.Text = 'Draw Dec';
+
+            % Create TDrawDecDropDown
+            app.TDrawDecDropDown = uidropdown(app.TP1GridLayout);
+            app.TDrawDecDropDown.Items = {'On', 'Off'};
+            app.TDrawDecDropDown.ItemsData = [true false];
+            app.TDrawDecDropDown.FontWeight = 'bold';
+            app.TDrawDecDropDown.BackgroundColor = [1 1 1];
+            app.TDrawDecDropDown.Layout.Row = 4;
+            app.TDrawDecDropDown.Layout.Column = 2;
+            app.TDrawDecDropDown.Value = true;
+
+            % Create DrawObjLabel
+            app.DrawObjLabel = uilabel(app.TP1GridLayout);
+            app.DrawObjLabel.FontWeight = 'bold';
+            app.DrawObjLabel.Tooltip = {'Single-task EA Option'};
+            app.DrawObjLabel.Layout.Row = 5;
+            app.DrawObjLabel.Layout.Column = 1;
+            app.DrawObjLabel.Text = 'Draw Obj';
+
+            % Create TDrawObjDropDown
+            app.TDrawObjDropDown = uidropdown(app.TP1GridLayout);
+            app.TDrawObjDropDown.Items = {'On', 'Off'};
+            app.TDrawObjDropDown.ItemsData = [true false];
+            app.TDrawObjDropDown.FontWeight = 'bold';
+            app.TDrawObjDropDown.BackgroundColor = [1 1 1];
+            app.TDrawObjDropDown.Layout.Row = 5;
+            app.TDrawObjDropDown.Layout.Column = 2;
+            app.TDrawObjDropDown.Value = true;
+
             % Create TPanel2
             app.TPanel2 = uipanel(app.TestGridLayout);
             app.TPanel2.BorderType = 'none';
@@ -3028,7 +3163,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create TP21GridLayout
             app.TP21GridLayout = uigridlayout(app.TP2GridLayout);
-            app.TP21GridLayout.ColumnWidth = {'1x', 'fit', 'fit'};
+            app.TP21GridLayout.ColumnWidth = {'1x', 'fit', 'fit', 'fit', 'fit'};
             app.TP21GridLayout.RowHeight = {'1x'};
             app.TP21GridLayout.ColumnSpacing = 5;
             app.TP21GridLayout.RowSpacing = 7;
@@ -3045,7 +3180,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TShowTypeDropDown.FontWeight = 'bold';
             app.TShowTypeDropDown.BackgroundColor = [1 1 1];
             app.TShowTypeDropDown.Layout.Row = 1;
-            app.TShowTypeDropDown.Layout.Column = 3;
+            app.TShowTypeDropDown.Layout.Column = 5;
             app.TShowTypeDropDown.Value = 'Tasks Figure (1D Unified)';
 
             % Create TExportButton
@@ -3056,12 +3191,27 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TExportButton.FontWeight = 'bold';
             app.TExportButton.Tooltip = {''};
             app.TExportButton.Layout.Row = 1;
-            app.TExportButton.Layout.Column = 2;
+            app.TExportButton.Layout.Column = 4;
             app.TExportButton.Text = 'Export Figure';
+
+            % Create SampleNumberEditFieldLabel
+            app.SampleNumberEditFieldLabel = uilabel(app.TP21GridLayout);
+            app.SampleNumberEditFieldLabel.HorizontalAlignment = 'right';
+            app.SampleNumberEditFieldLabel.FontWeight = 'bold';
+            app.SampleNumberEditFieldLabel.Layout.Row = 1;
+            app.SampleNumberEditFieldLabel.Layout.Column = 2;
+            app.SampleNumberEditFieldLabel.Text = 'Sample Number';
+
+            % Create SampleNumberEditField
+            app.SampleNumberEditField = uieditfield(app.TP21GridLayout, 'numeric');
+            app.SampleNumberEditField.ValueChangedFcn = createCallbackFcn(app, @SampleNumberEditFieldValueChanged, true);
+            app.SampleNumberEditField.Layout.Row = 1;
+            app.SampleNumberEditField.Layout.Column = 3;
+            app.SampleNumberEditField.Value = 100;
 
             % Create TP24GridLayout
             app.TP24GridLayout = uigridlayout(app.TP2GridLayout);
-            app.TP24GridLayout.ColumnWidth = {'1x', 70, 70, '1x'};
+            app.TP24GridLayout.ColumnWidth = {'1x', 70, 70, 70, '1x'};
             app.TP24GridLayout.RowHeight = {'1x'};
             app.TP24GridLayout.Padding = [0 0 0 0];
             app.TP24GridLayout.Layout.Row = 3;
@@ -3079,16 +3229,29 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TStartButton.Layout.Column = 2;
             app.TStartButton.Text = 'Start';
 
-            % Create TResetButton
-            app.TResetButton = uibutton(app.TP24GridLayout, 'push');
-            app.TResetButton.ButtonPushedFcn = createCallbackFcn(app, @TResetButtonPushed, true);
-            app.TResetButton.BusyAction = 'cancel';
-            app.TResetButton.BackgroundColor = [1 1 0.7608];
-            app.TResetButton.FontWeight = 'bold';
-            app.TResetButton.Tooltip = {''};
-            app.TResetButton.Layout.Row = 1;
-            app.TResetButton.Layout.Column = 3;
-            app.TResetButton.Text = 'Reset';
+            % Create TStopButton
+            app.TStopButton = uibutton(app.TP24GridLayout, 'push');
+            app.TStopButton.ButtonPushedFcn = createCallbackFcn(app, @TStopButtonPushed, true);
+            app.TStopButton.BusyAction = 'cancel';
+            app.TStopButton.BackgroundColor = [1 0.7294 0.7294];
+            app.TStopButton.FontWeight = 'bold';
+            app.TStopButton.Enable = 'off';
+            app.TStopButton.Tooltip = {''};
+            app.TStopButton.Layout.Row = 1;
+            app.TStopButton.Layout.Column = 4;
+            app.TStopButton.Text = {'Stop'; ''};
+
+            % Create TPauseButton
+            app.TPauseButton = uibutton(app.TP24GridLayout, 'push');
+            app.TPauseButton.ButtonPushedFcn = createCallbackFcn(app, @TPauseButtonPushed, true);
+            app.TPauseButton.BusyAction = 'cancel';
+            app.TPauseButton.BackgroundColor = [1 1 0.7608];
+            app.TPauseButton.FontWeight = 'bold';
+            app.TPauseButton.Enable = 'off';
+            app.TPauseButton.Tooltip = {''};
+            app.TPauseButton.Layout.Row = 1;
+            app.TPauseButton.Layout.Column = 3;
+            app.TPauseButton.Text = 'Pause';
 
             % Create TUIAxes
             app.TUIAxes = uiaxes(app.TP2GridLayout);
@@ -3400,7 +3563,6 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create EPauseButton
             app.EPauseButton = uibutton(app.GridLayout2, 'push');
             app.EPauseButton.ButtonPushedFcn = createCallbackFcn(app, @EPauseButtonPushed, true);
-            app.EPauseButton.BusyAction = 'cancel';
             app.EPauseButton.BackgroundColor = [1 1 0.7608];
             app.EPauseButton.FontWeight = 'bold';
             app.EPauseButton.Enable = 'off';
@@ -3636,7 +3798,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create EConvergeTypeDropDown
             app.EConvergeTypeDropDown = uidropdown(app.EP3T1GridLayout);
-            app.EConvergeTypeDropDown.Items = {'Log', 'Normal'};
+            app.EConvergeTypeDropDown.Items = {'Log', 'Log Type2', 'Normal'};
             app.EConvergeTypeDropDown.Tooltip = {'Show Type'};
             app.EConvergeTypeDropDown.FontWeight = 'bold';
             app.EConvergeTypeDropDown.BackgroundColor = [1 1 1];
