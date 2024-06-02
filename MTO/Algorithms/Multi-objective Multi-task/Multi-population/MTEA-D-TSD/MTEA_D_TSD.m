@@ -74,6 +74,9 @@ methods
                 population{t}(i).TR = Algo.TR0;
             end
             Z{t} = min(population{t}.Objs, [], 1);
+            if N(t) < Prob.N % Fill population
+                population{t}(N(t) + 1:Prob.N) = population{t}(1:Prob.N - N(t));
+            end
         end
         trans_flag = false;
         History_Matrix = zeros(sum(N));
@@ -153,6 +156,9 @@ methods
                         end
                     end
                 end
+                if N(t) < Prob.N % Fill population
+                    population{t}(N(t) + 1:Prob.N) = population{t}(1:Prob.N - N(t));
+                end
             end
 
             for t = 1:Prob.T
@@ -162,14 +168,6 @@ methods
                     if ~all(variation == 0)
                         population{t}(i).SD = Algo.CF * population{t}(i).SD + ...
                             (1 - Algo.CF) * (variation);
-                    end
-                end
-            end
-
-            if Algo.FE >= Prob.maxFE
-                for t = 1:Prob.T
-                    if N(t) < Prob.N % Fill population
-                        population{t}(N(t) + 1:Prob.N) = population{t}(1:Prob.N - N(t));
                     end
                 end
             end

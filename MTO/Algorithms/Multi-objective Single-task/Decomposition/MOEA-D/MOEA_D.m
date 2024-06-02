@@ -67,6 +67,9 @@ methods
             population{t} = Initialization_One(Algo, Prob, t, Individual, N{t});
 
             Z{t} = min(population{t}.Objs, [], 1);
+            if N{t} < Prob.N % Fill population
+                population{t}(N{t} + 1:Prob.N) = population{t}(1:Prob.N - N{t});
+            end
         end
 
         while Algo.notTerminated(Prob, population)
@@ -108,13 +111,8 @@ methods
                     end
                     population{t}(P(g_old >= g_new)) = offspring;
                 end
-            end
-
-            if Algo.FE >= Prob.maxFE
-                for t = 1:Prob.T
-                    if N{t} < Prob.N % Fill population
-                        population{t}(N{t} + 1:Prob.N) = population{t}(1:Prob.N - N{t});
-                    end
+                if N{t} < Prob.N % Fill population
+                    population{t}(N{t} + 1:Prob.N) = population{t}(1:Prob.N - N{t});
                 end
             end
         end
