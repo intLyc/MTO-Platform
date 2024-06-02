@@ -85,7 +85,7 @@ methods
             end
         end
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
             % Generation
             offspring = Algo.Generation(population, transfer);
             % Evaluation

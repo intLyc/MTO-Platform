@@ -66,7 +66,7 @@ methods
         PIJ = ones(Prob.T, Prob.T); % Benefit and Harm
         AIJ = ones(Prob.T, Prob.T); % Harm and neutral
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
             offspring = population;
             for t = 1:Prob.T
                 % generation

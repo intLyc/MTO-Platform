@@ -62,7 +62,7 @@ methods
             Ep0{t} = cv_temp(idx(n));
         end
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population2)
             for t = 1:Prob.T
                 if Algo.FE < Algo.EC_Tc * Prob.maxFE
                     Ep = Ep0{t} * ((1 - Algo.FE / (Algo.EC_Tc * Prob.maxFE))^Algo.EC_Cp);

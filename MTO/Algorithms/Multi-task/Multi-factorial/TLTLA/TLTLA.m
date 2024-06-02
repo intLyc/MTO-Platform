@@ -44,7 +44,7 @@ methods
         % Initialize
         population = Initialization_MF(Algo, Prob, Individual_MF);
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
             %% Upper-level: Inter-task Knowledge Transfer
             % Generation
             offspring = Algo.Generation(population);

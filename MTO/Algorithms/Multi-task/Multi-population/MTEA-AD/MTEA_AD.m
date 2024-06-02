@@ -45,7 +45,7 @@ methods
         population = Initialization(Algo, Prob, Individual);
         epsilon = zeros(1, Prob.T); % Parameter of the anomaly detection model
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
             for t = 1:Prob.T
                 % Generation
                 offspring = Algo.Generation(population{t});

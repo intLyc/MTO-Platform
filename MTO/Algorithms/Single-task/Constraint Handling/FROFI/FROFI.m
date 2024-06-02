@@ -30,7 +30,7 @@ methods
         % Initialization
         population = Initialization(Algo, Prob, Individual);
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
             for t = 1:Prob.T
                 % Generation
                 offspring = Algo.Generation(population{t}, F_pool, CR_pool);
@@ -90,13 +90,13 @@ methods
             if rand() < 0.5
                 % rand-to-best
                 offspring(i).Dec = population(x1).Dec + ...
-                F * (population(best).Dec - population(x1).Dec) + ...
+                    F * (population(best).Dec - population(x1).Dec) + ...
                     F * (population(x2).Dec - population(x3).Dec);
                 offspring(i).Dec = DE_Crossover(offspring(i).Dec, population(i).Dec, CR);
             else
                 % current-to-rand
                 offspring(i).Dec = population(i).Dec + ...
-                rand() * (population(x1).Dec - population(i).Dec) + ...
+                    rand() * (population(x1).Dec - population(i).Dec) + ...
                     F * (population(x2).Dec - population(x3).Dec);
             end
 

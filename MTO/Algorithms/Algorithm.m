@@ -19,6 +19,12 @@ properties
     Result % Result after run
     Result_Num % Convergence Results Num
     Save_Dec % Save Decision Variables Flag
+    Check_Status_Fn = @emptyFn % Check Status Function
+    Run_Time = 0 % Run Time
+    Draw_Dec = false % Draw Decision Variables Flag
+    Draw_Obj = false % Draw Objective Variables Flag
+    dpd % DrawPopDec Object
+    dpo % DrawPopObj Object
 end
 
 methods
@@ -70,12 +76,30 @@ methods
         end
     end
 
+    function drawInit(Algo, Prob)
+        if Algo.Draw_Dec
+            Algo.dpd = DrawPopDec(Algo, Prob);
+        end
+        if Algo.Draw_Obj && min(Prob.M) > 1
+            Algo.dpo = DrawPopObj(Algo, Prob);
+        end
+    end
+
     function flag = notTerminated(Algo, varargin)
         if length(varargin) == 1
             Prob = varargin{1};
         elseif length(varargin) == 2
             Prob = varargin{1};
             Pop = varargin{2};
+
+            if Algo.Draw_Dec && ~isempty(Algo.dpd)
+                Algo.dpd.update(Algo, Prob, Pop);
+                drawnow('limitrate');
+            end
+            if Algo.Draw_Obj && ~isempty(Algo.dpo)
+                Algo.dpo.update(Algo, Prob, Pop);
+                drawnow('limitrate');
+            end
         end
 
         if Algo.FE == 0
@@ -97,6 +121,9 @@ methods
         end
         Algo.FE_Gen(Algo.Gen) = Algo.FE;
         Algo.Gen = Algo.Gen + 1;
+
+        drawnow('limitrate');
+        Algo.Check_Status_Fn();
     end
 
     function [Pop, Flag] = Evaluation(Algo, Pop, Prob, t)

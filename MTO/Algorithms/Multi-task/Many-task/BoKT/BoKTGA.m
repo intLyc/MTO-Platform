@@ -62,7 +62,7 @@ methods
         task_center = {};
         task_best = {};
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
             case1 = 0;
             case2 = 0;
             case3 = 0;

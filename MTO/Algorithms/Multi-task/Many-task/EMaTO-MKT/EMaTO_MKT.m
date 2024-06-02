@@ -52,7 +52,7 @@ methods
         % Initialization
         population = Initialization(Algo, Prob, Individual_MKT);
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
             % AMP
             if Algo.Gen < 4
                 AMP(1:Prob.T) = Algo.AMP0;

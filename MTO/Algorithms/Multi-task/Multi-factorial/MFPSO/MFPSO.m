@@ -61,7 +61,7 @@ methods
             population(i).V = 0;
         end
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
             W = Algo.maxW - (Algo.maxW - Algo.minW) * Algo.FE / Prob.maxFE;
 
             % Generation

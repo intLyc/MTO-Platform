@@ -62,7 +62,7 @@ methods
             archive{t} = Individual_DE.empty();
         end
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
             for t = 1:Prob.T
                 % Randomly choose an task to communicate
                 task_idx = 1:Prob.T;

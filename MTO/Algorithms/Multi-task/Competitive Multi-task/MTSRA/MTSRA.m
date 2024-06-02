@@ -69,7 +69,7 @@ methods
         HR = 0 * ones(Prob.T, Algo.RH); % HR is used to store the historical rewards
         pro(1, :) = 1 / Prob.T * ones(1, Prob.T);
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
             % Select the k-th task to optimize
             if Algo.FE <= Algo.Beta * Prob.maxFE
                 % Stage 1: Evolution

@@ -43,7 +43,7 @@ methods
         % Initialization
         population = Initialization(Algo, Prob, Individual);
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
             for t = 1:Prob.T
                 centroid{t} = mean(population{t}.Decs, 1);
             end

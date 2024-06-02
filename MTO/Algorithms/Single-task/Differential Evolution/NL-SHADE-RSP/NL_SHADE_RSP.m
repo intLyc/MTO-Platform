@@ -59,7 +59,7 @@ methods
             pA(t) = 0.5;
         end
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
             for t = 1:Prob.T
                 N = round((Nmin - Ninit(t)) * (Algo.FE / Prob.maxFE)^(1 - Algo.FE / Prob.maxFE) + Ninit(t));
                 P = round((Algo.Pmin - Algo.Pmax) / Prob.maxFE * Algo.FE + Algo.Pmax);

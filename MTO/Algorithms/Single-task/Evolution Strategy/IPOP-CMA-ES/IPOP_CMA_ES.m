@@ -70,7 +70,7 @@ methods
 
         taskFE = zeros(1, Prob.T);
         maxTaskFE = Prob.maxFE / Prob.T;
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, sample)
             for t = 1:Prob.T
                 if taskFE(t) > maxTaskFE
                     continue;

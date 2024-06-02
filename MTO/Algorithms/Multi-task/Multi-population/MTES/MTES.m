@@ -62,7 +62,7 @@ methods
             d0(t) = sum(d(t, :) / (Prob.T - 1));
         end
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, sample)
             dold = d;
             xold = x;
             for t = 1:Prob.T

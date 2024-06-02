@@ -58,7 +58,7 @@ methods
             end
         end
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, sample)
             for t = 1:Prob.T
                 % step 1: sampling & importance mixing
                 Z{t} = randn(Prob.D(t), N);

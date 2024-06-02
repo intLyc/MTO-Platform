@@ -22,7 +22,7 @@ end
 
 methods
     function obj = DrawPopDec(Algo, Prob)
-        obj.fig = figure();
+        obj.fig = figure('Position', [100, 100, 500, 500]);
         obj.tiled = tiledlayout('flow');
         obj.tiled.TileSpacing = 'compact';
         obj.tiled.Padding = 'compact';
@@ -48,13 +48,31 @@ methods
         end
     end
 
-    function obj = update(obj, Prob, Pop)
+    function obj = update(obj, Algo, Prob, Pop)
+        if ~isa(Pop, 'cell')
+            Pop = MF2MP(Pop, Prob.T);
+        end
         for t = 1:Prob.T
-            for i = 1:Prob.N
+            lenPop = length(Pop{t});
+            for i = 1:min(lenPop, length(obj.hplot{t}))
                 set(obj.hplot{t}{i}, 'YData', Pop{t}(i).Dec)
+            end
+            for i = min(lenPop, length(obj.hplot{t})) + 1:lenPop
+                obj.hplot{t}{i} = plot(Pop{t}(i).Dec);
+                obj.hplot{t}{i}.Color = [.2, .2, .2];
+                obj.hplot{t}{i}.LineWidth = 1;
+                hold(obj.tiled.Children(end - t + 1), 'on');
+            end
+            if lenPop < length(obj.hplot{t})
+                for i = length(obj.hplot{t}):-1:lenPop + 1
+                    % set(obj.hplot{t}{i}, 'YData', []);
+                    delete(obj.hplot{t}{i})
+                    obj.hplot{t}(i) = [];
+                end
             end
             drawnow;
         end
+        title(obj.tiled, [Algo.Name, ' on ', Prob.Name, ' Gen=', num2str(Algo.Gen)]);
     end
 
     function obj = close(obj)

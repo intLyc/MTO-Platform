@@ -58,7 +58,7 @@ methods
             end
         end
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
             W = Algo.maxW - (Algo.maxW - Algo.minW) * Algo.FE / Prob.maxFE;
 
             for t = 1:Prob.T
@@ -84,7 +84,7 @@ methods
         for i = 1:length(population)
             % Velocity update
             population(i).V = W * population(i).V + ...
-            Algo.C1 .* rand() .* (population(i).PBestDec - population(i).Dec) + ...
+                Algo.C1 .* rand() .* (population(i).PBestDec - population(i).Dec) + ...
                 Algo.C2 .* rand() .* (GBest.Dec - population(i).Dec);
 
             % Position update

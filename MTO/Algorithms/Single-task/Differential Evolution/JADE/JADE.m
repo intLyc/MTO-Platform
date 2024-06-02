@@ -47,7 +47,7 @@ methods
             archive{t} = Individual_DE.empty();
         end
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
             for t = 1:Prob.T
                 % calculate individual F and CR
                 for i = 1:length(population{t})

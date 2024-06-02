@@ -41,7 +41,7 @@ methods
         population = Initialization_MF(Algo, Prob, Individual_MF);
         sigma = 0;
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
             f = randperm(5);
             if sigma <= 0
                 for i = 1:5

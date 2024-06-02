@@ -64,7 +64,7 @@ methods
             end
         end
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
             int_population = population;
             for t = 1:Prob.T
                 parent = Individual_SRE.empty();

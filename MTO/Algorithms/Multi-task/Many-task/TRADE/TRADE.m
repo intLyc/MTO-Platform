@@ -60,7 +60,7 @@ methods
             Arc{t} = Individual_DE.empty();
         end
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
             for t = 1:Prob.T
                 for i = 1:length(population{t})
                     if stage == 1

@@ -46,7 +46,7 @@ methods
         % Initialize
         population = Initialization_MF(Algo, Prob, Individual_MF);
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
             % Extract task specific data sets
             for t = 1:Prob.T
                 subpops(t).data = [];

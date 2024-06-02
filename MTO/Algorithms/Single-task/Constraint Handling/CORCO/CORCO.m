@@ -54,7 +54,7 @@ methods
             cor_flag{t} = false;
         end
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
             for t = 1:Prob.T
                 if Algo.FE < Algo.LP * Prob.maxFE
                     stage = 1;
@@ -115,7 +115,7 @@ methods
             else
                 % current-to-rand
                 offspring(i).Dec = population(i).Dec + ...
-                rand() * (population(x1).Dec - population(i).Dec) + ...
+                    rand() * (population(x1).Dec - population(i).Dec) + ...
                     F * (population(x2).Dec - population(x3).Dec);
             end
 

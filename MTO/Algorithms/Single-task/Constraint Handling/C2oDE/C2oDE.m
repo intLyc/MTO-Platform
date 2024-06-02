@@ -54,7 +54,7 @@ methods
             X{t} = 0;
         end
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
             for t = 1:Prob.T
                 cp = (-log(Ep0{t}) - Algo.Beta) / log(1 - Algo.P);
                 % adjust the threshold

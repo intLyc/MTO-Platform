@@ -109,7 +109,7 @@ methods
             CHPro{t}(1, :) = 1 / Algo.CHNum * ones(1, Algo.CHNum);
         end
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population(:, 1))
             for t = 1:Prob.T
                 % Select a task to evolve
                 if Algo.FE <= Algo.Beta * Prob.maxFE % Stage 1: Development

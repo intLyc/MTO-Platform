@@ -72,7 +72,7 @@ methods
             end
         end
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
             for t = 1:Prob.T
                 if rand() > Algo.Alpha
                     for i = 1:length(population{t})

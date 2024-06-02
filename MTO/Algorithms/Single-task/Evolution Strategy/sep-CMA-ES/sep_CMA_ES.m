@@ -64,7 +64,7 @@ methods
             end
         end
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, sample)
             for t = 1:Prob.T
                 % Sample solutions
                 for i = 1:lambda

@@ -50,7 +50,7 @@ methods
             P{t} = []; M{t} = [];
         end
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
             % Extract Task specific Data Sets
             for t = 1:Prob.T
                 subpops(t).data = []; f(t).cost = [];

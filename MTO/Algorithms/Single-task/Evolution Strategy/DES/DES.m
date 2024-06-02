@@ -43,7 +43,7 @@ methods
             pH{t} = zeros(1, maxn);
         end
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
             for t = 1:Prob.T
                 oldDec = mDec{t};
                 mDec{t} = mean(population{t}(rank{t}(1:mu)).Decs);

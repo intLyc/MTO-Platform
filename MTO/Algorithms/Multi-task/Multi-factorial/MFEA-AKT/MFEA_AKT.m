@@ -55,7 +55,7 @@ methods
             population(i).parNum = 0;
         end
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
             % Generation
             offspring = Algo.Generation(population);
             % Evaluation

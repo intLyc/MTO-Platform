@@ -121,7 +121,7 @@ methods
         greedy = 0.9;
         gama = 0.9;
 
-        while obj.notTerminated(Prob)
+        while obj.notTerminated(Prob, population(:, 1))
             for t = 1:Prob.T
 
                 if obj.Gen <= 2000

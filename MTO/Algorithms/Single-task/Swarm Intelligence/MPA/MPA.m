@@ -43,7 +43,7 @@ methods
         population = Initialization(Algo, Prob, Individual);
         dim = max(Prob.D);
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
             for t = 1:Prob.T
                 CF = (1 - Algo.FE / Prob.maxFE)^(2 * Algo.FE / Prob.maxFE);
                 RL = 0.05 * Algo.Levy(Prob.N, dim, 1.5);

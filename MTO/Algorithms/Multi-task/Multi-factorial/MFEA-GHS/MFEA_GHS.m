@@ -47,7 +47,7 @@ methods
             M{t} = ones(1, max(Prob.D));
         end
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
             % Generation
             offspring = Algo.Generation(population, max_T, min_T, M);
             % Evaluation

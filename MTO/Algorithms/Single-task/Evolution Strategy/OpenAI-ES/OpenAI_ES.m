@@ -55,7 +55,7 @@ methods
             end
         end
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, sample)
             for t = 1:Prob.T
                 % sampling
                 Z{t} = randn(Prob.D(t), N);

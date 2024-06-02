@@ -45,7 +45,7 @@ methods
         maxK = Prob.N / 2;
         divK = randi([minK, maxK]);
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
             corre = [];
             for t = 1:Prob.T
                 for i = 1:Prob.N

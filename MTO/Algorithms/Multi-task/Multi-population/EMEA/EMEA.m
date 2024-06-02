@@ -67,7 +67,7 @@ methods
             init_pop_dec{t} = init_pop_dec{t}(:, 1:Prob.D(t));
         end
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
             for t = 1:Prob.T
                 % Generation
                 op_idx = mod(t - 1, length(operator)) + 1;

@@ -45,7 +45,7 @@ methods
         % Initialize
         population = Initialization_MF(Algo, Prob, Individual_MF);
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
             PopDec = {};
             for t = 1:Prob.T
                 PopDec{t} = population([population.MFFactor] == t).Decs;

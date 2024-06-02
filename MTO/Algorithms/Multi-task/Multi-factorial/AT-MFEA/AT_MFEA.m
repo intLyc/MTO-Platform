@@ -49,7 +49,7 @@ methods
         % Initialize Affine Transformation
         [Mu_tasks, Sigma_tasks] = InitialDistribution(population, Prob.T);
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
             % Generation
             offspring = Algo.Generation(population, Mu_tasks, Sigma_tasks);
             % Evaluation

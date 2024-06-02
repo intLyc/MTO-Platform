@@ -39,7 +39,7 @@ methods
         % Initialization
         population = Initialization(Algo, Prob, Individual_PSO);
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
             for t = 1:Prob.T
                 % Determine the losers and winners
                 rnd_idx = randperm(Prob.N);
@@ -62,7 +62,7 @@ methods
         for i = 1:length(pop_loser)
             % Velocity update
             pop_loser(i).V = rand() * pop_loser(i).V + ...
-            rand() .* (pop_winner(i).Dec - pop_loser(i).Dec) + ...
+                rand() .* (pop_winner(i).Dec - pop_loser(i).Dec) + ...
                 Algo.Phi .* rand() .* (wDec - pop_loser(i).Dec);
 
             % Position update

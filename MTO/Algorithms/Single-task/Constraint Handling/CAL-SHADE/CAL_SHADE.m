@@ -65,7 +65,7 @@ methods
             archive{t} = Individual_DE.empty();
         end
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
             for t = 1:Prob.T
                 N = round((Nmin - Ninit(t)) / Prob.maxFE * Algo.FE + Ninit(t));
                 % Calculate individual F and CR

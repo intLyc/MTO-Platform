@@ -43,7 +43,7 @@ methods
         % Initialization
         population = Initialization(Algo, Prob, Individual);
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
             for t = 1:Prob.T
                 % Generation
                 offspring = Algo.Generation(population{t});

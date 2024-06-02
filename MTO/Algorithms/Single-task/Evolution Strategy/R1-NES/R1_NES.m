@@ -56,7 +56,7 @@ methods
             end
         end
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, sample)
             for t = 1:Prob.T
                 % step 1: sampling
                 W{t} = randn(Prob.D(t), N) + u{t} * randn(1, N);

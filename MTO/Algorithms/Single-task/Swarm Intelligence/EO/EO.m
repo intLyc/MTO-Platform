@@ -57,7 +57,7 @@ methods
             end
         end
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
             for t = 1:Prob.T
                 for i = 1:Prob.N
                     pObj = population{t}(i).Obj;

@@ -73,7 +73,7 @@ methods
             Ep0{t} = cv_temp(idx(n));
         end
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population(:, 1))
             % Pre Calculation
             Sr = Sr - dSr;
             for t = 1:Prob.T

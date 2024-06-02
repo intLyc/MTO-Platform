@@ -51,7 +51,7 @@ methods
         RMP = Algo.RMP0 * ones(Prob.T, Prob.T) / (Prob.T - 1);
         RMP(logical(eye(size(RMP)))) = (1 - Algo.RMP0);
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
             for k = 1:Prob.T
                 [offspring, r1_task] = Algo.Generation(population, RMP, k);
                 % Evaluation

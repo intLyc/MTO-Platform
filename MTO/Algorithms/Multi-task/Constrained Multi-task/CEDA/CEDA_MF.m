@@ -68,7 +68,7 @@ methods
             Ep0{t} = cv_temp(idx(n));
         end
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population2)
             % calculate epsilon
             for t = 1:Prob.T
                 if Algo.FE < Algo.EC_Tc * Prob.maxFE

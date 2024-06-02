@@ -80,7 +80,7 @@ methods
         end
         rank = {};
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, sample)
             %% Sample new solutions
             oldsample = sample;
             sample{t} = sample{t}(1:lambda);

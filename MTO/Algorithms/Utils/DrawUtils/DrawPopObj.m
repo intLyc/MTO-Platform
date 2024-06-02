@@ -22,7 +22,7 @@ end
 
 methods
     function obj = DrawPopObj(Algo, Prob)
-        obj.fig = figure();
+        obj.fig = figure('Position', [600, 100, 500, 500]);
         obj.tiled = tiledlayout('flow');
         obj.tiled.TileSpacing = 'compact';
         obj.tiled.Padding = 'compact';
@@ -91,6 +91,9 @@ methods
     end
 
     function obj = update(obj, Algo, Prob, Pop)
+        if ~isa(Pop, 'cell')
+            Pop = MF2MP(Pop, Prob.T);
+        end
         for t = 1:Prob.T
             M = Prob.M(t);
             Obj = Pop{t}.Objs;

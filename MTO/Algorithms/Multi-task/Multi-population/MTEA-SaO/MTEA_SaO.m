@@ -65,7 +65,7 @@ methods
         STN(1, :, end) = Prob.N - sum(STN(1, :, 1:end - 1), 3);
         succ = []; fail = [];
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
             succ_iter = zeros(Prob.T, STNum);
             fail_iter = zeros(Prob.T, STNum);
             for t = 1:Prob.T
