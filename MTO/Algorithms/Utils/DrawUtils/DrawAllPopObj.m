@@ -22,7 +22,7 @@ end
 
 methods
     function obj = DrawAllPopObj(Algo, Prob)
-        obj.fig = figure();
+        obj.fig = figure('Position', [600, 100, 500, 500]);
         obj.ax = axes();
         title(obj.ax, [Algo.Name, ' on ', Prob.Name]);
 
