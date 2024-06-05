@@ -1,5 +1,5 @@
 classdef MOEA_D < Algorithm
-% <Single-task> <Multi-objective> <None>
+% <Single-task> <Multi-objective> <None/Constrained>
 
 %------------------------------- Reference --------------------------------
 % @article{Zhang2007MOEAD,
@@ -109,7 +109,9 @@ methods
                             g_old = max(abs(population{t}(P).Objs - repmat(Z{t}, DT{t}, 1)) ./ W{t}(P, :), [], 2);
                             g_new = max(repmat(abs(offspring.Obj - Z{t}), DT{t}, 1) ./ W{t}(P, :), [], 2);
                     end
-                    population{t}(P(g_old >= g_new)) = offspring;
+                    CVO = offspring.CV;
+                    CVP = population{t}(P).CVs;
+                    population{t}(P(g_old >= g_new & CVP == CVO | CVP > CVO)) = offspring;
                 end
                 if N{t} < Prob.N % Fill population
                     population{t}(N{t} + 1:Prob.N) = population{t}(1:Prob.N - N{t});

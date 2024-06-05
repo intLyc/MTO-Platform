@@ -1,5 +1,5 @@
 classdef MTEA_D_TSD < Algorithm
-% <Multi-task> <Multi-objective> <None>
+% <Multi-task> <Multi-objective> <None/Constrained>
 
 %------------------------------- Reference --------------------------------
 % @InProceedings{Li2024MTEA-D-TSD,
@@ -132,7 +132,9 @@ methods
                     g_old = max(abs(population{t}(P).Objs - repmat(Z{t}, length(P), 1)) .* W{t}(P, :), [], 2);
                     g_new = max(repmat(abs(offspring.Obj - Z{t}), length(P), 1) .* W{t}(P, :), [], 2);
 
-                    replace = P(find(g_old >= g_new, Algo.NR));
+                    CVO = offspring.CV;
+                    CVP = population{t}(P).CVs;
+                    replace = P(find(g_old >= g_new & CVP == CVO | CVP > CVO, Algo.NR));
                     population{t}(replace) = offspring;
 
                     if flag && ~isempty(replace) % Successful transfer
