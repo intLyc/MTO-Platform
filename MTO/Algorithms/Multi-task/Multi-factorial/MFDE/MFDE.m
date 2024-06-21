@@ -83,15 +83,8 @@ methods
                 while x3 == x2 || population(x3).MFFactor == population(i).MFFactor
                     x3 = randi(length(population));
                 end
-                r = randi(3);
-                switch r
-                    case 1
-                        offspring(i).MFFactor = population(x1).MFFactor;
-                    case 2
-                        offspring(i).MFFactor = population(x2).MFFactor;
-                    case 3
-                        offspring(i).MFFactor = population(x3).MFFactor;
-                end
+                MFFactors = [population([x1, x2, x3]).MFFactor];
+                offspring(i).MFFactor = MFFactors(randi(3));
             else
                 x2 = randi(length(population));
                 while x2 == i || x2 == x1 || population(x2).MFFactor ~= population(i).MFFactor
