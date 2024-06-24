@@ -14,10 +14,11 @@ function Task = benchmark_CEC20_RWCO(index)
 %--------------------------------------------------------------------------
 
 %------------------------------- Copyright --------------------------------
-% Copyright (c) 2022 Yanchi Li. You are free to use the MTO-Platform for
-% research purposes. All publications which use this platform or any code
-% in the platform should acknowledge the use of "MTO-Platform" and cite
-% or footnote "https://github.com/intLyc/MTO-Platform"
+% Copyright (c) Yanchi Li. You are free to use the MToP for research
+% purposes. All publications which use this platform should acknowledge
+% the use of "MToP" or "MTO-Platform" and cite as "Y. Li, W. Gong, F. Ming,
+% T. Zhang, S. Li, and Q. Gu, MToP: A MATLAB Optimization Platform for
+% Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
 file_dir = './Problems/Single-task/CEC20-RWCO/Data/';
@@ -52,7 +53,7 @@ GBPQL = {G, B, P, Q, L};
 
 %% Parameter Dim and Boundary Constraint
 D = [9	11	7	6	9	38	48	2	3	3	7	7	5	10	7	14	3	4	4	2	5	9	5	7	4	22	10	10	4	3	4	5 ...
-    30	118	153	158	126	126	126	76	74	86	86	30	25	25	25	30	30	30	59	59	59	59	64	64	64];
+        30	118	153	158	126	126	126	76	74	86	86	30	25	25	25	30	30	30	59	59	59	59	64	64	64];
 % bound constraint definitions for all 18 test functions
 xmin1 = [0, 0, 0, 0, 1000, 0, 100, 100, 100];
 xmax1 = [10, 200, 100, 200, 2000000, 600, 600, 600, 900];
