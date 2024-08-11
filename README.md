@@ -1,7 +1,7 @@
 # Multitask Optimization Platform (MToP)
 
 [![](https://img.shields.io/badge/Download-Latest-green)](https://github.com/intLyc/MTO-Platform/archive/refs/heads/master.zip)
-[![](https://img.shields.io/badge/Release-v1.4-orange)](#mto-platform)
+[![](https://img.shields.io/badge/Release-v1.5-orange)](#mto-platform)
 [![](https://img.shields.io/badge/Matlab-%3E%3DR2020b-blue)](#mto-platform)
 
 [![GitHub Repo stars](https://img.shields.io/github/stars/intLyc/MTO-Platform?style=social)](#mto-platform)
@@ -16,13 +16,33 @@ We introduce the multitask optimization platform, named **MToP**, for evolutiona
 - 40+ single-task evolutionary algorithms that can handle multitask optimization problems
 - 150+ multitask optimization problem cases with real-world applications
 - 150+ classical single-task optimization benchmark problems
-- 10+ performance metrics covering single- and multi-objective optimization
+- 20+ performance metrics covering single- and multi-objective optimization
 
 MToP is a user-friendly tool with a graphical user interface that makes it easy to analyze results, export data, and plot schematics. More importantly, MToP is extensible, allowing users to develop new algorithms and define new problems.
 
 **Documents:**
 [**[Paper - Click Here]**](https://arxiv.org/abs/2312.08134) /
 [**[User Guide - Click Here]**](./Doc/User-Guide.md)
+
+## Copyright
+
+> Copyright (c) Yanchi Li. You are free to use the MToP for research purposes. All publications which use this platform should acknowledge the use of *"MToP"* or *"MTO-Platform"* and cite as *"Y. Li, W. Gong, F. Ming, T. Zhang, S. Li, and Q. Gu, MToP: A MATLAB Optimization Platform for Evolutionary Multitasking, 2023, arXiv:2312.08134"*
+
+```
+@Article{Li2023MToP,
+  title   = {{MToP}: A {MATLAB} Optimization Platform for Evolutionary Multitasking},
+  author  = {Yanchi Li and Wenyin Gong and Fei Ming and Tingyu Zhang and Shuijia Li and Qiong Gu},
+  journal = {arXiv preprint arXiv:2312.08134},
+  year    = {2023},
+  eprint  = {2312.08134},
+}
+```
+
+## Release Highlights of MToP v1.5
+
+- Fix the bug when GUI parallel runs experiments with save Dec.
+- New Algorithm: MTEA-HKTS (Single-objective Multi/Many-task INS24)
+- New Problem: Multi-objective sensor coverage problem
 
 ## Release Highlights of MToP v1.4
 
@@ -64,20 +84,6 @@ MToP is a user-friendly tool with a graphical user interface that makes it easy 
 - Newly added algorithms:
   - MKTDE (single-objective multi-task TEVC 2022)
   - CCEF-ECHT (constrained single-objective TSMC 2023)
-
-## Copyright
-
-> Copyright (c) Yanchi Li. You are free to use the MToP for research purposes. All publications which use this platform should acknowledge the use of *"MToP"* or *"MTO-Platform"* and cite as *"Y. Li, W. Gong, F. Ming, T. Zhang, S. Li, and Q. Gu, MToP: A MATLAB Optimization Platform for Evolutionary Multitasking, 2023, arXiv:2312.08134"*
-
-```
-@Article{Li2023MToP,
-  title   = {{MToP}: A {MATLAB} Optimization Platform for Evolutionary Multitasking},
-  author  = {Yanchi Li and Wenyin Gong and Fei Ming and Tingyu Zhang and Shuijia Li and Qiong Gu},
-  journal = {arXiv preprint arXiv:2312.08134},
-  year    = {2023},
-  eprint  = {2312.08134},
-}
-```
 
 ## Contact Us
 
