@@ -27,13 +27,17 @@ classdef SREMTO < Algorithm
 
 properties (SetAccess = private)
     TH = 0.3
-    MuC = 2
-    MuM = 5
+    PAlpha = 0.7
+    PBeta = 1
+    MuC = 1
+    MuM = 39
 end
 
 methods
     function Parameter = getParameter(Algo)
         Parameter = {'TH: two line segments point', num2str(Algo.TH), ...
+                'PAlpha: Probability of Crossover', num2str(Algo.PAlpha), ...
+                'PBeta: Probability of Differential Mutation', num2str(Algo.PBeta), ...
                 'MuC: Simulated Binary Crossover', num2str(Algo.MuC), ...
                 'MuM: Polynomial Mutation', num2str(Algo.MuM)};
     end
@@ -41,6 +45,8 @@ methods
     function Algo = setParameter(Algo, Parameter)
         i = 1;
         Algo.TH = str2double(Parameter{i}); i = i + 1;
+        Algo.PAlpha = str2double(Parameter{i}); i = i + 1;
+        Algo.PBeta = str2double(Parameter{i}); i = i + 1;
         Algo.MuC = str2double(Parameter{i}); i = i + 1;
         Algo.MuM = str2double(Parameter{i}); i = i + 1;
     end
@@ -74,7 +80,7 @@ methods
                     end
                 end
 
-                offspring = Algo.Generation(parent);
+                offspring = Algo.Generation(parent, t);
                 for i = 1:length(offspring)
                     for k = 1:Prob.T
                         if k == t || rand() < offspring(i).Ability(k)
@@ -125,7 +131,7 @@ methods
         end
     end
 
-    function offspring = Generation(Algo, population)
+    function offspring = Generation(Algo, population, t)
         indorder = randperm(length(population));
         count = 1;
         for i = 1:ceil(length(population) / 2)
@@ -133,11 +139,21 @@ methods
             p2 = indorder(i + fix(length(population) / 2));
             offspring(count) = population(p1);
             offspring(count + 1) = population(p2);
-            % crossover
-            [offspring(count).Dec, offspring(count + 1).Dec] = GA_Crossover(population(p1).Dec, population(p2).Dec, Algo.MuC);
-            % mutation
-            offspring(count).Dec = GA_Mutation(population(p1).Dec, Algo.MuM);
-            offspring(count + 1).Dec = GA_Mutation(population(p2).Dec, Algo.MuM);
+            if rand() < Algo.PAlpha
+                % crossover
+                [offspring(count).Dec, offspring(count + 1).Dec] = GA_Crossover(population(p1).Dec, population(p2).Dec, Algo.MuC);
+                % differential mutation
+                if rand() < Algo.PBeta
+                    offspring(count).Dec = offspring(count).Dec + ...
+                        rand() * (Algo.Best{t}.Dec - offspring(count).Dec + population(p1).Dec - population(p2).Dec);
+                    offspring(count + 1).Dec = offspring(count + 1).Dec + ...
+                        rand() * (Algo.Best{t}.Dec - offspring(count + 1).Dec + population(p2).Dec - population(p1).Dec);
+                end
+            else
+                % mutation
+                offspring(count).Dec = GA_Mutation(population(p1).Dec, Algo.MuM);
+                offspring(count + 1).Dec = GA_Mutation(population(p2).Dec, Algo.MuM);
+            end
             % imitation
             offspring(count).Ability = population(p1).Ability;
             offspring(count + 1).Ability = population(p2).Ability;
