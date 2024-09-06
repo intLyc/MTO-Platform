@@ -37,10 +37,16 @@ for t = 1:Prob.T
 end
 
 % Calculate skill factor
-for i = 1:length(population)
-    min_rank = min(population(i).MFRank);
-    min_idx = find(population(i).MFRank == min_rank);
-    population(i).MFFactor = min_idx(randi(length(min_idx)));
+record = zeros(1, Prob.T);
+for i = 1:Prob.N * Prob.T
+    [~, idx] = sort(population(i).MFRank);
+    j = 1; factor = idx(j);
+    % Generate Uniform Skill Factor
+    while record(factor) >= Prob.N
+        j = j + 1; factor = idx(j);
+    end
+    record(factor) = record(factor) + 1;
+    population(i).MFFactor = factor;
     population(i).Obj = population(i).MFObj(population(i).MFFactor);
     population(i).CV = population(i).MFCV(population(i).MFFactor);
 end

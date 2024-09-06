@@ -13,21 +13,31 @@ function population = Selection_MF(population, offspring, Prob)
 
 population = [population, offspring];
 
+%% Improved Selection for Uniform Skill Factors
+pop_temp = population.empty();
 for t = 1:Prob.T
-    for i = 1:length(population)
-        Obj(i, 1) = population(i).MFObj(t);
-        CV(i, 1) = population(i).MFCV(t);
-    end
-    [~, rank] = sortrows([CV, Obj], [1, 2]);
-    for i = 1:length(population)
-        population(rank(i)).MFRank(t) = i;
-    end
+    population_t = population([population.MFFactor] == t);
+    [~, rank] = sortrows([population_t.CVs, population_t.Objs], [1, 2]);
+    pop_temp = [pop_temp, population_t(rank(1:Prob.N))];
 end
+population = pop_temp;
 
-for i = 1:length(population)
-    fit(i) = 1 / min([population(i).MFRank]);
-end
-
-[~, rank] = sort(fit, 'descend');
-population = population(rank(1:Prob.N * Prob.T));
+%% Original Multifactorial Selection
+% for t = 1:Prob.T
+%     for i = 1:length(population)
+%         Obj(i, 1) = population(i).MFObj(t);
+%         CV(i, 1) = population(i).MFCV(t);
+%     end
+%     [~, rank] = sortrows([CV, Obj], [1, 2]);
+%     for i = 1:length(population)
+%         population(rank(i)).MFRank(t) = i;
+%     end
+% end
+% 
+% for i = 1:length(population)
+%     fit(i) = 1 / min([population(i).MFRank]);
+% end
+% 
+% [~, rank] = sort(fit, 'descend');
+% population = population(rank(1:Prob.N * Prob.T));
 end
