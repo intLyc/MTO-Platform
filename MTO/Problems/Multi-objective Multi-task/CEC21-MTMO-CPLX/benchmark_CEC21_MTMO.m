@@ -12,8 +12,8 @@ switch prob_idx
         Tasks(1).shift = load(strcat(file_dir, shift_file));
         Tasks(1).tType = 'MMDTLZ';
         Tasks(1).gType = 'F17';
-        Tasks(2).f1Type = '';
-        Tasks(2).hType = '';
+        Tasks(1).f1Type = '';
+        Tasks(1).hType = '';
         Tasks(1).boundaryCvDv = 1;
         Tasks(1).dim = dim;
 
@@ -43,8 +43,8 @@ switch prob_idx
         Tasks(1).rotation = load(strcat(file_dir, rotation_file));
         Tasks(1).shift = load(strcat(file_dir, shift_file));
         Tasks(1).tType = 'MMDTLZ';
-        Tasks(2).f1Type = '';
-        Tasks(2).hType = '';
+        Tasks(1).f1Type = '';
+        Tasks(1).hType = '';
         Tasks(1).gType = 'F19';
         Tasks(1).boundaryCvDv = 1;
         Tasks(1).dim = dim;
@@ -75,8 +75,8 @@ switch prob_idx
         Tasks(1).rotation = load(strcat(file_dir, rotation_file));
         Tasks(1).shift = load(strcat(file_dir, shift_file));
         Tasks(1).tType = 'MMDTLZ';
-        Tasks(2).f1Type = '';
-        Tasks(2).hType = '';
+        Tasks(1).f1Type = '';
+        Tasks(1).hType = '';
         Tasks(1).gType = 'F22';
         Tasks(1).boundaryCvDv = 1;
         Tasks(1).dim = dim;
@@ -139,8 +139,8 @@ switch prob_idx
         Tasks(1).rotation = load(strcat(file_dir, rotation_file));
         Tasks(1).shift = load(strcat(file_dir, shift_file));
         Tasks(1).tType = 'MMDTLZ';
-        Tasks(2).f1Type = '';
-        Tasks(2).hType = '';
+        Tasks(1).f1Type = '';
+        Tasks(1).hType = '';
         Tasks(1).gType = 'F4';
         Tasks(1).boundaryCvDv = 1;
         Tasks(1).dim = dim;
@@ -171,8 +171,8 @@ switch prob_idx
         Tasks(1).rotation = load(strcat(file_dir, rotation_file));
         Tasks(1).shift = load(strcat(file_dir, shift_file));
         Tasks(1).tType = 'MMDTLZ';
-        Tasks(2).f1Type = '';
-        Tasks(2).hType = '';
+        Tasks(1).f1Type = '';
+        Tasks(1).hType = '';
         Tasks(1).gType = 'F9';
         Tasks(1).boundaryCvDv = 1;
         Tasks(1).dim = dim;
@@ -203,8 +203,8 @@ switch prob_idx
         Tasks(1).rotation = load(strcat(file_dir, rotation_file));
         Tasks(1).shift = load(strcat(file_dir, shift_file));
         Tasks(1).tType = 'MMDTLZ';
-        Tasks(2).f1Type = '';
-        Tasks(2).hType = '';
+        Tasks(1).f1Type = '';
+        Tasks(1).hType = '';
         Tasks(1).gType = 'F8';
         Tasks(1).boundaryCvDv = 1;
         Tasks(1).dim = dim;
@@ -235,8 +235,8 @@ switch prob_idx
         Tasks(1).rotation = load(strcat(file_dir, rotation_file));
         Tasks(1).shift = load(strcat(file_dir, shift_file));
         Tasks(1).tType = 'MMDTLZ';
-        Tasks(2).f1Type = '';
-        Tasks(2).hType = '';
+        Tasks(1).f1Type = '';
+        Tasks(1).hType = '';
         Tasks(1).gType = 'F18';
         Tasks(1).boundaryCvDv = 1;
         Tasks(1).dim = dim;
@@ -267,8 +267,8 @@ switch prob_idx
         Tasks(1).rotation = load(strcat(file_dir, rotation_file));
         Tasks(1).shift = load(strcat(file_dir, shift_file));
         Tasks(1).tType = 'MMDTLZ';
-        Tasks(2).f1Type = '';
-        Tasks(2).hType = '';
+        Tasks(1).f1Type = '';
+        Tasks(1).hType = '';
         Tasks(1).gType = 'F11';
         Tasks(1).boundaryCvDv = 1;
         Tasks(1).dim = dim;
@@ -299,8 +299,8 @@ switch prob_idx
         Tasks(1).rotation = load(strcat(file_dir, rotation_file));
         Tasks(1).shift = load(strcat(file_dir, shift_file));
         Tasks(1).tType = 'MMDTLZ';
-        Tasks(2).f1Type = '';
-        Tasks(2).hType = '';
+        Tasks(1).f1Type = '';
+        Tasks(1).hType = '';
         Tasks(1).gType = 'F15';
         Tasks(1).boundaryCvDv = 1;
         Tasks(1).dim = dim;
