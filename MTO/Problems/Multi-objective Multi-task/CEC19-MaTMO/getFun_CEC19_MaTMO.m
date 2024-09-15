@@ -58,7 +58,8 @@ if strcmp(f1Type, 'linear')
     F1Function = A ./ size(x, 2);
 else
     A = sum(x.^2, 2);
-    F1Function = sqrt(A);
+    r = sqrt(A);
+    F1Function = 1 - exp(-4 * r) .* sin(5 * pi * r).^4;
 end
 end
 
