@@ -97,7 +97,7 @@ methods
                     OffObj = (offspring.Obj - fmin) ./ (fmax - fmin);
 
                     % Non-dominated sorting
-                    NewFront = UpdateFront([PopObj; OffObj], FrontNo{t});
+                    NewFront = Algo.UpdateFront([PopObj; OffObj], FrontNo{t});
                     if NewFront(end) > 1
                         continue;
                     end
@@ -170,7 +170,7 @@ methods
         %--------------------------------------------------------------------------
 
         [N, M] = size(PopObj);
-        if nargin < 3
+        if nargin < 4
             %% Add a new solution (has been stored in the last of PopObj)
             FrontNo = [FrontNo, 0];
             Move = false(1, N);

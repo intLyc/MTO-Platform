@@ -183,7 +183,7 @@ methods
         if sum(CV == 0) > 1
             % Calculate the distance between each solution and point
             N = sum(CV == 0);
-            Distance = CalDistance(Population(CV == 0).Objs - repmat(Range(1, :), N, 1), RefPoint);
+            Distance = Algo.CalDistance(Population(CV == 0).Objs - repmat(Range(1, :), N, 1), RefPoint);
             Convergence = min(Distance, [], 2);
             [dis, rank] = sort(Distance, 1);
             % Calculate the fitness of noncontributing solutions
@@ -253,7 +253,7 @@ methods
         NR = size(RefPoint, 1);
 
         %% Calculate the distance between each solution and point
-        Distance = CalDistance(PopObj - repmat(Range(1, :), N, 1), RefPoint);
+        Distance = Algo.CalDistance(PopObj - repmat(Range(1, :), N, 1), RefPoint);
         Convergence = min(Distance, [], 2);
 
         %% Delete the solution which has the smallest metric contribution one by one
