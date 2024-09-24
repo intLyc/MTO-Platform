@@ -104,7 +104,7 @@ methods
         PopObj = PopObj - repmat(min(PopObj, [], 1), N, 1);
 
         %% Calculate the degree of violation of each solution
-        CV = Population.CV;
+        CV = Population.CVs;
 
         %% Calculate the smallest angle value between each vector and others
         cosine = 1 - pdist2(V, V, 'cosine');
