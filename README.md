@@ -1,7 +1,7 @@
 # Multitask Optimization Platform (MToP)
 
 [![](https://img.shields.io/badge/Download-Latest-green)](https://github.com/intLyc/MTO-Platform/archive/refs/heads/master.zip)
-[![](https://img.shields.io/badge/Release-v1.5-orange)](#mto-platform)
+[![](https://img.shields.io/badge/Release-v1.6-orange)](#mto-platform)
 [![](https://img.shields.io/badge/Matlab-%3E%3DR2020b-blue)](#mto-platform)
 
 [![GitHub Repo stars](https://img.shields.io/github/stars/intLyc/MTO-Platform?style=social)](#mto-platform)
@@ -37,6 +37,15 @@ MToP is a user-friendly tool with a graphical user interface that makes it easy 
   eprint  = {2312.08134},
 }
 ```
+
+## Release Highlights of MToP v1.6
+
+- Fix the bug of multifactorial algorithms run in many-task problems
+- New Algorithm: 
+  - TNG-NES (Single-objective Many-task TEVC24)
+  - MTDE-ADKT (Single-objective Multi-task ASOC24)
+  - AR-MOEA, MSEA (Multi-objective Single-task)
+- New Problem: LSMaTSO (Large-scale many-task single-objective)
 
 ## Release Highlights of MToP v1.5
 
