@@ -62,7 +62,7 @@ methods
             meanT{t} = zeros(1, max(Prob.D));
             population_t = population([population.MFFactor] == t);
             pop_Dec{t} = population_t.Decs;
-            pop_Rank{t} = [population_t.MFRank];
+            pop_Rank{t} = [];
         end
         for t = 1:Prob.T - 1
             for k = (t + 1):Prob.T
@@ -110,15 +110,14 @@ methods
             for t = 1:Prob.T
                 population_t = population([population.MFFactor] == t);
                 pop_Dec{t} = population_t.Decs;
-                pop_Rank{t} = [population_t.MFRank];
+                [~, pop_Rank{t}] = sortrows([population_t.CVs, population_t.Objs], [1, 2]);
             end
 
             if Algo.Gen >= Algo.Phi * (Prob.maxFE / (Prob.N * Prob.T)) && ...
                     mod(Algo.Gen, round(Algo.Theta * (Prob.maxFE / (Prob.N * Prob.T)))) == 0
                 Alpha = (Algo.FE / Prob.maxFE)^2;
                 for t = 1:Prob.T
-                    [~, y] = sort(pop_Rank{t});
-                    meanT{t} = mean(pop_Dec{t}(y(1:round(Algo.Top * Prob.N)), :));
+                    meanT{t} = mean(pop_Dec{t}(pop_Rank{t}(1:round(Algo.Top * Prob.N)), :));
                 end
             end
 
