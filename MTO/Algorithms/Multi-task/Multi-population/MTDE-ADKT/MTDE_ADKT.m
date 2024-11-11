@@ -87,7 +87,7 @@ methods
             mDec(t, :) = mean(population{t}.Decs);
         end
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
             % Calculate individual F and CR
             for t = 1:Prob.T
                 for i = 1:length(population{t})
