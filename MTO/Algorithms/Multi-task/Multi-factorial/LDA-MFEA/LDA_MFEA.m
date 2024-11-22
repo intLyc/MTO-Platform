@@ -24,7 +24,7 @@ properties (SetAccess = private)
     RMP = 0.3
     MuC = 2
     MuM = 5
-    H = 10
+    K = 5
 end
 
 methods
@@ -32,7 +32,7 @@ methods
         Parameter = {'RMP: Random Mating Probability', num2str(Algo.RMP), ...
                 'MuC: Simulated Binary Crossover', num2str(Algo.MuC), ...
                 'MuM: Polynomial Mutation', num2str(Algo.MuM), ...
-                'H: Store Max Length', num2str(Algo.H)};
+                'K: Cluster Number', num2str(Algo.K)};
     end
 
     function Algo = setParameter(Algo, Parameter)
@@ -40,7 +40,7 @@ methods
         Algo.RMP = str2double(Parameter{i}); i = i + 1;
         Algo.MuC = str2double(Parameter{i}); i = i + 1;
         Algo.MuM = str2double(Parameter{i}); i = i + 1;
-        Algo.H = str2double(Parameter{i}); i = i + 1;
+        Algo.K = str2double(Parameter{i}); i = i + 1;
     end
 
     function run(Algo, Prob)
@@ -61,8 +61,9 @@ methods
             end
 
             for t = 1:Prob.T
-                if size(P{t}, 1) > Algo.H * Prob.N
-                    P{t} = P{t}(end - Algo.H * Prob.N:end, :);
+                if Algo.Gen > 2
+                    % Clustering to reduce data size
+                    [~, P{t}] = kmeans(P{t}, Algo.K);
                 end
                 % Accumulate all historical points of t and sort according to objective
                 temp = [P{t}; [subpops(t).data, f(t).cost]];
