@@ -52,18 +52,30 @@ else
 end
 
 % Calculate Multi-task Score
-igd_matrix = igd_result.TableData;
+igd_matrix = igd_result.ConvergeData.Y;
 row = 1;
 for prob = 1:length(MTOData.Problems)
-    score_temp = zeros(1, length(MTOData.Algorithms));
+    AlgoNum = length(MTOData.Algorithms);
+    score_temp = [];
+    Gen = size(MTOData.Results(1, 1, 1).Obj{1}, 1);
     for task = 1:MTOData.Problems(prob).T
-        mean_task = mean(igd_matrix(row, :, :), 'all');
-        std_task = std(igd_matrix(row, :, :), 0, 'all');
-        for algo = 1:length(MTOData.Algorithms)
-            score_temp(algo) = score_temp(algo) + mean((igd_matrix(row, algo, :) - mean_task) ./ std_task);
+        for gen = 1:Gen
+            mean_task = mean(igd_matrix(row, :, :, gen), 'all');
+            std_task = std(igd_matrix(row, :, :, gen), 0, 'all');
+            if std_task == 0
+                score_temp(task, 1:AlgoNum, 1:MTOData.Reps, gen) = 0;
+            else
+                score_temp(task, 1:AlgoNum, 1:MTOData.Reps, gen) = (igd_matrix(row, 1:AlgoNum, 1:MTOData.Reps, gen) - mean_task) ./ std_task;
+            end
         end
         row = row + 1;
     end
-    result.TableData(prob, :, 1) = score_temp(:);
+    for algo = 1:AlgoNum
+        result.TableData(prob, algo, :) = mean(score_temp(1:MTOData.Problems(prob).T, algo, 1:MTOData.Reps, end), 1);
+        for rep = 1:MTOData.Reps
+            result.ConvergeData.Y(prob, algo, rep, :) = mean(score_temp(1:MTOData.Problems(prob).T, algo, rep, 1:Gen), 1);
+            result.ConvergeData.X(prob, algo, rep, :) = [1:Gen] ./ Gen .* MTOData.Problems(prob).maxFE;
+        end
+    end
 end
 end
