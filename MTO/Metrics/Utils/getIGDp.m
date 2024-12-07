@@ -10,7 +10,7 @@ function score = getIGDp(PopObj, optimum)
 % Computational Intelligence Magazine, 2017, 12(4): 73-87".
 %--------------------------------------------------------------------------
 
-if size(PopObj, 2) ~= size(optimum, 2)
+if size(PopObj,1) == 0 || size(PopObj, 2) ~= size(optimum, 2)
     score = nan;
 else
     [Nr, M] = size(optimum);
