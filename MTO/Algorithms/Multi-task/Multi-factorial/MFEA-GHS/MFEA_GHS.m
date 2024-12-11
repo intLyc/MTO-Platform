@@ -44,7 +44,10 @@ methods
         population = Initialization_MF_One(Algo, Prob, Individual_MF);
         [max_T, min_T] = Algo.cal_max_min(population, Prob.T);
         for t = 1:Prob.T
-            M{t} = ones(1, max(Prob.D));
+            for k = 1:Prob.T
+                if k == t, continue; end
+                M{t, k} = ones(1, max(Prob.D));
+            end
         end
 
         while Algo.notTerminated(Prob, population)
@@ -101,7 +104,7 @@ methods
                 t1 = population(p(r1)).MFFactor; t2 = population(p(r2)).MFFactor;
                 if rand() < 0.5
                     tmp = population(p(r1));
-                    tmp.Dec = population(p(r1)).Dec .* M{t1};
+                    tmp.Dec = population(p(r1)).Dec .* M{t1, t2};
                     tmp.Dec(tmp.Dec > 1) = 1; tmp.Dec(tmp.Dec < 0) = 0;
                     offspring(count).Dec = GA_Crossover(tmp.Dec, population(p(r2)).Dec, Algo.MuC);
                     if rand() > mod(Algo.Gen, 2) % OBL
@@ -111,7 +114,7 @@ methods
                     end
                 else
                     tmp = population(p(r2));
-                    tmp.Dec = population(p(r2)).Dec .* M{t2};
+                    tmp.Dec = population(p(r2)).Dec .* M{t2, t1};
                     tmp.Dec(tmp.Dec > 1) = 1; tmp.Dec(tmp.Dec < 0) = 0;
                     offspring(count).Dec = GA_Crossover(population(p(r1)).Dec, tmp.Dec, Algo.MuC);
                     if rand() > mod(Algo.Gen, 2) % OBL
@@ -153,7 +156,7 @@ methods
         end
     end
 
-    function [M] = domain_ad(Algo, population, Tnum)
+    function M = domain_ad(Algo, population, Tnum)
         M = {};
         for t = 1:Tnum
             population_t = population([population.MFFactor] == t);
@@ -162,8 +165,13 @@ methods
             for i = 1:N
                 T = [T; population_t(i).Dec];
             end
-            mean_T = mean(T);
-            M{t} = (mean_T +1e-10) ./ (mean_T +1e-10);
+            mean_{t} = mean(T);
+        end
+        for t = 1:Tnum
+            for k = 1:Tnum
+                if k == t, continue; end
+                M{t, k} = (mean_{k} +1e-10) ./ (mean_{t} +1e-10);
+            end
         end
     end
 end
