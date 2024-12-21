@@ -1,7 +1,7 @@
 # Multitask Optimization Platform (MToP)
 
 [![](https://img.shields.io/badge/Download-Latest-green)](https://github.com/intLyc/MTO-Platform/archive/refs/heads/master.zip)
-[![](https://img.shields.io/badge/Release-v1.6-orange)](#mto-platform)
+[![](https://img.shields.io/badge/Release-v1.7-orange)](#mto-platform)
 [![](https://img.shields.io/badge/Matlab-%3E%3DR2020b-blue)](#mto-platform)
 
 [![GitHub Repo stars](https://img.shields.io/github/stars/intLyc/MTO-Platform?style=social)](#mto-platform)
@@ -12,8 +12,8 @@
 
 We introduce the multitask optimization platform, named **MToP**, for evolutionary multitasking:
 
-- 40+ multitask evolutionary algorithms for multitask optimization
-- 40+ single-task evolutionary algorithms that can handle multitask optimization problems
+- 50+ multitask evolutionary algorithms for multitask optimization
+- 50+ single-task evolutionary algorithms that can handle multitask optimization problems
 - 150+ multitask optimization problem cases with real-world applications
 - 150+ classical single-task optimization benchmark problems
 - 20+ performance metrics covering single- and multi-objective optimization
@@ -37,6 +37,23 @@ MToP is a user-friendly tool with a graphical user interface that makes it easy 
   eprint  = {2312.08134},
 }
 ```
+
+## Contact Us
+
+*Email: <int_lyc@cug.edu.cn>*
+
+*QQ Group: 862974231*
+
+## Release Highlights of MToP v1.7
+
+- New Algorithm: 
+  - MTEA-DCK (Single-objective Many-task TSMC-S-24)
+  - MFEA-VC (Single-objective Multi-task ASOC-24)
+- Optimize 2D Pareto Front drawing
+- Update MTS metric with convergence for HV, IGD, and IGD+
+- Fix MFEA-GHS domain adaptation bug
+- Fix LDA-MFEA data size reduce method
+- Fix NaN bug in IGD and IGD+ calculation
 
 ## Release Highlights of MToP v1.6
 
@@ -94,18 +111,13 @@ MToP is a user-friendly tool with a graphical user interface that makes it easy 
   - MKTDE (single-objective multi-task TEVC 2022)
   - CCEF-ECHT (constrained single-objective TSMC 2023)
 
-## Contact Us
 
-*Email: <int_lyc@cug.edu.cn>*
-
-*QQ Group: 862974231*
 
 ## Related Websites
 
 [*MTO Website*](http://www.bdsc.site/websites/MTO/index.html)
 /
 [*ETO Website*](http://www.bdsc.site/websites/ETO/ETO.html)
-
 
 ## Star History
 
