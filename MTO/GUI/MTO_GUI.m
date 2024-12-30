@@ -7,131 +7,131 @@ classdef MTO_GUI < matlab.apps.AppBase
         MTOPlatformTabGroup             matlab.ui.container.TabGroup
         TestModuleTab                   matlab.ui.container.Tab
         TestGridLayout                  matlab.ui.container.GridLayout
-        TPanel1                         matlab.ui.container.Panel
-        TP1GridLayout                   matlab.ui.container.GridLayout
-        AlgorithmDropDownLabel          matlab.ui.control.Label
-        TAlgorithmDropDown              matlab.ui.control.DropDown
-        TAlgorithmTree                  matlab.ui.container.Tree
-        TProblemTree                    matlab.ui.container.Tree
-        TProblemDropDown                matlab.ui.control.DropDown
-        ProblemDropDownLabel            matlab.ui.control.Label
-        TTaskTypeDropDown               matlab.ui.control.DropDown
-        TaskLabel                       matlab.ui.control.Label
-        SpecialLabel_2                  matlab.ui.control.Label
-        TSpecialTypeDropDown            matlab.ui.control.DropDown
-        TObjectiveTypeDropDown          matlab.ui.control.DropDown
-        ObjectiveLabel                  matlab.ui.control.Label
-        DrawDecLabel                    matlab.ui.control.Label
-        TDrawDecDropDown                matlab.ui.control.DropDown
-        DrawObjLabel                    matlab.ui.control.Label
-        TDrawObjDropDown                matlab.ui.control.DropDown
-        TPanel2                         matlab.ui.container.Panel
-        TP2GridLayout                   matlab.ui.container.GridLayout
-        TP21GridLayout                  matlab.ui.container.GridLayout
-        TShowTypeDropDown               matlab.ui.control.DropDown
-        TExportButton                   matlab.ui.control.Button
-        SampleNumberEditFieldLabel      matlab.ui.control.Label
-        SampleNumberEditField           matlab.ui.control.NumericEditField
-        TP24GridLayout                  matlab.ui.container.GridLayout
-        TStartButton                    matlab.ui.control.Button
-        TStopButton                     matlab.ui.control.Button
-        TPauseButton                    matlab.ui.control.Button
-        TUIAxes                         matlab.ui.control.UIAxes
         TPanel3                         matlab.ui.container.Panel
         TP3GridLayout                   matlab.ui.container.GridLayout
-        TOutputTextArea                 matlab.ui.control.TextArea
         MTOPlatformMToPbyYanchiLiLabel  matlab.ui.control.Label
+        TOutputTextArea                 matlab.ui.control.TextArea
+        TPanel2                         matlab.ui.container.Panel
+        TP2GridLayout                   matlab.ui.container.GridLayout
+        TP24GridLayout                  matlab.ui.container.GridLayout
+        TPauseButton                    matlab.ui.control.Button
+        TStopButton                     matlab.ui.control.Button
+        TStartButton                    matlab.ui.control.Button
+        TP21GridLayout                  matlab.ui.container.GridLayout
+        SampleNumberEditField           matlab.ui.control.NumericEditField
+        SampleNumberEditFieldLabel      matlab.ui.control.Label
+        TExportButton                   matlab.ui.control.Button
+        TShowTypeDropDown               matlab.ui.control.DropDown
+        TUIAxes                         matlab.ui.control.UIAxes
+        TPanel1                         matlab.ui.container.Panel
+        TP1GridLayout                   matlab.ui.container.GridLayout
+        TDrawObjDropDown                matlab.ui.control.DropDown
+        DrawObjLabel                    matlab.ui.control.Label
+        TDrawDecDropDown                matlab.ui.control.DropDown
+        DrawDecLabel                    matlab.ui.control.Label
+        ObjectiveLabel                  matlab.ui.control.Label
+        TObjectiveTypeDropDown          matlab.ui.control.DropDown
+        TSpecialTypeDropDown            matlab.ui.control.DropDown
+        SpecialLabel_2                  matlab.ui.control.Label
+        TaskLabel                       matlab.ui.control.Label
+        TTaskTypeDropDown               matlab.ui.control.DropDown
+        ProblemDropDownLabel            matlab.ui.control.Label
+        TProblemDropDown                matlab.ui.control.DropDown
+        TProblemTree                    matlab.ui.container.Tree
+        TAlgorithmTree                  matlab.ui.container.Tree
+        TAlgorithmDropDown              matlab.ui.control.DropDown
+        AlgorithmDropDownLabel          matlab.ui.control.Label
         ExperimentModuleTab             matlab.ui.container.Tab
         ExperimentsGridLayout           matlab.ui.container.GridLayout
-        EPanel1                         matlab.ui.container.Panel
-        EP1GridLayout                   matlab.ui.container.GridLayout
-        EProblemsAddButton              matlab.ui.control.Button
-        EAlgorithmsAddButton            matlab.ui.control.Button
-        EAlgorithmsListBox              matlab.ui.control.ListBox
-        AlgorithmListLabel              matlab.ui.control.Label
-        EProblemsListBox                matlab.ui.control.ListBox
-        ProblemListLabel                matlab.ui.control.Label
-        ParallelLabel                   matlab.ui.control.Label
-        EParallelDropDown               matlab.ui.control.DropDown
-        TaskLabel_2                     matlab.ui.control.Label
-        ETaskTypeDropDown               matlab.ui.control.DropDown
-        SpecialLabel                    matlab.ui.control.Label
-        ESpecialTypeDropDown            matlab.ui.control.DropDown
-        ObjectiveLabel_2                matlab.ui.control.Label
-        EObjectiveTypeDropDown          matlab.ui.control.DropDown
-        GridLayout5                     matlab.ui.container.GridLayout
-        ERepsEditField                  matlab.ui.control.NumericEditField
-        EResultsNumEditField            matlab.ui.control.NumericEditField
-        ERunTimesEditFieldLabel         matlab.ui.control.Label
-        EResultsNumEditFieldLabel       matlab.ui.control.Label
-        SaveDecLabel                    matlab.ui.control.Label
-        ESaveDecDropDown                matlab.ui.control.DropDown
-        EPanel2                         matlab.ui.container.Panel
-        EP2GridLayout                   matlab.ui.container.GridLayout
-        EAlgorithmsTree                 matlab.ui.container.Tree
-        EProblemsTree                   matlab.ui.container.Tree
-        GridLayout2                     matlab.ui.container.GridLayout
-        EStartButton                    matlab.ui.control.Button
-        EPauseButton                    matlab.ui.control.Button
-        EStopButton                     matlab.ui.control.Button
-        GridLayout3                     matlab.ui.container.GridLayout
-        ESelectedAlgorithmsLabel        matlab.ui.control.Label
-        EAlgorithmsDelButton            matlab.ui.control.Button
-        GridLayout4                     matlab.ui.container.GridLayout
-        ESelectedProblemsLabel          matlab.ui.control.Label
-        EProblemsDelButton              matlab.ui.control.Button
-        GridLayout                      matlab.ui.container.GridLayout
-        ESaveDataButton                 matlab.ui.control.Button
-        ELoadDataButton                 matlab.ui.control.Button
         EPanel3                         matlab.ui.container.Panel
         EP3GridLayout                   matlab.ui.container.GridLayout
         EP3TGridLayout                  matlab.ui.container.GridLayout
-        EP3T1GridLayout                 matlab.ui.container.GridLayout
-        ETestTypeDropDown               matlab.ui.control.DropDown
-        EAlgorithmDropDown              matlab.ui.control.DropDown
-        EShowTypeDropDown               matlab.ui.control.DropDown
-        EDataTypeDropDown               matlab.ui.control.DropDown
-        EHighlightTypeDropDown          matlab.ui.control.DropDown
-        ESaveTableButton                matlab.ui.control.Button
-        EDataFormatEditField            matlab.ui.control.EditField
-        EConvergeButton                 matlab.ui.control.Button
-        EParetoButton                   matlab.ui.control.Button
-        EConvergeTypeDropDown           matlab.ui.control.DropDown
         EUITable                        matlab.ui.control.Table
+        EP3T1GridLayout                 matlab.ui.container.GridLayout
+        EConvergeTypeDropDown           matlab.ui.control.DropDown
+        EParetoButton                   matlab.ui.control.Button
+        EConvergeButton                 matlab.ui.control.Button
+        EDataFormatEditField            matlab.ui.control.EditField
+        ESaveTableButton                matlab.ui.control.Button
+        EHighlightTypeDropDown          matlab.ui.control.DropDown
+        EDataTypeDropDown               matlab.ui.control.DropDown
+        EShowTypeDropDown               matlab.ui.control.DropDown
+        EAlgorithmDropDown              matlab.ui.control.DropDown
+        ETestTypeDropDown               matlab.ui.control.DropDown
+        EPanel2                         matlab.ui.container.Panel
+        EP2GridLayout                   matlab.ui.container.GridLayout
+        GridLayout                      matlab.ui.container.GridLayout
+        ELoadDataButton                 matlab.ui.control.Button
+        ESaveDataButton                 matlab.ui.control.Button
+        GridLayout4                     matlab.ui.container.GridLayout
+        EProblemsDelButton              matlab.ui.control.Button
+        ESelectedProblemsLabel          matlab.ui.control.Label
+        GridLayout3                     matlab.ui.container.GridLayout
+        EAlgorithmsDelButton            matlab.ui.control.Button
+        ESelectedAlgorithmsLabel        matlab.ui.control.Label
+        GridLayout2                     matlab.ui.container.GridLayout
+        EStopButton                     matlab.ui.control.Button
+        EPauseButton                    matlab.ui.control.Button
+        EStartButton                    matlab.ui.control.Button
+        EProblemsTree                   matlab.ui.container.Tree
+        EAlgorithmsTree                 matlab.ui.container.Tree
+        EPanel1                         matlab.ui.container.Panel
+        EP1GridLayout                   matlab.ui.container.GridLayout
+        ESaveDecDropDown                matlab.ui.control.DropDown
+        SaveDecLabel                    matlab.ui.control.Label
+        GridLayout5                     matlab.ui.container.GridLayout
+        EResultsNumEditFieldLabel       matlab.ui.control.Label
+        ERunTimesEditFieldLabel         matlab.ui.control.Label
+        EResultsNumEditField            matlab.ui.control.NumericEditField
+        ERepsEditField                  matlab.ui.control.NumericEditField
+        EObjectiveTypeDropDown          matlab.ui.control.DropDown
+        ObjectiveLabel_2                matlab.ui.control.Label
+        ESpecialTypeDropDown            matlab.ui.control.DropDown
+        SpecialLabel                    matlab.ui.control.Label
+        ETaskTypeDropDown               matlab.ui.control.DropDown
+        TaskLabel_2                     matlab.ui.control.Label
+        EParallelDropDown               matlab.ui.control.DropDown
+        ParallelLabel                   matlab.ui.control.Label
+        ProblemListLabel                matlab.ui.control.Label
+        EProblemsListBox                matlab.ui.control.ListBox
+        AlgorithmListLabel              matlab.ui.control.Label
+        EAlgorithmsListBox              matlab.ui.control.ListBox
+        EAlgorithmsAddButton            matlab.ui.control.Button
+        EProblemsAddButton              matlab.ui.control.Button
         DataProcessModuleTab            matlab.ui.container.Tab
         DataProcessGridLayout           matlab.ui.container.GridLayout
-        DPanel1                         matlab.ui.container.Panel
-        DP1GridLayout                   matlab.ui.container.GridLayout
-        DDataProcessModuleLabel         matlab.ui.control.Label
-        DP1Panel1                       matlab.ui.container.Panel
-        DP1P1GridLayout                 matlab.ui.container.GridLayout
-        DLoadDataButton                 matlab.ui.control.Button
-        DDeleteDataButton               matlab.ui.control.Button
-        DSaveDataButton                 matlab.ui.control.Button
-        DLoadDataorSelectandDeleteSaveDataLabel_3  matlab.ui.control.Label
-        DLoadDataorSelectandDeleteSaveDataLabel_4  matlab.ui.control.Label
-        DP1Panel2                       matlab.ui.container.Panel
-        DP1P2GridLayout                 matlab.ui.container.GridLayout
-        DSelectandSplitDataLabel        matlab.ui.control.Label
-        DRepsSplitButton                matlab.ui.control.Button
-        DAlgorithmsSplitButton          matlab.ui.control.Button
-        DProblemsSplitButton            matlab.ui.control.Button
-        DP1Panel3                       matlab.ui.container.Panel
-        DP1P3GridLayout                 matlab.ui.container.GridLayout
-        DSelectandMergeDataLabel        matlab.ui.control.Label
-        DRepsMergeButton                matlab.ui.control.Button
-        DAlgorithmsMergeButton          matlab.ui.control.Button
-        DProblemsMergeButton            matlab.ui.control.Button
-        DP1Panel4                       matlab.ui.container.Panel
-        DP1P4GridLayout                 matlab.ui.container.GridLayout
-        DUpandDownDataLabel             matlab.ui.control.Label
-        DUpButton                       matlab.ui.control.Button
-        DDownButton                     matlab.ui.control.Button
-        DDataProcessModuleLabel_2       matlab.ui.control.Label
-        DLoadDataorSelectandDeleteSaveDataLabel_5  matlab.ui.control.Label
         DPanel2                         matlab.ui.container.Panel
         DP2GridLayout                   matlab.ui.container.GridLayout
         DDataTree                       matlab.ui.container.Tree
+        DPanel1                         matlab.ui.container.Panel
+        DP1GridLayout                   matlab.ui.container.GridLayout
+        DLoadDataorSelectandDeleteSaveDataLabel_5  matlab.ui.control.Label
+        DDataProcessModuleLabel_2       matlab.ui.control.Label
+        DP1Panel4                       matlab.ui.container.Panel
+        DP1P4GridLayout                 matlab.ui.container.GridLayout
+        DDownButton                     matlab.ui.control.Button
+        DUpButton                       matlab.ui.control.Button
+        DUpandDownDataLabel             matlab.ui.control.Label
+        DP1Panel3                       matlab.ui.container.Panel
+        DP1P3GridLayout                 matlab.ui.container.GridLayout
+        DProblemsMergeButton            matlab.ui.control.Button
+        DAlgorithmsMergeButton          matlab.ui.control.Button
+        DRepsMergeButton                matlab.ui.control.Button
+        DSelectandMergeDataLabel        matlab.ui.control.Label
+        DP1Panel2                       matlab.ui.container.Panel
+        DP1P2GridLayout                 matlab.ui.container.GridLayout
+        DProblemsSplitButton            matlab.ui.control.Button
+        DAlgorithmsSplitButton          matlab.ui.control.Button
+        DRepsSplitButton                matlab.ui.control.Button
+        DSelectandSplitDataLabel        matlab.ui.control.Label
+        DP1Panel1                       matlab.ui.container.Panel
+        DP1P1GridLayout                 matlab.ui.container.GridLayout
+        DLoadDataorSelectandDeleteSaveDataLabel_4  matlab.ui.control.Label
+        DLoadDataorSelectandDeleteSaveDataLabel_3  matlab.ui.control.Label
+        DSaveDataButton                 matlab.ui.control.Button
+        DDeleteDataButton               matlab.ui.control.Button
+        DLoadDataButton                 matlab.ui.control.Button
+        DDataProcessModuleLabel         matlab.ui.control.Label
         SelectedAlgoContextMenu         matlab.ui.container.ContextMenu
         SelectedAlgoSelectAllMenu       matlab.ui.container.Menu
         DDataContextMenu                matlab.ui.container.ContextMenu
@@ -2837,10 +2837,27 @@ classdef MTO_GUI < matlab.apps.AppBase
                             sampledY = y;
                         end
                         
-                        [sampledX, sortIdx] = sort(sampledX); % 根据 x 排序
-                        sampledY = sampledY(sortIdx);
+                        % Calculate threshold for Pareto front plot
+                        distArray = sqrt(diff(sampledX).^2 + diff(sampledY).^2);
+                        distMean = mean(distArray);
+                        distStd  = std(distArray);
+                        autoThreshold = distMean + 2 * distStd;
                         
-                        p = plot(ax, sampledX, sampledY);
+                        xPlot = [];
+                        yPlot = [];
+                        for idx = 1:length(sampledX)-1
+                            xPlot(end+1) = sampledX(idx);
+                            yPlot(end+1) = sampledY(idx);
+                            % if dist exceed threshold，insert [NaN, NaN]
+                            if distArray(idx) > autoThreshold
+                                xPlot(end+1) = NaN;
+                                yPlot(end+1) = NaN;
+                            end
+                        end
+                        xPlot(end+1) = sampledX(end);
+                        yPlot(end+1) = sampledY(end);
+
+                        p = plot(ax, xPlot, yPlot);
                         p.Color = [.2,.2,.2];
                         p.LineWidth = 2;
 %                         s = scatter(ax, x, y);
@@ -3188,6 +3205,12 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TP2GridLayout.Padding = [0 0 0 0];
             app.TP2GridLayout.BackgroundColor = [1 1 1];
 
+            % Create TUIAxes
+            app.TUIAxes = uiaxes(app.TP2GridLayout);
+            app.TUIAxes.PlotBoxAspectRatio = [1.14506769825919 1 1];
+            app.TUIAxes.Layout.Row = 2;
+            app.TUIAxes.Layout.Column = 1;
+
             % Create TP21GridLayout
             app.TP21GridLayout = uigridlayout(app.TP2GridLayout);
             app.TP21GridLayout.ColumnWidth = {'1x', 'fit', 'fit', 'fit', 'fit'};
@@ -3279,12 +3302,6 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TPauseButton.Layout.Row = 1;
             app.TPauseButton.Layout.Column = 3;
             app.TPauseButton.Text = 'Pause';
-
-            % Create TUIAxes
-            app.TUIAxes = uiaxes(app.TP2GridLayout);
-            app.TUIAxes.PlotBoxAspectRatio = [1.14506769825919 1 1];
-            app.TUIAxes.Layout.Row = 2;
-            app.TUIAxes.Layout.Column = 1;
 
             % Create TPanel3
             app.TPanel3 = uipanel(app.TestGridLayout);
@@ -4113,62 +4130,62 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create SelectedAlgoContextMenu
             app.SelectedAlgoContextMenu = uicontextmenu(app.MTOPlatformMToPv17UIFigure);
             app.SelectedAlgoContextMenu.ContextMenuOpeningFcn = createCallbackFcn(app, @SelectedAlgoContextMenuOpening, true);
-            
-            % Assign app.SelectedAlgoContextMenu
-            app.EAlgorithmsTree.ContextMenu = app.SelectedAlgoContextMenu;
 
             % Create SelectedAlgoSelectAllMenu
             app.SelectedAlgoSelectAllMenu = uimenu(app.SelectedAlgoContextMenu);
             app.SelectedAlgoSelectAllMenu.Checked = 'on';
             app.SelectedAlgoSelectAllMenu.Text = 'Select All';
+            
+            % Assign app.SelectedAlgoContextMenu
+            app.EAlgorithmsTree.ContextMenu = app.SelectedAlgoContextMenu;
 
             % Create DDataContextMenu
             app.DDataContextMenu = uicontextmenu(app.MTOPlatformMToPv17UIFigure);
             app.DDataContextMenu.ContextMenuOpeningFcn = createCallbackFcn(app, @DDataContextMenuOpening, true);
-            
-            % Assign app.DDataContextMenu
-            app.DDataTree.ContextMenu = app.DDataContextMenu;
 
             % Create SelectedAlgoSelectAllMenu_2
             app.SelectedAlgoSelectAllMenu_2 = uimenu(app.DDataContextMenu);
             app.SelectedAlgoSelectAllMenu_2.Checked = 'on';
             app.SelectedAlgoSelectAllMenu_2.Text = 'Select All';
+            
+            % Assign app.DDataContextMenu
+            app.DDataTree.ContextMenu = app.DDataContextMenu;
 
             % Create SelectedProbContextMenu
             app.SelectedProbContextMenu = uicontextmenu(app.MTOPlatformMToPv17UIFigure);
-            
-            % Assign app.SelectedProbContextMenu
-            app.EProblemsTree.ContextMenu = app.SelectedProbContextMenu;
 
             % Create SelectedProbSelectAllMenu
             app.SelectedProbSelectAllMenu = uimenu(app.SelectedProbContextMenu);
             app.SelectedProbSelectAllMenu.MenuSelectedFcn = createCallbackFcn(app, @ESelectedProbContextMenuOpening, true);
             app.SelectedProbSelectAllMenu.Checked = 'on';
             app.SelectedProbSelectAllMenu.Text = 'Select All';
+            
+            % Assign app.SelectedProbContextMenu
+            app.EProblemsTree.ContextMenu = app.SelectedProbContextMenu;
 
             % Create AlgorithmsContextMenu
             app.AlgorithmsContextMenu = uicontextmenu(app.MTOPlatformMToPv17UIFigure);
             app.AlgorithmsContextMenu.ContextMenuOpeningFcn = createCallbackFcn(app, @AlgorithmsContextMenuOpening, true);
-            
-            % Assign app.AlgorithmsContextMenu
-            app.EAlgorithmsListBox.ContextMenu = app.AlgorithmsContextMenu;
 
             % Create AlgorithmsSelectAllMenu
             app.AlgorithmsSelectAllMenu = uimenu(app.AlgorithmsContextMenu);
             app.AlgorithmsSelectAllMenu.Checked = 'on';
             app.AlgorithmsSelectAllMenu.Text = 'Select All';
+            
+            % Assign app.AlgorithmsContextMenu
+            app.EAlgorithmsListBox.ContextMenu = app.AlgorithmsContextMenu;
 
             % Create ProblemsContextMenu
             app.ProblemsContextMenu = uicontextmenu(app.MTOPlatformMToPv17UIFigure);
-            
-            % Assign app.ProblemsContextMenu
-            app.EProblemsListBox.ContextMenu = app.ProblemsContextMenu;
 
             % Create ProblemsSelectAllMenu
             app.ProblemsSelectAllMenu = uimenu(app.ProblemsContextMenu);
             app.ProblemsSelectAllMenu.MenuSelectedFcn = createCallbackFcn(app, @EProblemsContextMenuOpening, true);
             app.ProblemsSelectAllMenu.Checked = 'on';
             app.ProblemsSelectAllMenu.Text = 'Select All';
+            
+            % Assign app.ProblemsContextMenu
+            app.EProblemsListBox.ContextMenu = app.ProblemsContextMenu;
 
             % Show the figure after all components are created
             app.MTOPlatformMToPv17UIFigure.Visible = 'on';
