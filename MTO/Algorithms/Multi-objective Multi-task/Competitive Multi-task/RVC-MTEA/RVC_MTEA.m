@@ -63,7 +63,7 @@ methods
 
         % Initialization
         Zall = Inf * ones(1, max(Prob.M));
-        population = Initialization(Algo, Prob, Individual_TSD, N);
+        population = Initialization(Algo, Prob, Individual_RVC, N);
         archive = population;
         for t = 1:Prob.T
             Z{t} = min(population{t}.Objs, [], 1);
