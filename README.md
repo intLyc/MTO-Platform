@@ -46,10 +46,16 @@ MToP is a user-friendly tool with a graphical user interface that makes it easy 
 
 ## Release Highlights of MToP v1.7
 
-- New Algorithm: 
-  - MTEA-DCK (Single-objective Many-task TSMC-S-24)
+- New Algorithms: 
+  - RVC-MTEA (Competitive Multi-objective Multi-task TEVC-24)
+  - MTEA-DCK (Multi-objective Multi-task TSMC-S-24)
   - MFEA-VC (Single-objective Multi-task ASOC-24)
+- New Problems:
+  - CMOMT Benchmark (Competitive Multi-objective Multi-task TEVC-24)
+  - MOSCP2 (Competitive Multi-objective Sensor Coverage Problem)
+  - OPF-CMOMT (Competitive Multi-objective Optimal Power Flow)
 - Optimize 2D Pareto Front drawing
+- Add competitive multi-objective multi-task metric IGD-CMT and HV-CMT
 - Update MTS metric with convergence for HV, IGD, and IGD+
 - Fix MFEA-GHS domain adaptation bug
 - Fix LDA-MFEA data size reduce method
