@@ -2295,6 +2295,22 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
             min_results_num = min(results_num);
             M =  max([data_selected(i).NodeData.Problems.M]);
+
+            % check Dec field
+            removeDec = false;
+            for i = 1:length(data_selected)
+                if ~isfield(data_selected(i).NodeData.Results, 'Dec')
+                    removeDec = true;
+                end
+            end
+            if removeDec
+                for i = 1:length(data_selected)
+                    if isfield(data_selected(i).NodeData.Results, 'Dec')
+                        data_selected(i).NodeData.Results = rmfield(data_selected(i).NodeData.Results, 'Dec');
+                    end
+                end
+            end
+
             for i = 1:length(data_selected)
                 results_temp = app.DReduceResults(data_selected(i).NodeData.Results, min_results_num, M);
                 MTOData.Results(1:length(MTOData.Problems),1:length(MTOData.Algorithms),MTOData.Reps+1:MTOData.Reps+data_selected(i).NodeData.Reps) = ...
@@ -2316,6 +2332,10 @@ classdef MTO_GUI < matlab.apps.AppBase
                     metric_name = intersect(metric_name, {});
                 end
             end
+            % remove HV
+            contains_HV = contains(metric_name, 'HV');
+            metric_name = metric_name(~contains_HV);
+
             del_metric_idx = [];
             for i = 1:length(metric_name)
                 flag = true;
@@ -2403,6 +2423,22 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
             min_results_num = min(results_num);
             M =  max([data_selected(i).NodeData.Problems.M]);
+
+            % check Dec field
+            removeDec = false;
+            for i = 1:length(data_selected)
+                if ~isfield(data_selected(i).NodeData.Results, 'Dec')
+                    removeDec = true;
+                end
+            end
+            if removeDec
+                for i = 1:length(data_selected)
+                    if isfield(data_selected(i).NodeData.Results, 'Dec')
+                        data_selected(i).NodeData.Results = rmfield(data_selected(i).NodeData.Results, 'Dec');
+                    end
+                end
+            end
+
             for i = 1:length(data_selected)
                 results_temp = app.DReduceResults(data_selected(i).NodeData.Results, min_results_num, M);
                 MTOData.Algorithms(idx+1:idx+length(data_selected(i).NodeData.Algorithms)) = ...
@@ -2426,6 +2462,10 @@ classdef MTO_GUI < matlab.apps.AppBase
                     metric_name = intersect(metric_name, {});
                 end
             end
+            % remove HV
+            contains_HV = contains(metric_name, 'HV');
+            metric_name = metric_name(~contains_HV);
+            
             del_metric_idx = [];
             for i = 1:length(metric_name)
                 flag = true;
@@ -2515,6 +2555,22 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
             min_results_num = min(results_num);
             M =  max([data_selected(i).NodeData.Problems.M]);
+
+            % check Dec field
+            removeDec = false;
+            for i = 1:length(data_selected)
+                if ~isfield(data_selected(i).NodeData.Results, 'Dec')
+                    removeDec = true;
+                end
+            end
+            if removeDec
+                for i = 1:length(data_selected)
+                    if isfield(data_selected(i).NodeData.Results, 'Dec')
+                        data_selected(i).NodeData.Results = rmfield(data_selected(i).NodeData.Results, 'Dec');
+                    end
+                end
+            end
+
             for i = 1:length(data_selected)
                 results_temp = app.DReduceResults(data_selected(i).NodeData.Results, min_results_num, M);
                 MTOData.Problems(idx+1:idx+length(data_selected(i).NodeData.Problems)) = ...
