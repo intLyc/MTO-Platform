@@ -2,12 +2,15 @@ classdef MTDE_MKTA < Algorithm
 % <Multi-task/Many-task> <Multi-objective> <None/Constrained>
 
 %------------------------------- Reference --------------------------------
-% @Article{Li2024MTDE-MKTA,
-%   title    = {Multiobjective Multitask Optimization with Multiple Knowledge Types and Transfer Adaptation},
-%   author   = {Li, Yanchi and Gong, Wenyin},
-%   journal  = {IEEE Transactions on Evolutionary Computation},
-%   year     = {2024},
-%   doi      = {10.1109/TEVC.2024.3353319},
+% @Article{Li2025MTDE-MKTA,
+%   title      = {Multiobjective Multitask Optimization With Multiple Knowledge Types and Transfer Adaptation},
+%   author     = {Li, Yanchi and Gong, Wenyin},
+%   journal    = {IEEE Transactions on Evolutionary Computation},
+%   year       = {2025},
+%   number     = {1},
+%   pages      = {205-216},
+%   volume     = {29},
+%   doi        = {10.1109/TEVC.2024.3353319},
 % }
 %--------------------------------------------------------------------------
 
