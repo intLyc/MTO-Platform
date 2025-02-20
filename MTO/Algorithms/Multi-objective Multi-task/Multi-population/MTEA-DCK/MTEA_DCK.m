@@ -2,12 +2,15 @@ classdef MTEA_DCK < Algorithm
 % <Multi-task/Many-task> <Multi-objective> <None/Constrained>
 
 %------------------------------- Reference --------------------------------
-% @Article{Li2024MTEA-DCK,
-%   title    = {Multiobjective Multitask Optimization via Diversity and Convergence Oriented Knowledge Transfer},
-%   author   = {Li, Yanchi and Li, Dongcheng and Gong, Wenyin and Gu, Qiong},
-%   journal  = {IEEE Transactions on Systems, Man, and Cybernetics: Systems},
-%   year     = {2024},
-%   doi      = {10.1109/TSMC.2024.3520526},
+% @Article{Li2025MTEA-DCK,
+%   title      = {Multiobjective Multitask Optimization via Diversity- and Convergence-Oriented Knowledge Transfer},
+%   author     = {Li, Yanchi and Li, Dongcheng and Gong, Wenyin and Gu, Qiong},
+%   journal    = {IEEE Transactions on Systems, Man, and Cybernetics: Systems},
+%   year       = {2025},
+%   number     = {3},
+%   pages      = {2367-2379},
+%   volume     = {55},
+%   doi        = {10.1109/TSMC.2024.3520526},
 % }
 %--------------------------------------------------------------------------
 
