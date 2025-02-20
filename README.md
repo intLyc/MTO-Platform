@@ -48,8 +48,9 @@ MToP is a user-friendly tool with a graphical user interface that makes it easy 
 
 - New Algorithms: 
   - RVC-MTEA (Competitive Multi-objective Multi-task TEVC-24)
-  - MTEA-DCK (Multi-objective Multi-task TSMC-S-24)
+  - MTEA-DCK (Multi-objective Multi-task TSMC-S-25)
   - MFEA-VC (Single-objective Multi-task ASOC-24)
+  - CMO-LKT (Constrained Single-objective Multi-task TSMC-S-25)
 - New Problems:
   - CMOMT Benchmark (Competitive Multi-objective Multi-task TEVC-24)
   - MOSCP2 (Competitive Multi-objective Sensor Coverage Problem)
