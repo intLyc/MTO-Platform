@@ -14,7 +14,7 @@ We introduce the multitask optimization platform, named **MToP**, for evolutiona
 
 - 50+ multitask evolutionary algorithms for multitask optimization
 - 50+ single-task evolutionary algorithms that can handle multitask optimization problems
-- 150+ multitask optimization problem cases with real-world applications
+- 200+ multitask optimization problem cases with real-world applications
 - 150+ classical single-task optimization benchmark problems
 - 20+ performance metrics covering single- and multi-objective optimization
 
