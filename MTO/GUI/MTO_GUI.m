@@ -148,57 +148,58 @@ classdef MTO_GUI < matlab.apps.AppBase
         AlgoLoad % cell of algorithms loaded from folder
         ProbLoad % cell of problems loaded from folder
         MetricLoad % cell of metrics loaded from folder
-        
+
         % convergence axes set
         DefaultLineWidth = 1.5
         DefaultMarkerList = {'o', '*', 'x', '^', '+', 'p', 'v', 's', 'd', '<', '>', 'h'}
         DefaultMarkerSize = 7
         DefaultMarkerNum = 10
-        
+
         % Test Module
         TData % data
         TStopFlag
-        
+
         % Experiment Module
         EData % data
         EStopFlag % stop button clicked flag
-        
+
         ETableSelected % selected table cell index
         EMetricMin = true % default metric min
         EResultConvergeData % results converge corresponding to metric
         EResultParetoData % results pareto corresponding to metric
         EResultTableData % results data corresponding to metric
-        
+        EHighlightMatrix
+
         ETableData % table data for calculate
         ETableView % table data view
         ETableTest % table data view test
         ETableReps % table reps
-        
+
         % Data Process Module
         DDataFlag % legal data node index
     end
-    
+
     methods (Access = public)
         function readAlgoProb(app, label_str)
             % load the algorithms and problems list
-            
+
             app.AlgoLoad = app.readList('../Algorithms', label_str);
             app.ProbLoad = app.readList('../Problems', label_str);
-            
+
             app.AlgoLoad = sort_nat(app.AlgoLoad);
             app.ProbLoad = sort_nat(app.ProbLoad);
         end
-        
+
         function readMetric(app, label_str)
             % load the metrics
-            
+
             app.MetricLoad = app.readList('../Metrics', {'Metric', label_str});
             app.MetricLoad = sort_nat(app.MetricLoad);
         end
-        
+
         function read_list = readList(app, folder_name, label_str)
             % read file name list with labels
-            
+
             read_list = {};
             folders = split(genpath(fullfile(fileparts(mfilename('fullpath')), folder_name)),pathsep);
             for i = 1:length(folders)
@@ -224,10 +225,10 @@ classdef MTO_GUI < matlab.apps.AppBase
                 end
             end
         end
-        
+
         function TloadAlgoProb(app)
             % load the algorithms and problems in Test module
-            
+
             label_str = {app.TTaskTypeDropDown.Value, app.TObjectiveTypeDropDown.Value, app.TSpecialTypeDropDown.Value};
             app.readAlgoProb(label_str);
             app.TAlgorithmDropDown.Items = {};
@@ -237,10 +238,10 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TProblemDropDown.Items = strrep(app.ProbLoad, '_', '-');
             app.TProblemDropDown.ItemsData = app.ProbLoad;
         end
-        
+
         function EloadAlgoProb(app)
             % load the algorithms and problems in Experiment module
-            
+
             label_str = {app.ETaskTypeDropDown.Value, app.EObjectiveTypeDropDown.Value, app.ESpecialTypeDropDown.Value};
             app.readAlgoProb(label_str);
             app.EAlgorithmsListBox.Items(:) = [];
@@ -250,21 +251,21 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EProblemsListBox.Items = strrep(app.ProbLoad, '_', '-');
             app.EProblemsListBox.ItemsData = app.ProbLoad;
         end
-        
+
         function EloadMetric(app, label_str)
             % load the algorithms and problems in Experiment module
-            
+
             app.readMetric(label_str);
             app.EDataTypeDropDown.Items(:) = [];
             items = ['Reps', app.MetricLoad];
             app.EDataTypeDropDown.Items = strrep(items, '_', '-');
             app.EDataTypeDropDown.ItemsData = items;
         end
-        
+
         function TstartEnable(app, value)
             % change controler enable when start button pused and end
             % in Test module
-            
+
             app.TStartButton.Enable = value;
             app.TPauseButton.Enable = ~value;
             app.TStopButton.Enable = ~value;
@@ -278,11 +279,11 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TDrawDecDropDown.Enable = value;
             app.TDrawObjDropDown.Enable = value;
         end
-        
+
         function EstartEnable(app, value)
             % change controler enable when start button pused and end
             % in Experiment module
-            
+
             app.EStartButton.Enable = value;
             app.ERepsEditField.Enable = value;
             app.EResultsNumEditField.Enable = value;
@@ -304,48 +305,48 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EPauseButton.Enable = ~value;
             app.EStopButton.Enable = ~value;
         end
-        
+
         function TcheckPauseStopStatus(app)
             if app.TStopFlag
                 error('User Stop');
             end
-            
+
             if strcmp(app.TPauseButton.Text, 'Resume')
                 waitfor(app.TPauseButton,'Text', 'Pause');
             end
         end
-        
+
         function EcheckPauseStopStatus(app)
             % This function can be called at any time to check that status of the pause and stop buttons.
             % If paused, it will wait until un-paused.
             % If stopped, it will throw an error to break execution. The error will not be thrown.
-            
+
             if app.EStopFlag
                 app.EstartEnable(true);
                 error('User Stop');
             end
-            
+
             if strcmp(app.EPauseButton.Text, 'Resume')
                 waitfor(app.EPauseButton,'Text', 'Pause');
             end
         end
-        
+
         function TupdateAlgorithm(app)
             % update algorithm tree in Test module
-            
+
             if isempty(app.TAlgorithmDropDown.Value)
                 return;
             end
-            
+
             app.TAlgorithmTree.Children.delete;
-            
+
             algo_name = app.TAlgorithmDropDown.Value;
             eval(['algo_obj = ', algo_name, '(''', strrep(algo_name, '_', '-'), ''');']);
             algo_node = uitreenode(app.TAlgorithmTree);
             algo_node.Text = algo_obj.Name;
             algo_node.NodeData = algo_obj;
             algo_node.ContextMenu = app.SelectedProbContextMenu;
-            
+
             % child parameter node
             parameter = algo_obj.getParameter();
             for p = 1:2:length(parameter)
@@ -357,26 +358,26 @@ classdef MTO_GUI < matlab.apps.AppBase
                 para_value_node.Text = parameter{p+1};
                 para_value_node.ContextMenu = app.SelectedAlgoContextMenu;
             end
-            
+
             expand(algo_node);
         end
-        
+
         function TupdateProblem(app)
             % update problem tree in Test module
-            
+
             if isempty(app.TProblemDropDown.Value)
                 return;
             end
-            
+
             app.TProblemTree.Children.delete;
-            
+
             prob_name = app.TProblemDropDown.Value;
             eval(['prob_obj = ', prob_name, '(''', strrep(prob_name, '_', '-'), ''');']);
             prob_node = uitreenode(app.TProblemTree);
             prob_node.Text = prob_obj.Name;
             prob_node.NodeData = prob_obj;
             prob_node.ContextMenu = app.SelectedProbContextMenu;
-            
+
             % child parameter node
             parameter = prob_obj.getParameter();
             for p = 1:2:length(parameter)
@@ -388,13 +389,13 @@ classdef MTO_GUI < matlab.apps.AppBase
                 para_value_node.Text = parameter{p+1};
                 para_value_node.ContextMenu = app.SelectedProbContextMenu;
             end
-            
+
             expand(prob_node);
         end
-        
+
         function TupdateUIAxes(app)
             % update UI Axes in Test module
-            
+
             cla(app.TUIAxes, 'reset');
             type = app.TShowTypeDropDown.Value;
             switch type
@@ -414,13 +415,13 @@ classdef MTO_GUI < matlab.apps.AppBase
                     app.TupdateParetoFront();
             end
         end
-        
+
         function TupdateTasksFigure(app)
             % update selected problem tasks figure in Test module
             try
                 sample_number = app.SampleNumberEditField.Value;
                 x = 0:1/sample_number:1;
-                
+
                 legend_cell = {};
                 plot_handle = {};
                 color = colororder;
@@ -430,18 +431,18 @@ classdef MTO_GUI < matlab.apps.AppBase
                     vars = (maxrange - minrange) .* x' + minrange;
                     [f, con] = app.TProblemTree.Children(1).NodeData.Fnc{no}(vars);
                     f(sum(con, 2)>0, :) = NaN;
-                    
+
                     if strcmp(app.TShowTypeDropDown.Value, 'Tasks Figure (1D Unified)') % unified
                         fmin = min(f);
                         fmax = max(f);
                         f = (f - fmin) / (fmax - fmin);
                     end
-                    
+
                     p1 = plot(app.TUIAxes, x, f);
                     p1.Color = color(mod(no-1, size(color, 1))+1, :);
                     p1.LineWidth = 1;
                     hold(app.TUIAxes, 'on');
-                    
+
                     if ~isnan(f)
                         xmin = x(f == min(f));
                         fmin = min(f) * ones(size(xmin));
@@ -451,7 +452,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                         p2.MarkerEdgeColor = color(mod(no-1, size(color, 1))+1, :);
                         hold(app.TUIAxes, 'on');
                     end
-                    
+
                     legend_cell = [legend_cell, ['Task', num2str(no)]];
                     plot_handle = [plot_handle, p1];
                 end
@@ -463,21 +464,21 @@ classdef MTO_GUI < matlab.apps.AppBase
                 return;
             end
         end
-        
+
         function TupdateTasksFigure2D(app)
             % update selected problem tasks figure in Test module
             try
                 sample_number = app.SampleNumberEditField.Value;
                 x = 0:1/sample_number:1;
-                
+
                 legend_cell = {};
                 plot_handle = {};
-                
+
                 color = colororder;
                 for no = 1:app.TProblemTree.Children(1).NodeData.T
                     minrange = app.TProblemTree.Children(1).NodeData.Lb{no}(1:2);
                     maxrange = app.TProblemTree.Children(1).NodeData.Ub{no}(1:2);
-                    
+
                     [vars1, vars2] = meshgrid(x);
                     vars = [vars1(:), vars2(:)];
                     vars = (maxrange - minrange) .* vars + minrange;
@@ -490,14 +491,14 @@ classdef MTO_GUI < matlab.apps.AppBase
                         ff = (ff - fmin) / (fmax - fmin);
                     end
                     ff = reshape(ff, size(vars1));
-                    
+
                     p1 = mesh(app.TUIAxes, vars1, vars2, ff);
                     p1.FaceAlpha = 0.15;
                     p1.FaceColor = color(mod(no-1, size(color, 1))+1, :);
                     p1.EdgeColor = color(mod(no-1, size(color, 1))+1, :);
                     p1.LineStyle = '-';
                     hold(app.TUIAxes, 'on');
-                    
+
                     legend_cell = [legend_cell, ['T', num2str(no)]];
                     plot_handle = [plot_handle, p1];
                 end
@@ -511,42 +512,42 @@ classdef MTO_GUI < matlab.apps.AppBase
                 return;
             end
         end
-        
+
         function TupdateFeasibleRegion(app)
             % update selected problem tasks feasible region
-            
+
             try
                 if ~strcmp(app.TSpecialTypeDropDown.Value, 'Constrained')
                     return;
                 end
-                
+
                 sample_number = app.SampleNumberEditField.Value;
                 x = 0:1/sample_number:1;
-                
+
                 legend_cell = {};
                 plot_handle = {};
-                
+
                 color = colororder;
                 for no = 1:app.TProblemTree.Children(1).NodeData.T
                     minrange = app.TProblemTree.Children(1).NodeData.Lb{no}(1:2);
                     maxrange = app.TProblemTree.Children(1).NodeData.Ub{no}(1:2);
-                    
+
                     [vars1, vars2] = meshgrid(x);
                     vars1 = vars1(:);
                     vars2 = vars2(:);
                     vars = [vars1, vars2];
                     vars = (maxrange - minrange) .* vars + minrange;
                     [~, con] = app.TProblemTree.Children(1).NodeData.Fnc{no}(vars);
-                    
+
                     vars1(sum(con, 2) > 0) = [];
                     vars2(sum(con, 2) > 0) = [];
-                    
+
                     p1 = scatter(app.TUIAxes, vars1, vars2, 6, 'filled');
                     p1.MarkerFaceAlpha = 0.6;
                     p1.MarkerEdgeAlpha = 0.6;
                     p1.MarkerEdgeColor = color(mod(no-1, size(color, 1))+1, :);
                     hold(app.TUIAxes, 'on');
-                    
+
                     legend_cell = [legend_cell, ['T', num2str(no)]];
                     plot_handle = [plot_handle, p1];
                 end
@@ -557,22 +558,22 @@ classdef MTO_GUI < matlab.apps.AppBase
                 return;
             end
         end
-        
+
         function TupdateConvergence(app)
             % update figure axes
-            
+
             if isempty(app.TData)
                 return;
             end
-            
+
             cla(app.TUIAxes, 'reset');
-            
+
             if max(app.TData.Problems(1).M) == 1
                 result = Obj(app.TData);
             else
                 result = IGD(app.TData);
             end
-            
+
             xlim_min = inf;
             xlim_max = 0;
             tasks_name = {};
@@ -584,7 +585,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                 else
                     marker = app.DefaultMarkerList{j};
                 end
-                
+
                 y = squeeze(converge_y(j, 1, 1, :))';
                 x = squeeze(converge_x(j, 1, 1, :))';
                 p = plot(app.TUIAxes, x, y, ['-', marker]);
@@ -597,7 +598,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                 hold(app.TUIAxes, 'on');
                 tasks_name = [tasks_name, ['T', num2str(j)]];
             end
-            
+
             xlim(app.TUIAxes, [xlim_min, xlim_max]);
             if max(app.TData.Problems(1).M) == 1
                 ylabel(app.TUIAxes, 'Obj');
@@ -608,22 +609,22 @@ classdef MTO_GUI < matlab.apps.AppBase
             legend(app.TUIAxes, tasks_name, 'Location', 'best');
             grid(app.TUIAxes, 'on');
         end
-        
+
         function TupdateParetoFront(app)
             % update figure axes
-            
+
             if isempty(app.TData)
                 return;
             end
-            
+
             cla(app.TUIAxes, 'reset');
-            
+
             if max(app.TData.Problems(1).M) ~= 2 || min(app.TData.Problems(1).M) ~= 2
                 return;
             end
-            
+
             result = IGD(app.TData);
-            
+
             tasks_name = {};
             color_list = colororder;
             for j = 1:size(result.ParetoData.Obj, 1)
@@ -637,7 +638,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     s.MarkerFaceColor = color_list(j,:);
                     s.SizeData = 3;
                     hold(app.TUIAxes, 'on');
-                    
+
                     % draw population
                     x = squeeze(result.ParetoData.Obj{j, 1, 1}(:, 1));
                     y = squeeze(result.ParetoData.Obj{j, 1, 1}(:, 2));
@@ -650,13 +651,13 @@ classdef MTO_GUI < matlab.apps.AppBase
                 end
                 tasks_name = [tasks_name, ['T', num2str(j), ' Pareto Front'], ['T', num2str(j), ' Population']];
             end
-            
+
             xlabel(app.TUIAxes, '$f_1$', 'interpreter', 'latex');
             ylabel(app.TUIAxes, '$f_2$', 'interpreter', 'latex');
             legend(app.TUIAxes, tasks_name, 'Location', 'best');
             grid(app.TUIAxes, 'on');
         end
-        
+
         function Toutput(app, output_str)
             if strcmp(app.TOutputTextArea.Value, '')
                 app.TOutputTextArea.Value = output_str;
@@ -665,10 +666,10 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
             drawnow;
         end
-        
+
         function EresetTableAlgorithmDropDown(app, algo_cell)
             % reset table's algorithms drop down in Experiment module
-            
+
             algo_index = [];
             for algo = 1:length(algo_cell)
                 algo_index = [algo_index, algo];
@@ -677,10 +678,10 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EAlgorithmDropDown.ItemsData = algo_index;
             app.EAlgorithmDropDown.Value = 1;
         end
-        
+
         function EresetTable(app, row_name, column_name)
             % reset table in Experiment module
-            
+
             app.EUITable.Data = {};
             app.EUITable.RowName = row_name;
             app.EUITable.ColumnName = column_name;
@@ -689,10 +690,10 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.ETableTest = {};
             drawnow;
         end
-        
+
         function EreloadTableData(app)
             % reload table data in Experiment module
-            
+
             app.EresetFormat();
             switch app.EDataTypeDropDown.Value
                 case 'Reps'
@@ -742,29 +743,29 @@ classdef MTO_GUI < matlab.apps.AppBase
                     app.EupdateTableTest();
             end
         end
-        
+
         function EupdateTableReps(app)
             % update table reps per run
-            
+
             app.ETableData = app.ETableReps;
             app.EUITable.Data = sprintfc('%d', app.ETableReps);
             drawnow;
         end
-        
+
         function EupdateTableData(app)
             % update table data
-            
+
             if strcmp(app.EDataTypeDropDown.Value, 'Reps')
                 return;
             end
-            
+
             table_data = app.EResultTableData;
             show_type = app.EShowTypeDropDown.Value;
             format_str = app.EDataFormatEditField.Value;
             app.EUITable.Data = {};
             app.ETableData = [];
             app.ETableView = {};
-            
+
             switch show_type
                 case 'Mean' % Mean
                     data_mean = mean(table_data, 3, 'omitnan');
@@ -809,81 +810,201 @@ classdef MTO_GUI < matlab.apps.AppBase
             drawnow;
             app.EupdateTableHighlight();
         end
-        
+
         function EupdateTableTest(app)
             % update table test
-            
+
             if strcmp(app.EDataTypeDropDown.Value, 'Reps')
                 return;
             end
-            
+
             table_data = app.EResultTableData;
             if isempty(app.EData)
                 return;
             end
-            
+
             test_type = app.ETestTypeDropDown.Value;
             algo_selected = app.EAlgorithmDropDown.Value;
             app.ETableTest = {};
-            
+
             if strcmp(test_type, 'None')
                 app.EUITable.Data = app.ETableView;
-                app.EUITable.RowName{size(app.ETableData, 1)+1} = [];
+                app.EUITable.RowName{size(app.ETableData, 1) + 1} = [];
+                app.EUITable.RowName{size(app.ETableData, 1) + 2} = [];
                 drawnow;
                 return;
-            end
-            
-            app.EUITable.RowName{size(app.ETableData, 1)+1} = '+ / - / =';
-            
-            % Rank sum or Signed rank test
-            for algo = 1:size(app.ETableData, 2)
-                if algo == algo_selected
-                    app.ETableTest{size(app.ETableData, 1)+1, algo} = 'Base';
-                    continue;
-                end
-                sign_p = [0 0 0];
-                for row_i = 1:size(app.ETableData, 1)
-                    x1 = reshape(table_data(row_i, algo, :), 1, length(table_data(row_i, algo, :)));
-                    x2 = reshape(table_data(row_i, algo_selected, :), 1, length(table_data(row_i, algo_selected, :)));
-                    
-                    p = 0;
-                    x1(isnan(x1)) = 1e15; % big number replace NaN
-                    x2(isnan(x2)) = 1e15; % big number replace NaN
-                    if strcmp(test_type, 'Rank sum test')
-                        p = ranksum(x1, x2);
-                    elseif strcmp(test_type, 'Signed rank test')
-                        p = signrank(x1, x2);
+
+            elseif contains(test_type, 'Wilcoxon')
+                app.EUITable.RowName{size(app.ETableData, 1) + 1} = '+ / - / =';
+                app.EUITable.RowName{size(app.ETableData, 1) + 2} = [];
+
+                % Rank sum or Signed rank test
+                for algo = 1:size(app.ETableData, 2)
+                    if algo == algo_selected
+                        app.ETableTest{size(app.ETableData, 1) + 1, algo} = 'Base';
+                        continue;
                     end
-                    if p < 0.05
-                        data1 = app.ETableData(row_i, algo);
-                        data1(isnan(data1)) = Inf;
-                        data2 = app.ETableData(row_i, algo_selected);
-                        data2(isnan(data2)) = Inf;
-                        if (app.EMetricMin && data1 < data2) || (~app.EMetricMin && data1 > data2)
-                            app.ETableTest{row_i, algo} = '+';
-                            sign_p(1) = sign_p(1) + 1;
-                        elseif (app.EMetricMin && data1 > data2) || (~app.EMetricMin && data1 < data2)
-                            app.ETableTest{row_i, algo} = '-';
-                            sign_p(2) = sign_p(2) + 1;
+                    sign_p = [0 0 0];
+                    for row_i = 1:size(app.ETableData, 1)
+                        x1 = reshape(table_data(row_i, algo, :), 1, length(table_data(row_i, algo, :)));
+                        x2 = reshape(table_data(row_i, algo_selected, :), 1, length(table_data(row_i, algo_selected, :)));
+
+                        p = 0;
+                        x1(isnan(x1)) = 1e15; % big number replace NaN
+                        x2(isnan(x2)) = 1e15; % big number replace NaN
+                        if contains(test_type, 'Rank-sum')
+                            p = ranksum(x1, x2);
+                        elseif contains(test_type, 'Signed-rank')
+                            p = signrank(x1, x2);
+                        end
+                        if p < 0.05
+                            data1 = app.ETableData(row_i, algo);
+                            data1(isnan(data1)) = Inf;
+                            data2 = app.ETableData(row_i, algo_selected);
+                            data2(isnan(data2)) = Inf;
+                            if (app.EMetricMin && data1 < data2) || (~app.EMetricMin && data1 > data2)
+                                app.ETableTest{row_i, algo} = '+';
+                                sign_p(1) = sign_p(1) + 1;
+                            elseif (app.EMetricMin && data1 > data2) || (~app.EMetricMin && data1 < data2)
+                                app.ETableTest{row_i, algo} = '-';
+                                sign_p(2) = sign_p(2) + 1;
+                            else
+                                app.ETableTest{row_i, algo} = '=';
+                                sign_p(3) = sign_p(3) + 1;
+                            end
                         else
                             app.ETableTest{row_i, algo} = '=';
                             sign_p(3) = sign_p(3) + 1;
                         end
-                    else
-                        app.ETableTest{row_i, algo} = '=';
-                        sign_p(3) = sign_p(3) + 1;
+                    end
+                    app.ETableTest{size(app.ETableData, 1) + 1, algo} = sprintf('%d / %d / %d', sign_p);
+                end
+                % app.EUITable.Data = cellstr(strcat(app.ETableView, " ", app.ETableTest(1:end - 1, :)));
+                app.EUITable.Data = cellfun(@(v, t) ...
+                    [v, repmat(' ', 1, ~isempty(t)), t], app.ETableView, app.ETableTest(1:end-1, :), 'UniformOutput', false);
+                app.EUITable.Data(size(app.ETableData, 1) + 1, :) = app.ETableTest(size(app.ETableData, 1) + 1, :);
+                drawnow;
+            elseif contains(test_type, 'Friedman')
+                % Friedman test
+                if contains(test_type, '(mean)')
+                    if size(app.ETableData, 1) < 2
+                        app.EUITable.Data = app.ETableView;
+                        app.EUITable.RowName{size(app.ETableData, 1) + 1} = [];
+                        app.EUITable.RowName{size(app.ETableData, 1) + 2} = [];
+                        drawnow;
+                        return;
+                    end
+                    data = app.ETableData;
+                    data(isnan(data)) = 1e15;
+                    if ~app.EMetricMin
+                        data = -data;
+                    end
+                    [~, ~, stats] = friedman(data, 1, 'off');
+                elseif contains(test_type, '(reps)')
+                    if size(app.EResultTableData, 1) * size(app.EResultTableData, 3) < 2
+                        app.EUITable.Data = app.ETableView;
+                        app.EUITable.RowName{size(app.ETableData, 1) + 1} = [];
+                        app.EUITable.RowName{size(app.ETableData, 1) + 2} = [];
+                        drawnow;
+                        return;
+                    end
+                    data = app.EResultTableData;
+                    data(isnan(data)) = 1e15;
+                    if ~app.EMetricMin
+                        data = -data;
+                    end
+                    s = size(data);
+                    permuted_data = permute(data, [1 3 2]);
+                    data = reshape(permuted_data, [], s(2));
+                    [~, ~, stats] = friedman(data, 1, 'off');
+                end
+                app.EUITable.RowName{size(app.ETableData, 1) + 1} = 'Ranking';
+                app.EUITable.RowName{size(app.ETableData, 1) + 2} = 'p-value';
+                baseIdx = algo_selected;
+
+                % 获取平均秩次
+                ranks = stats.meanranks;
+                baseRank = ranks(baseIdx);
+
+                % 计算统计量所需参数
+                numAlgorithms = length(ranks);
+
+                numSamples = size(data, 1);
+
+                % 计算标准误差
+                SE = sqrt(numAlgorithms * (numAlgorithms + 1) / (6 * numSamples));
+
+                % 计算每个算法与基准算法的z值和p值
+                z_values = zeros(1, numAlgorithms);
+                p_values = zeros(1, numAlgorithms);
+
+                for i = 1:numAlgorithms
+                    if i ~= baseIdx
+                        z_values(i) = abs(ranks(i) - baseRank) / SE;
+                        % 双尾检验的p值
+                        p_values(i) = 2 * (1 - normcdf(z_values(i)));
                     end
                 end
-                app.ETableTest{size(app.ETableData, 1)+1, algo} = sprintf('%d / %d / %d', sign_p);
+
+                % 构建结果单元格
+                resultCell = {};
+                resultCell(1, :) = arrayfun(@(x) sprintf('%.2f', x), ranks, 'UniformOutput', false);
+                resultCell(2, :) = {''};
+                resultCell(2, baseIdx) = {'Base'};
+
+                for i = 1:numAlgorithms
+                    if i ~= baseIdx
+                        resultCell{2, i} = sprintf('%.4f', p_values(i));
+                        if p_values(i) < 0.05
+                            resultCell{2, i} = [resultCell{2, i} '*'];
+                        end
+                    end
+                end
+
+                % alpha = 0.05;
+                % % comp = multcompare(stats, 'CType', 'tukey-kramer', 'Alpha', alpha, "Display", "off");
+                % comp = multcompare(stats, 'CType', 'dunn-sidak', 'Alpha', alpha, "Display", "off");
+                % resultCell = {};
+                % resultCell(1, :) = arrayfun(@(x) sprintf('%.2f', x), stats.meanranks, 'UniformOutput', false);
+                %
+                % % 提取与基准算法相关的所有比较
+                % rowsWithBase = comp(:, 1) == baseIdx | comp(:, 2) == baseIdx;
+                % baseComparisons = comp(rowsWithBase, :);
+                %
+                % % 初始化p值结果为空单元格数组
+                % resultCell(2, :) = {''};
+                % resultCell(2, baseIdx) = {'Base'};
+                %
+                % % 对每个与基准算法的比较进行处理
+                % for i = 1:size(baseComparisons, 1)
+                %     if baseComparisons(i, 1) == baseIdx
+                %         otherAlg = baseComparisons(i, 2);
+                %     else
+                %         otherAlg = baseComparisons(i, 1);
+                %     end
+                %
+                %     % 使用第6列的p值 (这是multcompare输出的p值)
+                %     pValue = baseComparisons(i, 6);
+                %
+                %     % 存储p值，格式化为4位小数
+                %     resultCell{2, otherAlg} = sprintf('%.4f', pValue);
+                %
+                %     % 使用星号标记显著差异
+                %     if pValue < alpha
+                %         resultCell{2, otherAlg} = [resultCell{2, otherAlg} '*'];
+                %     end
+                % end
+
+                app.EUITable.Data = app.ETableView;
+                app.EUITable.Data(size(app.ETableData, 1)+1:size(app.ETableData, 1)+2, :) = resultCell;
+                drawnow;
             end
-            app.EUITable.Data = cellstr(strcat(app.ETableView, " ", app.ETableTest(1:end-1, :)));
-            app.EUITable.Data(size(app.ETableData, 1)+1,:) = app.ETableTest(size(app.ETableData, 1)+1,:);
-            drawnow;
+            app.EupdateTableHighlight();
         end
-        
+
         function EupdateTableHighlight(app)
             % update table highlight
-            
+
             % highlight best value
             app.EUITable.removeStyle();
             high_color = uistyle('BackgroundColor', [0.67,0.95,0.67]);
@@ -895,6 +1016,9 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
             best_matrix = [];
             worst_matrix = [];
+
+            app.EHighlightMatrix = zeros(size(app.EUITable.DisplayData));
+
             for row_i = 1:size(app.ETableData, 1)
                 if strcmp(app.EHighlightTypeDropDown.Value, 'None')
                     drawnow;
@@ -911,6 +1035,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     temp_idx = find(temp_data == best_data)';
                     row_idx = ones(length(temp_idx),1) .* row_i;
                     best_matrix = [best_matrix; [row_idx, temp_idx]];
+                    app.EHighlightMatrix(row_idx, temp_idx) = 1;
                 end
                 % worst
                 if strcmp(app.EHighlightTypeDropDown.Value, 'Best&Worst')
@@ -931,6 +1056,15 @@ classdef MTO_GUI < matlab.apps.AppBase
                     end
                 end
             end
+            if size(app.EUITable.Data, 1) == size(app.ETableData, 1) + 2
+                % Friedman test
+                temp_data = app.EUITable.Data(end-1,:);
+                temp_data = cell2mat(cellfun(@str2double, temp_data, 'UniformOutput', false));
+                best_data = min(temp_data);
+                temp_idx = find(temp_data == best_data)';
+                best_matrix = [best_matrix; [size(app.ETableData, 1) + 1, temp_idx]];
+                app.EHighlightMatrix(size(app.ETableData, 1) + 1, temp_idx) = 1;
+            end
             if ~isempty(worst_matrix)
                 app.EUITable.addStyle(low_color, 'cell', worst_matrix);
             end
@@ -940,10 +1074,10 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
             drawnow;
         end
-        
+
         function EresetFormat(app)
             format_str = app.EDataFormatEditField.Value;
-            
+
             switch app.EShowTypeDropDown.Value
                 case 'Mean'
                     format_str = '%.4e';
@@ -958,13 +1092,13 @@ classdef MTO_GUI < matlab.apps.AppBase
                 case 'Worst'
                     format_str = '%.4e';
             end
-            
+
             app.EDataFormatEditField.Value = format_str;
         end
-        
+
         function result = DcheckSplitData(app)
             % check and reproduce split data
-            
+
             data_selected = app.DDataTree.SelectedNodes;
             app.DDataFlag = [];
             data_num = 0;
@@ -982,14 +1116,14 @@ classdef MTO_GUI < matlab.apps.AppBase
                 result = false;
                 return;
             end
-            
+
             result = true;
         end
-        
+
         function result = DcheckMergeData(app)
             % check merge data num, pop size, iter num, eva num
             % select legal node
-            
+
             data_selected = app.DDataTree.SelectedNodes;
             app.DDataFlag = [];
             data_num = 0;
@@ -1009,10 +1143,10 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
             result = true;
         end
-        
+
         function result = DcheckMergeReps(app)
             % check merge reps
-            
+
             data_num = sum(app.DDataFlag);
             data_selected = app.DDataTree.SelectedNodes;
             data_selected = data_selected(app.DDataFlag == 1);
@@ -1027,10 +1161,10 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
             result = true;
         end
-        
+
         function result = DcheckMergeAlgorithms(app)
             % check merge algorithms
-            
+
             data_num = sum(app.DDataFlag);
             data_selected = app.DDataTree.SelectedNodes;
             data_selected = data_selected(app.DDataFlag == 1);
@@ -1071,10 +1205,10 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
             result = true;
         end
-        
+
         function result = DcheckMergeProblems(app)
             % check merge problems
-            
+
             data_num = sum(app.DDataFlag);
             data_selected = app.DDataTree.SelectedNodes;
             data_selected = data_selected(app.DDataFlag == 1);
@@ -1095,30 +1229,30 @@ classdef MTO_GUI < matlab.apps.AppBase
                             sum(data_selected(i).NodeData.Problems(prob).D ~= problems(prob).D) || ...
                             data_selected(i).NodeData.Problems(prob).N ~= problems(prob).N || ...
                             data_selected(i).NodeData.Problems(prob).maxFE ~= problems(prob).maxFE
-                    msg = 'The data''s problems not equal';
-                    uiconfirm(app.MTOPlatformMToPv17UIFigure, msg, 'error', 'Icon','warning');
-                    result = false;
-                    return;
+                        msg = 'The data''s problems not equal';
+                        uiconfirm(app.MTOPlatformMToPv17UIFigure, msg, 'error', 'Icon','warning');
+                        result = false;
+                        return;
                     end
                 end
             end
             result = true;
         end
-        
+
         function DputDataNode(app, name, MTOData)
             % add data to tree in Data process module
-            
+
             data_node = uitreenode(app.DDataTree);
             data_node.Text = name;
             data_node.NodeData = MTOData;
             data_node.ContextMenu = app.DDataContextMenu;
-            
+
             % child node
             reps_node = uitreenode(data_node);
             reps_node.Text = ['Reps: ', num2str(data_node.NodeData.Reps)];
             reps_node.NodeData = reps_node.Text;
             reps_node.ContextMenu = app.DDataContextMenu;
-            
+
             algo_node = uitreenode(data_node);
             algo_node.Text = 'Algorithms:';
             algo_node.NodeData = algo_node.Text;
@@ -1129,7 +1263,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                 algo_child_node.NodeData = algo_child_node.Text;
                 algo_child_node.ContextMenu = app.DDataContextMenu;
             end
-            
+
             prob_node = uitreenode(data_node);
             prob_node.Text = 'Problems:';
             prob_node.ContextMenu = app.DDataContextMenu;
@@ -1140,21 +1274,21 @@ classdef MTO_GUI < matlab.apps.AppBase
                 prob_child_node.ContextMenu = app.DDataContextMenu;
             end
         end
-        
+
         function DsaveData(app, MTOData)
             % save data to folder in Data process module
-            
+
             % check selected file name
             [file_name, dir_name] = uiputfile('MTOData.mat');
             figure(app.MTOPlatformMToPv17UIFigure);
             if file_name == 0
                 return;
             end
-            
+
             % save data
             save([dir_name, file_name], 'MTOData');
         end
-        
+
         function NewResults = DReduceResults(app, Results, N, M)
             results_num = size(Results(1, 1, 1).CV, 2);
             if results_num <= N
@@ -1178,7 +1312,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                 end
             end
         end
-        
+
         function NewResult = DReduceResultNum(app, Result, D, Dim, N)
             Gap = size(Result,D) ./ (N);
             if Dim == 3
@@ -1192,7 +1326,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     NewResult = Result(:,:,:,1:N);
                 end
             end
-            
+
             idx = 1;
             i = 1;
             while i <= size(Result,D)
@@ -1254,7 +1388,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Code that executes after component creation
         function startupFcn(app)
             % App startup function
-            
+
             app.TloadAlgoProb();
             app.TupdateAlgorithm();
             app.TupdateProblem();
@@ -1296,7 +1430,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Node text changed function: TAlgorithmTree
         function TAlgorithmTreeNodeTextChanged(app, event)
             % update algorithm obj parameter
-            
+
             node = event.Node;
             if isa(node.Parent, 'matlab.ui.container.Tree')
                 % this is algorithm name node
@@ -1340,7 +1474,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Node text changed function: TProblemTree
         function TProblemTreeNodeTextChanged(app, event)
             % update problem obj parameter
-            
+
             node = event.Node;
             if isa(node.Parent, 'matlab.ui.container.Tree')
                 % this is problem node
@@ -1363,7 +1497,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     node.Parent.Children(x).Text = parameter{x};
                 end
             end
-            
+
             app.TData = [];
             app.TupdateUIAxes();
         end
@@ -1376,12 +1510,12 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Button pushed function: TStartButton
         function TStartButtonPushed(app, event)
             % start this test
-            
+
             % off the start button
             app.TstartEnable(false);
             app.TStopFlag = false;
             drawnow;
-            
+
             % set data
             app.TData = [];
             app.TData.Reps = 1;
@@ -1403,7 +1537,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TData.Algorithms(1).Para = app.TAlgorithmTree.Children(1).NodeData.getParameter();
             app.TData.Results = [];
             app.TData.RunTimes = [];
-            
+
             % run
             app.TAlgorithmTree.Children(1).NodeData.Result_Num = 50;
             app.TAlgorithmTree.Children(1).NodeData.Save_Dec = 0;
@@ -1425,9 +1559,9 @@ classdef MTO_GUI < matlab.apps.AppBase
                 end
             end
             best_data = app.TAlgorithmTree.Children(1).NodeData.Best;
-            
+
             app.TupdateUIAxes();
-            
+
             % Output Best Data To Right Text
             app.Toutput(['Algo: ', app.TData.Algorithms(1).Name]);
             app.Toutput(['Prob: ', app.TData.Problems(1).Name]);
@@ -1444,14 +1578,14 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
             app.Toutput('-------------------------------------------');
             scroll(app.TOutputTextArea,"bottom");
-            
+
             app.TstartEnable(true);
         end
 
         % Button pushed function: TPauseButton
         function TPauseButtonPushed(app, event)
             % pause or resume
-            
+
             if strcmp(app.TPauseButton.Text, 'Pause')
                 app.TStopButton.Enable = 'off';
                 app.TPauseButton.Text = 'Resume';
@@ -1475,14 +1609,14 @@ classdef MTO_GUI < matlab.apps.AppBase
             set(axes2,'units','default','position','default');
             set(axes2,'OuterPosition',[0,0,1,1]);
 
-%            %% Unused
-%             % check selected file name
-%             filter = {'*.eps'; '*.pdf';'*.png';};
-%             [file_name, dir_name] = uiputfile(filter);
-%             if file_name == 0
-%                 return;
-%             end
-%             exportgraphics(app.TUIAxes, [dir_name, file_name], 'ContentType', "vector");
+            %            %% Unused
+            %             % check selected file name
+            %             filter = {'*.eps'; '*.pdf';'*.png';};
+            %             [file_name, dir_name] = uiputfile(filter);
+            %             if file_name == 0
+            %                 return;
+            %             end
+            %             exportgraphics(app.TUIAxes, [dir_name, file_name], 'ContentType', "vector");
         end
 
         % Value changed function: ETaskTypeDropDown
@@ -1503,7 +1637,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Context menu opening function: AlgorithmsContextMenu
         function AlgorithmsContextMenuOpening(app, event)
             % select all algorithms
-            
+
             if ~isempty(app.EAlgorithmsListBox.Items)
                 app.EAlgorithmsListBox.Value = app.EAlgorithmsListBox.ItemsData;
             end
@@ -1512,7 +1646,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Button pushed function: EAlgorithmsAddButton
         function EAlgorithmsAddButtonPushed(app, event)
             % add selected algorithms to selected algorithms tree
-            
+
             algo_selected = app.EAlgorithmsListBox.Value;
             for i= 1:length(algo_selected)
                 eval(['algo_obj = ', algo_selected{i}, '(''', strrep(algo_selected{i}, '_', '-'), ''');']);
@@ -1520,7 +1654,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                 algo_node.Text = algo_obj.Name;
                 algo_node.NodeData = algo_obj;
                 algo_node.ContextMenu = app.SelectedAlgoContextMenu;
-                
+
                 % child parameter node
                 parameter = algo_obj.getParameter();
                 for p = 1:2:length(parameter)
@@ -1533,7 +1667,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     para_value_node.ContextMenu = app.SelectedAlgoContextMenu;
                 end
             end
-            
+
             % collapse other node and expand this node
             all_node = algo_node.Parent.Children;
             for i = 1:length(all_node)
@@ -1545,7 +1679,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Menu selected function: ProblemsSelectAllMenu
         function EProblemsContextMenuOpening(app, event)
             % select all problems
-            
+
             if ~isempty(app.EProblemsListBox.Items)
                 app.EProblemsListBox.Value = app.EProblemsListBox.ItemsData;
             end
@@ -1554,7 +1688,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Button pushed function: EProblemsAddButton
         function EProblemsAddButtonPushed(app, event)
             % add selected problems to selected problems tree
-            
+
             prob_selected = app.EProblemsListBox.Value;
             for i= 1:length(prob_selected)
                 eval(['prob_obj = ', prob_selected{i}, '(''', strrep(prob_selected{i}, '_', '-'), ''');']);
@@ -1562,7 +1696,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                 prob_node.Text = prob_obj.Name;
                 prob_node.NodeData = prob_obj;
                 prob_node.ContextMenu = app.SelectedProbContextMenu;
-                
+
                 % child parameter node
                 parameter = prob_obj.getParameter();
                 for p = 1:2:length(parameter)
@@ -1575,7 +1709,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     para_value_node.ContextMenu = app.SelectedProbContextMenu;
                 end
             end
-            
+
             % collapse other node and expand this node
             all_node = prob_node.Parent.Children;
             for i = 1:length(all_node)
@@ -1587,7 +1721,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Button pushed function: EStartButton
         function EStartButtonPushed(app, event)
             % start this experiment
-            
+
             % check selected
             algo_num = length(app.EAlgorithmsTree.Children);
             prob_num = length(app.EProblemsTree.Children);
@@ -1603,12 +1737,12 @@ classdef MTO_GUI < matlab.apps.AppBase
                 app.EstartEnable(true);
                 return;
             end
-            
+
             % off the start button
             app.EstartEnable(false);
             app.EStopFlag = false;
             app.EDataTypeDropDown.Value = 'Reps';
-            
+
             % initialize data
             app.EData = [];
             MTOData.Reps = app.ERepsEditField.Value;
@@ -1635,7 +1769,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
             MTOData.Results = [];
             MTOData.RunTimes = [];
-            
+
             % reset table and convergence
             app.EloadMetric('none');
             app.ETableReps = zeros(prob_num, algo_num);
@@ -1725,7 +1859,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                                 end
                             end
                             t_temp(rep) = toc(tstart);
-                            
+
                             app.ETableReps(prob, algo) = rep;
                             app.EupdateTableReps();
                         end
@@ -1735,7 +1869,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     app.EupdateTableReps();
                     app.EcheckPauseStopStatus();
                 end
-                
+
                 % save temporary data
                 MTOData.Results = MakeGenEqual(Results);
                 MTOData.Problems = problems_temp(1:prob);
@@ -1743,7 +1877,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                 app.EData = MTOData;
             end
             % save('MTOData_Temp', 'MTOData');
-            
+
             m = [MTOData.Problems.M];
             if all(m==1)
                 app.EloadMetric('Single-objective')
@@ -1752,11 +1886,11 @@ classdef MTO_GUI < matlab.apps.AppBase
             else
                 app.EloadMetric({'none'})
             end
-            
+
             tEnd = toc(tStart);
             msg = ['All Use Time: ', char(duration([0, 0, tEnd]))];
             uiconfirm(app.MTOPlatformMToPv17UIFigure, msg, 'success', 'Icon', 'success');
-            
+
             app.EstartEnable(true);
             app.EreloadTableData();
         end
@@ -1764,7 +1898,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Button pushed function: EPauseButton
         function EPauseButtonPushed(app, event)
             % pause or resume this experiment
-            
+
             if strcmp(app.EPauseButton.Text, 'Pause')
                 app.EStopButton.Enable = 'off';
                 app.EPauseButton.Text = 'Resume';
@@ -1777,7 +1911,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Button pushed function: EStopButton
         function EStopButtonPushed(app, event)
             % stop this experiment
-            
+
             app.EstartEnable(true);
             app.EStopFlag = true;
         end
@@ -1785,7 +1919,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Context menu opening function: SelectedAlgoContextMenu
         function SelectedAlgoContextMenuOpening(app, event)
             % select all selected algorithms
-            
+
             if ~isempty(app.EAlgorithmsTree.Children)
                 app.EAlgorithmsTree.SelectedNodes = app.EAlgorithmsTree.Children;
             end
@@ -1794,13 +1928,13 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Button pushed function: EAlgorithmsDelButton
         function EAlgorithmsDelButtonPushed(app, event)
             % delete selected algorithms from algorithms tree
-            
+
             algo_selected = app.EAlgorithmsTree.SelectedNodes;
             if isempty(algo_selected)
                 msg = 'Select Algorithm node in tree first';
                 uiconfirm(app.MTOPlatformMToPv17UIFigure, msg, 'error', 'Icon','warning');
             end
-            
+
             for i = 1:length(algo_selected)
                 if isa(algo_selected(i).Parent, 'matlab.ui.container.Tree')
                     algo_selected(i).delete;
@@ -1811,7 +1945,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Node text changed function: EAlgorithmsTree
         function EAlgorithmsTreeNodeTextChanged(app, event)
             % update algorithm obj parameter
-            
+
             node = event.Node;
             if isa(node.Parent, 'matlab.ui.container.Tree')
                 % this is algorithm name node
@@ -1839,7 +1973,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Menu selected function: SelectedProbSelectAllMenu
         function ESelectedProbContextMenuOpening(app, event)
             % select all selected problems
-            
+
             if ~isempty(app.EProblemsTree.Children)
                 app.EProblemsTree.SelectedNodes = app.EProblemsTree.Children;
             end
@@ -1848,13 +1982,13 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Button pushed function: EProblemsDelButton
         function EProblemsDelButtonPushed(app, event)
             % delete selected problems from problems tree
-            
+
             prob_selected = app.EProblemsTree.SelectedNodes;
             if isempty(prob_selected)
                 msg = 'Select Problem node in tree first';
                 uiconfirm(app.MTOPlatformMToPv17UIFigure, msg, 'error', 'Icon','warning');
             end
-            
+
             for i = 1:length(prob_selected)
                 if isa(prob_selected(i).Parent, 'matlab.ui.container.Tree')
                     prob_selected(i).delete;
@@ -1865,7 +1999,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Node text changed function: EProblemsTree
         function EProblemsTreeNodeTextChanged(app, event)
             % update problem obj parameter
-            
+
             node = event.Node;
             if isa(node.Parent, 'matlab.ui.container.Tree')
                 % this is problem node
@@ -1893,21 +2027,21 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Button pushed function: ESaveDataButton
         function ESaveDataButtonPushed(app, event)
             % save data to folder
-            
+
             % check data
             if isempty(app.EData)
                 msg = 'Please run experiment first';
                 uiconfirm(app.MTOPlatformMToPv17UIFigure, msg, 'error', 'Icon','warning');
                 return;
             end
-            
+
             % check selected file name
             [file_name, dir_name] = uiputfile('MTOData.mat');
             figure(app.MTOPlatformMToPv17UIFigure);
             if file_name == 0
                 return;
             end
-            
+
             % save data
             MTOData = app.EData;
             save([dir_name, file_name], 'MTOData');
@@ -1949,16 +2083,16 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Button pushed function: ELoadDataButton
         function ELoadDataButtonPushed(app, event)
             % load data from file
-            
+
             % select mat file
             [file_name, pathname] = uigetfile('*.mat', 'Select Data', './');
             figure(app.MTOPlatformMToPv17UIFigure);
-            
+
             % check selected ile_name
             if file_name == 0
                 return;
             end
-            
+
             % load data to app's parameter
             load([pathname, file_name], 'MTOData');
             app.EData = MTOData;
@@ -1978,7 +2112,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Button pushed function: ESaveTableButton
         function ESaveTableButtonPushed(app, event)
             % save table
-            
+
             % check selected file name
             filter = {'*.tex'; '*.xlsx';'*.csv';};
             [file_name, dir_name] = uiputfile(filter);
@@ -1989,22 +2123,23 @@ classdef MTO_GUI < matlab.apps.AppBase
             if contains(file_name, 'tex')
                 hl = zeros(size(app.EUITable.Data));
                 if ~strcmp(app.EHighlightTypeDropDown.Value, 'None')
-                    for row_i = 1:size(app.ETableData, 1)
-                        if ~(sum(isnan(app.ETableData(row_i, :))) == size(app.ETableData, 2))
-                            temp_data = app.ETableData(row_i, :);
-                            if app.EMetricMin
-                                best_data = min(temp_data);
-                            else
-                                best_data = max(temp_data);
-                            end
-                            temp_idx = temp_data == best_data;
-                            x = 1:length(temp_idx);
-                            x = x(temp_idx);
-                            for xx = 1:length(x)
-                                hl(row_i, x(xx)) = 1;
-                            end
-                        end
-                    end
+                    % for row_i = 1:size(app.ETableData, 1)
+                    %     if ~(sum(isnan(app.ETableData(row_i, :))) == size(app.ETableData, 2))
+                    %         temp_data = app.ETableData(row_i, :);
+                    %         if app.EMetricMin
+                    %             best_data = min(temp_data);
+                    %         else
+                    %             best_data = max(temp_data);
+                    %         end
+                    %         temp_idx = temp_data == best_data;
+                    %         x = 1:length(temp_idx);
+                    %         x = x(temp_idx);
+                    %         for xx = 1:length(x)
+                    %             hl(row_i, x(xx)) = 1;
+                    %         end
+                    %     end
+                    % end
+                    hl = app.EHighlightMatrix;
                 end
                 input.data = app.EUITable.Data;
                 input.hl = hl;
@@ -2032,7 +2167,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Context menu opening function: DDataContextMenu
         function DDataContextMenuOpening(app, event)
             % select all data
-            
+
             if ~isempty(app.DDataTree.Children)
                 app.DDataTree.SelectedNodes = app.DDataTree.Children;
             end
@@ -2041,18 +2176,18 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Button pushed function: DLoadDataButton
         function DLoadDataButtonPushed(app, event)
             % load data from mat files
-            
+
             % select mat file
             file_name_list = {};
             [file_name, pathname] = uigetfile('*.mat', 'select the data mat', './', 'MultiSelect', 'on');
             figure(app.MTOPlatformMToPv17UIFigure);
             file_name_list = [file_name_list, file_name];
-            
+
             % check selected file_name
             if file_name_list{1} == 0
                 return;
             end
-            
+
             %load data mat files
             for i = 1:length(file_name_list)
                 load([pathname, file_name_list{i}], 'MTOData');
@@ -2064,7 +2199,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Button pushed function: DDeleteDataButton
         function DDeleteDataButtonPushed(app, event)
             % delete selected data from tree
-            
+
             data_selected = app.DDataTree.SelectedNodes;
             data_mark = [];
             data_num = 0;
@@ -2080,7 +2215,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                 msg = 'Select data node in tree first';
                 uiconfirm(app.MTOPlatformMToPv17UIFigure, msg, 'error', 'Icon','warning');
             end
-            
+
             data_selected = data_selected(data_mark == 1);
             for i = 1:length(data_selected)
                 data_selected(i).delete();
@@ -2091,7 +2226,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Button pushed function: DSaveDataButton
         function DSaveDataButtonPushed(app, event)
             % save selected data from tree
-            
+
             data_selected = app.DDataTree.SelectedNodes;
             data_mark = [];
             data_num = 0;
@@ -2107,7 +2242,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                 msg = 'Select data node in tree first';
                 uiconfirm(app.MTOPlatformMToPv17UIFigure, msg, 'error', 'Icon','warning');
             end
-            
+
             data_selected = data_selected(data_mark == 1);
             for i = 1:length(data_selected)
                 app.DsaveData(data_selected(i).NodeData);
@@ -2117,15 +2252,15 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Button pushed function: DRepsSplitButton
         function DRepsSplitButtonPushed(app, event)
             % split reps
-            
+
             if ~app.DcheckSplitData()
                 return;
             end
-            
+
             % split
             data_selected = app.DDataTree.SelectedNodes;
             data_selected = data_selected(app.DDataFlag == 1);
-            
+
             for i = 1:length(data_selected)
                 if data_selected(i).NodeData.Reps <= 1
                     msg = ['The ', data_selected(i).Text, '''s reps <= 1'];
@@ -2166,15 +2301,15 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Button pushed function: DAlgorithmsSplitButton
         function DAlgorithmsSplitButtonPushed(app, event)
             % split algorithms
-            
+
             if ~app.DcheckSplitData()
                 return;
             end
-            
+
             % split
             data_selected = app.DDataTree.SelectedNodes;
             data_selected = data_selected(app.DDataFlag == 1);
-            
+
             for i = 1:length(data_selected)
                 if length(data_selected(i).NodeData.Algorithms) <= 1
                     msg = ['The ', data_selected(i).Text, '''s algorithms <= 1'];
@@ -2216,15 +2351,15 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Button pushed function: DProblemsSplitButton
         function DProblemsSplitButtonPushed(app, event)
             % split algorithms
-            
+
             if ~app.DcheckSplitData()
                 return;
             end
-            
+
             % split
             data_selected = app.DDataTree.SelectedNodes;
             data_selected = data_selected(app.DDataFlag == 1);
-            
+
             for i = 1:length(data_selected)
                 if length(data_selected(i).NodeData.Problems) <= 1
                     msg = ['The ', data_selected(i).Text, '''s problems <= 1'];
@@ -2277,11 +2412,11 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Button pushed function: DRepsMergeButton
         function DRepsMergeButtonPushed(app, event)
             % merge reps, with same pop, evaluate, algorithms and problems
-            
+
             if ~app.DcheckMergeData() || ~app.DcheckMergeAlgorithms() || ~app.DcheckMergeProblems()
                 return;
             end
-            
+
             % merge
             data_selected = app.DDataTree.SelectedNodes;
             data_selected = data_selected(app.DDataFlag == 1);
@@ -2397,7 +2532,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             if isfield(MTOData,'Metrics')
                 MTOData.Metrics(del_metric_idx) = [];
             end
-            
+
             app.DputDataNode('data (Merge Reps)', MTOData);
             drawnow;
         end
@@ -2405,11 +2540,11 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Button pushed function: DAlgorithmsMergeButton
         function DAlgorithmsMergeButtonPushed(app, event)
             % merge algorithms, with same pop, evaluate, reps and problems
-            
+
             if ~app.DcheckMergeData() || ~app.DcheckMergeReps() || ~app.DcheckMergeProblems()
                 return;
             end
-            
+
             % merge
             data_selected = app.DDataTree.SelectedNodes;
             data_selected = data_selected(app.DDataFlag == 1);
@@ -2465,7 +2600,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % remove HV
             contains_HV = contains(metric_name, 'HV');
             metric_name = metric_name(~contains_HV);
-            
+
             del_metric_idx = [];
             for i = 1:length(metric_name)
                 flag = true;
@@ -2529,7 +2664,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             if isfield(MTOData,'Metrics')
                 MTOData.Metrics(del_metric_idx) = [];
             end
-            
+
             app.DputDataNode('data (Merge Algorithms)', MTOData);
             drawnow;
         end
@@ -2537,11 +2672,11 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Button pushed function: DProblemsMergeButton
         function DProblemsMergeButtonPushed(app, event)
             % merge problems, with same pop, evaluate, reps and algorithms
-            
+
             if ~app.DcheckMergeData() || ~app.DcheckMergeReps() || ~app.DcheckMergeAlgorithms()
                 return;
             end
-            
+
             % merge
             data_selected = app.DDataTree.SelectedNodes;
             data_selected = data_selected(app.DDataFlag == 1);
@@ -2656,7 +2791,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             if isfield(MTOData,'Metrics')
                 MTOData.Metrics(del_metric_idx) = [];
             end
-            
+
             app.DputDataNode('data (Merge Problems)', MTOData);
             drawnow;
         end
@@ -2664,7 +2799,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Node text changed function: DDataTree
         function DDataTreeNodeTextChanged(app, event)
             % update data text
-            
+
             node = event.Node;
             if isa(node.Parent, 'matlab.ui.container.Tree')
                 % this is data text node
@@ -2691,7 +2826,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             data_selected = sort(app.DDataTree.SelectedNodes, 'descend');
             data_selected = data_selected(data_mark == 1);
             selected = [];
-            
+
             % move up
             for i = 1:length(data_selected)
                 parent = data_selected(i).Parent;
@@ -2705,7 +2840,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     end
                 end
             end
-            
+
             % change selected node
             app.DDataTree.SelectedNodes = selected;
             drawnow;
@@ -2714,7 +2849,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Button pushed function: DDownButton
         function DDownButtonPushed(app, event)
             data_selected = app.DDataTree.SelectedNodes;
-            
+
             data_mark = [];
             data_num = 0;
             for i = 1:length(data_selected)
@@ -2728,7 +2863,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             data_selected = app.DDataTree.SelectedNodes;
             data_selected = sort(data_selected(data_mark == 1), 'descend');
             selected = [];
-            
+
             % move down
             for i = length(data_selected):-1:1
                 parent = data_selected(i).Parent;
@@ -2742,7 +2877,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     end
                 end
             end
-            
+
             % change selected node
             app.DDataTree.SelectedNodes = selected;
             drawnow;
@@ -2762,7 +2897,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                 uiconfirm(app.MTOPlatformMToPv17UIFigure, msg, 'warning', 'Icon', 'warning');
                 return;
             end
-            
+
             prob_list = unique(app.ETableSelected(:, 1));
             if length(prob_list) <= 15
                 weidth = 340;
@@ -2788,21 +2923,21 @@ classdef MTO_GUI < matlab.apps.AppBase
                 ax = axes(fig);
                 xlim_min = inf;
                 xlim_max = 0;
-                
+
                 for j = 1:length(algo_list)
                     if j > length(app.DefaultMarkerList)
                         marker = '';
                     else
                         marker = app.DefaultMarkerList{j};
                     end
-                    
+
                     y = squeeze(mean(app.EResultConvergeData.Y(prob_list(i), algo_list(j), :, :),3))';
                     if strcmp(app.EConvergeTypeDropDown.Value, 'Log')
                         set(ax, 'YScale', 'log');
                     elseif strcmp(app.EConvergeTypeDropDown.Value, 'Log Type2')
-                         y = log(y);
+                        y = log(y);
                     end
-                    
+
                     x = squeeze(mean(app.EResultConvergeData.X(prob_list(i), algo_list(j), :, :),3))';
                     p = plot(ax, x, y, ['-', marker]);
                     p.LineWidth = app.DefaultLineWidth;
@@ -2820,7 +2955,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     hold(ax, 'on');
                 end
                 set(ax,'OuterPosition',[0,0,1,1]);
-                
+
                 if xlim_min ~= xlim_max
                     xlim(ax, [xlim_min, xlim_max]);
                 end
@@ -2847,7 +2982,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                 uiconfirm(app.MTOPlatformMToPv17UIFigure, msg, 'warning', 'Icon', 'warning');
                 return;
             end
-            
+
             prob_list = unique(app.ETableSelected(:, 1));
             if length(prob_list) <= 15
                 weidth = 340;
@@ -2871,17 +3006,17 @@ classdef MTO_GUI < matlab.apps.AppBase
                     position = position + [10-position(1),height+80,0,0];
                 end
                 ax = axes(fig);
-                
+
                 M = size(app.EResultParetoData.Obj{prob_list(i),1,1}, 2);
                 if M == 2
                     if ~isempty(app.EResultParetoData.Optimum)
                         % draw optimum
                         x = squeeze(app.EResultParetoData.Optimum{prob_list(i)}(:, 1));
                         y = squeeze(app.EResultParetoData.Optimum{prob_list(i)}(:, 2));
-                        
+
                         [x, sortIdx] = sort(x);
                         y = y(sortIdx);
-                        
+
                         N = length(x);
                         sampleSize = 100;
                         if N > sampleSize * 3
@@ -2892,19 +3027,19 @@ classdef MTO_GUI < matlab.apps.AppBase
                             sampledX = x;
                             sampledY = y;
                         end
-                        
+
                         % Calculate threshold for Pareto front plot
                         distArray = sqrt(diff(sampledX).^2 + diff(sampledY).^2);
                         distMean = mean(distArray);
                         distStd  = std(distArray);
                         autoThreshold = distMean + 2 * distStd;
-                        
+
                         xPlot = [];
                         yPlot = [];
                         for idx = 1:length(sampledX)-1
                             xPlot(end+1) = sampledX(idx);
                             yPlot(end+1) = sampledY(idx);
-                            % if dist exceed threshold，insert [NaN, NaN]
+                            % if dist exceed thresholdinsert [NaN, NaN]
                             if distArray(idx) > autoThreshold
                                 xPlot(end+1) = NaN;
                                 yPlot(end+1) = NaN;
@@ -2916,14 +3051,14 @@ classdef MTO_GUI < matlab.apps.AppBase
                         p = plot(ax, xPlot, yPlot);
                         p.Color = [.2,.2,.2];
                         p.LineWidth = 2;
-%                         s = scatter(ax, x, y);
-%                         s.MarkerEdgeColor = 'none';
-%                         s.MarkerFaceAlpha = 0.65;
-%                         s.MarkerFaceColor = [.2,.2,.2];
-%                         s.SizeData = 3;
+                        %                         s = scatter(ax, x, y);
+                        %                         s.MarkerEdgeColor = 'none';
+                        %                         s.MarkerFaceAlpha = 0.65;
+                        %                         s.MarkerFaceColor = [.2,.2,.2];
+                        %                         s.SizeData = 3;
                         hold(ax, 'on');
                     end
-                    
+
                     % draw each algorithm
                     color_list = colororder;
                     for j = 1:length(algo_list)
@@ -2939,16 +3074,16 @@ classdef MTO_GUI < matlab.apps.AppBase
                         s.SizeData = 40;
                         hold(ax, 'on');
                     end
-                    
+
                     xlabel(ax, '$f_1$', 'interpreter', 'latex');
                     ylabel(ax, '$f_2$', 'interpreter', 'latex');
-                    
+
                     if ~isempty(app.EResultParetoData.Optimum)
                         legend(ax, ['Pareto Front'; strrep(app.EUITable.ColumnName(algo_list), '_', '\_')], 'Location', 'best');
                     else
                         legend(ax, strrep(app.EUITable.ColumnName(algo_list), '_', '\_'), 'Location', 'best');
                     end
-                    
+
                     title(ax, strrep(app.EUITable.RowName(prob_list(i)), '_', '\_'),'FontWeight','bold')
                     grid(ax, 'on');
                 elseif M == 3
@@ -2957,7 +3092,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                         x = squeeze(app.EResultParetoData.Optimum{prob_list(i)}(:, 1));
                         y = squeeze(app.EResultParetoData.Optimum{prob_list(i)}(:, 2));
                         z = squeeze(app.EResultParetoData.Optimum{prob_list(i)}(:, 3));
-                        
+
                         s = scatter3(ax, x, y, z);
                         s.MarkerEdgeColor = 'none';
                         s.MarkerFaceAlpha = 0.65;
@@ -2965,7 +3100,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                         s.SizeData = 3;
                         hold(ax, 'on');
                     end
-                    
+
                     % draw each algorithm
                     color_list = colororder;
                     for j = 1:length(algo_list)
@@ -2982,17 +3117,17 @@ classdef MTO_GUI < matlab.apps.AppBase
                         s.SizeData = 40;
                         hold(ax, 'on');
                     end
-                    
+
                     xlabel(ax, '$f_1$', 'interpreter', 'latex');
                     ylabel(ax, '$f_2$', 'interpreter', 'latex');
                     zlabel(ax, '$f_3$', 'interpreter', 'latex');
-                    
+
                     if ~isempty(app.EResultParetoData.Optimum)
                         legend(ax, ['Pareto Front'; strrep(app.EUITable.ColumnName(algo_list), '_', '\_')], 'Location', 'best');
                     else
                         legend(ax, strrep(app.EUITable.ColumnName(algo_list), '_', '\_'), 'Location', 'best');
                     end
-                    
+
                     title(ax, strrep(app.EUITable.RowName(prob_list(i)), '_', '\_'),'FontWeight','bold')
                     view(ax,[135 30]);
                     grid(ax, 'on');
@@ -3004,7 +3139,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                         metric_data = squeeze(app.EResultTableData(prob_list(i), j, :));
                         [~, rank] = sort(metric_data);
                         mid_idx = rank(ceil(end / 2));
-                        
+
                         data = app.EResultParetoData.Obj{prob_list(i), j, mid_idx};
                         min_data = min([data; min_data],[],1);
                         max_data = max([data; max_data],[],1);
@@ -3013,7 +3148,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                         metric_data = squeeze(app.EResultTableData(prob_list(i), algo_list(j), :));
                         [~, rank] = sort(metric_data);
                         mid_idx = rank(ceil(end / 2));
-                        
+
                         % Unify
                         data = app.EResultParetoData.Obj{prob_list(i), algo_list(j), mid_idx};
                         data = (data - min_data) ./ (max_data - min_data);
@@ -3024,7 +3159,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                             hold(ax, 'on');
                         end
                     end
-                    
+
                     ylim([0,1]);
                     xlabel(ax, 'Dimension', 'interpreter', 'latex');
                     ylabel(ax, 'Unified $f$', 'interpreter', 'latex');
@@ -3804,7 +3939,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create ETestTypeDropDown
             app.ETestTypeDropDown = uidropdown(app.EP3T1GridLayout);
-            app.ETestTypeDropDown.Items = {'None', 'Rank sum test', 'Signed rank test'};
+            app.ETestTypeDropDown.Items = {'None', 'Wilcoxon Rank-sum', 'Wilcoxon Signed-rank', 'Friedman (mean)', 'Friedman (reps)'};
             app.ETestTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @ETestTypeDropDownValueChanged, true);
             app.ETestTypeDropDown.Tooltip = {'Statistical Analysis'};
             app.ETestTypeDropDown.FontWeight = 'bold';
