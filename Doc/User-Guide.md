@@ -90,8 +90,10 @@
       - Worst
     - Statistical test
       - None
-      - Rank sum test
-      - Signed rank test
+      - Wilcoxon Rank-sum test
+      - Wilcoxon Signed-rank test
+      - Friedman test (mean value)
+      - Friedman test (all reps value)
     - Highlight data
       - None
       - Highlight best
