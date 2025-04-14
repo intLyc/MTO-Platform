@@ -218,8 +218,10 @@
       - Worst 最差目标值
     - 统计测试
       - None
-      - Rank sum test 秩和检验
-      - Signed rank test 符号秩检验
+      - Wilcoxon Rank-sum test / Wilcoxon 秩和检验
+      - Wilcoxon Signed-rank test / Wilcoxon 符号秩检验
+      - Friedman test (mean) / Friedman 检验 (均值作为观测)
+      - Friedman test (reps) / Friedman 检验 (独立运行数据作为观测)
     - 高亮数据
       - None 无高亮
       - Highlight best 高亮最优值
