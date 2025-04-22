@@ -1767,6 +1767,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                 MTOData.Algorithms(algo).Name = app.EAlgorithmsTree.Children(algo).NodeData.Name;
                 MTOData.Algorithms(algo).Para = app.EAlgorithmsTree.Children(algo).NodeData.getParameter();
             end
+            algorithms_temp = MTOData.Algorithms;
             MTOData.Results = [];
             MTOData.RunTimes = [];
 
@@ -1868,6 +1869,15 @@ classdef MTO_GUI < matlab.apps.AppBase
                     app.ETableReps(prob, algo) = MTOData.Reps;
                     app.EupdateTableReps();
                     app.EcheckPauseStopStatus();
+
+                    if prob == 1
+                        % save temporary data
+                        MTOData.Results = MakeGenEqual(Results);
+                        MTOData.Algorithms = algorithms_temp(1:algo);
+                        MTOData.Problems = problems_temp(1:prob);
+                        save('MTOData_Temp', 'MTOData');
+                        app.EData = MTOData;
+                    end
                 end
 
                 % save temporary data
