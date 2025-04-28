@@ -922,31 +922,31 @@ classdef MTO_GUI < matlab.apps.AppBase
                 app.EUITable.RowName{size(app.ETableData, 1) + 2} = 'p-value';
                 baseIdx = algo_selected;
 
-                % 获取平均秩次
+                % 
                 ranks = stats.meanranks;
                 baseRank = ranks(baseIdx);
 
-                % 计算统计量所需参数
+                % 
                 numAlgorithms = length(ranks);
 
                 numSamples = size(data, 1);
 
-                % 计算标准误差
+                % 
                 SE = sqrt(numAlgorithms * (numAlgorithms + 1) / (6 * numSamples));
 
-                % 计算每个算法与基准算法的z值和p值
+                % zp
                 z_values = zeros(1, numAlgorithms);
                 p_values = zeros(1, numAlgorithms);
 
                 for i = 1:numAlgorithms
                     if i ~= baseIdx
                         z_values(i) = abs(ranks(i) - baseRank) / SE;
-                        % 双尾检验的p值
+                        % p
                         p_values(i) = 2 * (1 - normcdf(z_values(i)));
                     end
                 end
 
-                % 构建结果单元格
+                % 
                 resultCell = {};
                 resultCell(1, :) = arrayfun(@(x) sprintf('%.2f', x), ranks, 'UniformOutput', false);
                 resultCell(2, :) = {''};
@@ -967,15 +967,15 @@ classdef MTO_GUI < matlab.apps.AppBase
                 % resultCell = {};
                 % resultCell(1, :) = arrayfun(@(x) sprintf('%.2f', x), stats.meanranks, 'UniformOutput', false);
                 %
-                % % 提取与基准算法相关的所有比较
+                % % 
                 % rowsWithBase = comp(:, 1) == baseIdx | comp(:, 2) == baseIdx;
                 % baseComparisons = comp(rowsWithBase, :);
                 %
-                % % 初始化p值结果为空单元格数组
+                % % p
                 % resultCell(2, :) = {''};
                 % resultCell(2, baseIdx) = {'Base'};
                 %
-                % % 对每个与基准算法的比较进行处理
+                % % 
                 % for i = 1:size(baseComparisons, 1)
                 %     if baseComparisons(i, 1) == baseIdx
                 %         otherAlg = baseComparisons(i, 2);
@@ -983,13 +983,13 @@ classdef MTO_GUI < matlab.apps.AppBase
                 %         otherAlg = baseComparisons(i, 1);
                 %     end
                 %
-                %     % 使用第6列的p值 (这是multcompare输出的p值)
+                %     % 6p (multcomparep)
                 %     pValue = baseComparisons(i, 6);
                 %
-                %     % 存储p值，格式化为4位小数
+                %     % p4
                 %     resultCell{2, otherAlg} = sprintf('%.4f', pValue);
                 %
-                %     % 使用星号标记显著差异
+                %     % 
                 %     if pValue < alpha
                 %         resultCell{2, otherAlg} = [resultCell{2, otherAlg} '*'];
                 %     end
@@ -2921,6 +2921,10 @@ classdef MTO_GUI < matlab.apps.AppBase
                 fontsize = 7;
             end
             position = [10,50,weidth,height];
+
+            % Check if we need to plot with ranges
+            plot_with_ranges = strcmp(app.EConvergeTypeDropDown.Value, 'Log Range') || strcmp(app.EConvergeTypeDropDown.Value, 'Norm Range');
+
             for i = 1:length(prob_list)
                 idx = find(app.ETableSelected(:, 1) == prob_list(i));
                 algo_list = app.ETableSelected(idx, 2);
@@ -2934,6 +2938,10 @@ classdef MTO_GUI < matlab.apps.AppBase
                 xlim_min = inf;
                 xlim_max = 0;
 
+                % Prepare legend entries
+                legend_entries = cell(0);
+                plot_handles = [];
+
                 for j = 1:length(algo_list)
                     if j > length(app.DefaultMarkerList)
                         marker = '';
@@ -2941,25 +2949,56 @@ classdef MTO_GUI < matlab.apps.AppBase
                         marker = app.DefaultMarkerList{j};
                     end
 
-                    y = squeeze(mean(app.EResultConvergeData.Y(prob_list(i), algo_list(j), :, :),3))';
-                    if strcmp(app.EConvergeTypeDropDown.Value, 'Log')
+                    % Get mean values
+                    y_mean = squeeze(mean(app.EResultConvergeData.Y(prob_list(i), algo_list(j), :, :),3))';
+                    x = squeeze(mean(app.EResultConvergeData.X(prob_list(i), algo_list(j), :, :),3))';
+                    
+                    % Set scale type
+                    if strcmp(app.EConvergeTypeDropDown.Value, 'Log') || strcmp(app.EConvergeTypeDropDown.Value, 'Log Range')
                         set(ax, 'YScale', 'log');
                     elseif strcmp(app.EConvergeTypeDropDown.Value, 'Log Type2')
-                        y = log(y);
+                        y_mean = log(y_mean);
                     end
 
-                    x = squeeze(mean(app.EResultConvergeData.X(prob_list(i), algo_list(j), :, :),3))';
-                    p = plot(ax, x, y, ['-', marker]);
+                    % Plot main line
+                    p = plot(ax, x, y_mean, ['-', marker]);
                     p.LineWidth = app.DefaultLineWidth;
-                    indices = round(length(y)/min(app.DefaultMarkerNum,length(y)));
+
+                    % Set marker positions
+                    indices = round(length(y_mean)/min(app.DefaultMarkerNum,length(y_mean)));
                     if length(x) <= 3
-                        p.MarkerIndices = indices:indices:length(y);
-                    elseif length(y) < app.DefaultMarkerNum
-                        p.MarkerIndices = indices+1:indices:length(y)-round(indices/2);
+                        p.MarkerIndices = indices:indices:length(y_mean);
+                    elseif length(y_mean) < app.DefaultMarkerNum
+                        p.MarkerIndices = indices+1:indices:length(y_mean)-round(indices/2);
                     else
-                        p.MarkerIndices = indices:indices:length(y)-round(indices/2);
+                        p.MarkerIndices = indices:indices:length(y_mean)-round(indices/2);
                     end
                     p.MarkerSize = app.DefaultMarkerSize;
+
+                    % Add to legend entries - ensure it's a string
+                    algo_name = app.EUITable.ColumnName{algo_list(j)}; % Use {} to get content
+                    legend_entries{end+1} = strrep(algo_name, '_', '\_');
+                    plot_handles(end+1) = p;
+                    
+                    % Plot ranges if needed
+                    if plot_with_ranges
+                        % Calculate min and max
+                        y_min = squeeze(min(app.EResultConvergeData.Y(prob_list(i), algo_list(j), :, :), [], 3));
+                        y_max = squeeze(max(app.EResultConvergeData.Y(prob_list(i), algo_list(j), :, :), [], 3));
+                        
+                        % Plot range area
+                        hold(ax, 'on');
+                        fill_color = p.Color;
+                        fill_alpha = 0.2;
+                        h = fill(ax, [x'; flipud(x')], [y_min; flipud(y_max)], fill_color, ...
+                            'FaceAlpha', fill_alpha, 'EdgeColor', 'none', 'DisplayName', '');
+                        
+                        % Make sure the fill is behind the main line
+                        uistack(h, 'bottom');
+                        
+                        h.Annotation.LegendInformation.IconDisplayStyle = 'off';
+                    end
+
                     xlim_max = max(xlim_max, x(end));
                     xlim_min = min(xlim_min, x(1));
                     hold(ax, 'on');
@@ -2969,13 +3008,17 @@ classdef MTO_GUI < matlab.apps.AppBase
                 if xlim_min ~= xlim_max
                     xlim(ax, [xlim_min, xlim_max]);
                 end
+                % Set labels
                 if strcmp(app.EConvergeTypeDropDown.Value, 'Log Type2')
                     ylabel(ax, ['Log - ', strrep(app.EDataTypeDropDown.Value, '_', ' ')]);
                 else
                     ylabel(ax, strrep(app.EDataTypeDropDown.Value, '_', ' '));
                 end
                 xlabel(ax, 'Evaluation');
-                legend(ax, strrep(app.EUITable.ColumnName(algo_list), '_', '\_'), 'Location', 'best');
+
+                % Set legend
+                legend(ax, plot_handles, legend_entries, 'Location', 'best');
+                
                 title(ax, strrep(app.EUITable.RowName(prob_list(i)), '_', '\_'),'FontWeight','bold')
                 grid(ax, 'on');
                 set(ax,'FontWeight','bold'); set(get(fig,'Children'),'FontSize',fontsize);
@@ -4043,7 +4086,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create EConvergeTypeDropDown
             app.EConvergeTypeDropDown = uidropdown(app.EP3T1GridLayout);
-            app.EConvergeTypeDropDown.Items = {'Log', 'Log Type2', 'Normal'};
+            app.EConvergeTypeDropDown.Items = {'Log', 'Log Type2', 'Log Range', 'Normal', 'Norm Range'};
             app.EConvergeTypeDropDown.Tooltip = {'Y-axis Show Type of Convergence Plot'};
             app.EConvergeTypeDropDown.FontWeight = 'bold';
             app.EConvergeTypeDropDown.BackgroundColor = [1 1 1];
