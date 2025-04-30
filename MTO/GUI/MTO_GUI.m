@@ -1279,7 +1279,11 @@ classdef MTO_GUI < matlab.apps.AppBase
             % save data to folder in Data process module
 
             % check selected file name
+            app.MTOPlatformMToPv17UIFigure.Visible = 'off';
             [file_name, dir_name] = uiputfile('MTOData.mat');
+            app.MTOPlatformMToPv17UIFigure.Visible = 'on';
+            figure(app.MTOPlatformMToPv17UIFigure);
+            drawnow;
             figure(app.MTOPlatformMToPv17UIFigure);
             if file_name == 0
                 return;
@@ -1608,15 +1612,6 @@ classdef MTO_GUI < matlab.apps.AppBase
             axes2 = copyobj(app.TUIAxes, f);
             set(axes2,'units','default','position','default');
             set(axes2,'OuterPosition',[0,0,1,1]);
-
-            %            %% Unused
-            %             % check selected file name
-            %             filter = {'*.eps'; '*.pdf';'*.png';};
-            %             [file_name, dir_name] = uiputfile(filter);
-            %             if file_name == 0
-            %                 return;
-            %             end
-            %             exportgraphics(app.TUIAxes, [dir_name, file_name], 'ContentType', "vector");
         end
 
         % Value changed function: ETaskTypeDropDown
@@ -2046,8 +2041,12 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
 
             % check selected file name
+            app.MTOPlatformMToPv17UIFigure.Visible = 'off';
             [file_name, dir_name] = uiputfile('MTOData.mat');
+            app.MTOPlatformMToPv17UIFigure.Visible = 'on';
             figure(app.MTOPlatformMToPv17UIFigure);
+            drawnow;
+            
             if file_name == 0
                 return;
             end
@@ -2095,8 +2094,11 @@ classdef MTO_GUI < matlab.apps.AppBase
             % load data from file
 
             % select mat file
+            app.MTOPlatformMToPv17UIFigure.Visible = 'off';
             [file_name, pathname] = uigetfile('*.mat', 'Select Data', './');
+            app.MTOPlatformMToPv17UIFigure.Visible = 'on';
             figure(app.MTOPlatformMToPv17UIFigure);
+            drawnow;
 
             % check selected ile_name
             if file_name == 0
@@ -2125,7 +2127,12 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % check selected file name
             filter = {'*.tex'; '*.xlsx';'*.csv';};
+            app.MTOPlatformMToPv17UIFigure.Visible = 'off';
             [file_name, dir_name] = uiputfile(filter);
+            app.MTOPlatformMToPv17UIFigure.Visible = 'on';
+            figure(app.MTOPlatformMToPv17UIFigure);
+            drawnow;
+            
             % figure(app.MTOPlatformMToPv17UIFigure);
             if file_name == 0
                 return;
@@ -2133,22 +2140,6 @@ classdef MTO_GUI < matlab.apps.AppBase
             if contains(file_name, 'tex')
                 hl = zeros(size(app.EUITable.Data));
                 if ~strcmp(app.EHighlightTypeDropDown.Value, 'None')
-                    % for row_i = 1:size(app.ETableData, 1)
-                    %     if ~(sum(isnan(app.ETableData(row_i, :))) == size(app.ETableData, 2))
-                    %         temp_data = app.ETableData(row_i, :);
-                    %         if app.EMetricMin
-                    %             best_data = min(temp_data);
-                    %         else
-                    %             best_data = max(temp_data);
-                    %         end
-                    %         temp_idx = temp_data == best_data;
-                    %         x = 1:length(temp_idx);
-                    %         x = x(temp_idx);
-                    %         for xx = 1:length(x)
-                    %             hl(row_i, x(xx)) = 1;
-                    %         end
-                    %     end
-                    % end
                     hl = app.EHighlightMatrix;
                 end
                 input.data = app.EUITable.Data;
@@ -2189,8 +2180,12 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % select mat file
             file_name_list = {};
+            app.MTOPlatformMToPv17UIFigure.Visible = 'off';
             [file_name, pathname] = uigetfile('*.mat', 'select the data mat', './', 'MultiSelect', 'on');
+            app.MTOPlatformMToPv17UIFigure.Visible = 'on';
             figure(app.MTOPlatformMToPv17UIFigure);
+            drawnow;
+            
             file_name_list = [file_name_list, file_name];
 
             % check selected file_name
