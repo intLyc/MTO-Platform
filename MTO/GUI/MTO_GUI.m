@@ -3764,14 +3764,14 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.ERunTimesEditFieldLabel.FontWeight = 'bold';
             app.ERunTimesEditFieldLabel.Layout.Row = 1;
             app.ERunTimesEditFieldLabel.Layout.Column = 1;
-            app.ERunTimesEditFieldLabel.Text = 'No. of Runs';
+            app.ERunTimesEditFieldLabel.Text = '# Indep. Reps';
 
             % Create EResultsNumEditFieldLabel
             app.EResultsNumEditFieldLabel = uilabel(app.GridLayout5);
             app.EResultsNumEditFieldLabel.FontWeight = 'bold';
             app.EResultsNumEditFieldLabel.Layout.Row = 2;
             app.EResultsNumEditFieldLabel.Layout.Column = 1;
-            app.EResultsNumEditFieldLabel.Text = 'No. of Results';
+            app.EResultsNumEditFieldLabel.Text = '# Iter. Results';
 
             % Create SaveDecLabel
             app.SaveDecLabel = uilabel(app.EP1GridLayout);
