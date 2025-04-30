@@ -12,7 +12,9 @@ function Result = gen2eva(Result_Gen, FE_Gen, maxGen)
 %--------------------------------------------------------------------------
 
 if size(Result_Gen, 2) <= maxGen
-    maxGen = size(Result_Gen, 2);
+    repeat_factor = ceil((maxGen + 1) / size(Result_Gen, 2));
+    Result_Gen = repelem(Result_Gen, 1, repeat_factor);
+    FE_Gen = repelem(FE_Gen, 1, repeat_factor);
 end
 
 Result = Result_Gen(:, 1:maxGen);
