@@ -922,31 +922,22 @@ classdef MTO_GUI < matlab.apps.AppBase
                 app.EUITable.RowName{size(app.ETableData, 1) + 2} = 'p-value';
                 baseIdx = algo_selected;
 
-                % 
                 ranks = stats.meanranks;
                 baseRank = ranks(baseIdx);
-
-                % 
                 numAlgorithms = length(ranks);
-
                 numSamples = size(data, 1);
-
-                % 
                 SE = sqrt(numAlgorithms * (numAlgorithms + 1) / (6 * numSamples));
 
-                % zp
                 z_values = zeros(1, numAlgorithms);
                 p_values = zeros(1, numAlgorithms);
 
                 for i = 1:numAlgorithms
                     if i ~= baseIdx
                         z_values(i) = abs(ranks(i) - baseRank) / SE;
-                        % p
                         p_values(i) = 2 * (1 - normcdf(z_values(i)));
                     end
                 end
 
-                % 
                 resultCell = {};
                 resultCell(1, :) = arrayfun(@(x) sprintf('%.2f', x), ranks, 'UniformOutput', false);
                 resultCell(2, :) = {''};
@@ -960,40 +951,6 @@ classdef MTO_GUI < matlab.apps.AppBase
                         end
                     end
                 end
-
-                % alpha = 0.05;
-                % % comp = multcompare(stats, 'CType', 'tukey-kramer', 'Alpha', alpha, "Display", "off");
-                % comp = multcompare(stats, 'CType', 'dunn-sidak', 'Alpha', alpha, "Display", "off");
-                % resultCell = {};
-                % resultCell(1, :) = arrayfun(@(x) sprintf('%.2f', x), stats.meanranks, 'UniformOutput', false);
-                %
-                % % 
-                % rowsWithBase = comp(:, 1) == baseIdx | comp(:, 2) == baseIdx;
-                % baseComparisons = comp(rowsWithBase, :);
-                %
-                % % p
-                % resultCell(2, :) = {''};
-                % resultCell(2, baseIdx) = {'Base'};
-                %
-                % % 
-                % for i = 1:size(baseComparisons, 1)
-                %     if baseComparisons(i, 1) == baseIdx
-                %         otherAlg = baseComparisons(i, 2);
-                %     else
-                %         otherAlg = baseComparisons(i, 1);
-                %     end
-                %
-                %     % 6p (multcomparep)
-                %     pValue = baseComparisons(i, 6);
-                %
-                %     % p4
-                %     resultCell{2, otherAlg} = sprintf('%.4f', pValue);
-                %
-                %     % 
-                %     if pValue < alpha
-                %         resultCell{2, otherAlg} = [resultCell{2, otherAlg} '*'];
-                %     end
-                % end
 
                 app.EUITable.Data = app.ETableView;
                 app.EUITable.Data(size(app.ETableData, 1)+1:size(app.ETableData, 1)+2, :) = resultCell;
@@ -1062,7 +1019,8 @@ classdef MTO_GUI < matlab.apps.AppBase
                 temp_data = cell2mat(cellfun(@str2double, temp_data, 'UniformOutput', false));
                 best_data = min(temp_data);
                 temp_idx = find(temp_data == best_data)';
-                best_matrix = [best_matrix; [size(app.ETableData, 1) + 1, temp_idx]];
+                temp_x = repmat(size(app.ETableData, 1) + 1, length(temp_idx), 1);
+                best_matrix = [best_matrix; [temp_x, temp_idx]];
                 app.EHighlightMatrix(size(app.ETableData, 1) + 1, temp_idx) = 1;
             end
             if ~isempty(worst_matrix)

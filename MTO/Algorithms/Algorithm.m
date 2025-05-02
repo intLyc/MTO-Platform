@@ -66,7 +66,7 @@ methods
         if Algo.Save_Dec
             for t = 1:size(Result, 1)
                 for idx = 1:size(Result, 2)
-                    Result(t, idx).Dec = Prob.Lb{t} + ...
+                    Result(t, idx).Dec(:, 1:Prob.D(t)) = Prob.Lb{t} + ...
                         Result(t, idx).Dec(:, 1:Prob.D(t)) .* (Prob.Ub{t} - Prob.Lb{t});
                     Result(t, idx).Dec(:, Prob.D(t) + 1:max(Prob.D)) = NaN;
                 end
@@ -150,9 +150,12 @@ methods
             BestTemp.Dec = Pop(idx).Dec;
             BestTemp.Obj = Pop(idx).Obj;
             BestTemp.CV = Pop(idx).CV;
-            BestTemp = [BestTemp, Algo.Best{t}];
-            [~, ~, idx] = min_FP([BestTemp.Obj], [BestTemp.CV]);
-            Algo.Best{t} = BestTemp(idx);
+            if Prob.GlobalBest
+                BestTemp = [BestTemp, Algo.Best{t}];
+                [~, ~, idx] = min_FP([BestTemp.Obj], [BestTemp.CV]);
+                BestTemp = BestTemp(idx);
+            end
+            Algo.Best{t} = BestTemp;
             % Set Best Update Flag
             if idx == 1
                 Flag = true;
