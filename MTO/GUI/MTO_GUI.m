@@ -850,8 +850,13 @@ classdef MTO_GUI < matlab.apps.AppBase
                         x2 = reshape(table_data(row_i, algo_selected, :), 1, length(table_data(row_i, algo_selected, :)));
 
                         p = 0;
-                        x1(isnan(x1)) = 1e15; % big number replace NaN
-                        x2(isnan(x2)) = 1e15; % big number replace NaN
+                        if app.EMetricMin
+                            x1(isnan(x1)) = 1e15; % big number replace NaN
+                            x2(isnan(x2)) = 1e15; % big number replace NaN
+                        else
+                            x1(isnan(x1)) = -1e15; % big number replace NaN
+                            x2(isnan(x2)) = -1e15; % big number replace NaN
+                        end
                         if contains(test_type, 'Rank-sum')
                             p = ranksum(x1, x2);
                         elseif contains(test_type, 'Signed-rank')
@@ -859,9 +864,14 @@ classdef MTO_GUI < matlab.apps.AppBase
                         end
                         if p < 0.05
                             data1 = app.ETableData(row_i, algo);
-                            data1(isnan(data1)) = Inf;
                             data2 = app.ETableData(row_i, algo_selected);
-                            data2(isnan(data2)) = Inf;
+                            if app.EMetricMin
+                                data1(isnan(data1)) = Inf;
+                                data2(isnan(data2)) = Inf;
+                            else
+                                data1(isnan(data1)) = -Inf;
+                                data2(isnan(data2)) = -Inf;
+                            end
                             if (app.EMetricMin && data1 < data2) || (~app.EMetricMin && data1 > data2)
                                 app.ETableTest{row_i, algo} = '+';
                                 sign_p(1) = sign_p(1) + 1;
