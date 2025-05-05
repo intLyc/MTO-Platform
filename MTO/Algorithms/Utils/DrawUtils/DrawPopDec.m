@@ -41,7 +41,7 @@ methods
                 obj.hplot{t}{i}.LineWidth = 1;
                 hold(obj.tiled.Children(end - t + 1), 'on');
             end
-            xlim(obj.tiled.Children(end - t + 1), [1, max(Prob.D)]);
+            xlim(obj.tiled.Children(end - t + 1), [1, Prob.D(t)]);
             ylim(obj.tiled.Children(end - t + 1), [0, 1]);
             title(obj.tiled.Children(end - t + 1), ['Task ', num2str(t)]);
             grid(obj.tiled.Children(end - t + 1), 'on');
