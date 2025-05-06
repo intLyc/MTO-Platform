@@ -1752,11 +1752,10 @@ classdef MTO_GUI < matlab.apps.AppBase
                     algo_obj = app.EAlgorithmsTree.Children(algo).NodeData;
                     algo_obj.Result_Num = app.EResultsNumEditField.Value;
                     algo_obj.Save_Dec = app.ESaveDecDropDown.Value;
+                    algo_obj.Check_Status_Fn = @emptyFn;
                     prob_obj = app.EProblemsTree.Children(prob).NodeData;
                     app.EcheckPauseStopStatus();
                     if app.EParallelDropDown.Value == 1
-                        algo_obj.reset();
-                        algo_obj.Check_Status_Fn = @emptyFn;
                         future(1:MTOData.Reps) = parallel.FevalFuture;
                         for rep = 1:MTOData.Reps
                             future(rep) = parfeval(@parRun,1,algo_obj,prob_obj);
@@ -1801,6 +1800,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                         t_temp = [];
                         for rep = 1:MTOData.Reps
                             tstart = tic;
+                            prob_obj.setTasks();
                             algo_obj.reset();
                             algo_obj.Check_Status_Fn = @app.EcheckPauseStopStatus;
                             algo_obj.run(prob_obj);

@@ -78,6 +78,7 @@ for prob = 1:length(ProbObject)
             par_tool = Par(Reps);
             parfor rep = 1:Reps
                 Par.tic
+                prob_obj.setTasks()
                 algo_obj.reset();
                 algo_obj.run(ProbObject{prob});
                 tmp = algo_obj.getResult(ProbObject{prob});
@@ -104,6 +105,7 @@ for prob = 1:length(ProbObject)
             t_temp = [];
             for rep = 1:Reps
                 tstart = tic;
+                prob_obj.setTasks()
                 algo_obj.reset();
                 algo_obj.run(ProbObject{prob});
                 tmp = algo_obj.getResult(ProbObject{prob});
