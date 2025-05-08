@@ -1,4 +1,4 @@
-function MTO_CMD(AlgoCell, ProbCell, Reps, Par_Flag, Results_Num, Save_Dec, Save_Name)
+function MTOData = MTO_CMD(AlgoCell, ProbCell, Reps, Par_Flag, Results_Num, Save_Dec, Save_Name)
 %% MTO Platform run with command line, save data in mat file
 % Input: algorithms char cell, problems char cell, no. of runs, parallel flag, no. of results, save decision variables flag, save file name
 % Output: none

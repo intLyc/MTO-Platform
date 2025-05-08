@@ -1,7 +1,7 @@
-function mto(varargin)
+function MTOData = mto(varargin)
 %% MTO Platform
 % GUI: 'mto'
-% Command line: 'mto(Algo_Cell, Prob_Cell, Reps, Par_flag, Results_Num, Save_Dec, Save_Name)'
+% Command line: 'MTOData = mto(Algo_Cell, Prob_Cell, Reps, Par_flag, Results_Num, Save_Dec, Save_Name)'
 
 %------------------------------- Copyright --------------------------------
 % Copyright (c) Yanchi Li. You are free to use the MToP for research
@@ -44,6 +44,6 @@ else
     if length(varargin) >= 7
         Save_Name = varargin{7};
     end
-    MTO_CMD(Algo_Cell, Prob_Cell, Reps, Par_flag, Results_Num, Save_Dec, Save_Name);
+    MTOData = MTO_CMD(Algo_Cell, Prob_Cell, Reps, Par_flag, Results_Num, Save_Dec, Save_Name);
 end
 end
