@@ -128,7 +128,11 @@ methods
 
     function [Pop, Flag] = Evaluation(Algo, Pop, Prob, t)
         lenPop = length(Pop);
-        PopDec = max(0, min(1, Pop.Decs));
+        if Prob.Bounded
+            PopDec = max(0, min(1, Pop.Decs));
+        else
+            PopDec = Pop.Decs;
+        end
         x = repmat(Prob.Ub{t} - Prob.Lb{t}, lenPop, 1) .* ...
             PopDec(:, 1:Prob.D(t)) + repmat(Prob.Lb{t}, lenPop, 1);
         [Objs, Cons] = Prob.Fnc{t}(x);

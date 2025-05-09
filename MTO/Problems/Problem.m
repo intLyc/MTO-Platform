@@ -26,6 +26,7 @@ properties
     maxFE % (integer) Maximum evaluations
 
     GlobalBest = true % (boolean) Use global best solution
+    Bounded = true % (boolean) Use bounded solution
 end
 
 methods
