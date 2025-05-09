@@ -51,7 +51,8 @@ row = 1;
 for prob = 1:length(MTOData.Problems)
     number_temp = zeros(1, length(MTOData.Algorithms));
     for task = 1:MTOData.Problems(prob).T
-        [~, algo] = min(obj_matrix(row, :));
+        min_obj = min(obj_matrix(row, :));
+        algo = find(obj_matrix(row, :) == min_obj);
         number_temp(algo) = number_temp(algo) + 1;
         row = row + 1;
     end
