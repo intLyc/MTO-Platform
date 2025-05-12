@@ -67,10 +67,10 @@ methods
                 end
 
                 % ---- Evaluate fitness ----
-                meanSample = Individual();
-                meanSample.Dec = x{t}';
-                Algo.Evaluation(meanSample, Prob, t);
-                sample{t} = Algo.Evaluation(sample{t}, Prob, t);
+                mean_sample = Individual();
+                mean_sample.Dec = x{t}'; % mean decision variable
+                sample{t} = Algo.Evaluation([sample{t}, mean_sample], Prob, t);
+                sample{t} = sample{t}(1:N);
 
                 % ---- Centered rank shaping ----
                 fitness = [sample{t}.Objs];
