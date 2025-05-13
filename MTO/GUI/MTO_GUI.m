@@ -832,6 +832,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                 app.EUITable.RowName{size(app.ETableData, 1) + 1} = [];
                 app.EUITable.RowName{size(app.ETableData, 1) + 2} = [];
                 drawnow;
+                app.EupdateTableHighlight();
                 return;
 
             elseif contains(test_type, 'Wilcoxon')
@@ -1873,8 +1874,15 @@ classdef MTO_GUI < matlab.apps.AppBase
             % pause or resume this experiment
 
             if strcmp(app.EPauseButton.Text, 'Pause')
-                app.EStopButton.Enable = 'off';
-                app.EPauseButton.Text = 'Resume';
+                msg = 'Are you sure to pause the experiment?';
+                selection = uiconfirm(app.MTOPlatformMToPv17UIFigure, msg, 'Confirm Pause', ...
+                                     'Options', {'Confirm', 'Cancel'}, ...
+                                     'DefaultOption', 'Cancel', ...
+                                     'Icon', 'warning'); % 'warning' might be more appropriate than 'success'
+                if strcmp(selection, 'Confirm')
+                    app.EStopButton.Enable = 'off';
+                    app.EPauseButton.Text = 'Resume';
+                end
             else
                 app.EStopButton.Enable = 'on';
                 app.EPauseButton.Text = 'Pause';
@@ -1885,8 +1893,16 @@ classdef MTO_GUI < matlab.apps.AppBase
         function EStopButtonPushed(app, event)
             % stop this experiment
 
-            app.EstartEnable(true);
-            app.EStopFlag = true;
+            msg = 'Are you sure to stop the experiment?';
+            selection = uiconfirm(app.MTOPlatformMToPv17UIFigure, msg, 'Confirm Stop', ...
+                                 'Options', {'Confirm', 'Cancel'}, ...
+                                 'DefaultOption', 'Cancel', ...
+                                 'Icon', 'warning'); % 'warning' might be more appropriate than 'success'
+            
+            if strcmp(selection, 'Confirm')
+                app.EstartEnable(true);
+                app.EStopFlag = true;
+            end
         end
 
         % Context menu opening function: SelectedAlgoContextMenu
