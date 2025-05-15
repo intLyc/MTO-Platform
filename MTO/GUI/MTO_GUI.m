@@ -2961,20 +2961,28 @@ classdef MTO_GUI < matlab.apps.AppBase
                     
                     % Plot ranges if needed
                     if plot_with_ranges
-                        % Calculate min and max
-                        y_min = squeeze(min(app.EResultConvergeData.Y(prob_list(i), algo_list(j), :, :), [], 3));
-                        y_max = squeeze(max(app.EResultConvergeData.Y(prob_list(i), algo_list(j), :, :), [], 3));
+                        Y_data = squeeze(app.EResultConvergeData.Y(prob_list(i), algo_list(j), :, :));
                         
-                        % Plot range area
+                        mu = mean(Y_data, 1);
+                        sigma = std(Y_data, 0, 1);
+                        n = size(Y_data, 1);
+                        
+                        % 0.95 confidence interval
+                        ci95 = 1.96 * sigma / sqrt(n);
+                        y_lower = mu - ci95;
+                        y_upper = mu + ci95;
+                        
+                        y_lower = y_lower(:);
+                        y_upper = y_upper(:);
+                        x = x(:);
+                        
                         hold(ax, 'on');
                         fill_color = p.Color;
                         fill_alpha = 0.2;
-                        h = fill(ax, [x'; flipud(x')], [y_min; flipud(y_max)], fill_color, ...
+                        h = fill(ax, [x; flipud(x)], [y_lower; flipud(y_upper)], fill_color, ...
                             'FaceAlpha', fill_alpha, 'EdgeColor', 'none', 'DisplayName', '');
                         
-                        % Make sure the fill is behind the main line
                         uistack(h, 'bottom');
-                        
                         h.Annotation.LegendInformation.IconDisplayStyle = 'off';
                     end
 
