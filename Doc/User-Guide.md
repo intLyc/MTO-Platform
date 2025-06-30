@@ -59,10 +59,11 @@
 <img src="./ReadmeFigure/MTO-Platform%20Experiment%20Module%202.png" width="400px">
 <img src="./ReadmeFigure/MTO-Platform%20Experiment%20Module%203.png" width="400px">
 
-1. parameter settings
-    - No. of Runs: Number of independent run times
-    - No. of Results: Number of save results
-    - Parallel：Parallel execution
+1. Parameter settings
+    - Repetitions: Number of independent repetitions
+    - Data Length: Convergence Data Length. Set to 1 to save only the last generation. (Does not affect termination conditions)
+    - Save Dec: Save decision variables flag
+    - Parallel：Parallel flag (independent repetitions in parallel)
 
 2. Algorithm selection
     - After selecting an algorithm in Algorithms, click Add button, it will add the algorithm to Selected Algorithms, you can expand the algorithm and double-click to modify the parameters or algorithm name, double-click to modify the parameters or algorithm name. *Multi-selectable, right-click to select all, can be added repeatedly*
@@ -188,9 +189,10 @@
 <img src="./ReadmeFigure/MTO-Platform%20Experiment%20Module%203.png" width="400px">
 
 1. 参数设置
-    - No. of Runs: 独立运行次数
-    - No. of Results: 结果保存次数
-    - Parallel: 是否开启并行
+    - Repetitions: 独立重复的次数
+    - Data Length: 收敛数据长度。设置为1则只保存最后一代。(不影响终止条件)
+    - Save Dec: 保存决策变量标志
+    - Parallel：并行标志（独立重复并行）
 
 2. 算法选择
     - 在Algorithms中选择算法后，点击Add按钮，会将算法添加到Selected Algorithms中，可以展开算法，双击修改参数或算法名称。*可多选，右键全选，可重复添加*

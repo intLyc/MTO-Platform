@@ -3649,6 +3649,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create ParallelLabel
             app.ParallelLabel = uilabel(app.EP1GridLayout);
             app.ParallelLabel.FontWeight = 'bold';
+            app.ParallelLabel.Tooltip = {'Parallel flag'; '(independent repetitions in parallel)'};
             app.ParallelLabel.Layout.Row = 3;
             app.ParallelLabel.Layout.Column = 1;
             app.ParallelLabel.Text = 'Parallel';
@@ -3657,6 +3658,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EParallelDropDown = uidropdown(app.EP1GridLayout);
             app.EParallelDropDown.Items = {'Off', 'On'};
             app.EParallelDropDown.ItemsData = [0 1];
+            app.EParallelDropDown.Tooltip = {'Parallel flag'; '(independent repetitions in parallel)'};
             app.EParallelDropDown.FontWeight = 'bold';
             app.EParallelDropDown.BackgroundColor = [1 1 1];
             app.EParallelDropDown.Layout.Row = 3;
@@ -3736,6 +3738,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.ERepsEditField.ValueDisplayFormat = '%d';
             app.ERepsEditField.HorizontalAlignment = 'center';
             app.ERepsEditField.FontWeight = 'bold';
+            app.ERepsEditField.Tooltip = {'Number of Independent Repetitions'};
             app.ERepsEditField.Layout.Row = 1;
             app.ERepsEditField.Layout.Column = 2;
             app.ERepsEditField.Value = 1;
@@ -3747,6 +3750,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EResultsNumEditField.ValueDisplayFormat = '%d';
             app.EResultsNumEditField.HorizontalAlignment = 'center';
             app.EResultsNumEditField.FontWeight = 'bold';
+            app.EResultsNumEditField.Tooltip = {'Convergence Data Length.'; 'Set to 1 to save only the last generation.'; '(Does not affect termination conditions)'};
             app.EResultsNumEditField.Layout.Row = 2;
             app.EResultsNumEditField.Layout.Column = 2;
             app.EResultsNumEditField.Value = 50;
@@ -3754,20 +3758,23 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create ERunTimesEditFieldLabel
             app.ERunTimesEditFieldLabel = uilabel(app.GridLayout5);
             app.ERunTimesEditFieldLabel.FontWeight = 'bold';
+            app.ERunTimesEditFieldLabel.Tooltip = {'Number of Independent Repetitions'};
             app.ERunTimesEditFieldLabel.Layout.Row = 1;
             app.ERunTimesEditFieldLabel.Layout.Column = 1;
-            app.ERunTimesEditFieldLabel.Text = '# Indep. Reps';
+            app.ERunTimesEditFieldLabel.Text = 'Repetitions';
 
             % Create EResultsNumEditFieldLabel
             app.EResultsNumEditFieldLabel = uilabel(app.GridLayout5);
             app.EResultsNumEditFieldLabel.FontWeight = 'bold';
+            app.EResultsNumEditFieldLabel.Tooltip = {'Convergence Data Length.'; 'Set to 1 to save only the last generation.'; '(Does not affect termination conditions)'};
             app.EResultsNumEditFieldLabel.Layout.Row = 2;
             app.EResultsNumEditFieldLabel.Layout.Column = 1;
-            app.EResultsNumEditFieldLabel.Text = '# Iter. Results';
+            app.EResultsNumEditFieldLabel.Text = 'Data Length';
 
             % Create SaveDecLabel
             app.SaveDecLabel = uilabel(app.EP1GridLayout);
             app.SaveDecLabel.FontWeight = 'bold';
+            app.SaveDecLabel.Tooltip = {'Save decision variables flag'};
             app.SaveDecLabel.Layout.Row = 2;
             app.SaveDecLabel.Layout.Column = 1;
             app.SaveDecLabel.Text = 'Save Dec';
@@ -3776,6 +3783,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.ESaveDecDropDown = uidropdown(app.EP1GridLayout);
             app.ESaveDecDropDown.Items = {'Off', 'On'};
             app.ESaveDecDropDown.ItemsData = [0 1];
+            app.ESaveDecDropDown.Tooltip = {'Save decision variables flag'};
             app.ESaveDecDropDown.FontWeight = 'bold';
             app.ESaveDecDropDown.BackgroundColor = [1 1 1];
             app.ESaveDecDropDown.Layout.Row = 2;
