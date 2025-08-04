@@ -1,7 +1,7 @@
 # Multitask Optimization Platform (MToP)
 
 [![](https://img.shields.io/badge/Download-Latest-green)](https://github.com/intLyc/MTO-Platform/archive/refs/heads/master.zip)
-[![](https://img.shields.io/badge/Release-v1.7-orange)](#mto-platform)
+[![](https://img.shields.io/badge/Release-v1.8-orange)](#mto-platform)
 [![](https://img.shields.io/badge/Matlab-%3E%3DR2020b-blue)](#mto-platform)
 
 [![GitHub Repo stars](https://img.shields.io/github/stars/intLyc/MTO-Platform?style=social)](#mto-platform)
@@ -43,6 +43,15 @@ MToP is a user-friendly tool with a graphical user interface that makes it easy 
 *Email: <int_lyc@cug.edu.cn>*
 
 *QQ Group: 862974231*
+
+## Release Highlights of MToP v1.8
+
+- New Algorithm: SSLT (Single-objective Multi-task KBS-25)
+- New Problems: MGA_DSM_GTOP and MGA-GTOP (Multi-task Global Trajectory Optimization Problem)
+- Add the Friedman test for statistical analysis
+- Add Convergence range drawing with 95% confidence interval
+- Improve the GUI tooltip and description
+- Fix some bugs
 
 ## Release Highlights of MToP v1.7
 
