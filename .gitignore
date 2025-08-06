@@ -2,7 +2,7 @@
 MTOData*
 
 # test file
-test*
+test/
 
 # macos trash
 .DS_Store
