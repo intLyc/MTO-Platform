@@ -25,10 +25,8 @@ classdef MTO_GUI < matlab.apps.AppBase
         TUIAxes                         matlab.ui.control.UIAxes
         TPanel1                         matlab.ui.container.Panel
         TP1GridLayout                   matlab.ui.container.GridLayout
-        TDrawObjDropDown                matlab.ui.control.DropDown
-        DrawObjLabel                    matlab.ui.control.Label
-        TDrawDecDropDown                matlab.ui.control.DropDown
-        DrawDecLabel                    matlab.ui.control.Label
+        TDrawObjCheckBox                matlab.ui.control.CheckBox
+        TDrawDecCheckBox                matlab.ui.control.CheckBox
         ObjectiveLabel                  matlab.ui.control.Label
         TObjectiveTypeDropDown          matlab.ui.control.DropDown
         TSpecialTypeDropDown            matlab.ui.control.DropDown
@@ -77,8 +75,8 @@ classdef MTO_GUI < matlab.apps.AppBase
         EAlgorithmsTree                 matlab.ui.container.Tree
         EPanel1                         matlab.ui.container.Panel
         EP1GridLayout                   matlab.ui.container.GridLayout
-        ESaveDecDropDown                matlab.ui.control.DropDown
-        SaveDecLabel                    matlab.ui.control.Label
+        ESaveDecCheckBox                matlab.ui.control.CheckBox
+        EParallelCheckBox               matlab.ui.control.CheckBox
         GridLayout5                     matlab.ui.container.GridLayout
         EResultsNumEditFieldLabel       matlab.ui.control.Label
         ERunTimesEditFieldLabel         matlab.ui.control.Label
@@ -90,8 +88,6 @@ classdef MTO_GUI < matlab.apps.AppBase
         SpecialLabel                    matlab.ui.control.Label
         ETaskTypeDropDown               matlab.ui.control.DropDown
         TaskLabel_2                     matlab.ui.control.Label
-        EParallelDropDown               matlab.ui.control.DropDown
-        ParallelLabel                   matlab.ui.control.Label
         ProblemListLabel                matlab.ui.control.Label
         EProblemsListBox                matlab.ui.control.ListBox
         AlgorithmListLabel              matlab.ui.control.Label
@@ -276,8 +272,8 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TAlgorithmTree.Enable = value;
             app.TProblemDropDown.Enable = value;
             app.TProblemTree.Enable = value;
-            app.TDrawDecDropDown.Enable = value;
-            app.TDrawObjDropDown.Enable = value;
+            app.TDrawDecCheckBox.Enable = value;
+            app.TDrawObjCheckBox.Enable = value;
         end
 
         function EstartEnable(app, value)
@@ -287,8 +283,8 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EStartButton.Enable = value;
             app.ERepsEditField.Enable = value;
             app.EResultsNumEditField.Enable = value;
-            app.ESaveDecDropDown.Enable = value;
-            app.EParallelDropDown.Enable = value;
+            app.ESaveDecCheckBox.Enable = value;
+            app.EParallelCheckBox.Enable = value;
             app.ETaskTypeDropDown.Enable = value;
             app.EObjectiveTypeDropDown.Enable = value;
             app.ESpecialTypeDropDown.Enable = value;
@@ -711,7 +707,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                         end
                     end
                     if is_calculate
-                        eval(['result = ', app.EDataTypeDropDown.Value, '(app.EData, ', num2str(app.EParallelDropDown.Value) ,');']);
+                        eval(['result = ', app.EDataTypeDropDown.Value, '(app.EData, ', num2str(app.EParallelCheckBox.Value) ,');']);
                         metric.Name = app.EDataTypeDropDown.Value;
                         metric.Result = result;
                         if ~isfield(app.EData, 'Metrics')
@@ -1517,8 +1513,8 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TAlgorithmTree.Children(1).NodeData.Save_Dec = 0;
             app.TAlgorithmTree.Children(1).NodeData.reset();
             app.TAlgorithmTree.Children(1).NodeData.Check_Status_Fn = @app.TcheckPauseStopStatus;
-            app.TAlgorithmTree.Children(1).NodeData.Draw_Dec = app.TDrawDecDropDown.Value;
-            app.TAlgorithmTree.Children(1).NodeData.Draw_Obj = app.TDrawObjDropDown.Value;
+            app.TAlgorithmTree.Children(1).NodeData.Draw_Dec = app.TDrawDecCheckBox.Value;
+            app.TAlgorithmTree.Children(1).NodeData.Draw_Obj = app.TDrawObjCheckBox.Value;
             app.TAlgorithmTree.Children(1).NodeData.drawInit(app.TProblemTree.Children(1).NodeData);
             app.TAlgorithmTree.Children(1).NodeData.run(app.TProblemTree.Children(1).NodeData);
             tmp = app.TAlgorithmTree.Children(1).NodeData.getResult(app.TProblemTree.Children(1).NodeData);
@@ -1761,11 +1757,11 @@ classdef MTO_GUI < matlab.apps.AppBase
                     % check pause and stop
                     algo_obj = app.EAlgorithmsTree.Children(algo).NodeData;
                     algo_obj.Result_Num = app.EResultsNumEditField.Value;
-                    algo_obj.Save_Dec = app.ESaveDecDropDown.Value;
+                    algo_obj.Save_Dec = app.ESaveDecCheckBox.Value;
                     algo_obj.Check_Status_Fn = @emptyFn;
                     prob_obj = app.EProblemsTree.Children(prob).NodeData;
                     app.EcheckPauseStopStatus();
-                    if app.EParallelDropDown.Value == 1
+                    if app.EParallelCheckBox.Value
                         future(1:MTOData.Reps) = parallel.FevalFuture;
                         for rep = 1:MTOData.Reps
                             future(rep) = parfeval(@parRun,1,algo_obj,prob_obj);
@@ -2123,45 +2119,72 @@ classdef MTO_GUI < matlab.apps.AppBase
 
         % Button pushed function: ESaveTableButton
         function ESaveTableButtonPushed(app, event)
-            % save table
+            msg = 'Select Export Type';
+            selection = uiconfirm(app.MTOPlatformMToPv18UIFigure, msg, 'Export', ...
+                                 'Options', {'Current Table', 'IOHanalyzer', 'Cancel'}, ...
+                                 'DefaultOption', 'Cancel', 'Icon', 'question');
 
-            % check selected file name
-            filter = {'*.tex'; '*.xlsx';'*.csv';};
-            app.MTOPlatformMToPv18UIFigure.Visible = 'off';
-            [file_name, dir_name] = uiputfile(filter);
-            app.MTOPlatformMToPv18UIFigure.Visible = 'on';
-            figure(app.MTOPlatformMToPv18UIFigure);
-            drawnow;
-            
-            % figure(app.MTOPlatformMToPv18UIFigure);
-            if file_name == 0
-                return;
-            end
-            if contains(file_name, 'tex')
-                hl = zeros(size(app.EUITable.Data));
-                if ~strcmp(app.EHighlightTypeDropDown.Value, 'None')
-                    hl = app.EHighlightMatrix;
+            if strcmp(selection, 'Current Table')
+                % save table
+    
+                % check selected file name
+                filter = {'*.tex'; '*.xlsx';'*.csv';};
+                app.MTOPlatformMToPv18UIFigure.Visible = 'off';
+                [file_name, dir_name] = uiputfile(filter);
+                app.MTOPlatformMToPv18UIFigure.Visible = 'on';
+                figure(app.MTOPlatformMToPv18UIFigure);
+                drawnow;
+                
+                % figure(app.MTOPlatformMToPv18UIFigure);
+                if file_name == 0
+                    return;
                 end
-                input.data = app.EUITable.Data;
-                input.hl = hl;
-                input.tableColLabels = app.EUITable.ColumnName(1:size(input.data, 2));
-                input.tableRowLabels = app.EUITable.RowName(1:size(input.data, 1))';
-                input.tableColumnAlignment = 'c';
-                input.tableBorders = 0;
-                input.dataNanString = '-';
-                input.booktabs = 1;
-                latex = latexTable(input);
-                fid=fopen([dir_name, file_name],'w');
-                [nrows, ncols] = size(latex);
-                for row = 1:nrows
-                    fprintf(fid,'%s\n',latex{row,:});
+                if contains(file_name, 'tex')
+                    hl = zeros(size(app.EUITable.Data));
+                    if ~strcmp(app.EHighlightTypeDropDown.Value, 'None')
+                        hl = app.EHighlightMatrix;
+                    end
+                    input.data = app.EUITable.Data;
+                    input.hl = hl;
+                    input.tableColLabels = app.EUITable.ColumnName(1:size(input.data, 2));
+                    input.tableRowLabels = app.EUITable.RowName(1:size(input.data, 1))';
+                    input.tableColumnAlignment = 'c';
+                    input.tableBorders = 0;
+                    input.dataNanString = '-';
+                    input.booktabs = 1;
+                    latex = latexTable(input);
+                    fid=fopen([dir_name, file_name],'w');
+                    [nrows, ncols] = size(latex);
+                    for row = 1:nrows
+                        fprintf(fid,'%s\n',latex{row,:});
+                    end
+                    fclose(fid);
+                else
+                    row_name = app.EUITable.RowName(1:size(app.EUITable.Data, 1));
+                    column_name = app.EUITable.ColumnName(1:size(app.EUITable.Data, 2))';
+                    cell_out = [[{''}; row_name], [column_name; app.EUITable.Data]];
+                    writecell(cell_out, [dir_name, file_name]);
                 end
-                fclose(fid);
-            else
-                row_name = app.EUITable.RowName(1:size(app.EUITable.Data, 1));
-                column_name = app.EUITable.ColumnName(1:size(app.EUITable.Data, 2))';
-                cell_out = [[{''}; row_name], [column_name; app.EUITable.Data]];
-                writecell(cell_out, [dir_name, file_name]);
+            elseif strcmp(selection, 'IOHanalyzer')
+                % save current metric convergence
+
+                 % check selected file name
+                filter = {'*.csv';};
+                app.MTOPlatformMToPv18UIFigure.Visible = 'off';
+                [file_name, dir_name] = uiputfile(filter);
+                app.MTOPlatformMToPv18UIFigure.Visible = 'on';
+                figure(app.MTOPlatformMToPv18UIFigure);
+                drawnow;
+                
+                % figure(app.MTOPlatformMToPv18UIFigure);
+                if file_name == 0
+                    return;
+                end
+                metric_idx = find(ismember({app.EData.Metrics.Name}, app.EDataTypeDropDown.Value));
+                disp('Exporting IOHanylyzer csv ...')
+                table_out = IOHconvert(app.EData.Metrics(metric_idx).Result);
+                writetable(table_out, [dir_name, file_name]);
+                disp('Done.')
             end
         end
 
@@ -3284,7 +3307,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create TP1GridLayout
             app.TP1GridLayout = uigridlayout(app.TPanel1);
             app.TP1GridLayout.ColumnWidth = {'fit', '1x'};
-            app.TP1GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x'};
+            app.TP1GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x'};
             app.TP1GridLayout.ColumnSpacing = 5;
             app.TP1GridLayout.RowSpacing = 7;
             app.TP1GridLayout.Padding = [0 0 0 0];
@@ -3293,7 +3316,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create AlgorithmDropDownLabel
             app.AlgorithmDropDownLabel = uilabel(app.TP1GridLayout);
             app.AlgorithmDropDownLabel.FontWeight = 'bold';
-            app.AlgorithmDropDownLabel.Layout.Row = 6;
+            app.AlgorithmDropDownLabel.Layout.Row = 5;
             app.AlgorithmDropDownLabel.Layout.Column = 1;
             app.AlgorithmDropDownLabel.Text = 'Algorithm';
 
@@ -3305,7 +3328,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TAlgorithmDropDown.Tooltip = {'Select algorithm'};
             app.TAlgorithmDropDown.FontWeight = 'bold';
             app.TAlgorithmDropDown.BackgroundColor = [1 1 1];
-            app.TAlgorithmDropDown.Layout.Row = 6;
+            app.TAlgorithmDropDown.Layout.Row = 5;
             app.TAlgorithmDropDown.Layout.Column = 2;
             app.TAlgorithmDropDown.Value = {};
 
@@ -3314,7 +3337,8 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TAlgorithmTree.Multiselect = 'on';
             app.TAlgorithmTree.NodeTextChangedFcn = createCallbackFcn(app, @TAlgorithmTreeNodeTextChanged, true);
             app.TAlgorithmTree.Editable = 'on';
-            app.TAlgorithmTree.Layout.Row = 7;
+            app.TAlgorithmTree.Tooltip = {'Click triangle to expand the algorithm, double-click to change the algorithm name or parameter value'};
+            app.TAlgorithmTree.Layout.Row = 6;
             app.TAlgorithmTree.Layout.Column = [1 2];
 
             % Create TProblemTree
@@ -3322,7 +3346,8 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TProblemTree.Multiselect = 'on';
             app.TProblemTree.NodeTextChangedFcn = createCallbackFcn(app, @TProblemTreeNodeTextChanged, true);
             app.TProblemTree.Editable = 'on';
-            app.TProblemTree.Layout.Row = 9;
+            app.TProblemTree.Tooltip = {'Click triangle to expand the problem, double-click to change the problem name or parameter value'};
+            app.TProblemTree.Layout.Row = 8;
             app.TProblemTree.Layout.Column = [1 2];
 
             % Create TProblemDropDown
@@ -3333,14 +3358,14 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TProblemDropDown.Tooltip = {'Select problem'};
             app.TProblemDropDown.FontWeight = 'bold';
             app.TProblemDropDown.BackgroundColor = [1 1 1];
-            app.TProblemDropDown.Layout.Row = 8;
+            app.TProblemDropDown.Layout.Row = 7;
             app.TProblemDropDown.Layout.Column = 2;
             app.TProblemDropDown.Value = {};
 
             % Create ProblemDropDownLabel
             app.ProblemDropDownLabel = uilabel(app.TP1GridLayout);
             app.ProblemDropDownLabel.FontWeight = 'bold';
-            app.ProblemDropDownLabel.Layout.Row = 8;
+            app.ProblemDropDownLabel.Layout.Row = 7;
             app.ProblemDropDownLabel.Layout.Column = 1;
             app.ProblemDropDownLabel.Text = 'Problem';
 
@@ -3351,7 +3376,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TTaskTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @TTaskTypeDropDownValueChanged, true);
             app.TTaskTypeDropDown.FontWeight = 'bold';
             app.TTaskTypeDropDown.BackgroundColor = [1 1 1];
-            app.TTaskTypeDropDown.Layout.Row = 1;
+            app.TTaskTypeDropDown.Layout.Row = 2;
             app.TTaskTypeDropDown.Layout.Column = 2;
             app.TTaskTypeDropDown.Value = 'Multi-task';
 
@@ -3359,7 +3384,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TaskLabel = uilabel(app.TP1GridLayout);
             app.TaskLabel.FontWeight = 'bold';
             app.TaskLabel.Tooltip = {'Single-task EA Option'};
-            app.TaskLabel.Layout.Row = 1;
+            app.TaskLabel.Layout.Row = 2;
             app.TaskLabel.Layout.Column = 1;
             app.TaskLabel.Text = 'Task';
 
@@ -3367,7 +3392,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.SpecialLabel_2 = uilabel(app.TP1GridLayout);
             app.SpecialLabel_2.FontWeight = 'bold';
             app.SpecialLabel_2.Tooltip = {'Single-task EA Option'};
-            app.SpecialLabel_2.Layout.Row = 3;
+            app.SpecialLabel_2.Layout.Row = 4;
             app.SpecialLabel_2.Layout.Column = 1;
             app.SpecialLabel_2.Text = 'Special';
 
@@ -3377,7 +3402,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TSpecialTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @TSpecialTypeDropDownValueChanged, true);
             app.TSpecialTypeDropDown.FontWeight = 'bold';
             app.TSpecialTypeDropDown.BackgroundColor = [1 1 1];
-            app.TSpecialTypeDropDown.Layout.Row = 3;
+            app.TSpecialTypeDropDown.Layout.Row = 4;
             app.TSpecialTypeDropDown.Layout.Column = 2;
             app.TSpecialTypeDropDown.Value = 'None';
 
@@ -3388,7 +3413,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TObjectiveTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @TObjectiveTypeDropDownValueChanged, true);
             app.TObjectiveTypeDropDown.FontWeight = 'bold';
             app.TObjectiveTypeDropDown.BackgroundColor = [1 1 1];
-            app.TObjectiveTypeDropDown.Layout.Row = 2;
+            app.TObjectiveTypeDropDown.Layout.Row = 3;
             app.TObjectiveTypeDropDown.Layout.Column = 2;
             app.TObjectiveTypeDropDown.Value = 'Single-objective';
 
@@ -3396,45 +3421,27 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.ObjectiveLabel = uilabel(app.TP1GridLayout);
             app.ObjectiveLabel.FontWeight = 'bold';
             app.ObjectiveLabel.Tooltip = {'Single-task EA Option'};
-            app.ObjectiveLabel.Layout.Row = 2;
+            app.ObjectiveLabel.Layout.Row = 3;
             app.ObjectiveLabel.Layout.Column = 1;
             app.ObjectiveLabel.Text = 'Objective';
 
-            % Create DrawDecLabel
-            app.DrawDecLabel = uilabel(app.TP1GridLayout);
-            app.DrawDecLabel.FontWeight = 'bold';
-            app.DrawDecLabel.Tooltip = {'Single-task EA Option'};
-            app.DrawDecLabel.Layout.Row = 4;
-            app.DrawDecLabel.Layout.Column = 1;
-            app.DrawDecLabel.Text = 'Draw Dec';
+            % Create TDrawDecCheckBox
+            app.TDrawDecCheckBox = uicheckbox(app.TP1GridLayout);
+            app.TDrawDecCheckBox.Tooltip = {'Parallel flag'; '(independent repetitions in parallel)'};
+            app.TDrawDecCheckBox.Text = 'Draw Dec';
+            app.TDrawDecCheckBox.FontWeight = 'bold';
+            app.TDrawDecCheckBox.Layout.Row = 1;
+            app.TDrawDecCheckBox.Layout.Column = 1;
+            app.TDrawDecCheckBox.Value = true;
 
-            % Create TDrawDecDropDown
-            app.TDrawDecDropDown = uidropdown(app.TP1GridLayout);
-            app.TDrawDecDropDown.Items = {'On', 'Off'};
-            app.TDrawDecDropDown.ItemsData = [true false];
-            app.TDrawDecDropDown.FontWeight = 'bold';
-            app.TDrawDecDropDown.BackgroundColor = [1 1 1];
-            app.TDrawDecDropDown.Layout.Row = 4;
-            app.TDrawDecDropDown.Layout.Column = 2;
-            app.TDrawDecDropDown.Value = true;
-
-            % Create DrawObjLabel
-            app.DrawObjLabel = uilabel(app.TP1GridLayout);
-            app.DrawObjLabel.FontWeight = 'bold';
-            app.DrawObjLabel.Tooltip = {'Single-task EA Option'};
-            app.DrawObjLabel.Layout.Row = 5;
-            app.DrawObjLabel.Layout.Column = 1;
-            app.DrawObjLabel.Text = 'Draw Obj';
-
-            % Create TDrawObjDropDown
-            app.TDrawObjDropDown = uidropdown(app.TP1GridLayout);
-            app.TDrawObjDropDown.Items = {'On', 'Off'};
-            app.TDrawObjDropDown.ItemsData = [true false];
-            app.TDrawObjDropDown.FontWeight = 'bold';
-            app.TDrawObjDropDown.BackgroundColor = [1 1 1];
-            app.TDrawObjDropDown.Layout.Row = 5;
-            app.TDrawObjDropDown.Layout.Column = 2;
-            app.TDrawObjDropDown.Value = true;
+            % Create TDrawObjCheckBox
+            app.TDrawObjCheckBox = uicheckbox(app.TP1GridLayout);
+            app.TDrawObjCheckBox.Tooltip = {'Parallel flag'; '(independent repetitions in parallel)'};
+            app.TDrawObjCheckBox.Text = 'Draw Obj';
+            app.TDrawObjCheckBox.FontWeight = 'bold';
+            app.TDrawObjCheckBox.Layout.Row = 1;
+            app.TDrawObjCheckBox.Layout.Column = 2;
+            app.TDrawObjCheckBox.Value = true;
 
             % Create TPanel2
             app.TPanel2 = uipanel(app.TestGridLayout);
@@ -3604,7 +3611,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create EP1GridLayout
             app.EP1GridLayout = uigridlayout(app.EPanel1);
             app.EP1GridLayout.ColumnWidth = {'2x', '1x', '1.2x'};
-            app.EP1GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x'};
+            app.EP1GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x'};
             app.EP1GridLayout.ColumnSpacing = 5;
             app.EP1GridLayout.RowSpacing = 7;
             app.EP1GridLayout.Padding = [0 0 0 0];
@@ -3617,7 +3624,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EProblemsAddButton.BackgroundColor = [1 1 1];
             app.EProblemsAddButton.FontWeight = 'bold';
             app.EProblemsAddButton.Tooltip = {'Add Selected Problems'};
-            app.EProblemsAddButton.Layout.Row = 9;
+            app.EProblemsAddButton.Layout.Row = 8;
             app.EProblemsAddButton.Layout.Column = 3;
             app.EProblemsAddButton.Text = 'Add';
 
@@ -3628,7 +3635,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EAlgorithmsAddButton.BackgroundColor = [1 1 1];
             app.EAlgorithmsAddButton.FontWeight = 'bold';
             app.EAlgorithmsAddButton.Tooltip = {'Add Selected Algorithms'};
-            app.EAlgorithmsAddButton.Layout.Row = 7;
+            app.EAlgorithmsAddButton.Layout.Row = 6;
             app.EAlgorithmsAddButton.Layout.Column = 3;
             app.EAlgorithmsAddButton.Text = 'Add';
 
@@ -3636,14 +3643,15 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EAlgorithmsListBox = uilistbox(app.EP1GridLayout);
             app.EAlgorithmsListBox.Items = {};
             app.EAlgorithmsListBox.Multiselect = 'on';
-            app.EAlgorithmsListBox.Layout.Row = 8;
+            app.EAlgorithmsListBox.Tooltip = {'Hold <Control> to select multiple, Hold <Shift> to select a range'};
+            app.EAlgorithmsListBox.Layout.Row = 7;
             app.EAlgorithmsListBox.Layout.Column = [1 3];
             app.EAlgorithmsListBox.Value = {};
 
             % Create AlgorithmListLabel
             app.AlgorithmListLabel = uilabel(app.EP1GridLayout);
             app.AlgorithmListLabel.FontWeight = 'bold';
-            app.AlgorithmListLabel.Layout.Row = 7;
+            app.AlgorithmListLabel.Layout.Row = 6;
             app.AlgorithmListLabel.Layout.Column = [1 2];
             app.AlgorithmListLabel.Text = 'Algorithm List';
 
@@ -3651,41 +3659,23 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EProblemsListBox = uilistbox(app.EP1GridLayout);
             app.EProblemsListBox.Items = {};
             app.EProblemsListBox.Multiselect = 'on';
-            app.EProblemsListBox.Layout.Row = 10;
+            app.EProblemsListBox.Tooltip = {'Hold Control to select multiple, Hold Shift to select a range'};
+            app.EProblemsListBox.Layout.Row = 9;
             app.EProblemsListBox.Layout.Column = [1 3];
             app.EProblemsListBox.Value = {};
 
             % Create ProblemListLabel
             app.ProblemListLabel = uilabel(app.EP1GridLayout);
             app.ProblemListLabel.FontWeight = 'bold';
-            app.ProblemListLabel.Layout.Row = 9;
+            app.ProblemListLabel.Layout.Row = 8;
             app.ProblemListLabel.Layout.Column = [1 2];
             app.ProblemListLabel.Text = 'Problem List';
-
-            % Create ParallelLabel
-            app.ParallelLabel = uilabel(app.EP1GridLayout);
-            app.ParallelLabel.FontWeight = 'bold';
-            app.ParallelLabel.Tooltip = {'Parallel flag'; '(independent repetitions in parallel)'};
-            app.ParallelLabel.Layout.Row = 3;
-            app.ParallelLabel.Layout.Column = 1;
-            app.ParallelLabel.Text = 'Parallel';
-
-            % Create EParallelDropDown
-            app.EParallelDropDown = uidropdown(app.EP1GridLayout);
-            app.EParallelDropDown.Items = {'Off', 'On'};
-            app.EParallelDropDown.ItemsData = [0 1];
-            app.EParallelDropDown.Tooltip = {'Parallel flag'; '(independent repetitions in parallel)'};
-            app.EParallelDropDown.FontWeight = 'bold';
-            app.EParallelDropDown.BackgroundColor = [1 1 1];
-            app.EParallelDropDown.Layout.Row = 3;
-            app.EParallelDropDown.Layout.Column = [2 3];
-            app.EParallelDropDown.Value = 0;
 
             % Create TaskLabel_2
             app.TaskLabel_2 = uilabel(app.EP1GridLayout);
             app.TaskLabel_2.FontWeight = 'bold';
             app.TaskLabel_2.Tooltip = {'Single-task EA Option'};
-            app.TaskLabel_2.Layout.Row = 4;
+            app.TaskLabel_2.Layout.Row = 3;
             app.TaskLabel_2.Layout.Column = 1;
             app.TaskLabel_2.Text = 'Task';
 
@@ -3696,7 +3686,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.ETaskTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @ETaskTypeDropDownValueChanged, true);
             app.ETaskTypeDropDown.FontWeight = 'bold';
             app.ETaskTypeDropDown.BackgroundColor = [1 1 1];
-            app.ETaskTypeDropDown.Layout.Row = 4;
+            app.ETaskTypeDropDown.Layout.Row = 3;
             app.ETaskTypeDropDown.Layout.Column = [2 3];
             app.ETaskTypeDropDown.Value = 'Multi-task';
 
@@ -3704,7 +3694,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.SpecialLabel = uilabel(app.EP1GridLayout);
             app.SpecialLabel.FontWeight = 'bold';
             app.SpecialLabel.Tooltip = {'Single-task EA Option'};
-            app.SpecialLabel.Layout.Row = 6;
+            app.SpecialLabel.Layout.Row = 5;
             app.SpecialLabel.Layout.Column = 1;
             app.SpecialLabel.Text = 'Special';
 
@@ -3714,7 +3704,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.ESpecialTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @ESpecialTypeDropDownValueChanged, true);
             app.ESpecialTypeDropDown.FontWeight = 'bold';
             app.ESpecialTypeDropDown.BackgroundColor = [1 1 1];
-            app.ESpecialTypeDropDown.Layout.Row = 6;
+            app.ESpecialTypeDropDown.Layout.Row = 5;
             app.ESpecialTypeDropDown.Layout.Column = [2 3];
             app.ESpecialTypeDropDown.Value = 'None';
 
@@ -3722,7 +3712,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.ObjectiveLabel_2 = uilabel(app.EP1GridLayout);
             app.ObjectiveLabel_2.FontWeight = 'bold';
             app.ObjectiveLabel_2.Tooltip = {'Single-task EA Option'};
-            app.ObjectiveLabel_2.Layout.Row = 5;
+            app.ObjectiveLabel_2.Layout.Row = 4;
             app.ObjectiveLabel_2.Layout.Column = 1;
             app.ObjectiveLabel_2.Text = 'Objective';
 
@@ -3733,7 +3723,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EObjectiveTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EObjectiveTypeDropDownValueChanged, true);
             app.EObjectiveTypeDropDown.FontWeight = 'bold';
             app.EObjectiveTypeDropDown.BackgroundColor = [1 1 1];
-            app.EObjectiveTypeDropDown.Layout.Row = 5;
+            app.EObjectiveTypeDropDown.Layout.Row = 4;
             app.EObjectiveTypeDropDown.Layout.Column = [2 3];
             app.EObjectiveTypeDropDown.Value = 'Single-objective';
 
@@ -3743,7 +3733,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.GridLayout5.ColumnSpacing = 5;
             app.GridLayout5.RowSpacing = 7;
             app.GridLayout5.Padding = [0 0 0 0];
-            app.GridLayout5.Layout.Row = 1;
+            app.GridLayout5.Layout.Row = 2;
             app.GridLayout5.Layout.Column = [1 3];
             app.GridLayout5.BackgroundColor = [1 1 1];
 
@@ -3787,24 +3777,21 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EResultsNumEditFieldLabel.Layout.Column = 1;
             app.EResultsNumEditFieldLabel.Text = 'Data Length';
 
-            % Create SaveDecLabel
-            app.SaveDecLabel = uilabel(app.EP1GridLayout);
-            app.SaveDecLabel.FontWeight = 'bold';
-            app.SaveDecLabel.Tooltip = {'Save decision variables flag'};
-            app.SaveDecLabel.Layout.Row = 2;
-            app.SaveDecLabel.Layout.Column = 1;
-            app.SaveDecLabel.Text = 'Save Dec';
+            % Create EParallelCheckBox
+            app.EParallelCheckBox = uicheckbox(app.EP1GridLayout);
+            app.EParallelCheckBox.Tooltip = {'Parallel flag'; '(independent repetitions in parallel)'};
+            app.EParallelCheckBox.Text = 'Parallel';
+            app.EParallelCheckBox.FontWeight = 'bold';
+            app.EParallelCheckBox.Layout.Row = 1;
+            app.EParallelCheckBox.Layout.Column = 1;
 
-            % Create ESaveDecDropDown
-            app.ESaveDecDropDown = uidropdown(app.EP1GridLayout);
-            app.ESaveDecDropDown.Items = {'Off', 'On'};
-            app.ESaveDecDropDown.ItemsData = [0 1];
-            app.ESaveDecDropDown.Tooltip = {'Save decision variables flag'};
-            app.ESaveDecDropDown.FontWeight = 'bold';
-            app.ESaveDecDropDown.BackgroundColor = [1 1 1];
-            app.ESaveDecDropDown.Layout.Row = 2;
-            app.ESaveDecDropDown.Layout.Column = [2 3];
-            app.ESaveDecDropDown.Value = 0;
+            % Create ESaveDecCheckBox
+            app.ESaveDecCheckBox = uicheckbox(app.EP1GridLayout);
+            app.ESaveDecCheckBox.Tooltip = {'Save decision variables flag'};
+            app.ESaveDecCheckBox.Text = 'Save Dec';
+            app.ESaveDecCheckBox.FontWeight = 'bold';
+            app.ESaveDecCheckBox.Layout.Row = 1;
+            app.ESaveDecCheckBox.Layout.Column = [2 3];
 
             % Create EPanel2
             app.EPanel2 = uipanel(app.ExperimentsGridLayout);
@@ -3828,6 +3815,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EAlgorithmsTree.Multiselect = 'on';
             app.EAlgorithmsTree.NodeTextChangedFcn = createCallbackFcn(app, @EAlgorithmsTreeNodeTextChanged, true);
             app.EAlgorithmsTree.Editable = 'on';
+            app.EAlgorithmsTree.Tooltip = {'Click triangle to expand the algorithm, double-click to change the algorithm name or parameter value'};
             app.EAlgorithmsTree.Layout.Row = 4;
             app.EAlgorithmsTree.Layout.Column = 1;
 
@@ -3836,6 +3824,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EProblemsTree.Multiselect = 'on';
             app.EProblemsTree.NodeTextChangedFcn = createCallbackFcn(app, @EProblemsTreeNodeTextChanged, true);
             app.EProblemsTree.Editable = 'on';
+            app.EProblemsTree.Tooltip = {'Click triangle to expand the problem, double-click to change the problem name or parameter value'};
             app.EProblemsTree.Layout.Row = 6;
             app.EProblemsTree.Layout.Column = 1;
 
@@ -4061,10 +4050,10 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.ESaveTableButton.ButtonPushedFcn = createCallbackFcn(app, @ESaveTableButtonPushed, true);
             app.ESaveTableButton.BackgroundColor = [1 1 1];
             app.ESaveTableButton.FontWeight = 'bold';
-            app.ESaveTableButton.Tooltip = {'Save Current Table to File'};
+            app.ESaveTableButton.Tooltip = {'Export Current Table or Convergence Data to File'};
             app.ESaveTableButton.Layout.Row = 1;
             app.ESaveTableButton.Layout.Column = 1;
-            app.ESaveTableButton.Text = 'Save Table';
+            app.ESaveTableButton.Text = 'Export';
 
             % Create EDataFormatEditField
             app.EDataFormatEditField = uieditfield(app.EP3T1GridLayout, 'text');
@@ -4080,7 +4069,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EConvergeButton.ButtonPushedFcn = createCallbackFcn(app, @EConvergeButtonPushed, true);
             app.EConvergeButton.BackgroundColor = [1 1 1];
             app.EConvergeButton.FontWeight = 'bold';
-            app.EConvergeButton.Tooltip = {'Draw Metric Convergence Plot'};
+            app.EConvergeButton.Tooltip = {'Select data area in Table to draw Metric Convergence plot'};
             app.EConvergeButton.Layout.Row = 1;
             app.EConvergeButton.Layout.Column = 3;
             app.EConvergeButton.Text = 'Converge';
@@ -4090,7 +4079,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EParetoButton.ButtonPushedFcn = createCallbackFcn(app, @EParetoButtonPushed, true);
             app.EParetoButton.BackgroundColor = [1 1 1];
             app.EParetoButton.FontWeight = 'bold';
-            app.EParetoButton.Tooltip = {'Draw Median Population Pareto Front'};
+            app.EParetoButton.Tooltip = {'Select data area in Table to draw Median Population Pareto Front'};
             app.EParetoButton.Layout.Row = 1;
             app.EParetoButton.Layout.Column = 4;
             app.EParetoButton.Text = 'Pareto';
