@@ -78,19 +78,21 @@ classdef MTO_GUI < matlab.apps.AppBase
         ESaveDecCheckBox                matlab.ui.control.CheckBox
         EParallelCheckBox               matlab.ui.control.CheckBox
         GridLayout5                     matlab.ui.container.GridLayout
+        ERngSeedCheckBox                matlab.ui.control.CheckBox
+        ERngSeedEditField               matlab.ui.control.NumericEditField
         EResultsNumEditFieldLabel       matlab.ui.control.Label
-        ERunTimesEditFieldLabel         matlab.ui.control.Label
+        ERepsEditFieldLabel             matlab.ui.control.Label
         EResultsNumEditField            matlab.ui.control.NumericEditField
         ERepsEditField                  matlab.ui.control.NumericEditField
         EObjectiveTypeDropDown          matlab.ui.control.DropDown
-        ObjectiveLabel_2                matlab.ui.control.Label
+        EObjectiveTypeDropDownLabel     matlab.ui.control.Label
         ESpecialTypeDropDown            matlab.ui.control.DropDown
-        SpecialLabel                    matlab.ui.control.Label
+        ESpecialTypeDropDownLabel       matlab.ui.control.Label
         ETaskTypeDropDown               matlab.ui.control.DropDown
-        TaskLabel_2                     matlab.ui.control.Label
-        ProblemListLabel                matlab.ui.control.Label
+        ETaskTypeDropDownLabel          matlab.ui.control.Label
+        EProblemListLabel               matlab.ui.control.Label
         EProblemsListBox                matlab.ui.control.ListBox
-        AlgorithmListLabel              matlab.ui.control.Label
+        EAlgorithmListLabel             matlab.ui.control.Label
         EAlgorithmsListBox              matlab.ui.control.ListBox
         EAlgorithmsAddButton            matlab.ui.control.Button
         EProblemsAddButton              matlab.ui.control.Button
@@ -282,18 +284,29 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             app.EStartButton.Enable = value;
             app.ERepsEditField.Enable = value;
+            app.ERepsEditFieldLabel.Enable = value;
             app.EResultsNumEditField.Enable = value;
+            app.EResultsNumEditFieldLabel.Enable = value;
             app.ESaveDecCheckBox.Enable = value;
             app.EParallelCheckBox.Enable = value;
+            app.ERngSeedCheckBox.Enable = value;
+            app.ERngSeedEditField.Enable = value;
             app.ETaskTypeDropDown.Enable = value;
+            app.ETaskTypeDropDownLabel.Enable = value;
             app.EObjectiveTypeDropDown.Enable = value;
+            app.EObjectiveTypeDropDownLabel.Enable = value;
             app.ESpecialTypeDropDown.Enable = value;
+            app.ESpecialTypeDropDownLabel.Enable = value;
             app.EAlgorithmsAddButton.Enable = value;
+            app.EAlgorithmListLabel.Enable = value;
             app.EProblemsAddButton.Enable = value;
+            app.EProblemListLabel.Enable = value;
             app.EAlgorithmsListBox.Enable = value;
             app.EProblemsListBox.Enable = value;
             app.EAlgorithmsDelButton.Enable = value;
+            app.ESelectedAlgorithmsLabel.Enable = value;
             app.EProblemsDelButton.Enable = value;
+            app.ESelectedProblemsLabel.Enable = value;
             app.EAlgorithmsTree.Enable = value;
             app.EProblemsTree.Enable = value;
             app.ELoadDataButton.Enable = value;
@@ -1747,6 +1760,12 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EresetTableAlgorithmDropDown({MTOData.Algorithms.Name});
             % cla(app.EConvergenceTrendUIAxes, 'reset');
 
+            if app.ERngSeedCheckBox.Value
+                % using same rng(seed) in same independent runs
+                % generate different seed for runs
+                seeds = (0:MTOData.Reps-1) + app.ERngSeedEditField.Value;
+            end
+
             % main experiment loop
             tStart = tic;
             Results = [];
@@ -1764,7 +1783,12 @@ classdef MTO_GUI < matlab.apps.AppBase
                     if app.EParallelCheckBox.Value
                         future(1:MTOData.Reps) = parallel.FevalFuture;
                         for rep = 1:MTOData.Reps
-                            future(rep) = parfeval(@parRun,1,algo_obj,prob_obj);
+                            if app.ERngSeedCheckBox.Value
+                                se = seeds(rep);
+                            else
+                                se = -1;
+                            end
+                            future(rep) = parfeval(@parRun,1,algo_obj,prob_obj, se);
                         end
                         tmp_cell = cell(1,MTOData.Reps);
                         while ~all([future.Read])
@@ -1809,6 +1833,9 @@ classdef MTO_GUI < matlab.apps.AppBase
                             prob_obj.setTasks();
                             algo_obj.reset();
                             algo_obj.Check_Status_Fn = @app.EcheckPauseStopStatus;
+                            if app.ERngSeedCheckBox.Value
+                                rng(seeds(rep));
+                            end
                             algo_obj.run(prob_obj);
                             algo_obj.Check_Status_Fn = @emptyFn;
                             tmp = algo_obj.getResult(prob_obj);
@@ -3648,12 +3675,12 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EAlgorithmsListBox.Layout.Column = [1 3];
             app.EAlgorithmsListBox.Value = {};
 
-            % Create AlgorithmListLabel
-            app.AlgorithmListLabel = uilabel(app.EP1GridLayout);
-            app.AlgorithmListLabel.FontWeight = 'bold';
-            app.AlgorithmListLabel.Layout.Row = 6;
-            app.AlgorithmListLabel.Layout.Column = [1 2];
-            app.AlgorithmListLabel.Text = 'Algorithm List';
+            % Create EAlgorithmListLabel
+            app.EAlgorithmListLabel = uilabel(app.EP1GridLayout);
+            app.EAlgorithmListLabel.FontWeight = 'bold';
+            app.EAlgorithmListLabel.Layout.Row = 6;
+            app.EAlgorithmListLabel.Layout.Column = [1 2];
+            app.EAlgorithmListLabel.Text = 'Algorithm List';
 
             % Create EProblemsListBox
             app.EProblemsListBox = uilistbox(app.EP1GridLayout);
@@ -3664,20 +3691,20 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EProblemsListBox.Layout.Column = [1 3];
             app.EProblemsListBox.Value = {};
 
-            % Create ProblemListLabel
-            app.ProblemListLabel = uilabel(app.EP1GridLayout);
-            app.ProblemListLabel.FontWeight = 'bold';
-            app.ProblemListLabel.Layout.Row = 8;
-            app.ProblemListLabel.Layout.Column = [1 2];
-            app.ProblemListLabel.Text = 'Problem List';
+            % Create EProblemListLabel
+            app.EProblemListLabel = uilabel(app.EP1GridLayout);
+            app.EProblemListLabel.FontWeight = 'bold';
+            app.EProblemListLabel.Layout.Row = 8;
+            app.EProblemListLabel.Layout.Column = [1 2];
+            app.EProblemListLabel.Text = 'Problem List';
 
-            % Create TaskLabel_2
-            app.TaskLabel_2 = uilabel(app.EP1GridLayout);
-            app.TaskLabel_2.FontWeight = 'bold';
-            app.TaskLabel_2.Tooltip = {'Single-task EA Option'};
-            app.TaskLabel_2.Layout.Row = 3;
-            app.TaskLabel_2.Layout.Column = 1;
-            app.TaskLabel_2.Text = 'Task';
+            % Create ETaskTypeDropDownLabel
+            app.ETaskTypeDropDownLabel = uilabel(app.EP1GridLayout);
+            app.ETaskTypeDropDownLabel.FontWeight = 'bold';
+            app.ETaskTypeDropDownLabel.Tooltip = {'Single-task EA Option'};
+            app.ETaskTypeDropDownLabel.Layout.Row = 3;
+            app.ETaskTypeDropDownLabel.Layout.Column = 1;
+            app.ETaskTypeDropDownLabel.Text = 'Task';
 
             % Create ETaskTypeDropDown
             app.ETaskTypeDropDown = uidropdown(app.EP1GridLayout);
@@ -3690,13 +3717,13 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.ETaskTypeDropDown.Layout.Column = [2 3];
             app.ETaskTypeDropDown.Value = 'Multi-task';
 
-            % Create SpecialLabel
-            app.SpecialLabel = uilabel(app.EP1GridLayout);
-            app.SpecialLabel.FontWeight = 'bold';
-            app.SpecialLabel.Tooltip = {'Single-task EA Option'};
-            app.SpecialLabel.Layout.Row = 5;
-            app.SpecialLabel.Layout.Column = 1;
-            app.SpecialLabel.Text = 'Special';
+            % Create ESpecialTypeDropDownLabel
+            app.ESpecialTypeDropDownLabel = uilabel(app.EP1GridLayout);
+            app.ESpecialTypeDropDownLabel.FontWeight = 'bold';
+            app.ESpecialTypeDropDownLabel.Tooltip = {'Single-task EA Option'};
+            app.ESpecialTypeDropDownLabel.Layout.Row = 5;
+            app.ESpecialTypeDropDownLabel.Layout.Column = 1;
+            app.ESpecialTypeDropDownLabel.Text = 'Special';
 
             % Create ESpecialTypeDropDown
             app.ESpecialTypeDropDown = uidropdown(app.EP1GridLayout);
@@ -3708,13 +3735,13 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.ESpecialTypeDropDown.Layout.Column = [2 3];
             app.ESpecialTypeDropDown.Value = 'None';
 
-            % Create ObjectiveLabel_2
-            app.ObjectiveLabel_2 = uilabel(app.EP1GridLayout);
-            app.ObjectiveLabel_2.FontWeight = 'bold';
-            app.ObjectiveLabel_2.Tooltip = {'Single-task EA Option'};
-            app.ObjectiveLabel_2.Layout.Row = 4;
-            app.ObjectiveLabel_2.Layout.Column = 1;
-            app.ObjectiveLabel_2.Text = 'Objective';
+            % Create EObjectiveTypeDropDownLabel
+            app.EObjectiveTypeDropDownLabel = uilabel(app.EP1GridLayout);
+            app.EObjectiveTypeDropDownLabel.FontWeight = 'bold';
+            app.EObjectiveTypeDropDownLabel.Tooltip = {'Single-task EA Option'};
+            app.EObjectiveTypeDropDownLabel.Layout.Row = 4;
+            app.EObjectiveTypeDropDownLabel.Layout.Column = 1;
+            app.EObjectiveTypeDropDownLabel.Text = 'Objective';
 
             % Create EObjectiveTypeDropDown
             app.EObjectiveTypeDropDown = uidropdown(app.EP1GridLayout);
@@ -3730,6 +3757,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create GridLayout5
             app.GridLayout5 = uigridlayout(app.EP1GridLayout);
             app.GridLayout5.ColumnWidth = {'2x', '1.2x'};
+            app.GridLayout5.RowHeight = {'1x', '1x', '1x'};
             app.GridLayout5.ColumnSpacing = 5;
             app.GridLayout5.RowSpacing = 7;
             app.GridLayout5.Padding = [0 0 0 0];
@@ -3745,7 +3773,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.ERepsEditField.HorizontalAlignment = 'center';
             app.ERepsEditField.FontWeight = 'bold';
             app.ERepsEditField.Tooltip = {'Number of Independent Repetitions'};
-            app.ERepsEditField.Layout.Row = 1;
+            app.ERepsEditField.Layout.Row = 2;
             app.ERepsEditField.Layout.Column = 2;
             app.ERepsEditField.Value = 1;
 
@@ -3757,25 +3785,46 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EResultsNumEditField.HorizontalAlignment = 'center';
             app.EResultsNumEditField.FontWeight = 'bold';
             app.EResultsNumEditField.Tooltip = {'Convergence Data Length.'; 'Set to 1 to save only the last generation.'; '(Does not affect termination conditions)'};
-            app.EResultsNumEditField.Layout.Row = 2;
+            app.EResultsNumEditField.Layout.Row = 3;
             app.EResultsNumEditField.Layout.Column = 2;
             app.EResultsNumEditField.Value = 50;
 
-            % Create ERunTimesEditFieldLabel
-            app.ERunTimesEditFieldLabel = uilabel(app.GridLayout5);
-            app.ERunTimesEditFieldLabel.FontWeight = 'bold';
-            app.ERunTimesEditFieldLabel.Tooltip = {'Number of Independent Repetitions'};
-            app.ERunTimesEditFieldLabel.Layout.Row = 1;
-            app.ERunTimesEditFieldLabel.Layout.Column = 1;
-            app.ERunTimesEditFieldLabel.Text = 'Repetitions';
+            % Create ERepsEditFieldLabel
+            app.ERepsEditFieldLabel = uilabel(app.GridLayout5);
+            app.ERepsEditFieldLabel.FontWeight = 'bold';
+            app.ERepsEditFieldLabel.Tooltip = {'Number of Independent Repetitions'};
+            app.ERepsEditFieldLabel.Layout.Row = 2;
+            app.ERepsEditFieldLabel.Layout.Column = 1;
+            app.ERepsEditFieldLabel.Text = 'Repetitions';
 
             % Create EResultsNumEditFieldLabel
             app.EResultsNumEditFieldLabel = uilabel(app.GridLayout5);
             app.EResultsNumEditFieldLabel.FontWeight = 'bold';
             app.EResultsNumEditFieldLabel.Tooltip = {'Convergence Data Length.'; 'Set to 1 to save only the last generation.'; '(Does not affect termination conditions)'};
-            app.EResultsNumEditFieldLabel.Layout.Row = 2;
+            app.EResultsNumEditFieldLabel.Layout.Row = 3;
             app.EResultsNumEditFieldLabel.Layout.Column = 1;
             app.EResultsNumEditFieldLabel.Text = 'Data Length';
+
+            % Create ERngSeedEditField
+            app.ERngSeedEditField = uieditfield(app.GridLayout5, 'numeric');
+            app.ERngSeedEditField.Limits = [1 Inf];
+            app.ERngSeedEditField.RoundFractionalValues = 'on';
+            app.ERngSeedEditField.ValueDisplayFormat = '%d';
+            app.ERngSeedEditField.HorizontalAlignment = 'center';
+            app.ERngSeedEditField.FontWeight = 'bold';
+            app.ERngSeedEditField.Tooltip = {'Seed for random number generation'; '(For the r-th independent repetition, use rng(seed + r - 1))'};
+            app.ERngSeedEditField.Layout.Row = 1;
+            app.ERngSeedEditField.Layout.Column = 2;
+            app.ERngSeedEditField.Value = 2333;
+
+            % Create ERngSeedCheckBox
+            app.ERngSeedCheckBox = uicheckbox(app.GridLayout5);
+            app.ERngSeedCheckBox.Tooltip = {'Enable random seed control flag'; '(When checked, each r-th repetition uses rng(seed + r - 1))'};
+            app.ERngSeedCheckBox.Text = 'Rand Seed';
+            app.ERngSeedCheckBox.FontWeight = 'bold';
+            app.ERngSeedCheckBox.Layout.Row = 1;
+            app.ERngSeedCheckBox.Layout.Column = 1;
+            app.ERngSeedCheckBox.Value = true;
 
             % Create EParallelCheckBox
             app.EParallelCheckBox = uicheckbox(app.EP1GridLayout);
