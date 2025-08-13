@@ -1,7 +1,7 @@
-function result = CV(MTOData, varargin)
-% <Metric> <Single-objective>
+function result = Obj(MTOData, varargin)
+% <Metric> <Single-objective> <None/Constrained>
 
-% Constraint Violation
+% Objective Value
 
 %------------------------------- Copyright --------------------------------
 % Copyright (c) Yanchi Li. You are free to use the MToP for research
@@ -37,19 +37,22 @@ for prob = 1:length(MTOData.Problems)
 end
 result.ColumnName = {MTOData.Algorithms.Name};
 
-% Calculate Constraint Violation
+% Calculate Objective
 row = 1;
 for prob = 1:length(MTOData.Problems)
     for task = 1:MTOData.Problems(prob).T
         for algo = 1:length(MTOData.Algorithms)
             gen = size(MTOData.Results(prob, algo, 1).Obj, 2);
+            Obj = zeros(MTOData.Reps, gen);
             CV = zeros(MTOData.Reps, gen);
             for rep = 1:MTOData.Reps
+                Obj(rep, :) = MTOData.Results(prob, algo, rep).Obj(task, :);
                 CV(rep, :) = MTOData.Results(prob, algo, rep).CV(task, :);
             end
-            result.TableData(row, algo, :) = CV(:, end);
+            Obj(CV > 0) = NaN;
+            result.TableData(row, algo, :) = Obj(:, end);
             for rep = 1:MTOData.Reps
-                result.ConvergeData.Y(row, algo, rep, :) = CV(rep, :);
+                result.ConvergeData.Y(row, algo, rep, :) = Obj(rep, :);
                 result.ConvergeData.X(row, algo, rep, :) = [1:gen] ./ gen .* MTOData.Problems(prob).maxFE ./ MTOData.Problems(prob).T;
             end
         end

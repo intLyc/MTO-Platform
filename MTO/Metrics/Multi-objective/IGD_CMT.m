@@ -1,7 +1,7 @@
-function result = HV_CMT(MTOData, varargin)
-% <Metric> <Multi-objective>
+function result = IGD_CMT(MTOData, varargin)
+% <Metric> <Multi-objective> <Competitive>
 
-% Competitive Hypervolume of All Tasks
+% Competitive IGD of All Tasks
 
 %------------------------------- Reference --------------------------------
 % @Article{Li2022CompetitiveMTO,
@@ -28,7 +28,7 @@ if length(varargin) >= 1
     Par_flag = varargin{1};
 end
 
-result.Metric = 'Max';
+result.Metric = 'Min';
 result.RowName = {};
 result.ColumnName = {};
 % Data for Table
@@ -51,20 +51,15 @@ result.ColumnName = {MTOData.Algorithms.Name};
 % Calculate Competitive HV
 for prob = 1:length(MTOData.Problems)
     % Get Optimum
-    AllBestObj = [];
-    AllBestCV = [];
-    for algo = 1:length(MTOData.Algorithms)
-        for task = 1:MTOData.Problems(prob).T
-            for rep = 1:MTOData.Reps
-                AllBestObj = [AllBestObj; squeeze(MTOData.Results(prob, algo, rep).Obj{task}(end, :, :))];
-                AllBestCV = [AllBestCV; squeeze(MTOData.Results(prob, algo, rep).CV(task, end, :))];
-            end
-        end
+    AllOptimum = [];
+    for task = 1:MTOData.Problems(prob).T
+        AllOptimum = [AllOptimum; MTOData.Problems(prob).Optimum{task}];
     end
-    optimum = getBestObj(AllBestObj, AllBestCV);
+    AllCV = zeros(size(AllOptimum, 1), 1);
+    optimum = getBestObj(AllOptimum, AllCV);
     for algo = 1:length(MTOData.Algorithms)
         gen = size(MTOData.Results(prob, algo, 1).Obj{1}, 1);
-        hv = zeros(MTOData.Reps, gen);
+        igd = zeros(MTOData.Reps, gen);
         BestObj = {};
         if Par_flag
             parfor rep = 1:MTOData.Reps
@@ -77,7 +72,7 @@ for prob = 1:length(MTOData.Problems)
                         CV = [CV; CV_t];
                     end
                     BestObj{rep} = getBestObj(Obj, CV);
-                    hv(rep, g) = getHV(BestObj{rep}, optimum);
+                    igd(rep, g) = getIGD(BestObj{rep}, optimum);
                 end
             end
         else
@@ -91,13 +86,13 @@ for prob = 1:length(MTOData.Problems)
                         CV = [CV; CV_t];
                     end
                     BestObj{rep} = getBestObj(Obj, CV);
-                    hv(rep, g) = getHV(BestObj{rep}, optimum);
+                    igd(rep, g) = getIGD(BestObj{rep}, optimum);
                 end
             end
         end
-        result.TableData(prob, algo, :) = hv(:, end);
+        result.TableData(prob, algo, :) = igd(:, end);
         for rep = 1:MTOData.Reps
-            result.ConvergeData.Y(prob, algo, rep, :) = hv(rep, :);
+            result.ConvergeData.Y(prob, algo, rep, :) = igd(rep, :);
             result.ConvergeData.X(prob, algo, rep, :) = [1:gen] ./ gen .* MTOData.Problems(prob).maxFE;
             result.ParetoData.Obj{prob, algo, rep} = squeeze(BestObj{rep}(:, :));
         end

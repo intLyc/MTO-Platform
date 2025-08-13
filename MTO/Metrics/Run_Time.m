@@ -1,5 +1,5 @@
 function result = Run_Time(MTOData, varargin)
-% <Metric> <Single-objective/Multi-objective>
+% <Metric> <Single-objective/Multi-objective> <None/Constrained/Competitive>
 
 % Run Time
 

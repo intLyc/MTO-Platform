@@ -1,5 +1,5 @@
 function result = Spread(MTOData, varargin)
-% <Metric> <Multi-objective>
+% <Metric> <Multi-objective> <None/Constrained>
 
 % Spread
 

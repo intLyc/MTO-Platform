@@ -1,7 +1,18 @@
-function result = Spread_CMT(MTOData, varargin)
-% <Metric> <Multi-objective>
+function result = HV_CMT(MTOData, varargin)
+% <Metric> <Multi-objective> <Competitive>
 
-% Competitive Spread of All Tasks
+% Competitive Hypervolume of All Tasks
+
+%------------------------------- Reference --------------------------------
+% @Article{Li2022CompetitiveMTO,
+%   author     = {Li, Genghui and Zhang, Qingfu and Wang, Zhenkun},
+%   journal    = {IEEE Transactions on Evolutionary Computation},
+%   title      = {Evolutionary Competitive Multitasking Optimization},
+%   year       = {2022},
+%   pages      = {1-1},
+%   doi        = {10.1109/TEVC.2022.3141819},
+% }
+%--------------------------------------------------------------------------
 
 %------------------------------- Copyright --------------------------------
 % Copyright (c) Yanchi Li. You are free to use the MToP for research
@@ -17,7 +28,7 @@ if length(varargin) >= 1
     Par_flag = varargin{1};
 end
 
-result.Metric = 'Min';
+result.Metric = 'Max';
 result.RowName = {};
 result.ColumnName = {};
 % Data for Table
@@ -37,7 +48,7 @@ end
 result.RowName = {MTOData.Problems.Name};
 result.ColumnName = {MTOData.Algorithms.Name};
 
-% Calculate Competitive Spread
+% Calculate Competitive HV
 for prob = 1:length(MTOData.Problems)
     % Get Optimum
     AllBestObj = [];
@@ -53,7 +64,7 @@ for prob = 1:length(MTOData.Problems)
     optimum = getBestObj(AllBestObj, AllBestCV);
     for algo = 1:length(MTOData.Algorithms)
         gen = size(MTOData.Results(prob, algo, 1).Obj{1}, 1);
-        spread = zeros(MTOData.Reps, gen);
+        hv = zeros(MTOData.Reps, gen);
         BestObj = {};
         if Par_flag
             parfor rep = 1:MTOData.Reps
@@ -66,7 +77,7 @@ for prob = 1:length(MTOData.Problems)
                         CV = [CV; CV_t];
                     end
                     BestObj{rep} = getBestObj(Obj, CV);
-                    spread(rep, g) = getSpread(BestObj{rep}, optimum);
+                    hv(rep, g) = getHV(BestObj{rep}, optimum);
                 end
             end
         else
@@ -80,13 +91,13 @@ for prob = 1:length(MTOData.Problems)
                         CV = [CV; CV_t];
                     end
                     BestObj{rep} = getBestObj(Obj, CV);
-                    spread(rep, g) = getSpread(BestObj{rep}, optimum);
+                    hv(rep, g) = getHV(BestObj{rep}, optimum);
                 end
             end
         end
-        result.TableData(prob, algo, :) = spread(:, end);
+        result.TableData(prob, algo, :) = hv(:, end);
         for rep = 1:MTOData.Reps
-            result.ConvergeData.Y(prob, algo, rep, :) = spread(rep, :);
+            result.ConvergeData.Y(prob, algo, rep, :) = hv(rep, :);
             result.ConvergeData.X(prob, algo, rep, :) = [1:gen] ./ gen .* MTOData.Problems(prob).maxFE;
             result.ParetoData.Obj{prob, algo, rep} = squeeze(BestObj{rep}(:, :));
         end

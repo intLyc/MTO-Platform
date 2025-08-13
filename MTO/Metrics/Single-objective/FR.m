@@ -1,5 +1,5 @@
 function result = FR(MTOData, varargin)
-% <Metric> <Single-objective>
+% <Metric> <Single-objective> <Constrained>
 
 % Feasible Rate
 

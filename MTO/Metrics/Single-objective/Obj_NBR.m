@@ -1,5 +1,5 @@
 function result = Obj_NBR(MTOData, varargin)
-% <Metric> <Single-objective>
+% <Metric> <Single-objective> <None/Constrained>
 
 % Number of Best Results for All Tasks - Objective
 

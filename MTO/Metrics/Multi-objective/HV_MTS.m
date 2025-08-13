@@ -1,7 +1,7 @@
-function result = IGD_MTS(MTOData, varargin)
-% <Metric> <Multi-objective>
+function result = HV_MTS(MTOData, varargin)
+% <Metric> <Multi-objective> <None/Constrained>
 
-% Multi-task Score on IGD
+% Multi-task Score on HV
 
 %------------------------------- Reference --------------------------------
 % @Article{Da2017CEC2017-MTSO,
@@ -26,7 +26,7 @@ if length(varargin) >= 1
     Par_flag = varargin{1};
 end
 
-result.Metric = 'Min';
+result.Metric = 'Max';
 result.RowName = {};
 result.ColumnName = {};
 % Data for Table
@@ -41,18 +41,18 @@ result.RowName = {MTOData.Problems.Name};
 result.ColumnName = {MTOData.Algorithms.Name};
 
 if isfield(MTOData, 'Metrics')
-    idx = find(strcmp({MTOData.Metrics.Name}, 'IGD'));
+    idx = find(strcmp({MTOData.Metrics.Name}, 'HV'));
     if ~isempty(idx)
-        igd_result = MTOData.Metrics(idx).Result;
+        hv_result = MTOData.Metrics(idx).Result;
     else
-        igd_result = IGD(MTOData, Par_flag);
+        hv_result = HV(MTOData, Par_flag);
     end
 else
-    igd_result = IGD(MTOData, Par_flag);
+    hv_result = HV(MTOData, Par_flag);
 end
 
 % Calculate Multi-task Score
-igd_matrix = igd_result.ConvergeData.Y;
+hv_matrix = hv_result.ConvergeData.Y;
 row = 1;
 for prob = 1:length(MTOData.Problems)
     AlgoNum = length(MTOData.Algorithms);
@@ -60,12 +60,12 @@ for prob = 1:length(MTOData.Problems)
     Gen = size(MTOData.Results(1, 1, 1).Obj{1}, 1);
     for task = 1:MTOData.Problems(prob).T
         for gen = 1:Gen
-            mean_task = mean(igd_matrix(row, :, :, gen), 'all');
-            std_task = std(igd_matrix(row, :, :, gen), 0, 'all');
+            mean_task = mean(hv_matrix(row, :, :, gen), 'all');
+            std_task = std(hv_matrix(row, :, :, gen), 0, 'all');
             if std_task == 0
                 score_temp(task, 1:AlgoNum, 1:MTOData.Reps, gen) = 0;
             else
-                score_temp(task, 1:AlgoNum, 1:MTOData.Reps, gen) = (igd_matrix(row, 1:AlgoNum, 1:MTOData.Reps, gen) - mean_task) ./ std_task;
+                score_temp(task, 1:AlgoNum, 1:MTOData.Reps, gen) = (hv_matrix(row, 1:AlgoNum, 1:MTOData.Reps, gen) - mean_task) ./ std_task;
             end
         end
         row = row + 1;

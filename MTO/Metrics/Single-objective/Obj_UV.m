@@ -1,5 +1,5 @@
 function result = Obj_UV(MTOData, varargin)
-% <Metric> <Single-objective>
+% <Metric> <Single-objective> <None/Constrained>
 
 % Objective - Unified Value for all task
 % UObj = (Obj - Min) / (Max - Min)

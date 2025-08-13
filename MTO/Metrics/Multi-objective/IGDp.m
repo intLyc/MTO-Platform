@@ -1,7 +1,7 @@
-function result = IGD(MTOData, varargin)
-% <Metric> <Multi-objective>
+function result = IGDp(MTOData, varargin)
+% <Metric> <Multi-objective> <None/Constrained>
 
-% Inverted Generational Distance (IGD)
+% Inverted Generational Distance Plus (IGD+)
 
 %------------------------------- Copyright --------------------------------
 % Copyright (c) Yanchi Li. You are free to use the MToP for research
@@ -46,14 +46,14 @@ for prob = 1:length(MTOData.Problems)
 end
 result.ColumnName = {MTOData.Algorithms.Name};
 
-% Calculate IGD
+% Calculate IGD+
 row = 1;
 for prob = 1:length(MTOData.Problems)
     optimum = MTOData.Problems(prob).Optimum;
     for task = 1:MTOData.Problems(prob).T
         for algo = 1:length(MTOData.Algorithms)
             gen = size(MTOData.Results(prob, algo, 1).Obj{task}, 1);
-            igd = zeros(MTOData.Reps, gen);
+            igdp = zeros(MTOData.Reps, gen);
             BestObj = {};
             if Par_flag
                 parfor rep = 1:MTOData.Reps
@@ -61,7 +61,7 @@ for prob = 1:length(MTOData.Problems)
                         Obj = squeeze(MTOData.Results(prob, algo, rep).Obj{task}(g, :, :));
                         CV = squeeze(MTOData.Results(prob, algo, rep).CV(task, g, :));
                         BestObj{rep} = getBestObj(Obj, CV);
-                        igd(rep, g) = getIGD(BestObj{rep}, optimum{task});
+                        igdp(rep, g) = getIGDp(BestObj{rep}, optimum{task});
                     end
                 end
             else
@@ -70,13 +70,13 @@ for prob = 1:length(MTOData.Problems)
                         Obj = squeeze(MTOData.Results(prob, algo, rep).Obj{task}(g, :, :));
                         CV = squeeze(MTOData.Results(prob, algo, rep).CV(task, g, :));
                         BestObj{rep} = getBestObj(Obj, CV);
-                        igd(rep, g) = getIGD(BestObj{rep}, optimum{task});
+                        igdp(rep, g) = getIGDp(BestObj{rep}, optimum{task});
                     end
                 end
             end
-            result.TableData(row, algo, :) = igd(:, end);
+            result.TableData(row, algo, :) = igdp(:, end);
             for rep = 1:MTOData.Reps
-                result.ConvergeData.Y(row, algo, rep, :) = igd(rep, :);
+                result.ConvergeData.Y(row, algo, rep, :) = igdp(rep, :);
                 result.ConvergeData.X(row, algo, rep, :) = [1:gen] ./ gen .* MTOData.Problems(prob).maxFE ./ MTOData.Problems(prob).T;
                 result.ParetoData.Obj{row, algo, rep} = squeeze(BestObj{rep}(:, :));
             end

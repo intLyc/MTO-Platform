@@ -1,18 +1,7 @@
-function result = IGD_CMT(MTOData, varargin)
-% <Metric> <Multi-objective>
+function result = Spread_CMT(MTOData, varargin)
+% <Metric> <Multi-objective> <Competitive>
 
-% Competitive IGD of All Tasks
-
-%------------------------------- Reference --------------------------------
-% @Article{Li2022CompetitiveMTO,
-%   author     = {Li, Genghui and Zhang, Qingfu and Wang, Zhenkun},
-%   journal    = {IEEE Transactions on Evolutionary Computation},
-%   title      = {Evolutionary Competitive Multitasking Optimization},
-%   year       = {2022},
-%   pages      = {1-1},
-%   doi        = {10.1109/TEVC.2022.3141819},
-% }
-%--------------------------------------------------------------------------
+% Competitive Spread of All Tasks
 
 %------------------------------- Copyright --------------------------------
 % Copyright (c) Yanchi Li. You are free to use the MToP for research
@@ -48,18 +37,23 @@ end
 result.RowName = {MTOData.Problems.Name};
 result.ColumnName = {MTOData.Algorithms.Name};
 
-% Calculate Competitive HV
+% Calculate Competitive Spread
 for prob = 1:length(MTOData.Problems)
     % Get Optimum
-    AllOptimum = [];
-    for task = 1:MTOData.Problems(prob).T
-        AllOptimum = [AllOptimum; MTOData.Problems(prob).Optimum{task}];
+    AllBestObj = [];
+    AllBestCV = [];
+    for algo = 1:length(MTOData.Algorithms)
+        for task = 1:MTOData.Problems(prob).T
+            for rep = 1:MTOData.Reps
+                AllBestObj = [AllBestObj; squeeze(MTOData.Results(prob, algo, rep).Obj{task}(end, :, :))];
+                AllBestCV = [AllBestCV; squeeze(MTOData.Results(prob, algo, rep).CV(task, end, :))];
+            end
+        end
     end
-    AllCV = zeros(size(AllOptimum, 1), 1);
-    optimum = getBestObj(AllOptimum, AllCV);
+    optimum = getBestObj(AllBestObj, AllBestCV);
     for algo = 1:length(MTOData.Algorithms)
         gen = size(MTOData.Results(prob, algo, 1).Obj{1}, 1);
-        igd = zeros(MTOData.Reps, gen);
+        spread = zeros(MTOData.Reps, gen);
         BestObj = {};
         if Par_flag
             parfor rep = 1:MTOData.Reps
@@ -72,7 +66,7 @@ for prob = 1:length(MTOData.Problems)
                         CV = [CV; CV_t];
                     end
                     BestObj{rep} = getBestObj(Obj, CV);
-                    igd(rep, g) = getIGD(BestObj{rep}, optimum);
+                    spread(rep, g) = getSpread(BestObj{rep}, optimum);
                 end
             end
         else
@@ -86,13 +80,13 @@ for prob = 1:length(MTOData.Problems)
                         CV = [CV; CV_t];
                     end
                     BestObj{rep} = getBestObj(Obj, CV);
-                    igd(rep, g) = getIGD(BestObj{rep}, optimum);
+                    spread(rep, g) = getSpread(BestObj{rep}, optimum);
                 end
             end
         end
-        result.TableData(prob, algo, :) = igd(:, end);
+        result.TableData(prob, algo, :) = spread(:, end);
         for rep = 1:MTOData.Reps
-            result.ConvergeData.Y(prob, algo, rep, :) = igd(rep, :);
+            result.ConvergeData.Y(prob, algo, rep, :) = spread(rep, :);
             result.ConvergeData.X(prob, algo, rep, :) = [1:gen] ./ gen .* MTOData.Problems(prob).maxFE;
             result.ParetoData.Obj{prob, algo, rep} = squeeze(BestObj{rep}(:, :));
         end

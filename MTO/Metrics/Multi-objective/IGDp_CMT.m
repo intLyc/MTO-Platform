@@ -1,5 +1,5 @@
 function result = IGDp_CMT(MTOData, varargin)
-% <Metric> <Multi-objective>
+% <Metric> <Multi-objective> <Competitive>
 
 % Competitive IGD+ of All Tasks
 
