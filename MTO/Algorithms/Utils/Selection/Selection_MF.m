@@ -33,11 +33,11 @@ population = pop_temp;
 %         population(rank(i)).MFRank(t) = i;
 %     end
 % end
-% 
+%
 % for i = 1:length(population)
 %     fit(i) = 1 / min([population(i).MFRank]);
 % end
-% 
+%
 % [~, rank] = sort(fit, 'descend');
 % population = population(rank(1:Prob.N * Prob.T));
 end
