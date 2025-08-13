@@ -17,7 +17,8 @@ function Task = benchmark_CEC17_CSO(index, dim)
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-file_dir = './Problems/Single-task/CEC17-CSO/Data/';
+current_dir = fileparts(mfilename('fullpath'));
+file_dir = fullfile(current_dir, 'Data/');
 
 %% Boundary Constraint
 ub = 100;

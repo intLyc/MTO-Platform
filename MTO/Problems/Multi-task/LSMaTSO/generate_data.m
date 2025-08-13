@@ -22,9 +22,12 @@ task_num = 50;
 dim = 300;
 m = 50;
 
-file_name = './Problems/Multi-task/LSMaTSO/';
+current_dir = fileparts(mfilename('fullpath'));
+file_dir = fullfile(current_dir, 'Data/');
+if ~exist(file_dir, 'dir')
+    mkdir(file_dir);
+end
 
-mkdir([file_name, 'Data/']);
 for index = 1:5
     switch index
         case 1
@@ -88,7 +91,7 @@ for index = 1:5
             end
     end
 
-    save([file_name, 'Data/LSMaTSO_Data', num2str(index)], 'LSMaTSO_Data');
+    save([current_dir, '/Data/LSMaTSO_Data', num2str(index)], 'LSMaTSO_Data');
 end
 end
 

@@ -40,7 +40,9 @@ switch (index)
         choice_functions = [14, 15, 16, 17, 18, 19, 20];
 end
 
-load(['./Problems/Multi-task/LSMaTSO/Data/LSMaTSO_Data', num2str(index)])
+current_dir = fileparts(mfilename('fullpath'));
+file_dir = fullfile(current_dir, strcat('Data/LSMaTSO_Data', num2str(index)));
+load(file_dir, 'LSMaTSO_Data');
 
 for t = 1:task_num
     func_id = choice_functions(mod(t - 1, length(choice_functions)) + 1);

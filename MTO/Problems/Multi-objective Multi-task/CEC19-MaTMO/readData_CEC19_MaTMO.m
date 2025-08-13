@@ -1,5 +1,7 @@
 function [ShiftVector, RotationMatrix] = readData_CEC19_MaTMO(problem, tasks_num)
-file_dir = './Problems/Multi-objective Multi-task/CEC19-MaTMO/';
+current_dir = fileparts(mfilename('fullpath'));
+file_dir = fullfile(current_dir, '/');
+
 ShiftVector = {};
 RotationMatrix = {};
 for i = 1:tasks_num

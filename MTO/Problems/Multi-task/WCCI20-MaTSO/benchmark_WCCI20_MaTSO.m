@@ -36,11 +36,13 @@ switch (ID)
 end
 for task_id = 1:task_size
     func_id = choice_functions(mod(task_id - 1, length(choice_functions)) + 1);
-    file_dir = strcat("./Problems/Multi-task/WCCI20-MaTSO/Tasks/benchmark_", string(ID));
+    current_dir = fileparts(mfilename('fullpath'));
+    file_dir = fullfile(current_dir, strcat("Tasks/benchmark_", string(ID)));
+
     shift_file = strcat("/bias_", string(task_id));
     rotation_file = strcat("/matrix_", string(task_id));
-    matrix = load(strcat(file_dir, rotation_file));
-    shift = load(strcat(file_dir, shift_file));
+    matrix = load(strcat(file_dir, rotation_file), '-ascii');
+    shift = load(strcat(file_dir, shift_file), '-ascii');
     switch func_id
         case 1
             Tasks(task_id).Dim = 50; % dimensionality of Task

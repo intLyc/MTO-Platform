@@ -69,8 +69,8 @@ methods
     function setTasks(Prob)
         Prob.maxFE = Prob.Ntask * Prob.N * Prob.Gen;
         Prob.T = Prob.Ntask;
-        file_dir = './Problems/Real-world Applications/Planar Kinematic Arm Control Problem/';
-        file_name = [file_dir, 'cvt_d', num2str(Prob.Dim), '_nt', num2str(Prob.Ntask), '.mat'];
+        file_dir = fileparts(mfilename('fullpath'));
+        file_name = [file_dir, '/cvt_d', num2str(Prob.Dim), '_nt', num2str(Prob.Ntask), '.mat'];
         if exist(file_name, 'file')
             load(file_name);
         else

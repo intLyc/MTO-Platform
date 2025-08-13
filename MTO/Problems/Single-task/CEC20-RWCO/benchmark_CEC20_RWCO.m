@@ -21,7 +21,8 @@ function Task = benchmark_CEC20_RWCO(index)
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-file_dir = './Problems/Single-task/CEC20-RWCO/Data/';
+current_dir = fileparts(mfilename('fullpath'));
+file_dir = fullfile(current_dir, 'Data/');
 
 %% load data GBPQL
 G = 0; B = 0; P = 0; Q = 0; L = 0;

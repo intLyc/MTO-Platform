@@ -37,7 +37,8 @@ switch (case_idx)
         c1 = 0; c2 = 1000;
 end
 
-file_dir = './Problems/Multi-task/CEC17-MTSO/Tasks/';
+current_dir = fileparts(mfilename('fullpath'));
+file_dir = fullfile(current_dir, 'Tasks/');
 
 switch (index)
     case 1 % complete intersection with high similarity, Griewank and Rastrigin

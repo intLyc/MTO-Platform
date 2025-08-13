@@ -25,9 +25,11 @@ function Tasks = benchmark_C4TOP(index)
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-file_dir = './Problems/Multi-task/Competitive-C4TOP/Data/';
-load([file_dir, 'M_matrix.mat']);
-load([file_dir, 'O_matrix.mat']);
+current_dir = fileparts(mfilename('fullpath'));
+file_dir = fullfile(current_dir, 'Data/');
+
+load([file_dir, '/M_matrix.mat']);
+load([file_dir, '/O_matrix.mat']);
 
 D = [50, 50, 50, 50, 50, 40];
 Xmin = [-50, -100, -50, -50, -100, -0.5];

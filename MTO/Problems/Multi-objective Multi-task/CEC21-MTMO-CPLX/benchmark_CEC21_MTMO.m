@@ -1,15 +1,16 @@
 function [Tasks] = benchmark_CEC21_MTMO(prob_idx)
 
-root_dir = './Problems/Multi-objective Multi-task/CEC21-MTMO-CPLX/';
-file_dir = [root_dir, 'MData/benchmark_', num2str(prob_idx)];
+current_dir = fileparts(mfilename('fullpath'));
+file_dir = fullfile(current_dir, strcat('MData/benchmark_', num2str(prob_idx)));
+
 switch prob_idx
     case 1
         dim = 50;
         %Task 1
         shift_file = strcat("/bias_", string(1));
         rotation_file = strcat("/matrix_", string(1));
-        Tasks(1).rotation = load(strcat(file_dir, rotation_file));
-        Tasks(1).shift = load(strcat(file_dir, shift_file));
+        Tasks(1).rotation = load(strcat(file_dir, rotation_file), '-ascii');
+        Tasks(1).shift = load(strcat(file_dir, shift_file), '-ascii');
         Tasks(1).tType = 'MMDTLZ';
         Tasks(1).gType = 'F17';
         Tasks(1).f1Type = '';
@@ -20,8 +21,8 @@ switch prob_idx
         %Task 2
         shift_file = strcat("/bias_", string(2));
         rotation_file = strcat("/matrix_", string(2));
-        Tasks(2).rotation = load(strcat(file_dir, rotation_file));
-        Tasks(2).shift = load(strcat(file_dir, shift_file));
+        Tasks(2).rotation = load(strcat(file_dir, rotation_file), '-ascii');
+        Tasks(2).shift = load(strcat(file_dir, shift_file), '-ascii');
         Tasks(2).tType = 'MMZDT';
         Tasks(2).f1Type = 'linear';
         Tasks(2).gType = 'F17';
@@ -40,8 +41,8 @@ switch prob_idx
         %Task 1
         shift_file = strcat("/bias_", string(1));
         rotation_file = strcat("/matrix_", string(1));
-        Tasks(1).rotation = load(strcat(file_dir, rotation_file));
-        Tasks(1).shift = load(strcat(file_dir, shift_file));
+        Tasks(1).rotation = load(strcat(file_dir, rotation_file), '-ascii');
+        Tasks(1).shift = load(strcat(file_dir, shift_file), '-ascii');
         Tasks(1).tType = 'MMDTLZ';
         Tasks(1).f1Type = '';
         Tasks(1).hType = '';
@@ -52,8 +53,8 @@ switch prob_idx
         %Task 2
         shift_file = strcat("/bias_", string(2));
         rotation_file = strcat("/matrix_", string(2));
-        Tasks(2).rotation = load(strcat(file_dir, rotation_file));
-        Tasks(2).shift = load(strcat(file_dir, shift_file));
+        Tasks(2).rotation = load(strcat(file_dir, rotation_file), '-ascii');
+        Tasks(2).shift = load(strcat(file_dir, shift_file), '-ascii');
         Tasks(2).tType = 'MMDTLZ';
         Tasks(2).f1Type = '';
         Tasks(2).hType = '';
@@ -72,8 +73,8 @@ switch prob_idx
         %Task 1
         shift_file = strcat("/bias_", string(1));
         rotation_file = strcat("/matrix_", string(1));
-        Tasks(1).rotation = load(strcat(file_dir, rotation_file));
-        Tasks(1).shift = load(strcat(file_dir, shift_file));
+        Tasks(1).rotation = load(strcat(file_dir, rotation_file), '-ascii');
+        Tasks(1).shift = load(strcat(file_dir, shift_file), '-ascii');
         Tasks(1).tType = 'MMDTLZ';
         Tasks(1).f1Type = '';
         Tasks(1).hType = '';
@@ -84,8 +85,8 @@ switch prob_idx
         %Task 2
         shift_file = strcat("/bias_", string(2));
         rotation_file = strcat("/matrix_", string(2));
-        Tasks(2).rotation = load(strcat(file_dir, rotation_file));
-        Tasks(2).shift = load(strcat(file_dir, shift_file));
+        Tasks(2).rotation = load(strcat(file_dir, rotation_file), '-ascii');
+        Tasks(2).shift = load(strcat(file_dir, shift_file), '-ascii');
         Tasks(2).tType = 'MMZDT';
         Tasks(2).f1Type = 'linear';
         Tasks(2).gType = 'F22';
@@ -104,8 +105,8 @@ switch prob_idx
         %Task 1
         shift_file = strcat("/bias_", string(1));
         rotation_file = strcat("/matrix_", string(1));
-        Tasks(1).rotation = load(strcat(file_dir, rotation_file));
-        Tasks(1).shift = load(strcat(file_dir, shift_file));
+        Tasks(1).rotation = load(strcat(file_dir, rotation_file), '-ascii');
+        Tasks(1).shift = load(strcat(file_dir, shift_file), '-ascii');
         Tasks(1).tType = 'MMZDT';
         Tasks(1).f1Type = 'linear';
         Tasks(1).gType = 'F15';
@@ -116,8 +117,8 @@ switch prob_idx
         %Task 2
         shift_file = strcat("/bias_", string(2));
         rotation_file = strcat("/matrix_", string(2));
-        Tasks(2).rotation = load(strcat(file_dir, rotation_file));
-        Tasks(2).shift = load(strcat(file_dir, shift_file));
+        Tasks(2).rotation = load(strcat(file_dir, rotation_file), '-ascii');
+        Tasks(2).shift = load(strcat(file_dir, shift_file), '-ascii');
         Tasks(2).tType = 'MMZDT';
         Tasks(2).f1Type = 'linear';
         Tasks(2).gType = 'F15';
@@ -136,8 +137,8 @@ switch prob_idx
         %Task 1
         shift_file = strcat("/bias_", string(1));
         rotation_file = strcat("/matrix_", string(1));
-        Tasks(1).rotation = load(strcat(file_dir, rotation_file));
-        Tasks(1).shift = load(strcat(file_dir, shift_file));
+        Tasks(1).rotation = load(strcat(file_dir, rotation_file), '-ascii');
+        Tasks(1).shift = load(strcat(file_dir, shift_file), '-ascii');
         Tasks(1).tType = 'MMDTLZ';
         Tasks(1).f1Type = '';
         Tasks(1).hType = '';
@@ -148,8 +149,8 @@ switch prob_idx
         %Task 2
         shift_file = strcat("/bias_", string(2));
         rotation_file = strcat("/matrix_", string(2));
-        Tasks(2).rotation = load(strcat(file_dir, rotation_file));
-        Tasks(2).shift = load(strcat(file_dir, shift_file));
+        Tasks(2).rotation = load(strcat(file_dir, rotation_file), '-ascii');
+        Tasks(2).shift = load(strcat(file_dir, shift_file), '-ascii');
         Tasks(2).tType = 'MMZDT';
         Tasks(2).f1Type = 'linear';
         Tasks(2).gType = 'F4';
@@ -168,8 +169,8 @@ switch prob_idx
         %Task 1
         shift_file = strcat("/bias_", string(1));
         rotation_file = strcat("/matrix_", string(1));
-        Tasks(1).rotation = load(strcat(file_dir, rotation_file));
-        Tasks(1).shift = load(strcat(file_dir, shift_file));
+        Tasks(1).rotation = load(strcat(file_dir, rotation_file), '-ascii');
+        Tasks(1).shift = load(strcat(file_dir, shift_file), '-ascii');
         Tasks(1).tType = 'MMDTLZ';
         Tasks(1).f1Type = '';
         Tasks(1).hType = '';
@@ -180,8 +181,8 @@ switch prob_idx
         %Task 2
         shift_file = strcat("/bias_", string(2));
         rotation_file = strcat("/matrix_", string(2));
-        Tasks(2).rotation = load(strcat(file_dir, rotation_file));
-        Tasks(2).shift = load(strcat(file_dir, shift_file));
+        Tasks(2).rotation = load(strcat(file_dir, rotation_file), '-ascii');
+        Tasks(2).shift = load(strcat(file_dir, shift_file), '-ascii');
         Tasks(2).tType = 'MMDTLZ';
         Tasks(2).f1Type = '';
         Tasks(2).hType = '';
@@ -200,8 +201,8 @@ switch prob_idx
         %Task 1
         shift_file = strcat("/bias_", string(1));
         rotation_file = strcat("/matrix_", string(1));
-        Tasks(1).rotation = load(strcat(file_dir, rotation_file));
-        Tasks(1).shift = load(strcat(file_dir, shift_file));
+        Tasks(1).rotation = load(strcat(file_dir, rotation_file), '-ascii');
+        Tasks(1).shift = load(strcat(file_dir, shift_file), '-ascii');
         Tasks(1).tType = 'MMDTLZ';
         Tasks(1).f1Type = '';
         Tasks(1).hType = '';
@@ -212,8 +213,8 @@ switch prob_idx
         %Task 2
         shift_file = strcat("/bias_", string(2));
         rotation_file = strcat("/matrix_", string(2));
-        Tasks(2).rotation = load(strcat(file_dir, rotation_file));
-        Tasks(2).shift = load(strcat(file_dir, shift_file));
+        Tasks(2).rotation = load(strcat(file_dir, rotation_file), '-ascii');
+        Tasks(2).shift = load(strcat(file_dir, shift_file), '-ascii');
         Tasks(2).tType = 'MMZDT';
         Tasks(2).f1Type = 'linear';
         Tasks(2).gType = 'F8';
@@ -232,8 +233,8 @@ switch prob_idx
         %Task 1
         shift_file = strcat("/bias_", string(1));
         rotation_file = strcat("/matrix_", string(1));
-        Tasks(1).rotation = load(strcat(file_dir, rotation_file));
-        Tasks(1).shift = load(strcat(file_dir, shift_file));
+        Tasks(1).rotation = load(strcat(file_dir, rotation_file), '-ascii');
+        Tasks(1).shift = load(strcat(file_dir, shift_file), '-ascii');
         Tasks(1).tType = 'MMDTLZ';
         Tasks(1).f1Type = '';
         Tasks(1).hType = '';
@@ -244,8 +245,8 @@ switch prob_idx
         %Task 2
         shift_file = strcat("/bias_", string(2));
         rotation_file = strcat("/matrix_", string(2));
-        Tasks(2).rotation = load(strcat(file_dir, rotation_file));
-        Tasks(2).shift = load(strcat(file_dir, shift_file));
+        Tasks(2).rotation = load(strcat(file_dir, rotation_file), '-ascii');
+        Tasks(2).shift = load(strcat(file_dir, shift_file), '-ascii');
         Tasks(2).tType = 'MMZDT';
         Tasks(2).f1Type = 'linear';
         Tasks(2).gType = 'F20';
@@ -264,8 +265,8 @@ switch prob_idx
         %Task 1
         shift_file = strcat("/bias_", string(1));
         rotation_file = strcat("/matrix_", string(1));
-        Tasks(1).rotation = load(strcat(file_dir, rotation_file));
-        Tasks(1).shift = load(strcat(file_dir, shift_file));
+        Tasks(1).rotation = load(strcat(file_dir, rotation_file), '-ascii');
+        Tasks(1).shift = load(strcat(file_dir, shift_file), '-ascii');
         Tasks(1).tType = 'MMDTLZ';
         Tasks(1).f1Type = '';
         Tasks(1).hType = '';
@@ -276,8 +277,8 @@ switch prob_idx
         %Task 2
         shift_file = strcat("/bias_", string(2));
         rotation_file = strcat("/matrix_", string(2));
-        Tasks(2).rotation = load(strcat(file_dir, rotation_file));
-        Tasks(2).shift = load(strcat(file_dir, shift_file));
+        Tasks(2).rotation = load(strcat(file_dir, rotation_file), '-ascii');
+        Tasks(2).shift = load(strcat(file_dir, shift_file), '-ascii');
         Tasks(2).tType = 'MMZDT';
         Tasks(2).f1Type = 'linear';
         Tasks(2).gType = 'F18';
@@ -296,8 +297,8 @@ switch prob_idx
         %Task 1
         shift_file = strcat("/bias_", string(1));
         rotation_file = strcat("/matrix_", string(1));
-        Tasks(1).rotation = load(strcat(file_dir, rotation_file));
-        Tasks(1).shift = load(strcat(file_dir, shift_file));
+        Tasks(1).rotation = load(strcat(file_dir, rotation_file), '-ascii');
+        Tasks(1).shift = load(strcat(file_dir, shift_file), '-ascii');
         Tasks(1).tType = 'MMDTLZ';
         Tasks(1).f1Type = '';
         Tasks(1).hType = '';
@@ -308,8 +309,8 @@ switch prob_idx
         %Task 2
         shift_file = strcat("/bias_", string(2));
         rotation_file = strcat("/matrix_", string(2));
-        Tasks(2).rotation = load(strcat(file_dir, rotation_file));
-        Tasks(2).shift = load(strcat(file_dir, shift_file));
+        Tasks(2).rotation = load(strcat(file_dir, rotation_file), '-ascii');
+        Tasks(2).shift = load(strcat(file_dir, shift_file), '-ascii');
         Tasks(2).tType = 'MMZDT';
         Tasks(2).f1Type = 'linear';
         Tasks(2).gType = 'F17';

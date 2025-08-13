@@ -29,8 +29,8 @@ methods
     end
 
     function setTasks(Prob)
-        file_dir = './Problems/Multi-objective Multi-task/MTMO-Instance/';
-        load([file_dir, 'M_MTMO_Instance.mat']);
+        file_dir = fileparts(mfilename('fullpath'));
+        load([file_dir, '/M_MTMO_Instance.mat']);
 
         Prob.T = 2;
         Prob.M(1) = 2;

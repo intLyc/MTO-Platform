@@ -23,7 +23,8 @@ function Tasks = benchmark_CEC17_MTSO(index)
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-file_dir = './Problems/Multi-task/CEC17-MTSO/Tasks/';
+current_dir = fileparts(mfilename('fullpath'));
+file_dir = fullfile(current_dir, 'Tasks/');
 
 switch (index)
     case 1 % complete intersection with high similarity, Griewank and Rastrigin

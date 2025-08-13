@@ -26,7 +26,8 @@ methods
     end
 
     function setTasks(Prob)
-        file_dir = './Problems/Multi-objective Multi-task/CEC17-MTMO/Data/';
+        current_dir = fileparts(mfilename('fullpath'));
+        file_dir = fullfile(current_dir, 'Data/');
 
         Prob.T = 2;
         Prob.M(1) = 2;

@@ -26,7 +26,8 @@ methods
     end
 
     function setTasks(Prob)
-        file_dir = './Problems/Multi-objective Multi-task/CEC17-MTMO/Data/';
+        current_dir = fileparts(mfilename('fullpath'));
+        file_dir = fullfile(current_dir, 'Data/');
 
         load([file_dir, 'Snl1.mat'])
         Prob.T = 2;
