@@ -1,5 +1,5 @@
 function result = Obj_AV(MTOData, varargin)
-% <Metric> <Single-objective> <None/Constrained>
+% <Multi-task/Many-task> <Single-objective> <None/Constrained>
 
 % Objective - Average Value for all task
 

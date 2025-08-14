@@ -1,5 +1,5 @@
 function result = Obj_CMT(MTOData, varargin)
-% <Metric> <Single-objective> <Competitive>
+% <Multi-task/Many-task> <Single-objective> <Competitive>
 
 % Minimum Objective Value of All Tasks (for Competitive Multitasking Optimization)
 

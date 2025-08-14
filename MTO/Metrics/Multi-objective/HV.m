@@ -1,5 +1,5 @@
 function result = HV(MTOData, varargin)
-% <Metric> <Multi-objective> <None/Constrained>
+% <Single-task/Multi-task/Many-task> <Multi-objective> <None/Constrained>
 
 % Hypervolume (HV)
 

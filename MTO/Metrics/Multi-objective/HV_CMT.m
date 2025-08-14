@@ -1,5 +1,5 @@
 function result = HV_CMT(MTOData, varargin)
-% <Metric> <Multi-objective> <Competitive>
+% <Multi-task/Many-task> <Multi-objective> <Competitive>
 
 % Competitive Hypervolume of All Tasks
 

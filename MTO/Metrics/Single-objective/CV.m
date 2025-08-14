@@ -1,5 +1,5 @@
 function result = CV(MTOData, varargin)
-% <Metric> <Single-objective> <Constrained>
+% <Single-task/Multi-task/Many-task> <Single-objective> <Constrained>
 
 % Constraint Violation
 

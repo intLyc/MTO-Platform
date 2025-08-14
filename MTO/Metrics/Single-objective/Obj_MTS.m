@@ -1,5 +1,5 @@
 function result = Obj_MTS(MTOData, varargin)
-% <Metric> <Single-objective> <None/Constrained>
+% <Multi-task/Many-task> <Single-objective> <None/Constrained>
 
 %  Objective - Multi-task Score
 

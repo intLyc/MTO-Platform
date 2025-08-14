@@ -1,5 +1,5 @@
 function result = IGDp_MTS(MTOData, varargin)
-% <Metric> <Multi-objective> <None/Constrained>
+% <Multi-task/Many-task> <Multi-objective> <None/Constrained>
 
 % Multi-task Score on IGD+
 

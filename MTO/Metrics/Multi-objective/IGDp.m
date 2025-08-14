@@ -1,5 +1,5 @@
 function result = IGDp(MTOData, varargin)
-% <Metric> <Multi-objective> <None/Constrained>
+% <Single-task/Multi-task/Many-task> <Multi-objective> <None/Constrained>
 
 % Inverted Generational Distance Plus (IGD+)
 

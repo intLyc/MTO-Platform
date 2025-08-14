@@ -1,5 +1,5 @@
 function result = Obj_Neg(MTOData, varargin)
-% <Metric> <Single-objective> <None/Constrained>
+% <Multi-task/Many-task> <Single-objective> <None/Constrained>
 
 % Objective Value (negative)
 

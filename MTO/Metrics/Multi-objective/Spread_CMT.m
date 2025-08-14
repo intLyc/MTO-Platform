@@ -1,5 +1,5 @@
 function result = Spread_CMT(MTOData, varargin)
-% <Metric> <Multi-objective> <Competitive>
+% <Multi-task/Many-task> <Multi-objective> <Competitive>
 
 % Competitive Spread of All Tasks
 

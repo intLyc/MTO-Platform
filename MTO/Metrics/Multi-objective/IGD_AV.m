@@ -1,5 +1,5 @@
 function result = IGD_AV(MTOData, varargin)
-% <Metric> <Multi-objective> <None/Constrained>
+% <Multi-task/Many-task> <Multi-objective> <None/Constrained>
 
 % Inverted Generational Distance (IGD) - Average Value for all task
 
