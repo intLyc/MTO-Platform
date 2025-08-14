@@ -2,144 +2,157 @@ classdef MTO_GUI < matlab.apps.AppBase
 
     % Properties that correspond to app components
     properties (Access = public)
-        MTOPlatformMToPv18UIFigure      matlab.ui.Figure
-        MTOPlatformGridLayout           matlab.ui.container.GridLayout
-        MTOPlatformTabGroup             matlab.ui.container.TabGroup
-        TestModuleTab                   matlab.ui.container.Tab
-        TestGridLayout                  matlab.ui.container.GridLayout
-        TPanel3                         matlab.ui.container.Panel
-        TP3GridLayout                   matlab.ui.container.GridLayout
-        MTOPlatformMToPbyYanchiLiLabel  matlab.ui.control.Label
-        TOutputTextArea                 matlab.ui.control.TextArea
-        TPanel2                         matlab.ui.container.Panel
-        TP2GridLayout                   matlab.ui.container.GridLayout
-        TP24GridLayout                  matlab.ui.container.GridLayout
-        TPauseButton                    matlab.ui.control.Button
-        TStopButton                     matlab.ui.control.Button
-        TStartButton                    matlab.ui.control.Button
-        TP21GridLayout                  matlab.ui.container.GridLayout
-        SampleNumberEditField           matlab.ui.control.NumericEditField
-        SampleNumberEditFieldLabel      matlab.ui.control.Label
-        TExportButton                   matlab.ui.control.Button
-        TShowTypeDropDown               matlab.ui.control.DropDown
-        TUIAxes                         matlab.ui.control.UIAxes
-        TPanel1                         matlab.ui.container.Panel
-        TP1GridLayout                   matlab.ui.container.GridLayout
-        TDrawObjCheckBox                matlab.ui.control.CheckBox
-        TDrawDecCheckBox                matlab.ui.control.CheckBox
-        ObjectiveLabel                  matlab.ui.control.Label
-        TObjectiveTypeDropDown          matlab.ui.control.DropDown
-        TSpecialTypeDropDown            matlab.ui.control.DropDown
-        SpecialLabel_2                  matlab.ui.control.Label
-        TaskLabel                       matlab.ui.control.Label
-        TTaskTypeDropDown               matlab.ui.control.DropDown
-        ProblemDropDownLabel            matlab.ui.control.Label
-        TProblemDropDown                matlab.ui.control.DropDown
-        TProblemTree                    matlab.ui.container.Tree
-        TAlgorithmTree                  matlab.ui.container.Tree
-        TAlgorithmDropDown              matlab.ui.control.DropDown
-        AlgorithmDropDownLabel          matlab.ui.control.Label
-        ExperimentModuleTab             matlab.ui.container.Tab
-        ExperimentsGridLayout           matlab.ui.container.GridLayout
-        EPanel3                         matlab.ui.container.Panel
-        EP3GridLayout                   matlab.ui.container.GridLayout
-        EP3TGridLayout                  matlab.ui.container.GridLayout
-        EUITable                        matlab.ui.control.Table
-        EP3T1GridLayout                 matlab.ui.container.GridLayout
-        EConvergeTypeDropDown           matlab.ui.control.DropDown
-        EParetoButton                   matlab.ui.control.Button
-        EConvergeButton                 matlab.ui.control.Button
-        EDataFormatEditField            matlab.ui.control.EditField
-        ESaveTableButton                matlab.ui.control.Button
-        EHighlightTypeDropDown          matlab.ui.control.DropDown
-        EDataTypeDropDown               matlab.ui.control.DropDown
-        EShowTypeDropDown               matlab.ui.control.DropDown
-        EAlgorithmDropDown              matlab.ui.control.DropDown
-        ETestTypeDropDown               matlab.ui.control.DropDown
-        EPanel2                         matlab.ui.container.Panel
-        EP2GridLayout                   matlab.ui.container.GridLayout
-        GridLayout                      matlab.ui.container.GridLayout
-        ELoadDataButton                 matlab.ui.control.Button
-        ESaveDataButton                 matlab.ui.control.Button
-        GridLayout4                     matlab.ui.container.GridLayout
-        EProblemsDelButton              matlab.ui.control.Button
-        ESelectedProblemsLabel          matlab.ui.control.Label
-        GridLayout3                     matlab.ui.container.GridLayout
-        EAlgorithmsDelButton            matlab.ui.control.Button
-        ESelectedAlgorithmsLabel        matlab.ui.control.Label
-        GridLayout2                     matlab.ui.container.GridLayout
-        EStopButton                     matlab.ui.control.Button
-        EPauseButton                    matlab.ui.control.Button
-        EStartButton                    matlab.ui.control.Button
-        EProblemsTree                   matlab.ui.container.Tree
-        EAlgorithmsTree                 matlab.ui.container.Tree
-        EPanel1                         matlab.ui.container.Panel
-        EP1GridLayout                   matlab.ui.container.GridLayout
-        ESaveDecCheckBox                matlab.ui.control.CheckBox
-        EParallelCheckBox               matlab.ui.control.CheckBox
-        GridLayout5                     matlab.ui.container.GridLayout
-        ERngSeedCheckBox                matlab.ui.control.CheckBox
-        ERngSeedEditField               matlab.ui.control.NumericEditField
-        EResultsNumEditFieldLabel       matlab.ui.control.Label
-        ERepsEditFieldLabel             matlab.ui.control.Label
-        EResultsNumEditField            matlab.ui.control.NumericEditField
-        ERepsEditField                  matlab.ui.control.NumericEditField
-        EObjectiveTypeDropDown          matlab.ui.control.DropDown
-        EObjectiveTypeDropDownLabel     matlab.ui.control.Label
-        ESpecialTypeDropDown            matlab.ui.control.DropDown
-        ESpecialTypeDropDownLabel       matlab.ui.control.Label
-        ETaskTypeDropDown               matlab.ui.control.DropDown
-        ETaskTypeDropDownLabel          matlab.ui.control.Label
-        EProblemListLabel               matlab.ui.control.Label
-        EProblemsListBox                matlab.ui.control.ListBox
-        EAlgorithmListLabel             matlab.ui.control.Label
-        EAlgorithmsListBox              matlab.ui.control.ListBox
-        EAlgorithmsAddButton            matlab.ui.control.Button
-        EProblemsAddButton              matlab.ui.control.Button
-        DataProcessModuleTab            matlab.ui.container.Tab
-        DataProcessGridLayout           matlab.ui.container.GridLayout
-        DPanel2                         matlab.ui.container.Panel
-        DP2GridLayout                   matlab.ui.container.GridLayout
-        DDataTree                       matlab.ui.container.Tree
-        DPanel1                         matlab.ui.container.Panel
-        DP1GridLayout                   matlab.ui.container.GridLayout
+        MTOPlatformMToPv18UIFigure   matlab.ui.Figure
+        MTOPlatformGridLayout        matlab.ui.container.GridLayout
+        MTOPlatformTabGroup          matlab.ui.container.TabGroup
+        TestModuleTab                matlab.ui.container.Tab
+        TestGridLayout               matlab.ui.container.GridLayout
+        TPanel3                      matlab.ui.container.Panel
+        TP3GridLayout                matlab.ui.container.GridLayout
+        MTOPlatformMToPLabel         matlab.ui.control.Label
+        TOutputTextArea              matlab.ui.control.TextArea
+        TPanel2                      matlab.ui.container.Panel
+        TP2GridLayout                matlab.ui.container.GridLayout
+        TP24GridLayout               matlab.ui.container.GridLayout
+        TPauseButton                 matlab.ui.control.Button
+        TStopButton                  matlab.ui.control.Button
+        TStartButton                 matlab.ui.control.Button
+        TP21GridLayout               matlab.ui.container.GridLayout
+        TSampleNumberEditField       matlab.ui.control.NumericEditField
+        SampleNumberEditFieldLabel   matlab.ui.control.Label
+        TExportButton                matlab.ui.control.Button
+        TShowTypeDropDown            matlab.ui.control.DropDown
+        TUIAxes                      matlab.ui.control.UIAxes
+        TPanel1                      matlab.ui.container.Panel
+        TP1GridLayout                matlab.ui.container.GridLayout
+        TDrawObjCheckBox             matlab.ui.control.CheckBox
+        TDrawDecCheckBox             matlab.ui.control.CheckBox
+        ObjectiveLabel               matlab.ui.control.Label
+        TObjectiveTypeDropDown       matlab.ui.control.DropDown
+        TSpecialTypeDropDown         matlab.ui.control.DropDown
+        SpecialLabel_2               matlab.ui.control.Label
+        TaskLabel                    matlab.ui.control.Label
+        TTaskTypeDropDown            matlab.ui.control.DropDown
+        ProblemDropDownLabel         matlab.ui.control.Label
+        TProblemDropDown             matlab.ui.control.DropDown
+        TProblemTree                 matlab.ui.container.Tree
+        TAlgorithmTree               matlab.ui.container.Tree
+        TAlgorithmDropDown           matlab.ui.control.DropDown
+        AlgorithmDropDownLabel       matlab.ui.control.Label
+        ExperimentModuleTab          matlab.ui.container.Tab
+        ExperimentsGridLayout        matlab.ui.container.GridLayout
+        EPanel3                      matlab.ui.container.Panel
+        EP3GridLayout                matlab.ui.container.GridLayout
+        EP3TGridLayout               matlab.ui.container.GridLayout
+        EP3T2GridLayout              matlab.ui.container.GridLayout
+        ESaveTableButton             matlab.ui.control.Button
+        DrawingSelectTableAreaPanel  matlab.ui.container.Panel
+        GridLayout6_3                matlab.ui.container.GridLayout
+        ESplitCheckBox               matlab.ui.control.CheckBox
+        EParetoButton                matlab.ui.control.Button
+        EConvergeButton              matlab.ui.control.Button
+        EConvergeTypeDropDown        matlab.ui.control.DropDown
+        HighlightPanel               matlab.ui.container.Panel
+        GridLayout6_5                matlab.ui.container.GridLayout
+        EHighlightTypeDropDown       matlab.ui.control.DropDown
+        StatisticalTestPanel         matlab.ui.container.Panel
+        GridLayout6_4                matlab.ui.container.GridLayout
+        ETestTypeDropDown            matlab.ui.control.DropDown
+        EAlgorithmDropDown           matlab.ui.control.DropDown
+        MetricandShowTypePanel       matlab.ui.container.Panel
+        GridLayout6_2                matlab.ui.container.GridLayout
+        EDataTypeDropDown            matlab.ui.control.DropDown
+        EDataFormatEditField         matlab.ui.control.EditField
+        EShowTypeDropDown            matlab.ui.control.DropDown
+        EUITable                     matlab.ui.control.Table
+        EPanel2                      matlab.ui.container.Panel
+        EP2GridLayout                matlab.ui.container.GridLayout
+        GridLayout                   matlab.ui.container.GridLayout
+        ELoadDataButton              matlab.ui.control.Button
+        ESaveDataButton              matlab.ui.control.Button
+        GridLayout4                  matlab.ui.container.GridLayout
+        EProblemsDelButton           matlab.ui.control.Button
+        ESelectedProblemsLabel       matlab.ui.control.Label
+        GridLayout3                  matlab.ui.container.GridLayout
+        EAlgorithmsDelButton         matlab.ui.control.Button
+        ESelectedAlgorithmsLabel     matlab.ui.control.Label
+        GridLayout2                  matlab.ui.container.GridLayout
+        EStopButton                  matlab.ui.control.Button
+        EPauseButton                 matlab.ui.control.Button
+        EStartButton                 matlab.ui.control.Button
+        EProblemsTree                matlab.ui.container.Tree
+        EAlgorithmsTree              matlab.ui.container.Tree
+        EPanel1                      matlab.ui.container.Panel
+        EP1GridLayout                matlab.ui.container.GridLayout
+        ESaveDecCheckBox             matlab.ui.control.CheckBox
+        EParallelCheckBox            matlab.ui.control.CheckBox
+        GridLayout5                  matlab.ui.container.GridLayout
+        ERngSeedCheckBox             matlab.ui.control.CheckBox
+        ERngSeedEditField            matlab.ui.control.NumericEditField
+        EResultsNumEditFieldLabel    matlab.ui.control.Label
+        ERepsEditFieldLabel          matlab.ui.control.Label
+        EResultsNumEditField         matlab.ui.control.NumericEditField
+        ERepsEditField               matlab.ui.control.NumericEditField
+        EObjectiveTypeDropDown       matlab.ui.control.DropDown
+        EObjectiveTypeDropDownLabel  matlab.ui.control.Label
+        ESpecialTypeDropDown         matlab.ui.control.DropDown
+        ESpecialTypeDropDownLabel    matlab.ui.control.Label
+        ETaskTypeDropDown            matlab.ui.control.DropDown
+        ETaskTypeDropDownLabel       matlab.ui.control.Label
+        EProblemListLabel            matlab.ui.control.Label
+        EProblemsListBox             matlab.ui.control.ListBox
+        EAlgorithmListLabel          matlab.ui.control.Label
+        EAlgorithmsListBox           matlab.ui.control.ListBox
+        EAlgorithmsAddButton         matlab.ui.control.Button
+        EProblemsAddButton           matlab.ui.control.Button
+        DataProcessModuleTab         matlab.ui.container.Tab
+        DataProcessGridLayout        matlab.ui.container.GridLayout
+        DPanel2                      matlab.ui.container.Panel
+        DP2GridLayout                matlab.ui.container.GridLayout
+        DDataTree                    matlab.ui.container.Tree
+        DPanel1                      matlab.ui.container.Panel
+        DP1GridLayout                matlab.ui.container.GridLayout
+        DP1Panel5                    matlab.ui.container.Panel
+        DP1P5GridLayout              matlab.ui.container.GridLayout
+        DPreisionEditField           matlab.ui.control.NumericEditField
+        DPreisionButton              matlab.ui.control.Button
+        DDPreisionButtonDataLabel    matlab.ui.control.Label
         DLoadDataorSelectandDeleteSaveDataLabel_5  matlab.ui.control.Label
-        DDataProcessModuleLabel_2       matlab.ui.control.Label
-        DP1Panel4                       matlab.ui.container.Panel
-        DP1P4GridLayout                 matlab.ui.container.GridLayout
-        DDownButton                     matlab.ui.control.Button
-        DUpButton                       matlab.ui.control.Button
-        DUpandDownDataLabel             matlab.ui.control.Label
-        DP1Panel3                       matlab.ui.container.Panel
-        DP1P3GridLayout                 matlab.ui.container.GridLayout
-        DProblemsMergeButton            matlab.ui.control.Button
-        DAlgorithmsMergeButton          matlab.ui.control.Button
-        DRepsMergeButton                matlab.ui.control.Button
-        DSelectandMergeDataLabel        matlab.ui.control.Label
-        DP1Panel2                       matlab.ui.container.Panel
-        DP1P2GridLayout                 matlab.ui.container.GridLayout
-        DProblemsSplitButton            matlab.ui.control.Button
-        DAlgorithmsSplitButton          matlab.ui.control.Button
-        DRepsSplitButton                matlab.ui.control.Button
-        DSelectandSplitDataLabel        matlab.ui.control.Label
-        DP1Panel1                       matlab.ui.container.Panel
-        DP1P1GridLayout                 matlab.ui.container.GridLayout
+        DP1Panel4                    matlab.ui.container.Panel
+        DP1P4GridLayout              matlab.ui.container.GridLayout
+        DDownButton                  matlab.ui.control.Button
+        DUpButton                    matlab.ui.control.Button
+        DUpandDownDataLabel          matlab.ui.control.Label
+        DP1Panel3                    matlab.ui.container.Panel
+        DP1P3GridLayout              matlab.ui.container.GridLayout
+        DProblemsMergeButton         matlab.ui.control.Button
+        DAlgorithmsMergeButton       matlab.ui.control.Button
+        DRepsMergeButton             matlab.ui.control.Button
+        DSelectandMergeDataLabel     matlab.ui.control.Label
+        DP1Panel2                    matlab.ui.container.Panel
+        DP1P2GridLayout              matlab.ui.container.GridLayout
+        DProblemsSplitButton         matlab.ui.control.Button
+        DAlgorithmsSplitButton       matlab.ui.control.Button
+        DRepsSplitButton             matlab.ui.control.Button
+        DSelectandSplitDataLabel     matlab.ui.control.Label
+        DP1Panel1                    matlab.ui.container.Panel
+        DP1P1GridLayout              matlab.ui.container.GridLayout
         DLoadDataorSelectandDeleteSaveDataLabel_4  matlab.ui.control.Label
         DLoadDataorSelectandDeleteSaveDataLabel_3  matlab.ui.control.Label
-        DSaveDataButton                 matlab.ui.control.Button
-        DDeleteDataButton               matlab.ui.control.Button
-        DLoadDataButton                 matlab.ui.control.Button
-        DDataProcessModuleLabel         matlab.ui.control.Label
-        SelectedAlgoContextMenu         matlab.ui.container.ContextMenu
-        SelectedAlgoSelectAllMenu       matlab.ui.container.Menu
-        DDataContextMenu                matlab.ui.container.ContextMenu
-        SelectedAlgoSelectAllMenu_2     matlab.ui.container.Menu
-        SelectedProbContextMenu         matlab.ui.container.ContextMenu
-        SelectedProbSelectAllMenu       matlab.ui.container.Menu
-        AlgorithmsContextMenu           matlab.ui.container.ContextMenu
-        AlgorithmsSelectAllMenu         matlab.ui.container.Menu
-        ProblemsContextMenu             matlab.ui.container.ContextMenu
-        ProblemsSelectAllMenu           matlab.ui.container.Menu
+        DSaveDataButton              matlab.ui.control.Button
+        DDeleteDataButton            matlab.ui.control.Button
+        DLoadDataButton              matlab.ui.control.Button
+        DDataProcessModuleLabel      matlab.ui.control.Label
+        SelectedAlgoContextMenu      matlab.ui.container.ContextMenu
+        SelectedAlgoSelectAllMenu    matlab.ui.container.Menu
+        DDataContextMenu             matlab.ui.container.ContextMenu
+        DDataSelectAllMenu           matlab.ui.container.Menu
+        SelectedProbContextMenu      matlab.ui.container.ContextMenu
+        SelectedProbSelectAllMenu    matlab.ui.container.Menu
+        AlgorithmsContextMenu        matlab.ui.container.ContextMenu
+        AlgorithmsSelectAllMenu      matlab.ui.container.Menu
+        ProblemsContextMenu          matlab.ui.container.ContextMenu
+        ProblemsSelectAllMenu        matlab.ui.container.Menu
     end
 
     properties (Access = public)
@@ -191,7 +204,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         function readMetric(app, label_str)
             % load the metrics
 
-            app.MetricLoad = app.readList('../Metrics', {'Metric', label_str});
+            app.MetricLoad = app.readList('../Metrics', label_str);
             app.MetricLoad = sort_nat(app.MetricLoad);
         end
 
@@ -222,6 +235,24 @@ classdef MTO_GUI < matlab.apps.AppBase
                     end
                 end
             end
+        end
+
+        function labels = getDataLabels(app, MTOData)
+            m = [MTOData.Problems.M];
+            if any(m >= 2)
+                objective_label = 'Multi-objective';
+            else
+                objective_label = 'Single-objective';
+            end
+
+            t = [MTOData.Problems.T];
+            if any(t >= 2)
+                task_label = 'Multi-task';
+            else
+                task_label = 'Single-task';
+            end
+
+            labels = {task_label, objective_label};
         end
 
         function TloadAlgoProb(app)
@@ -428,7 +459,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         function TupdateTasksFigure(app)
             % update selected problem tasks figure in Test module
             try
-                sample_number = app.SampleNumberEditField.Value;
+                sample_number = app.TSampleNumberEditField.Value;
                 x = 0:1/sample_number:1;
 
                 legend_cell = {};
@@ -477,7 +508,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         function TupdateTasksFigure2D(app)
             % update selected problem tasks figure in Test module
             try
-                sample_number = app.SampleNumberEditField.Value;
+                sample_number = app.TSampleNumberEditField.Value;
                 x = 0:1/sample_number:1;
 
                 legend_cell = {};
@@ -530,7 +561,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     return;
                 end
 
-                sample_number = app.SampleNumberEditField.Value;
+                sample_number = app.TSampleNumberEditField.Value;
                 x = 0:1/sample_number:1;
 
                 legend_cell = {};
@@ -920,7 +951,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                         data = -data;
                     end
                     [~, ~, stats] = friedman(data, 1, 'off');
-                elseif contains(test_type, '(reps)')
+                elseif contains(test_type, '(all reps)')
                     if size(app.EResultTableData, 1) * size(app.EResultTableData, 3) < 2
                         app.EUITable.Data = app.ETableView;
                         app.EUITable.RowName{size(app.ETableData, 1) + 1} = [];
@@ -1217,6 +1248,30 @@ classdef MTO_GUI < matlab.apps.AppBase
             result = true;
         end
 
+        function result = DcheckPrecisionData(app)
+            % check and reproduce precision data
+
+            data_selected = app.DDataTree.SelectedNodes;
+            app.DDataFlag = [];
+            data_num = 0;
+            for i = 1:length(data_selected)
+                if isa(data_selected(i).Parent, 'matlab.ui.container.Tree')
+                    data_num = data_num + 1;
+                    app.DDataFlag(i) = 1;
+                else
+                    app.DDataFlag(i) = 0;
+                end
+            end
+            if data_num < 1
+                msg = 'Select at least 1 data node to precise';
+                uiconfirm(app.MTOPlatformMToPv18UIFigure, msg, 'error', 'Icon','warning');
+                result = false;
+                return;
+            end
+
+            result = true;
+        end
+
         function DputDataNode(app, name, MTOData)
             % add data to tree in Data process module
 
@@ -1364,6 +1419,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         end
     end
 
+
     % Callbacks that handle component events
     methods (Access = private)
 
@@ -1377,7 +1433,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % app.TupdateUIAxes();
             app.EloadAlgoProb();
             app.MTOPlatformTabGroup.SelectedTab = app.ExperimentModuleTab;
-            app.EloadMetric({'none'});
+            app.EloadMetric('Nothing');
         end
 
         % Value changed function: TTaskTypeDropDown
@@ -1486,6 +1542,11 @@ classdef MTO_GUI < matlab.apps.AppBase
 
         % Value changed function: TShowTypeDropDown
         function TShowTypeDropDownValueChanged(app, event)
+            app.TupdateUIAxes();
+        end
+
+        % Value changed function: TSampleNumberEditField
+        function TSampleNumberEditFieldValueChanged(app, event)
             app.TupdateUIAxes();
         end
 
@@ -1753,7 +1814,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             MTOData.RunTimes = [];
 
             % reset table and convergence
-            app.EloadMetric('none');
+            app.EloadMetric('Nothing');
             app.ETableReps = zeros(prob_num, algo_num);
             app.EupdateTableReps();
             app.EresetTable({MTOData.Problems.Name}, {MTOData.Algorithms.Name});
@@ -1884,14 +1945,16 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
             % save('MTOData_Temp', 'MTOData');
 
-            m = [MTOData.Problems.M];
-            if all(m==1)
-                app.EloadMetric('Single-objective')
-            elseif all(m>1)
-                app.EloadMetric('Multi-objective')
-            else
-                app.EloadMetric({'none'})
-            end
+            app.EloadMetric(app.getDataLabels(MTOData));
+
+            % m = [MTOData.Problems.M];
+            % if all(m==1)
+            %     app.EloadMetric({'Single-objective', app.ESpecialTypeDropDown.Value});
+            % elseif all(m>1)
+            %     app.EloadMetric({'Multi-objective', app.ESpecialTypeDropDown.Value});
+            % else
+            %     app.EloadMetric({'Nothing'})
+            % end
 
             tEnd = toc(tStart);
             msg = ['All Use Time: ', char(duration([0, 0, tEnd]))];
@@ -2131,14 +2194,15 @@ classdef MTO_GUI < matlab.apps.AppBase
             % load data to app's parameter
             load([pathname, file_name], 'MTOData');
             app.EData = MTOData;
-            m = [app.EData.Problems.M];
-            if all(m==1)
-                app.EloadMetric('Single-objective')
-            elseif all(m>1)
-                app.EloadMetric('Multi-objective')
-            else
-                app.EloadMetric({'Single-objective', 'Multi-objective'})
-            end
+            app.EloadMetric(app.getDataLabels(MTOData));
+            % m = [app.EData.Problems.M];
+            % if all(m==1)
+            %     app.EloadMetric('Single-objective')
+            % elseif all(m>1)
+            %     app.EloadMetric('Multi-objective')
+            % else
+            %     app.EloadMetric({'Single-objective', 'Multi-objective'})
+            % end
             app.ETableReps = app.EData.Reps * ones([length(app.EData.Problems), length(app.EData.Algorithms)]);
             app.EresetTableAlgorithmDropDown({app.EData.Algorithms.Name});
             app.EreloadTableData();
@@ -2148,10 +2212,10 @@ classdef MTO_GUI < matlab.apps.AppBase
         function ESaveTableButtonPushed(app, event)
             msg = 'Select Export Type';
             selection = uiconfirm(app.MTOPlatformMToPv18UIFigure, msg, 'Export', ...
-                                 'Options', {'Current Table', 'IOHanalyzer', 'Cancel'}, ...
+                                 'Options', {'Current Table (tex, xlsx, csv)', 'IOHanalyzer (csv)', 'Cancel'}, ...
                                  'DefaultOption', 'Cancel', 'Icon', 'question');
 
-            if strcmp(selection, 'Current Table')
+            if contains(selection, 'Current Table')
                 % save table
     
                 % check selected file name
@@ -2192,7 +2256,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     cell_out = [[{''}; row_name], [column_name; app.EUITable.Data]];
                     writecell(cell_out, [dir_name, file_name]);
                 end
-            elseif strcmp(selection, 'IOHanalyzer')
+            elseif contains(selection, 'IOHanalyzer')
                 % save current metric convergence
 
                  % check selected file name
@@ -2212,6 +2276,484 @@ classdef MTO_GUI < matlab.apps.AppBase
                 table_out = IOHconvert(app.EData.Metrics(metric_idx).Result);
                 writetable(table_out, [dir_name, file_name]);
                 disp('Done.')
+            end
+        end
+
+        % Cell selection callback: EUITable
+        function EUITableCellSelection(app, event)
+            app.ETableSelected = event.Indices;
+        end
+
+        % Button pushed function: EConvergeButton
+        function EConvergeButtonPushed(app, event)
+            if strcmp(app.EDataTypeDropDown.Value, 'Reps') || ...
+                    isempty(app.EResultConvergeData) || ...
+                    isempty(app.ETableSelected)
+                msg = 'Select calculated metric data from table first!';
+                uiconfirm(app.MTOPlatformMToPv18UIFigure, msg, 'warning', 'Icon', 'warning');
+                return;
+            end
+
+            prob_list = unique(app.ETableSelected(:, 1));
+
+            if app.ESplitCheckBox.Value
+                weidth = 340;
+                height = 300;
+                position = [10,50,weidth,height];
+            else
+                n_probs = length(prob_list);
+                cols = ceil(sqrt(n_probs));
+                rows = ceil(n_probs / cols);
+
+                base_width_per_subplot = 260;
+                base_height_per_subplot = 230;
+                
+                fig_width = cols * base_width_per_subplot;
+                fig_height = rows * base_height_per_subplot;
+                
+                screen_size = get(0, 'ScreenSize');
+                screen_width = screen_size(3);
+                screen_height = screen_size(4);
+                
+                pos_x = max(50, (screen_width - fig_width) / 2);
+                pos_y = max(50, (screen_height - fig_height) / 2);
+                
+                fig = figure('Position', [pos_x, pos_y, fig_width, fig_height]);
+
+                t = tiledlayout(rows, cols, 'TileSpacing', 'compact', 'Padding', 'compact');
+                all_plot_handles = [];
+                all_legend_entries = {};
+            end
+
+            fontsize = 12;
+
+            % Check if we need to plot with ranges
+            plot_with_ranges = strcmp(app.EConvergeTypeDropDown.Value, 'Log Range') || strcmp(app.EConvergeTypeDropDown.Value, 'Norm Range');
+
+            for i = 1:length(prob_list)
+                if app.ESplitCheckBox.Value
+                    fig = figure('Position',position);
+                    if position(1)<1600
+                        position = position + [weidth,0,0,0];
+                    else
+                        position = position + [10-position(1),height+80,0,0];
+                    end
+                    ax = axes(fig);
+
+                    % Prepare legend entries
+                    legend_entries = cell(0);
+                    plot_handles = [];
+                else
+                    nexttile(t);
+                    ax = gca;
+                end
+
+                idx = find(app.ETableSelected(:, 1) == prob_list(i));
+                algo_list = app.ETableSelected(idx, 2);
+                
+                xlim_min = inf;
+                xlim_max = 0;
+
+                for j = 1:length(algo_list)
+                    if j > length(app.DefaultMarkerList)
+                        marker = '';
+                    else
+                        marker = app.DefaultMarkerList{j};
+                    end
+
+                    % Get mean values
+                    y_mean = squeeze(mean(app.EResultConvergeData.Y(prob_list(i), algo_list(j), :, :),3))';
+                    x = squeeze(mean(app.EResultConvergeData.X(prob_list(i), algo_list(j), :, :),3))';
+                    
+                    % Set scale type
+                    if strcmp(app.EConvergeTypeDropDown.Value, 'Log') || strcmp(app.EConvergeTypeDropDown.Value, 'Log Range')
+                        set(ax, 'YScale', 'log');
+                    elseif strcmp(app.EConvergeTypeDropDown.Value, 'Log Type2')
+                        y_mean = log(y_mean);
+                    end
+
+                    % Plot main line
+                    p = plot(ax, x, y_mean, ['-', marker], 'LineWidth', app.DefaultLineWidth);
+
+                    % Set marker positions
+                    indices = round(length(y_mean)/min(app.DefaultMarkerNum,length(y_mean)));
+                    if length(x) <= 3
+                        p.MarkerIndices = indices:indices:length(y_mean);
+                    elseif length(y_mean) < app.DefaultMarkerNum
+                        p.MarkerIndices = indices+1:indices:length(y_mean)-round(indices/2);
+                    else
+                        p.MarkerIndices = indices:indices:length(y_mean)-round(indices/2);
+                    end
+                    p.MarkerSize = app.DefaultMarkerSize;
+                    
+                    % Plot ranges if needed
+                    if plot_with_ranges
+                        Y_data = squeeze(app.EResultConvergeData.Y(prob_list(i), algo_list(j), :, :));
+                        
+                        mu = mean(Y_data, 1);
+                        sigma = std(Y_data, 0, 1);
+                        n = size(Y_data, 1);
+                        
+                        % 0.95 confidence interval
+                        ci95 = 1.96 * sigma / sqrt(n);
+                        y_lower = mu - ci95;
+                        y_upper = mu + ci95;
+                        
+                        y_lower = y_lower(:);
+                        y_upper = y_upper(:);
+                        x = x(:);
+                        
+                        hold(ax, 'on');
+                        fill_color = p.Color;
+                        fill_alpha = 0.2;
+                        h = fill(ax, [x; flipud(x)], [y_lower; flipud(y_upper)], fill_color, ...
+                            'FaceAlpha', fill_alpha, 'EdgeColor', 'none', 'DisplayName', '');
+                        
+                        uistack(h, 'bottom');
+                        h.Annotation.LegendInformation.IconDisplayStyle = 'off';
+                    end
+
+                    xlim_max = max(xlim_max, x(end));
+                    xlim_min = min(xlim_min, x(1));
+
+                    if app.ESplitCheckBox.Value
+                        % Add to legend entries - ensure it's a string
+                        algo_name = app.EUITable.ColumnName{algo_list(j)}; % Use {} to get content
+                        legend_entries{end+1} = strrep(algo_name, '_', '\_');
+                        plot_handles(end+1) = p;
+                    else
+                        if i == 1
+                            algo_name = app.EUITable.ColumnName{algo_list(j)};
+                            legend_entry = strrep(algo_name, '_', '\_');
+                            all_plot_handles(end + 1) = p;
+                            all_legend_entries{end + 1} = legend_entry;
+                        end
+                    end
+                    hold(ax, 'on');
+                end
+
+                if xlim_min ~= xlim_max
+                    xlim(ax, [xlim_min, xlim_max]);
+                end
+
+                if app.ESplitCheckBox.Value
+                    set(ax,'OuterPosition',[0,0,1,1]);
+                    % Set labels
+                    if strcmp(app.EConvergeTypeDropDown.Value, 'Log Type2')
+                        ylabel(ax, ['Log - ', strrep(app.EDataTypeDropDown.Value, '_', ' ')]);
+                    else
+                        ylabel(ax, strrep(app.EDataTypeDropDown.Value, '_', ' '));
+                    end
+                    xlabel(ax, 'Evaluation');
+    
+                    % Set legend
+                    legend(ax, plot_handles, legend_entries, 'Location', 'best');
+                    title(ax, strrep(app.EUITable.RowName(prob_list(i)), '_', '\_'),'FontWeight','bold')
+                    grid(ax, 'on');
+                    set(ax,'FontWeight','bold'); set(get(fig,'Children'),'FontSize',fontsize);
+                    set(ax,'LooseInset',get(ax,'TightInset')+0.02)
+                else
+                    title(ax, strrep(app.EUITable.RowName(prob_list(i)), '_', '\_'),'FontWeight','bold')
+                    grid(ax, 'on');
+                    set(ax, 'FontWeight', 'bold', 'FontSize', fontsize);
+                    set(ax, 'LooseInset', get(ax, 'TightInset') + 0.02);
+                end
+            end
+            if ~app.ESplitCheckBox.Value
+                xlabel(t, 'Evaluation', 'FontWeight', 'bold', 'FontSize', 16);
+                if strcmp(app.EConvergeTypeDropDown.Value, 'Log Type2')
+                    ylabel(t, ['Log - ', strrep(app.EDataTypeDropDown.Value, '_', ' ')], 'FontWeight', 'bold', 'FontSize', 16);
+                else
+                    ylabel(t, strrep(app.EDataTypeDropDown.Value, '_', ' '), 'FontWeight', 'bold', 'FontSize', 16);
+                end
+                lgd = legend(ax, all_plot_handles, all_legend_entries, 'Orientation', 'horizontal', 'FontSize', 14);
+                lgd.Layout.Tile = 'south';
+            end
+        end
+
+        % Button pushed function: EParetoButton
+        function EParetoButtonPushed(app, event)
+            if strcmp(app.EDataTypeDropDown.Value, 'Reps') || ...
+                    isempty(app.EResultParetoData) || ...
+                    isempty(app.ETableSelected)
+                msg = 'Select calculated multi-objective metric data from table first!';
+                uiconfirm(app.MTOPlatformMToPv18UIFigure, msg, 'warning', 'Icon', 'warning');
+                return;
+            end
+
+            prob_list = unique(app.ETableSelected(:, 1));
+
+            if app.ESplitCheckBox.Value
+                weidth = 340;
+                height = 300;
+                position = [10,50,weidth,height];
+            else
+                n_probs = length(prob_list);
+                cols = ceil(sqrt(n_probs));
+                rows = ceil(n_probs / cols);
+
+                base_width_per_subplot = 260;
+                base_height_per_subplot = 230;
+                
+                fig_width = cols * base_width_per_subplot;
+                fig_height = rows * base_height_per_subplot;
+                
+                screen_size = get(0, 'ScreenSize');
+                screen_width = screen_size(3);
+                screen_height = screen_size(4);
+                
+                pos_x = max(50, (screen_width - fig_width) / 2);
+                pos_y = max(50, (screen_height - fig_height) / 2);
+                
+                fig = figure('Position', [pos_x, pos_y, fig_width, fig_height]);
+
+                t = tiledlayout(rows, cols, 'TileSpacing', 'compact', 'Padding', 'compact');
+                all_plot_handles = [];
+                all_legend_entries = {};
+            end
+    
+            fontsize = 12;
+                
+            for i = 1:length(prob_list)
+                if app.ESplitCheckBox.Value
+                    fig = figure('Position',position);
+                    if position(1)<1600
+                        position = position + [weidth,0,0,0];
+                    else
+                        position = position + [10-position(1),height+80,0,0];
+                    end
+                    ax = axes(fig);
+
+                    legend_entries = cell(0);
+                    plot_handles = [];
+                else
+                    nexttile(t);
+                    ax = gca;
+                end
+
+                idx = find(app.ETableSelected(:, 1) == prob_list(i));
+                algo_list = app.ETableSelected(idx, 2);
+
+                M = size(app.EResultParetoData.Obj{prob_list(i),1,1}, 2);
+                if M == 2
+                    if ~isempty(app.EResultParetoData.Optimum)
+                        % draw optimum
+                        x = squeeze(app.EResultParetoData.Optimum{prob_list(i)}(:, 1));
+                        y = squeeze(app.EResultParetoData.Optimum{prob_list(i)}(:, 2));
+
+                        [x, sortIdx] = sort(x);
+                        y = y(sortIdx);
+
+                        N = length(x);
+                        sampleSize = 100;
+                        if N > sampleSize * 3
+                            indices = round(linspace(1, N, sampleSize));
+                            sampledX = x(indices);
+                            sampledY = y(indices);
+                        else
+                            sampledX = x;
+                            sampledY = y;
+                        end
+
+                        % Calculate threshold for Pareto front plot
+                        distArray = sqrt(diff(sampledX).^2 + diff(sampledY).^2);
+                        distMean = mean(distArray);
+                        distStd  = std(distArray);
+                        autoThreshold = distMean + 2 * distStd;
+
+                        xPlot = [];
+                        yPlot = [];
+                        for idx = 1:length(sampledX)-1
+                            xPlot(end+1) = sampledX(idx);
+                            yPlot(end+1) = sampledY(idx);
+                            % if dist exceed thresholdinsert [NaN, NaN]
+                            if distArray(idx) > autoThreshold
+                                xPlot(end+1) = NaN;
+                                yPlot(end+1) = NaN;
+                            end
+                        end
+                        xPlot(end+1) = sampledX(end);
+                        yPlot(end+1) = sampledY(end);
+
+                        p = plot(ax, xPlot, yPlot);
+                        p.Color = [.2,.2,.2];
+                        p.LineWidth = 2;
+                        hold(ax, 'on');
+
+                        if app.ESplitCheckBox.Value
+                            legend_entries{end+1} = 'Pareto Front';
+                            plot_handles(end+1) = p;
+                        else
+                            if i == 1
+                                legend_entry = 'Pareto Front';
+                                all_plot_handles(end + 1) = p;
+                                all_legend_entries{end + 1} = legend_entry;
+                            end
+                        end
+                    end
+
+                    % draw each algorithm
+                    color_list = colororder;
+                    for j = 1:length(algo_list)
+                        metric_data = squeeze(app.EResultTableData(prob_list(i), algo_list(j), :));
+                        [~, rank] = sort(metric_data);
+                        mid_idx = rank(ceil(end / 2));
+                        x = squeeze(app.EResultParetoData.Obj{prob_list(i), algo_list(j), mid_idx}(:, 1));
+                        y = squeeze(app.EResultParetoData.Obj{prob_list(i), algo_list(j), mid_idx}(:, 2));
+                        s = scatter(ax, x, y);
+                        s.MarkerEdgeColor = color_list(j,:);
+                        s.MarkerFaceAlpha = 0.65;
+                        s.MarkerFaceColor = color_list(j,:);
+                        s.SizeData = 40;
+                        if app.ESplitCheckBox.Value
+                            legend_entries{end+1} = char(strrep(app.EUITable.ColumnName(algo_list(j)), '_', '\_'));
+                            plot_handles(end+1) = s;
+                        else
+                            if i == 1
+                                legend_entry = char(strrep(app.EUITable.ColumnName(algo_list(j)), '_', '\_'));
+                                all_plot_handles(end + 1) = s;
+                                all_legend_entries{end + 1} = legend_entry;
+                            end
+                        end
+                        hold(ax, 'on');
+                    end
+
+                    xlabel(ax, '$f_1$', 'interpreter', 'latex');
+                    ylabel(ax, '$f_2$', 'interpreter', 'latex');
+
+                    if app.ESplitCheckBox.Value
+                        legend(ax, plot_handles, legend_entries, 'Location', 'best');
+                    end
+
+                    title(ax, strrep(app.EUITable.RowName(prob_list(i)), '_', '\_'),'FontWeight','bold')
+                    grid(ax, 'on');
+                elseif M == 3
+                    if ~isempty(app.EResultParetoData.Optimum)
+                        % draw optimum
+                        x = squeeze(app.EResultParetoData.Optimum{prob_list(i)}(:, 1));
+                        y = squeeze(app.EResultParetoData.Optimum{prob_list(i)}(:, 2));
+                        z = squeeze(app.EResultParetoData.Optimum{prob_list(i)}(:, 3));
+
+                        s = scatter3(ax, x, y, z);
+                        s.MarkerEdgeColor = 'none';
+                        s.MarkerFaceAlpha = 0.65;
+                        s.MarkerFaceColor = [.5,.5,.5];
+                        s.SizeData = 3;
+                        hold(ax, 'on');
+
+                        if app.ESplitCheckBox.Value
+                            legend_entries{end+1} = 'Pareto Front';
+                            plot_handles(end+1) = p;
+                        else
+                            if i == 1
+                                legend_entry = 'Pareto Front';
+                                all_plot_handles(end + 1) = p;
+                                all_legend_entries{end + 1} = legend_entry;
+                            end
+                        end
+                    end
+
+                    % draw each algorithm
+                    color_list = colororder;
+                    for j = 1:length(algo_list)
+                        metric_data = squeeze(app.EResultTableData(prob_list(i), algo_list(j), :));
+                        [~, rank] = sort(metric_data);
+                        mid_idx = rank(ceil(end / 2));
+                        x = squeeze(app.EResultParetoData.Obj{prob_list(i), algo_list(j), mid_idx}(:, 1));
+                        y = squeeze(app.EResultParetoData.Obj{prob_list(i), algo_list(j), mid_idx}(:, 2));
+                        z = squeeze(app.EResultParetoData.Obj{prob_list(i), algo_list(j), mid_idx}(:, 3));
+                        s = scatter3(ax, x, y, z);
+                        s.MarkerEdgeColor = color_list(j,:);
+                        s.MarkerFaceAlpha = 0.65;
+                        s.MarkerFaceColor = color_list(j,:);
+                        s.SizeData = 40;
+
+                        if app.ESplitCheckBox.Value
+                            legend_entries{end+1} = char(strrep(app.EUITable.ColumnName(algo_list(j)), '_', '\_'));
+                            plot_handles(end+1) = s;
+                        else
+                            if i == 1
+                                legend_entry = char(strrep(app.EUITable.ColumnName(algo_list(j)), '_', '\_'));
+                                all_plot_handles(end + 1) = s;
+                                all_legend_entries{end + 1} = legend_entry;
+                            end
+                        end
+                        hold(ax, 'on');
+                    end
+
+                    xlabel(ax, '$f_1$', 'interpreter', 'latex');
+                    ylabel(ax, '$f_2$', 'interpreter', 'latex');
+                    zlabel(ax, '$f_3$', 'interpreter', 'latex');
+
+                    if app.ESplitCheckBox.Value
+                        legend(ax, plot_handles, legend_entries, 'Location', 'best');
+                    end
+
+                    title(ax, strrep(app.EUITable.RowName(prob_list(i)), '_', '\_'),'FontWeight','bold')
+                    view(ax,[135 30]);
+                    grid(ax, 'on');
+                else % M > 3
+                    % draw each algorithm
+                    color_list = colororder;
+                    min_data = []; max_data = [];
+                    for j = 1:size(app.EResultTableData, 2)
+                        metric_data = squeeze(app.EResultTableData(prob_list(i), j, :));
+                        [~, rank] = sort(metric_data);
+                        mid_idx = rank(ceil(end / 2));
+
+                        data = app.EResultParetoData.Obj{prob_list(i), j, mid_idx};
+                        min_data = min([data; min_data],[],1);
+                        max_data = max([data; max_data],[],1);
+                    end
+                    for j = 1:length(algo_list)
+                        metric_data = squeeze(app.EResultTableData(prob_list(i), algo_list(j), :));
+                        [~, rank] = sort(metric_data);
+                        mid_idx = rank(ceil(end / 2));
+
+                        % Unify
+                        data = app.EResultParetoData.Obj{prob_list(i), algo_list(j), mid_idx};
+                        data = (data - min_data) ./ (max_data - min_data);
+                        for k = 1:size(app.EResultParetoData.Obj{prob_list(i), algo_list(j), mid_idx}, 1)
+                            p(j) = plot(ax, data(k,:));
+                            p(j).Color = color_list(j,:);
+                            p(j).LineWidth = 1.5;
+                            hold(ax, 'on');
+                        end
+                        if app.ESplitCheckBox.Value
+                            legend_entries{end+1} = char(strrep(app.EUITable.ColumnName(algo_list(j)), '_', '\_'));
+                            plot_handles(end+1) = p(j);
+                        else
+                            if i == 1
+                                legend_entry = char(strrep(app.EUITable.ColumnName(algo_list(j)), '_', '\_'));
+                                all_plot_handles(end + 1) = p(j);
+                                all_legend_entries{end + 1} = legend_entry;
+                            end
+                        end
+                    end
+
+                    ylim([0,1]);
+                    xlabel(ax, 'Dimension', 'interpreter', 'latex');
+                    ylabel(ax, 'Unified $f$', 'interpreter', 'latex');
+
+                    if app.ESplitCheckBox.Value
+                        legend(ax, plot_handles, legend_entries, 'Location', 'best');
+                    end
+                    
+                    title(ax, strrep(app.EUITable.RowName(prob_list(i)), '_', '\_'),'FontWeight','bold')
+                    grid(ax, 'on');
+                end
+                if app.ESplitCheckBox.Value
+                    set(ax,'OuterPosition',[0,0,1,1]);
+                    set(ax,'FontWeight','bold'); set(get(fig,'Children'),'FontSize',fontsize);
+                    set(ax,'LooseInset',get(ax,'TightInset')+0.02)
+                else
+                    set(ax, 'FontWeight', 'bold', 'FontSize', fontsize);
+                    set(ax,'LooseInset',get(ax,'TightInset')+0.02)
+                end
+            end
+            if ~app.ESplitCheckBox.Value
+                lgd = legend(ax, all_plot_handles, all_legend_entries, 'Orientation', 'horizontal', 'FontSize', 14);
+                lgd.Layout.Tile = 'south';
             end
         end
 
@@ -2851,6 +3393,52 @@ classdef MTO_GUI < matlab.apps.AppBase
             drawnow;
         end
 
+        % Button pushed function: DPreisionButton
+        function DPreisionButtonPushed(app, event)
+            if ~app.DcheckPrecisionData()
+                return;
+            end
+            
+            data_selected = app.DDataTree.SelectedNodes;
+            data_selected = data_selected(app.DDataFlag == 1);
+
+            mu = app.DPreisionEditField.Value;
+            factor = 10^(-mu); % e.g., mu = -4 => factor = 1e4
+
+            for d = 1:length(data_selected)
+                MTOData = data_selected(d).NodeData;
+
+                for i = 1:size(MTOData.Results, 1)
+                    for j = 1:size(MTOData.Results, 2)
+                        for k = 1:size(MTOData.Results, 3)
+                            if isa(MTOData.Results(i, j, k).Obj, "cell")
+                                for c = 1:length(MTOData.Results(i, j, k).Obj)
+                                    MTOData.Results(i, j, k).Obj{c} = round(MTOData.Results(i, j, k).Obj{c} * factor) / factor;
+                                end
+                            else
+                                MTOData.Results(i, j, k).Obj = round(MTOData.Results(i, j, k).Obj * factor) / factor;
+                            end
+                            MTOData.Results(i, j, k).CV = round(MTOData.Results(i, j, k).CV * factor) / factor;
+                        end
+                    end
+                end
+
+                if isfield(MTOData, 'Metrics')
+                    for m = 1:length(MTOData.Metrics)
+                        MTOData.Metrics(m).Result.TableData = round(MTOData.Metrics(m).Result.TableData * factor) / factor;
+                        if isfield(MTOData.Metrics(m).Result, 'ConvergeData')
+                            MTOData.Metrics(m).Result.ConvergeData.Y = round(MTOData.Metrics(m).Result.ConvergeData.Y * factor) / factor;
+                        end
+                    end
+                end
+
+                app.DputDataNode([data_selected(d).Text, ' (Preision)'], MTOData);
+                drawnow;
+            end
+            
+            
+        end
+
         % Node text changed function: DDataTree
         function DDataTreeNodeTextChanged(app, event)
             % update data text
@@ -2938,351 +3526,8 @@ classdef MTO_GUI < matlab.apps.AppBase
             drawnow;
         end
 
-        % Cell selection callback: EUITable
-        function EUITableCellSelection(app, event)
-            app.ETableSelected = event.Indices;
-        end
-
-        % Button pushed function: EConvergeButton
-        function EConvergeButtonPushed(app, event)
-            if strcmp(app.EDataTypeDropDown.Value, 'Reps') || ...
-                    isempty(app.EResultConvergeData) || ...
-                    isempty(app.ETableSelected)
-                msg = 'Select calculated metric data from table first!';
-                uiconfirm(app.MTOPlatformMToPv18UIFigure, msg, 'warning', 'Icon', 'warning');
-                return;
-            end
-
-            prob_list = unique(app.ETableSelected(:, 1));
-            if length(prob_list) <= 15
-                weidth = 340;
-                height = 300;
-                weinum = 5;
-                fontsize = 10;
-            else
-                weidth = 250;
-                height = 220;
-                weinum = 7;
-                fontsize = 7;
-            end
-            position = [10,50,weidth,height];
-
-            % Check if we need to plot with ranges
-            plot_with_ranges = strcmp(app.EConvergeTypeDropDown.Value, 'Log Range') || strcmp(app.EConvergeTypeDropDown.Value, 'Norm Range');
-
-            for i = 1:length(prob_list)
-                idx = find(app.ETableSelected(:, 1) == prob_list(i));
-                algo_list = app.ETableSelected(idx, 2);
-                fig = figure('Position',position);
-                if position(1)<1600
-                    position = position + [weidth,0,0,0];
-                else
-                    position = position + [10-position(1),height+80,0,0];
-                end
-                ax = axes(fig);
-                xlim_min = inf;
-                xlim_max = 0;
-
-                % Prepare legend entries
-                legend_entries = cell(0);
-                plot_handles = [];
-
-                for j = 1:length(algo_list)
-                    if j > length(app.DefaultMarkerList)
-                        marker = '';
-                    else
-                        marker = app.DefaultMarkerList{j};
-                    end
-
-                    % Get mean values
-                    y_mean = squeeze(mean(app.EResultConvergeData.Y(prob_list(i), algo_list(j), :, :),3))';
-                    x = squeeze(mean(app.EResultConvergeData.X(prob_list(i), algo_list(j), :, :),3))';
-                    
-                    % Set scale type
-                    if strcmp(app.EConvergeTypeDropDown.Value, 'Log') || strcmp(app.EConvergeTypeDropDown.Value, 'Log Range')
-                        set(ax, 'YScale', 'log');
-                    elseif strcmp(app.EConvergeTypeDropDown.Value, 'Log Type2')
-                        y_mean = log(y_mean);
-                    end
-
-                    % Plot main line
-                    p = plot(ax, x, y_mean, ['-', marker]);
-                    p.LineWidth = app.DefaultLineWidth;
-
-                    % Set marker positions
-                    indices = round(length(y_mean)/min(app.DefaultMarkerNum,length(y_mean)));
-                    if length(x) <= 3
-                        p.MarkerIndices = indices:indices:length(y_mean);
-                    elseif length(y_mean) < app.DefaultMarkerNum
-                        p.MarkerIndices = indices+1:indices:length(y_mean)-round(indices/2);
-                    else
-                        p.MarkerIndices = indices:indices:length(y_mean)-round(indices/2);
-                    end
-                    p.MarkerSize = app.DefaultMarkerSize;
-
-                    % Add to legend entries - ensure it's a string
-                    algo_name = app.EUITable.ColumnName{algo_list(j)}; % Use {} to get content
-                    legend_entries{end+1} = strrep(algo_name, '_', '\_');
-                    plot_handles(end+1) = p;
-                    
-                    % Plot ranges if needed
-                    if plot_with_ranges
-                        Y_data = squeeze(app.EResultConvergeData.Y(prob_list(i), algo_list(j), :, :));
-                        
-                        mu = mean(Y_data, 1);
-                        sigma = std(Y_data, 0, 1);
-                        n = size(Y_data, 1);
-                        
-                        % 0.95 confidence interval
-                        ci95 = 1.96 * sigma / sqrt(n);
-                        y_lower = mu - ci95;
-                        y_upper = mu + ci95;
-                        
-                        y_lower = y_lower(:);
-                        y_upper = y_upper(:);
-                        x = x(:);
-                        
-                        hold(ax, 'on');
-                        fill_color = p.Color;
-                        fill_alpha = 0.2;
-                        h = fill(ax, [x; flipud(x)], [y_lower; flipud(y_upper)], fill_color, ...
-                            'FaceAlpha', fill_alpha, 'EdgeColor', 'none', 'DisplayName', '');
-                        
-                        uistack(h, 'bottom');
-                        h.Annotation.LegendInformation.IconDisplayStyle = 'off';
-                    end
-
-                    xlim_max = max(xlim_max, x(end));
-                    xlim_min = min(xlim_min, x(1));
-                    hold(ax, 'on');
-                end
-                set(ax,'OuterPosition',[0,0,1,1]);
-
-                if xlim_min ~= xlim_max
-                    xlim(ax, [xlim_min, xlim_max]);
-                end
-                % Set labels
-                if strcmp(app.EConvergeTypeDropDown.Value, 'Log Type2')
-                    ylabel(ax, ['Log - ', strrep(app.EDataTypeDropDown.Value, '_', ' ')]);
-                else
-                    ylabel(ax, strrep(app.EDataTypeDropDown.Value, '_', ' '));
-                end
-                xlabel(ax, 'Evaluation');
-
-                % Set legend
-                legend(ax, plot_handles, legend_entries, 'Location', 'best');
-                
-                title(ax, strrep(app.EUITable.RowName(prob_list(i)), '_', '\_'),'FontWeight','bold')
-                grid(ax, 'on');
-                set(ax,'FontWeight','bold'); set(get(fig,'Children'),'FontSize',fontsize);
-                set(ax,'LooseInset',get(ax,'TightInset')+0.02)
-            end
-        end
-
-        % Button pushed function: EParetoButton
-        function EParetoButtonPushed(app, event)
-            if strcmp(app.EDataTypeDropDown.Value, 'Reps') || ...
-                    isempty(app.EResultParetoData) || ...
-                    isempty(app.ETableSelected)
-                msg = 'Select calculated multi-objective metric data from table first!';
-                uiconfirm(app.MTOPlatformMToPv18UIFigure, msg, 'warning', 'Icon', 'warning');
-                return;
-            end
-
-            prob_list = unique(app.ETableSelected(:, 1));
-            if length(prob_list) <= 15
-                weidth = 340;
-                height = 300;
-                weinum = 5;
-                fontsize = 10;
-            else
-                weidth = 250;
-                height = 220;
-                weinum = 7;
-                fontsize = 7;
-            end
-            position = [10,50,weidth,height];
-            for i = 1:length(prob_list)
-                idx = find(app.ETableSelected(:, 1) == prob_list(i));
-                algo_list = app.ETableSelected(idx, 2);
-                fig = figure('Position',position);
-                if position(1)<1600
-                    position = position + [weidth,0,0,0];
-                else
-                    position = position + [10-position(1),height+80,0,0];
-                end
-                ax = axes(fig);
-
-                M = size(app.EResultParetoData.Obj{prob_list(i),1,1}, 2);
-                if M == 2
-                    if ~isempty(app.EResultParetoData.Optimum)
-                        % draw optimum
-                        x = squeeze(app.EResultParetoData.Optimum{prob_list(i)}(:, 1));
-                        y = squeeze(app.EResultParetoData.Optimum{prob_list(i)}(:, 2));
-
-                        [x, sortIdx] = sort(x);
-                        y = y(sortIdx);
-
-                        N = length(x);
-                        sampleSize = 100;
-                        if N > sampleSize * 3
-                            indices = round(linspace(1, N, sampleSize));
-                            sampledX = x(indices);
-                            sampledY = y(indices);
-                        else
-                            sampledX = x;
-                            sampledY = y;
-                        end
-
-                        % Calculate threshold for Pareto front plot
-                        distArray = sqrt(diff(sampledX).^2 + diff(sampledY).^2);
-                        distMean = mean(distArray);
-                        distStd  = std(distArray);
-                        autoThreshold = distMean + 2 * distStd;
-
-                        xPlot = [];
-                        yPlot = [];
-                        for idx = 1:length(sampledX)-1
-                            xPlot(end+1) = sampledX(idx);
-                            yPlot(end+1) = sampledY(idx);
-                            % if dist exceed thresholdinsert [NaN, NaN]
-                            if distArray(idx) > autoThreshold
-                                xPlot(end+1) = NaN;
-                                yPlot(end+1) = NaN;
-                            end
-                        end
-                        xPlot(end+1) = sampledX(end);
-                        yPlot(end+1) = sampledY(end);
-
-                        p = plot(ax, xPlot, yPlot);
-                        p.Color = [.2,.2,.2];
-                        p.LineWidth = 2;
-                        %                         s = scatter(ax, x, y);
-                        %                         s.MarkerEdgeColor = 'none';
-                        %                         s.MarkerFaceAlpha = 0.65;
-                        %                         s.MarkerFaceColor = [.2,.2,.2];
-                        %                         s.SizeData = 3;
-                        hold(ax, 'on');
-                    end
-
-                    % draw each algorithm
-                    color_list = colororder;
-                    for j = 1:length(algo_list)
-                        metric_data = squeeze(app.EResultTableData(prob_list(i), algo_list(j), :));
-                        [~, rank] = sort(metric_data);
-                        mid_idx = rank(ceil(end / 2));
-                        x = squeeze(app.EResultParetoData.Obj{prob_list(i), algo_list(j), mid_idx}(:, 1));
-                        y = squeeze(app.EResultParetoData.Obj{prob_list(i), algo_list(j), mid_idx}(:, 2));
-                        s = scatter(ax, x, y);
-                        s.MarkerEdgeColor = color_list(j,:);
-                        s.MarkerFaceAlpha = 0.65;
-                        s.MarkerFaceColor = color_list(j,:);
-                        s.SizeData = 40;
-                        hold(ax, 'on');
-                    end
-
-                    xlabel(ax, '$f_1$', 'interpreter', 'latex');
-                    ylabel(ax, '$f_2$', 'interpreter', 'latex');
-
-                    if ~isempty(app.EResultParetoData.Optimum)
-                        legend(ax, ['Pareto Front'; strrep(app.EUITable.ColumnName(algo_list), '_', '\_')], 'Location', 'best');
-                    else
-                        legend(ax, strrep(app.EUITable.ColumnName(algo_list), '_', '\_'), 'Location', 'best');
-                    end
-
-                    title(ax, strrep(app.EUITable.RowName(prob_list(i)), '_', '\_'),'FontWeight','bold')
-                    grid(ax, 'on');
-                elseif M == 3
-                    if ~isempty(app.EResultParetoData.Optimum)
-                        % draw optimum
-                        x = squeeze(app.EResultParetoData.Optimum{prob_list(i)}(:, 1));
-                        y = squeeze(app.EResultParetoData.Optimum{prob_list(i)}(:, 2));
-                        z = squeeze(app.EResultParetoData.Optimum{prob_list(i)}(:, 3));
-
-                        s = scatter3(ax, x, y, z);
-                        s.MarkerEdgeColor = 'none';
-                        s.MarkerFaceAlpha = 0.65;
-                        s.MarkerFaceColor = [.5,.5,.5];
-                        s.SizeData = 3;
-                        hold(ax, 'on');
-                    end
-
-                    % draw each algorithm
-                    color_list = colororder;
-                    for j = 1:length(algo_list)
-                        metric_data = squeeze(app.EResultTableData(prob_list(i), algo_list(j), :));
-                        [~, rank] = sort(metric_data);
-                        mid_idx = rank(ceil(end / 2));
-                        x = squeeze(app.EResultParetoData.Obj{prob_list(i), algo_list(j), mid_idx}(:, 1));
-                        y = squeeze(app.EResultParetoData.Obj{prob_list(i), algo_list(j), mid_idx}(:, 2));
-                        z = squeeze(app.EResultParetoData.Obj{prob_list(i), algo_list(j), mid_idx}(:, 3));
-                        s = scatter3(ax, x, y, z);
-                        s.MarkerEdgeColor = color_list(j,:);
-                        s.MarkerFaceAlpha = 0.65;
-                        s.MarkerFaceColor = color_list(j,:);
-                        s.SizeData = 40;
-                        hold(ax, 'on');
-                    end
-
-                    xlabel(ax, '$f_1$', 'interpreter', 'latex');
-                    ylabel(ax, '$f_2$', 'interpreter', 'latex');
-                    zlabel(ax, '$f_3$', 'interpreter', 'latex');
-
-                    if ~isempty(app.EResultParetoData.Optimum)
-                        legend(ax, ['Pareto Front'; strrep(app.EUITable.ColumnName(algo_list), '_', '\_')], 'Location', 'best');
-                    else
-                        legend(ax, strrep(app.EUITable.ColumnName(algo_list), '_', '\_'), 'Location', 'best');
-                    end
-
-                    title(ax, strrep(app.EUITable.RowName(prob_list(i)), '_', '\_'),'FontWeight','bold')
-                    view(ax,[135 30]);
-                    grid(ax, 'on');
-                else % M > 3
-                    % draw each algorithm
-                    color_list = colororder;
-                    min_data = []; max_data = [];
-                    for j = 1:size(app.EResultTableData, 2)
-                        metric_data = squeeze(app.EResultTableData(prob_list(i), j, :));
-                        [~, rank] = sort(metric_data);
-                        mid_idx = rank(ceil(end / 2));
-
-                        data = app.EResultParetoData.Obj{prob_list(i), j, mid_idx};
-                        min_data = min([data; min_data],[],1);
-                        max_data = max([data; max_data],[],1);
-                    end
-                    for j = 1:length(algo_list)
-                        metric_data = squeeze(app.EResultTableData(prob_list(i), algo_list(j), :));
-                        [~, rank] = sort(metric_data);
-                        mid_idx = rank(ceil(end / 2));
-
-                        % Unify
-                        data = app.EResultParetoData.Obj{prob_list(i), algo_list(j), mid_idx};
-                        data = (data - min_data) ./ (max_data - min_data);
-                        for k = 1:size(app.EResultParetoData.Obj{prob_list(i), algo_list(j), mid_idx}, 1)
-                            p(j) = plot(ax, data(k,:));
-                            p(j).Color = color_list(j,:);
-                            p(j).LineWidth = 1.5;
-                            hold(ax, 'on');
-                        end
-                    end
-
-                    ylim([0,1]);
-                    xlabel(ax, 'Dimension', 'interpreter', 'latex');
-                    ylabel(ax, 'Unified $f$', 'interpreter', 'latex');
-                    if length(algo_list) > 1
-                        legend(ax, p, strrep(app.EUITable.ColumnName(algo_list), '_', '\_'), 'Location', 'best');
-                    end
-                    title(ax, strrep(app.EUITable.RowName(prob_list(i)), '_', '\_'),'FontWeight','bold')
-                    grid(ax, 'on');
-                end
-                set(ax,'OuterPosition',[0,0,1,1]);
-                set(ax,'FontWeight','bold'); set(get(fig,'Children'),'FontSize',fontsize);
-                set(ax,'LooseInset',get(ax,'TightInset')+0.02)
-            end
-        end
-
-        % Value changed function: SampleNumberEditField
-        function SampleNumberEditFieldValueChanged(app, event)
+        % Button down function: TestModuleTab
+        function TestModuleTabButtonDown(app, event)
             app.TupdateUIAxes();
         end
     end
@@ -3296,7 +3541,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create MTOPlatformMToPv18UIFigure and hide until all components are created
             app.MTOPlatformMToPv18UIFigure = uifigure('Visible', 'off');
             app.MTOPlatformMToPv18UIFigure.Color = [1 1 1];
-            app.MTOPlatformMToPv18UIFigure.Position = [100 100 1043 798];
+            app.MTOPlatformMToPv18UIFigure.Position = [100 100 1071 744];
             app.MTOPlatformMToPv18UIFigure.Name = 'MTO-Platform (MToP) v1.8';
 
             % Create MTOPlatformGridLayout
@@ -3317,6 +3562,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TestModuleTab = uitab(app.MTOPlatformTabGroup);
             app.TestModuleTab.Title = 'Test Module';
             app.TestModuleTab.BackgroundColor = [1 1 1];
+            app.TestModuleTab.ButtonDownFcn = createCallbackFcn(app, @TestModuleTabButtonDown, true);
 
             % Create TestGridLayout
             app.TestGridLayout = uigridlayout(app.TestModuleTab);
@@ -3533,12 +3779,13 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.SampleNumberEditFieldLabel.Layout.Column = 2;
             app.SampleNumberEditFieldLabel.Text = 'Sample Number';
 
-            % Create SampleNumberEditField
-            app.SampleNumberEditField = uieditfield(app.TP21GridLayout, 'numeric');
-            app.SampleNumberEditField.ValueChangedFcn = createCallbackFcn(app, @SampleNumberEditFieldValueChanged, true);
-            app.SampleNumberEditField.Layout.Row = 1;
-            app.SampleNumberEditField.Layout.Column = 3;
-            app.SampleNumberEditField.Value = 100;
+            % Create TSampleNumberEditField
+            app.TSampleNumberEditField = uieditfield(app.TP21GridLayout, 'numeric');
+            app.TSampleNumberEditField.ValueChangedFcn = createCallbackFcn(app, @TSampleNumberEditFieldValueChanged, true);
+            app.TSampleNumberEditField.FontWeight = 'bold';
+            app.TSampleNumberEditField.Layout.Row = 1;
+            app.TSampleNumberEditField.Layout.Column = 3;
+            app.TSampleNumberEditField.Value = 100;
 
             % Create TP24GridLayout
             app.TP24GridLayout = uigridlayout(app.TP2GridLayout);
@@ -3608,13 +3855,13 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TOutputTextArea.Layout.Row = 1;
             app.TOutputTextArea.Layout.Column = 1;
 
-            % Create MTOPlatformMToPbyYanchiLiLabel
-            app.MTOPlatformMToPbyYanchiLiLabel = uilabel(app.TP3GridLayout);
-            app.MTOPlatformMToPbyYanchiLiLabel.HorizontalAlignment = 'center';
-            app.MTOPlatformMToPbyYanchiLiLabel.FontWeight = 'bold';
-            app.MTOPlatformMToPbyYanchiLiLabel.Layout.Row = 2;
-            app.MTOPlatformMToPbyYanchiLiLabel.Layout.Column = 1;
-            app.MTOPlatformMToPbyYanchiLiLabel.Text = 'MTO-Platform (MToP) by Yanchi Li';
+            % Create MTOPlatformMToPLabel
+            app.MTOPlatformMToPLabel = uilabel(app.TP3GridLayout);
+            app.MTOPlatformMToPLabel.HorizontalAlignment = 'center';
+            app.MTOPlatformMToPLabel.FontWeight = 'bold';
+            app.MTOPlatformMToPLabel.Layout.Row = 2;
+            app.MTOPlatformMToPLabel.Layout.Column = 1;
+            app.MTOPlatformMToPLabel.Text = 'MTO-Platform (MToP) by Yanchi Li';
 
             % Create ExperimentModuleTab
             app.ExperimentModuleTab = uitab(app.MTOPlatformTabGroup);
@@ -4022,126 +4269,11 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EP3TGridLayout = uigridlayout(app.EP3GridLayout);
             app.EP3TGridLayout.ColumnWidth = {'1x'};
             app.EP3TGridLayout.RowHeight = {'fit', '1x'};
-            app.EP3TGridLayout.RowSpacing = 0;
+            app.EP3TGridLayout.RowSpacing = 5;
             app.EP3TGridLayout.Padding = [0 0 0 0];
             app.EP3TGridLayout.Layout.Row = 1;
             app.EP3TGridLayout.Layout.Column = 1;
             app.EP3TGridLayout.BackgroundColor = [1 1 1];
-
-            % Create EP3T1GridLayout
-            app.EP3T1GridLayout = uigridlayout(app.EP3TGridLayout);
-            app.EP3T1GridLayout.ColumnWidth = {'1x', '0.8x', '1x', '0.8x', '0.9x', '1x', '1x', '1x', '1x', '1x'};
-            app.EP3T1GridLayout.RowHeight = {'fit'};
-            app.EP3T1GridLayout.ColumnSpacing = 5;
-            app.EP3T1GridLayout.RowSpacing = 7;
-            app.EP3T1GridLayout.Padding = [0 5 0 0];
-            app.EP3T1GridLayout.Layout.Row = 1;
-            app.EP3T1GridLayout.Layout.Column = 1;
-            app.EP3T1GridLayout.BackgroundColor = [1 1 1];
-
-            % Create ETestTypeDropDown
-            app.ETestTypeDropDown = uidropdown(app.EP3T1GridLayout);
-            app.ETestTypeDropDown.Items = {'None', 'Wilcoxon Rank-sum', 'Wilcoxon Signed-rank', 'Friedman (mean)', 'Friedman (reps)'};
-            app.ETestTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @ETestTypeDropDownValueChanged, true);
-            app.ETestTypeDropDown.Tooltip = {'Statistical Analysis'};
-            app.ETestTypeDropDown.FontWeight = 'bold';
-            app.ETestTypeDropDown.BackgroundColor = [1 1 1];
-            app.ETestTypeDropDown.Layout.Row = 1;
-            app.ETestTypeDropDown.Layout.Column = 8;
-            app.ETestTypeDropDown.Value = 'None';
-
-            % Create EAlgorithmDropDown
-            app.EAlgorithmDropDown = uidropdown(app.EP3T1GridLayout);
-            app.EAlgorithmDropDown.Items = {'Algorithm'};
-            app.EAlgorithmDropDown.ValueChangedFcn = createCallbackFcn(app, @EAlgorithmDropDownValueChanged, true);
-            app.EAlgorithmDropDown.Tooltip = {'Main Algorithm in Statistical Analysis'};
-            app.EAlgorithmDropDown.FontWeight = 'bold';
-            app.EAlgorithmDropDown.BackgroundColor = [1 1 1];
-            app.EAlgorithmDropDown.Layout.Row = 1;
-            app.EAlgorithmDropDown.Layout.Column = 9;
-            app.EAlgorithmDropDown.Value = 'Algorithm';
-
-            % Create EShowTypeDropDown
-            app.EShowTypeDropDown = uidropdown(app.EP3T1GridLayout);
-            app.EShowTypeDropDown.Items = {'Mean', 'Mean&Std', 'Std', 'Median', 'Best', 'Worst'};
-            app.EShowTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EShowTypeDropDownValueChanged, true);
-            app.EShowTypeDropDown.Tooltip = {'Result Type'};
-            app.EShowTypeDropDown.FontWeight = 'bold';
-            app.EShowTypeDropDown.BackgroundColor = [1 1 1];
-            app.EShowTypeDropDown.Layout.Row = 1;
-            app.EShowTypeDropDown.Layout.Column = 7;
-            app.EShowTypeDropDown.Value = 'Mean';
-
-            % Create EDataTypeDropDown
-            app.EDataTypeDropDown = uidropdown(app.EP3T1GridLayout);
-            app.EDataTypeDropDown.Items = {'Reps'};
-            app.EDataTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EDataTypeDropDownValueChanged, true);
-            app.EDataTypeDropDown.Tooltip = {'Performance Metric'};
-            app.EDataTypeDropDown.FontWeight = 'bold';
-            app.EDataTypeDropDown.BackgroundColor = [1 1 1];
-            app.EDataTypeDropDown.Layout.Row = 1;
-            app.EDataTypeDropDown.Layout.Column = 6;
-            app.EDataTypeDropDown.Value = 'Reps';
-
-            % Create EHighlightTypeDropDown
-            app.EHighlightTypeDropDown = uidropdown(app.EP3T1GridLayout);
-            app.EHighlightTypeDropDown.Items = {'None', 'Best', 'Best&Worst'};
-            app.EHighlightTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EHighlightTypeDropDownValueChanged, true);
-            app.EHighlightTypeDropDown.Tooltip = {'Highlight Type'};
-            app.EHighlightTypeDropDown.FontWeight = 'bold';
-            app.EHighlightTypeDropDown.BackgroundColor = [1 1 1];
-            app.EHighlightTypeDropDown.Layout.Row = 1;
-            app.EHighlightTypeDropDown.Layout.Column = 10;
-            app.EHighlightTypeDropDown.Value = 'Best&Worst';
-
-            % Create ESaveTableButton
-            app.ESaveTableButton = uibutton(app.EP3T1GridLayout, 'push');
-            app.ESaveTableButton.ButtonPushedFcn = createCallbackFcn(app, @ESaveTableButtonPushed, true);
-            app.ESaveTableButton.BackgroundColor = [1 1 1];
-            app.ESaveTableButton.FontWeight = 'bold';
-            app.ESaveTableButton.Tooltip = {'Export Current Table or Convergence Data to File'};
-            app.ESaveTableButton.Layout.Row = 1;
-            app.ESaveTableButton.Layout.Column = 1;
-            app.ESaveTableButton.Text = 'Export';
-
-            % Create EDataFormatEditField
-            app.EDataFormatEditField = uieditfield(app.EP3T1GridLayout, 'text');
-            app.EDataFormatEditField.ValueChangedFcn = createCallbackFcn(app, @EDataFormatEditFieldValueChanged, true);
-            app.EDataFormatEditField.HorizontalAlignment = 'center';
-            app.EDataFormatEditField.Tooltip = {'Data Format Str'};
-            app.EDataFormatEditField.Layout.Row = 1;
-            app.EDataFormatEditField.Layout.Column = 5;
-            app.EDataFormatEditField.Value = '%d';
-
-            % Create EConvergeButton
-            app.EConvergeButton = uibutton(app.EP3T1GridLayout, 'push');
-            app.EConvergeButton.ButtonPushedFcn = createCallbackFcn(app, @EConvergeButtonPushed, true);
-            app.EConvergeButton.BackgroundColor = [1 1 1];
-            app.EConvergeButton.FontWeight = 'bold';
-            app.EConvergeButton.Tooltip = {'Select data area in Table to draw Metric Convergence plot'};
-            app.EConvergeButton.Layout.Row = 1;
-            app.EConvergeButton.Layout.Column = 3;
-            app.EConvergeButton.Text = 'Converge';
-
-            % Create EParetoButton
-            app.EParetoButton = uibutton(app.EP3T1GridLayout, 'push');
-            app.EParetoButton.ButtonPushedFcn = createCallbackFcn(app, @EParetoButtonPushed, true);
-            app.EParetoButton.BackgroundColor = [1 1 1];
-            app.EParetoButton.FontWeight = 'bold';
-            app.EParetoButton.Tooltip = {'Select data area in Table to draw Median Population Pareto Front'};
-            app.EParetoButton.Layout.Row = 1;
-            app.EParetoButton.Layout.Column = 4;
-            app.EParetoButton.Text = 'Pareto';
-
-            % Create EConvergeTypeDropDown
-            app.EConvergeTypeDropDown = uidropdown(app.EP3T1GridLayout);
-            app.EConvergeTypeDropDown.Items = {'Log', 'Log Type2', 'Log Range', 'Normal', 'Norm Range'};
-            app.EConvergeTypeDropDown.Tooltip = {'Y-axis Show Type of Convergence Plot'};
-            app.EConvergeTypeDropDown.FontWeight = 'bold';
-            app.EConvergeTypeDropDown.BackgroundColor = [1 1 1];
-            app.EConvergeTypeDropDown.Layout.Row = 1;
-            app.EConvergeTypeDropDown.Layout.Column = 2;
-            app.EConvergeTypeDropDown.Value = 'Log';
 
             % Create EUITable
             app.EUITable = uitable(app.EP3TGridLayout);
@@ -4151,6 +4283,200 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EUITable.Layout.Row = 2;
             app.EUITable.Layout.Column = 1;
 
+            % Create EP3T2GridLayout
+            app.EP3T2GridLayout = uigridlayout(app.EP3TGridLayout);
+            app.EP3T2GridLayout.ColumnWidth = {'fit', '3x', '2x', '1x', '3.7x'};
+            app.EP3T2GridLayout.RowHeight = {48};
+            app.EP3T2GridLayout.ColumnSpacing = 5;
+            app.EP3T2GridLayout.RowSpacing = 0;
+            app.EP3T2GridLayout.Padding = [0 0 0 0];
+            app.EP3T2GridLayout.Layout.Row = 1;
+            app.EP3T2GridLayout.Layout.Column = 1;
+            app.EP3T2GridLayout.BackgroundColor = [1 1 1];
+
+            % Create MetricandShowTypePanel
+            app.MetricandShowTypePanel = uipanel(app.EP3T2GridLayout);
+            app.MetricandShowTypePanel.BorderType = 'none';
+            app.MetricandShowTypePanel.Title = 'Metric and Show Type';
+            app.MetricandShowTypePanel.BackgroundColor = [1 1 1];
+            app.MetricandShowTypePanel.Layout.Row = 1;
+            app.MetricandShowTypePanel.Layout.Column = 2;
+            app.MetricandShowTypePanel.FontWeight = 'bold';
+
+            % Create GridLayout6_2
+            app.GridLayout6_2 = uigridlayout(app.MetricandShowTypePanel);
+            app.GridLayout6_2.ColumnWidth = {'1x', '1x', '1x'};
+            app.GridLayout6_2.RowHeight = {'1x'};
+            app.GridLayout6_2.ColumnSpacing = 5;
+            app.GridLayout6_2.RowSpacing = 0;
+            app.GridLayout6_2.Padding = [0 0 0 5];
+            app.GridLayout6_2.BackgroundColor = [1 1 1];
+
+            % Create EShowTypeDropDown
+            app.EShowTypeDropDown = uidropdown(app.GridLayout6_2);
+            app.EShowTypeDropDown.Items = {'Mean', 'Mean&Std', 'Std', 'Median', 'Best', 'Worst'};
+            app.EShowTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EShowTypeDropDownValueChanged, true);
+            app.EShowTypeDropDown.Tooltip = {'Result Type'};
+            app.EShowTypeDropDown.FontWeight = 'bold';
+            app.EShowTypeDropDown.BackgroundColor = [1 1 1];
+            app.EShowTypeDropDown.Layout.Row = 1;
+            app.EShowTypeDropDown.Layout.Column = 3;
+            app.EShowTypeDropDown.Value = 'Mean';
+
+            % Create EDataFormatEditField
+            app.EDataFormatEditField = uieditfield(app.GridLayout6_2, 'text');
+            app.EDataFormatEditField.ValueChangedFcn = createCallbackFcn(app, @EDataFormatEditFieldValueChanged, true);
+            app.EDataFormatEditField.HorizontalAlignment = 'center';
+            app.EDataFormatEditField.FontWeight = 'bold';
+            app.EDataFormatEditField.Tooltip = {'Data Format Str'};
+            app.EDataFormatEditField.Layout.Row = 1;
+            app.EDataFormatEditField.Layout.Column = 2;
+            app.EDataFormatEditField.Value = '%d';
+
+            % Create EDataTypeDropDown
+            app.EDataTypeDropDown = uidropdown(app.GridLayout6_2);
+            app.EDataTypeDropDown.Items = {'Reps'};
+            app.EDataTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EDataTypeDropDownValueChanged, true);
+            app.EDataTypeDropDown.Tooltip = {'Performance Metric'};
+            app.EDataTypeDropDown.FontWeight = 'bold';
+            app.EDataTypeDropDown.BackgroundColor = [1 1 1];
+            app.EDataTypeDropDown.Layout.Row = 1;
+            app.EDataTypeDropDown.Layout.Column = 1;
+            app.EDataTypeDropDown.Value = 'Reps';
+
+            % Create StatisticalTestPanel
+            app.StatisticalTestPanel = uipanel(app.EP3T2GridLayout);
+            app.StatisticalTestPanel.BorderType = 'none';
+            app.StatisticalTestPanel.Title = 'Statistical Test';
+            app.StatisticalTestPanel.BackgroundColor = [1 1 1];
+            app.StatisticalTestPanel.Layout.Row = 1;
+            app.StatisticalTestPanel.Layout.Column = 3;
+            app.StatisticalTestPanel.FontWeight = 'bold';
+
+            % Create GridLayout6_4
+            app.GridLayout6_4 = uigridlayout(app.StatisticalTestPanel);
+            app.GridLayout6_4.RowHeight = {'1x'};
+            app.GridLayout6_4.ColumnSpacing = 5;
+            app.GridLayout6_4.RowSpacing = 0;
+            app.GridLayout6_4.Padding = [0 0 0 5];
+            app.GridLayout6_4.BackgroundColor = [1 1 1];
+
+            % Create EAlgorithmDropDown
+            app.EAlgorithmDropDown = uidropdown(app.GridLayout6_4);
+            app.EAlgorithmDropDown.Items = {'Algorithm'};
+            app.EAlgorithmDropDown.ValueChangedFcn = createCallbackFcn(app, @EAlgorithmDropDownValueChanged, true);
+            app.EAlgorithmDropDown.Tooltip = {'Main Algorithm in Statistical Analysis'};
+            app.EAlgorithmDropDown.FontWeight = 'bold';
+            app.EAlgorithmDropDown.BackgroundColor = [1 1 1];
+            app.EAlgorithmDropDown.Layout.Row = 1;
+            app.EAlgorithmDropDown.Layout.Column = 2;
+            app.EAlgorithmDropDown.Value = 'Algorithm';
+
+            % Create ETestTypeDropDown
+            app.ETestTypeDropDown = uidropdown(app.GridLayout6_4);
+            app.ETestTypeDropDown.Items = {'None', 'Wilcoxon Rank-sum', 'Wilcoxon Signed-rank', 'Friedman (mean)', 'Friedman (all reps)'};
+            app.ETestTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @ETestTypeDropDownValueChanged, true);
+            app.ETestTypeDropDown.Tooltip = {'Statistical Analysis'};
+            app.ETestTypeDropDown.FontWeight = 'bold';
+            app.ETestTypeDropDown.BackgroundColor = [1 1 1];
+            app.ETestTypeDropDown.Layout.Row = 1;
+            app.ETestTypeDropDown.Layout.Column = 1;
+            app.ETestTypeDropDown.Value = 'None';
+
+            % Create HighlightPanel
+            app.HighlightPanel = uipanel(app.EP3T2GridLayout);
+            app.HighlightPanel.BorderType = 'none';
+            app.HighlightPanel.Title = 'Highlight';
+            app.HighlightPanel.BackgroundColor = [1 1 1];
+            app.HighlightPanel.Layout.Row = 1;
+            app.HighlightPanel.Layout.Column = 4;
+            app.HighlightPanel.FontWeight = 'bold';
+
+            % Create GridLayout6_5
+            app.GridLayout6_5 = uigridlayout(app.HighlightPanel);
+            app.GridLayout6_5.ColumnWidth = {'1x'};
+            app.GridLayout6_5.RowHeight = {'1x'};
+            app.GridLayout6_5.ColumnSpacing = 5;
+            app.GridLayout6_5.RowSpacing = 0;
+            app.GridLayout6_5.Padding = [0 0 0 5];
+            app.GridLayout6_5.BackgroundColor = [1 1 1];
+
+            % Create EHighlightTypeDropDown
+            app.EHighlightTypeDropDown = uidropdown(app.GridLayout6_5);
+            app.EHighlightTypeDropDown.Items = {'None', 'Best', 'Best&Worst'};
+            app.EHighlightTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EHighlightTypeDropDownValueChanged, true);
+            app.EHighlightTypeDropDown.Tooltip = {'Highlight Type'};
+            app.EHighlightTypeDropDown.FontWeight = 'bold';
+            app.EHighlightTypeDropDown.BackgroundColor = [1 1 1];
+            app.EHighlightTypeDropDown.Layout.Row = 1;
+            app.EHighlightTypeDropDown.Layout.Column = 1;
+            app.EHighlightTypeDropDown.Value = 'Best&Worst';
+
+            % Create DrawingSelectTableAreaPanel
+            app.DrawingSelectTableAreaPanel = uipanel(app.EP3T2GridLayout);
+            app.DrawingSelectTableAreaPanel.BorderType = 'none';
+            app.DrawingSelectTableAreaPanel.Title = 'Drawing (Select Table Area)';
+            app.DrawingSelectTableAreaPanel.BackgroundColor = [1 1 1];
+            app.DrawingSelectTableAreaPanel.Layout.Row = 1;
+            app.DrawingSelectTableAreaPanel.Layout.Column = 5;
+            app.DrawingSelectTableAreaPanel.FontWeight = 'bold';
+
+            % Create GridLayout6_3
+            app.GridLayout6_3 = uigridlayout(app.DrawingSelectTableAreaPanel);
+            app.GridLayout6_3.ColumnWidth = {'1x', '1x', '1x', '0.7x'};
+            app.GridLayout6_3.RowHeight = {'1x'};
+            app.GridLayout6_3.ColumnSpacing = 5;
+            app.GridLayout6_3.RowSpacing = 0;
+            app.GridLayout6_3.Padding = [0 0 0 5];
+            app.GridLayout6_3.BackgroundColor = [1 1 1];
+
+            % Create EConvergeTypeDropDown
+            app.EConvergeTypeDropDown = uidropdown(app.GridLayout6_3);
+            app.EConvergeTypeDropDown.Items = {'Log', 'Log Type2', 'Log Range', 'Normal', 'Norm Range'};
+            app.EConvergeTypeDropDown.Tooltip = {'Y-axis Show Type of Convergence Plot'};
+            app.EConvergeTypeDropDown.FontWeight = 'bold';
+            app.EConvergeTypeDropDown.BackgroundColor = [1 1 1];
+            app.EConvergeTypeDropDown.Layout.Row = 1;
+            app.EConvergeTypeDropDown.Layout.Column = 1;
+            app.EConvergeTypeDropDown.Value = 'Log';
+
+            % Create EConvergeButton
+            app.EConvergeButton = uibutton(app.GridLayout6_3, 'push');
+            app.EConvergeButton.ButtonPushedFcn = createCallbackFcn(app, @EConvergeButtonPushed, true);
+            app.EConvergeButton.BackgroundColor = [1 1 1];
+            app.EConvergeButton.FontWeight = 'bold';
+            app.EConvergeButton.Tooltip = {'Select data area in Table to draw Metric Convergence plot'};
+            app.EConvergeButton.Layout.Row = 1;
+            app.EConvergeButton.Layout.Column = 2;
+            app.EConvergeButton.Text = 'Converge';
+
+            % Create EParetoButton
+            app.EParetoButton = uibutton(app.GridLayout6_3, 'push');
+            app.EParetoButton.ButtonPushedFcn = createCallbackFcn(app, @EParetoButtonPushed, true);
+            app.EParetoButton.BackgroundColor = [1 1 1];
+            app.EParetoButton.FontWeight = 'bold';
+            app.EParetoButton.Tooltip = {'Select data area in Table to draw Median Population Pareto Front'};
+            app.EParetoButton.Layout.Row = 1;
+            app.EParetoButton.Layout.Column = 3;
+            app.EParetoButton.Text = 'Pareto';
+
+            % Create ESplitCheckBox
+            app.ESplitCheckBox = uicheckbox(app.GridLayout6_3);
+            app.ESplitCheckBox.Text = 'Split';
+            app.ESplitCheckBox.FontWeight = 'bold';
+            app.ESplitCheckBox.Layout.Row = 1;
+            app.ESplitCheckBox.Layout.Column = 4;
+
+            % Create ESaveTableButton
+            app.ESaveTableButton = uibutton(app.EP3T2GridLayout, 'push');
+            app.ESaveTableButton.ButtonPushedFcn = createCallbackFcn(app, @ESaveTableButtonPushed, true);
+            app.ESaveTableButton.BackgroundColor = [1 1 1];
+            app.ESaveTableButton.FontWeight = 'bold';
+            app.ESaveTableButton.Tooltip = {'Export Current Table or Convergence Data to File'};
+            app.ESaveTableButton.Layout.Row = 1;
+            app.ESaveTableButton.Layout.Column = 1;
+            app.ESaveTableButton.Text = 'Export';
+
             % Create DataProcessModuleTab
             app.DataProcessModuleTab = uitab(app.MTOPlatformTabGroup);
             app.DataProcessModuleTab.Title = 'Data Process Module';
@@ -4158,13 +4484,13 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create DataProcessGridLayout
             app.DataProcessGridLayout = uigridlayout(app.DataProcessModuleTab);
-            app.DataProcessGridLayout.ColumnWidth = {330, '2x'};
-            app.DataProcessGridLayout.RowHeight = {'1x'};
+            app.DataProcessGridLayout.RowHeight = {'2x'};
             app.DataProcessGridLayout.BackgroundColor = [1 1 1];
 
             % Create DPanel1
             app.DPanel1 = uipanel(app.DataProcessGridLayout);
-            app.DPanel1.BorderType = 'none';
+            app.DPanel1.BorderColor = [0.651 0.651 0.651];
+            app.DPanel1.HighlightColor = [0.651 0.651 0.651];
             app.DPanel1.BackgroundColor = [1 1 1];
             app.DPanel1.Layout.Row = 1;
             app.DPanel1.Layout.Column = 1;
@@ -4172,9 +4498,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create DP1GridLayout
             app.DP1GridLayout = uigridlayout(app.DPanel1);
             app.DP1GridLayout.ColumnWidth = {'1x'};
-            app.DP1GridLayout.RowHeight = {'0.5x', 'fit', '1x', '1x', '1x', '1x', '2x'};
-            app.DP1GridLayout.RowSpacing = 20;
-            app.DP1GridLayout.Padding = [0 0 0 0];
+            app.DP1GridLayout.RowHeight = {'fit', 'fit', '1x', 'fit', '1x', 'fit', '1x', 'fit', '1x', 'fit', '1x', 'fit', '2x'};
             app.DP1GridLayout.BackgroundColor = [1 1 1];
 
             % Create DDataProcessModuleLabel
@@ -4185,19 +4509,19 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.DDataProcessModuleLabel.FontWeight = 'bold';
             app.DDataProcessModuleLabel.Layout.Row = 1;
             app.DDataProcessModuleLabel.Layout.Column = 1;
-            app.DDataProcessModuleLabel.Text = 'Data Process for Experiment';
+            app.DDataProcessModuleLabel.Text = 'Experiment Data Process ';
 
             % Create DP1Panel1
             app.DP1Panel1 = uipanel(app.DP1GridLayout);
             app.DP1Panel1.BorderType = 'none';
             app.DP1Panel1.BackgroundColor = [1 1 1];
-            app.DP1Panel1.Layout.Row = 3;
+            app.DP1Panel1.Layout.Row = 4;
             app.DP1Panel1.Layout.Column = 1;
 
             % Create DP1P1GridLayout
             app.DP1P1GridLayout = uigridlayout(app.DP1Panel1);
             app.DP1P1GridLayout.ColumnWidth = {'1x', '1x', '1x'};
-            app.DP1P1GridLayout.RowHeight = {'1x', 'fit'};
+            app.DP1P1GridLayout.RowHeight = {'fit', 'fit'};
             app.DP1P1GridLayout.Padding = [0 0 0 0];
             app.DP1P1GridLayout.BackgroundColor = [1 1 1];
 
@@ -4248,13 +4572,13 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.DP1Panel2 = uipanel(app.DP1GridLayout);
             app.DP1Panel2.BorderType = 'none';
             app.DP1Panel2.BackgroundColor = [1 1 1];
-            app.DP1Panel2.Layout.Row = 4;
+            app.DP1Panel2.Layout.Row = 6;
             app.DP1Panel2.Layout.Column = 1;
 
             % Create DP1P2GridLayout
             app.DP1P2GridLayout = uigridlayout(app.DP1Panel2);
             app.DP1P2GridLayout.ColumnWidth = {'1x', '1x', '1x'};
-            app.DP1P2GridLayout.RowHeight = {'1x', 'fit'};
+            app.DP1P2GridLayout.RowHeight = {'fit', 'fit'};
             app.DP1P2GridLayout.Padding = [0 0 0 0];
             app.DP1P2GridLayout.BackgroundColor = [1 1 1];
 
@@ -4297,13 +4621,13 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.DP1Panel3 = uipanel(app.DP1GridLayout);
             app.DP1Panel3.BorderType = 'none';
             app.DP1Panel3.BackgroundColor = [1 1 1];
-            app.DP1Panel3.Layout.Row = 5;
+            app.DP1Panel3.Layout.Row = 8;
             app.DP1Panel3.Layout.Column = 1;
 
             % Create DP1P3GridLayout
             app.DP1P3GridLayout = uigridlayout(app.DP1Panel3);
             app.DP1P3GridLayout.ColumnWidth = {'1x', '1x', '1x'};
-            app.DP1P3GridLayout.RowHeight = {'1x', 'fit'};
+            app.DP1P3GridLayout.RowHeight = {'fit', 'fit'};
             app.DP1P3GridLayout.Padding = [0 0 0 0];
             app.DP1P3GridLayout.BackgroundColor = [1 1 1];
 
@@ -4346,12 +4670,13 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.DP1Panel4 = uipanel(app.DP1GridLayout);
             app.DP1Panel4.BorderType = 'none';
             app.DP1Panel4.BackgroundColor = [1 1 1];
-            app.DP1Panel4.Layout.Row = 6;
+            app.DP1Panel4.Layout.Row = 12;
             app.DP1Panel4.Layout.Column = 1;
 
             % Create DP1P4GridLayout
             app.DP1P4GridLayout = uigridlayout(app.DP1Panel4);
-            app.DP1P4GridLayout.RowHeight = {'1x', 'fit'};
+            app.DP1P4GridLayout.ColumnWidth = {'1x', '2x', '2x', '1x'};
+            app.DP1P4GridLayout.RowHeight = {'fit', 'fit'};
             app.DP1P4GridLayout.Padding = [0 0 0 0];
             app.DP1P4GridLayout.BackgroundColor = [1 1 1];
 
@@ -4360,7 +4685,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.DUpandDownDataLabel.HorizontalAlignment = 'center';
             app.DUpandDownDataLabel.VerticalAlignment = 'bottom';
             app.DUpandDownDataLabel.Layout.Row = 1;
-            app.DUpandDownDataLabel.Layout.Column = [1 2];
+            app.DUpandDownDataLabel.Layout.Column = [1 4];
             app.DUpandDownDataLabel.Text = 'Select data node, click Up or Down button';
 
             % Create DUpButton
@@ -4369,7 +4694,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.DUpButton.BackgroundColor = [1 1 1];
             app.DUpButton.FontWeight = 'bold';
             app.DUpButton.Layout.Row = 2;
-            app.DUpButton.Layout.Column = 1;
+            app.DUpButton.Layout.Column = 2;
             app.DUpButton.Text = 'UP';
 
             % Create DDownButton
@@ -4378,16 +4703,8 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.DDownButton.BackgroundColor = [1 1 1];
             app.DDownButton.FontWeight = 'bold';
             app.DDownButton.Layout.Row = 2;
-            app.DDownButton.Layout.Column = 2;
+            app.DDownButton.Layout.Column = 3;
             app.DDownButton.Text = 'Down';
-
-            % Create DDataProcessModuleLabel_2
-            app.DDataProcessModuleLabel_2 = uilabel(app.DP1GridLayout);
-            app.DDataProcessModuleLabel_2.HorizontalAlignment = 'center';
-            app.DDataProcessModuleLabel_2.VerticalAlignment = 'bottom';
-            app.DDataProcessModuleLabel_2.Layout.Row = 7;
-            app.DDataProcessModuleLabel_2.Layout.Column = 1;
-            app.DDataProcessModuleLabel_2.Text = 'MTO-Platform (MToP) by Yanchi Li';
 
             % Create DLoadDataorSelectandDeleteSaveDataLabel_5
             app.DLoadDataorSelectandDeleteSaveDataLabel_5 = uilabel(app.DP1GridLayout);
@@ -4396,7 +4713,50 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.DLoadDataorSelectandDeleteSaveDataLabel_5.FontSize = 14;
             app.DLoadDataorSelectandDeleteSaveDataLabel_5.Layout.Row = 2;
             app.DLoadDataorSelectandDeleteSaveDataLabel_5.Layout.Column = 1;
-            app.DLoadDataorSelectandDeleteSaveDataLabel_5.Text = 'Load saved data of Experiment Module first. Select the root node of the data to merge or split. Hold down Ctrl or Cmd to select multiple data.';
+            app.DLoadDataorSelectandDeleteSaveDataLabel_5.Text = {'Load saved data of Experiment Module first.'; 'Select Data Root-Node to merge or split.'; 'Hold Control to select multiple data.'};
+
+            % Create DP1Panel5
+            app.DP1Panel5 = uipanel(app.DP1GridLayout);
+            app.DP1Panel5.BorderColor = [0.6902 0.6902 0.6902];
+            app.DP1Panel5.HighlightColor = [0.6902 0.6902 0.6902];
+            app.DP1Panel5.BorderType = 'none';
+            app.DP1Panel5.Layout.Row = 10;
+            app.DP1Panel5.Layout.Column = 1;
+
+            % Create DP1P5GridLayout
+            app.DP1P5GridLayout = uigridlayout(app.DP1Panel5);
+            app.DP1P5GridLayout.ColumnWidth = {'1x', '2x', '2x', '1x'};
+            app.DP1P5GridLayout.RowHeight = {'fit', 'fit'};
+            app.DP1P5GridLayout.Padding = [0 0 0 0];
+            app.DP1P5GridLayout.BackgroundColor = [1 1 1];
+
+            % Create DDPreisionButtonDataLabel
+            app.DDPreisionButtonDataLabel = uilabel(app.DP1P5GridLayout);
+            app.DDPreisionButtonDataLabel.HorizontalAlignment = 'center';
+            app.DDPreisionButtonDataLabel.VerticalAlignment = 'bottom';
+            app.DDPreisionButtonDataLabel.Layout.Row = 1;
+            app.DDPreisionButtonDataLabel.Layout.Column = [1 4];
+            app.DDPreisionButtonDataLabel.Text = 'Select data node, set precision, click adjust';
+
+            % Create DPreisionButton
+            app.DPreisionButton = uibutton(app.DP1P5GridLayout, 'push');
+            app.DPreisionButton.ButtonPushedFcn = createCallbackFcn(app, @DPreisionButtonPushed, true);
+            app.DPreisionButton.BackgroundColor = [1 1 1];
+            app.DPreisionButton.FontWeight = 'bold';
+            app.DPreisionButton.Layout.Row = 2;
+            app.DPreisionButton.Layout.Column = 3;
+            app.DPreisionButton.Text = 'Precision Adjust';
+
+            % Create DPreisionEditField
+            app.DPreisionEditField = uieditfield(app.DP1P5GridLayout, 'numeric');
+            app.DPreisionEditField.RoundFractionalValues = 'on';
+            app.DPreisionEditField.ValueDisplayFormat = '%d';
+            app.DPreisionEditField.HorizontalAlignment = 'center';
+            app.DPreisionEditField.FontWeight = 'bold';
+            app.DPreisionEditField.Tooltip = {''};
+            app.DPreisionEditField.Layout.Row = 2;
+            app.DPreisionEditField.Layout.Column = 2;
+            app.DPreisionEditField.Value = -4;
 
             % Create DPanel2
             app.DPanel2 = uipanel(app.DataProcessGridLayout);
@@ -4417,6 +4777,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.DDataTree.Multiselect = 'on';
             app.DDataTree.NodeTextChangedFcn = createCallbackFcn(app, @DDataTreeNodeTextChanged, true);
             app.DDataTree.Editable = 'on';
+            app.DDataTree.Tooltip = {'Select Root-Node to perform.'; 'Click the triangle to display metadata.'};
             app.DDataTree.Layout.Row = 1;
             app.DDataTree.Layout.Column = 1;
 
@@ -4436,10 +4797,10 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.DDataContextMenu = uicontextmenu(app.MTOPlatformMToPv18UIFigure);
             app.DDataContextMenu.ContextMenuOpeningFcn = createCallbackFcn(app, @DDataContextMenuOpening, true);
 
-            % Create SelectedAlgoSelectAllMenu_2
-            app.SelectedAlgoSelectAllMenu_2 = uimenu(app.DDataContextMenu);
-            app.SelectedAlgoSelectAllMenu_2.Checked = 'on';
-            app.SelectedAlgoSelectAllMenu_2.Text = 'Select All';
+            % Create DDataSelectAllMenu
+            app.DDataSelectAllMenu = uimenu(app.DDataContextMenu);
+            app.DDataSelectAllMenu.Checked = 'on';
+            app.DDataSelectAllMenu.Text = 'Select All';
             
             % Assign app.DDataContextMenu
             app.DDataTree.ContextMenu = app.DDataContextMenu;
