@@ -43,11 +43,9 @@ methods
 
         while Algo.notTerminated(Prob, population)
             f = randperm(5);
-            if sigma <= 0
-                for i = 1:5
-                    if f(1) == i
-                        sigma = 10^(-i);
-                    end
+            for i = 1:5
+                if f(1) == i
+                    sigma = 10^(-i);
                 end
             end
             for t = 1:Prob.T
@@ -61,8 +59,8 @@ methods
             offspring_temp = Individual_MF.empty();
             for t = 1:Prob.T
                 offspring_t = offspring([offspring.MFFactor] == t);
-                offspring_t = Algo.Evaluation(offspring_t, Prob, t);
                 offspring_t = [offspring_t, offspring2([offspring2.MFFactor] == t)];
+                offspring_t = Algo.Evaluation(offspring_t, Prob, t);
                 for i = 1:length(offspring_t)
                     offspring_t(i).MFObj = inf(1, Prob.T);
                     offspring_t(i).MFCV = inf(1, Prob.T);
@@ -120,7 +118,6 @@ methods
                     offspring(count + 1).Dec = 1 - offspring(count).Dec;
                 else
                     offspring(count + 1).Dec = k * (maxDec{factor} + minDec{factor}) - offspring(count).Dec;
-
                 end
                 % imitation
                 offspring(count).MFFactor = population(p(randi(2))).MFFactor;
