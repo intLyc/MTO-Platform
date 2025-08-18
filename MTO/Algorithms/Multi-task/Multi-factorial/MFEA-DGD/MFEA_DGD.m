@@ -20,7 +20,7 @@ classdef MFEA_DGD < Algorithm
 %--------------------------------------------------------------------------
 
 properties (SetAccess = private)
-    RMP = 0.3
+    RMP = 0.7
     Gamma = 0.1
 end
 
