@@ -140,7 +140,7 @@ methods
             sample(i).Dec = max(0, min(1, sample(i).Dec));
         end
         sample = Algo.Evaluation(sample, Prob, t);
-        [~, rank] = sortrows([sample.CVs, sample.Objs], [1, 2])
+        [~, rank] = sortrows([sample.CVs, sample.Objs], [1, 2]);
     end
 end
 end
