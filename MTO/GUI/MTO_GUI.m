@@ -278,9 +278,11 @@ classdef MTO_GUI < matlab.apps.AppBase
             if app.ECompetitiveButton.Value
                 special_label{end+1} = 'Competitive';
             end
-            
+            if isempty(special_label)
+                special_label = {'None'};
+            end
             label_str = {app.ETaskTypeDropDown.Value, app.EObjectiveTypeDropDown.Value, special_label{:}};
-
+            
             app.readAlgoProb(label_str);
             app.EAlgorithmsListBox.Items(:) = [];
             app.EProblemsListBox.Items(:) = [];
