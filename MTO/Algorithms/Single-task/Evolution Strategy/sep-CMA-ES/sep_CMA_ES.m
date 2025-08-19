@@ -52,18 +52,18 @@ methods
             ccov{t} = (1 / mueff) * (2 / (n{t} + sqrt(2))^2) + (1 - 1 / mueff) * min(1, (2 * mueff - 1) / ((n{t} + 2)^2 + mueff));
             ccov{t} = (n{t} + 2) / 3 * ccov{t};
             % Initialization
-            mDec{t} = mean(unifrnd(zeros(lambda, n{t}), ones(lambda, n{t})));
+            mDec{t} = rand(1, n{t});
             ps{t} = zeros(n{t}, 1);
             pc{t} = zeros(n{t}, 1);
             C{t} = ones(n{t}, 1);
             sigma{t} = Algo.sigma0;
             chiN{t} = sqrt(n{t}) * (1 - 1 / (4 * n{t}) + 1 / (21 * n{t}^2));
-            hth{t} = (1.4 + 2 / (n{t} + 1)) * chiN{t};
             for i = 1:lambda
                 sample{t}(i) = Individual();
             end
         end
 
+        taskFE = zeros(1, Prob.T);
         while Algo.notTerminated(Prob, sample)
             for t = 1:Prob.T
                 % Sample solutions
@@ -71,13 +71,14 @@ methods
                     sample{t}(i).Dec = mDec{t} + sigma{t} * (sqrt(C{t}) .* randn(n{t}, 1))';
                 end
                 [sample{t}, rank] = Algo.EvaluationAndSort(sample{t}, Prob, t);
+                taskFE(t) = taskFE(t) + lambda;
 
                 % Update mean decision variables
                 oldDec = mDec{t};
                 mDec{t} = weights * sample{t}(rank(1:mu)).Decs;
                 % Update evolution paths
                 ps{t} = (1 - cs{t}) * ps{t} + sqrt(cs{t} * (2 - cs{t}) * mueff) * (mDec{t} - oldDec)' ./ sqrt(C{t}) / sigma{t};
-                hsig = norm(ps{t}) / sqrt(1 - (1 - cs{t})^(2 * (ceil((Algo.FE - lambda * (t - 1)) / (lambda * Prob.T)) + 1))) < hth{t};
+                hsig = norm(ps{t}) / sqrt(1 - (1 - cs{t})^(2 * taskFE(t) / lambda)) / chiN{t} < 1.4 + 2 / (n{t} + 1);
                 pc{t} = (1 - cc{t}) * pc{t} + hsig * sqrt(cc{t} * (2 - cc{t}) * mueff) * (mDec{t} - oldDec)' / sigma{t};
                 % Update covariance matrix
                 artmp = (sample{t}(rank(1:mu)).Decs - repmat(oldDec, mu, 1))' / sigma{t};
@@ -90,18 +91,12 @@ methods
     end
 
     function [sample, rank] = EvaluationAndSort(Algo, sample, Prob, t)
-        %% Boundary Constraint
-        boundCVs = zeros(length(sample), 1);
+        % Boundary constraint handling (projection method)
         for i = 1:length(sample)
-            % Boundary Constraint Violation
-            tempDec = sample(i).Dec;
-            tempDec(tempDec < 0) = 0;
-            tempDec(tempDec > 1) = 1;
-            boundCVs(i) = sum((sample(i).Dec - tempDec).^2);
+            sample(i).Dec = max(0, min(1, sample(i).Dec));
         end
         sample = Algo.Evaluation(sample, Prob, t);
-        boundCVs(boundCVs > 0) = boundCVs(boundCVs > 0) + max(sample.CVs);
-        [~, rank] = sortrows([sample.CVs + boundCVs, sample.Objs], [1, 2]);
+        [~, rank] = sortrows([sample.CVs, sample.Objs], [1, 2])
     end
 end
 end

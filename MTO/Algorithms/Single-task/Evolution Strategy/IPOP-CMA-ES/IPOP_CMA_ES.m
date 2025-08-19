@@ -60,7 +60,6 @@ methods
             sigma{t} = Algo.sigma0;
             eigenFE{t} = 0;
             chiN{t} = sqrt(n{t}) * (1 - 1 / (4 * n{t}) + 1 / (21 * n{t}^2));
-            hth{t} = (1.4 + 2 / (n{t} + 1)) * chiN{t};
             for i = 1:lambda{t}
                 sample{t}(i) = Individual();
             end
@@ -92,7 +91,7 @@ methods
                 mDec{t} = weights{t} * sample{t}(rank{t}(1:mu{t})).Decs;
                 % Update evolution paths
                 ps{t} = (1 - cs{t}) * ps{t} + sqrt(cs{t} * (2 - cs{t}) * mueff{t}) * invsqrtC{t} * (mDec{t} - oldDec)' / sigma{t};
-                hsig = norm(ps{t}) / sqrt(1 - (1 - cs{t})^(2 * (ceil((Algo.FE - lambda{t} * (t - 1)) / (lambda{t} * Prob.T)) + 1))) < hth{t};
+                hsig = norm(ps{t}) / sqrt(1 - (1 - cs{t})^(2 * taskFE(t) / lambda{t})) / chiN{t} < 1.4 + 2 / (n{t} + 1);
                 pc{t} = (1 - cc{t}) * pc{t} + hsig * sqrt(cc{t} * (2 - cc{t}) * mueff{t}) * (mDec{t} - oldDec)' / sigma{t};
                 % Update covariance matrix
                 artmp = (sample{t}(rank{t}(1:mu{t})).Decs - repmat(oldDec, mu{t}, 1))' / sigma{t};
@@ -101,8 +100,8 @@ methods
                 % Update step size
                 sigma{t} = sigma{t} * exp(cs{t} / damps{t} * (norm(ps{t}) / chiN{t} - 1));
 
-                if (Algo.FE - lambda{t} * (t - 1)) - eigenFE{t} > (lambda{t} * Prob.T) / (c1{t} + cmu{t}) / n{t} / 10 % to achieve O(N^2)
-                    eigenFE{t} = Algo.FE;
+                if taskFE(t) - eigenFE{t} > lambda{t} / (c1{t} + cmu{t}) / n{t} / 10 % to achieve O(N^2)
+                    eigenFE{t} = taskFE(t);
                     C{t} = triu(C{t}) + triu(C{t}, 1)'; % enforce symmetry
                     [B{t}, D{t}] = eig(C{t}); % eigen decomposition, B==normalized eigenvectors
                     D{t} = sqrt(diag(D{t})); % D contains standard deviations now
@@ -136,18 +135,12 @@ methods
     end
 
     function [sample, rank] = EvaluationAndSort(Algo, sample, Prob, t)
-        %% Boundary Constraint
-        boundCVs = zeros(length(sample), 1);
+        % Boundary constraint handling (projection method)
         for i = 1:length(sample)
-            % Boundary Constraint Violation
-            tempDec = sample(i).Dec;
-            tempDec(tempDec < 0) = 0;
-            tempDec(tempDec > 1) = 1;
-            boundCVs(i) = sum((sample(i).Dec - tempDec).^2);
+            sample(i).Dec = max(0, min(1, sample(i).Dec));
         end
         sample = Algo.Evaluation(sample, Prob, t);
-        boundCVs(boundCVs > 0) = boundCVs(boundCVs > 0) + max(sample.CVs);
-        [~, rank] = sortrows([sample.CVs + boundCVs, sample.Objs], [1, 2]);
+        [~, rank] = sortrows([sample.CVs, sample.Objs], [1, 2])
     end
 end
 end
