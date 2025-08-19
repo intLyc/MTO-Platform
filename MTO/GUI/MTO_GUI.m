@@ -84,6 +84,8 @@ classdef MTO_GUI < matlab.apps.AppBase
         EAlgorithmsTree              matlab.ui.container.Tree
         EPanel1                      matlab.ui.container.Panel
         EP1GridLayout                matlab.ui.container.GridLayout
+        ECompetitiveButton           matlab.ui.control.StateButton
+        EConstrainedButton           matlab.ui.control.StateButton
         ESaveDecCheckBox             matlab.ui.control.CheckBox
         EParallelCheckBox            matlab.ui.control.CheckBox
         GridLayout5                  matlab.ui.container.GridLayout
@@ -95,8 +97,6 @@ classdef MTO_GUI < matlab.apps.AppBase
         ERepsEditField               matlab.ui.control.NumericEditField
         EObjectiveTypeDropDown       matlab.ui.control.DropDown
         EObjectiveTypeDropDownLabel  matlab.ui.control.Label
-        ESpecialTypeDropDown         matlab.ui.control.DropDown
-        ESpecialTypeDropDownLabel    matlab.ui.control.Label
         ETaskTypeDropDown            matlab.ui.control.DropDown
         ETaskTypeDropDownLabel       matlab.ui.control.Label
         EProblemListLabel            matlab.ui.control.Label
@@ -271,7 +271,16 @@ classdef MTO_GUI < matlab.apps.AppBase
         function EloadAlgoProb(app)
             % load the algorithms and problems in Experiment module
 
-            label_str = {app.ETaskTypeDropDown.Value, app.EObjectiveTypeDropDown.Value, app.ESpecialTypeDropDown.Value};
+            special_label = {};
+            if app.EConstrainedButton.Value
+                special_label{end+1} = 'Constrained';
+            end
+            if app.ECompetitiveButton.Value
+                special_label{end+1} = 'Competitive';
+            end
+            
+            label_str = {app.ETaskTypeDropDown.Value, app.EObjectiveTypeDropDown.Value, special_label{:}};
+
             app.readAlgoProb(label_str);
             app.EAlgorithmsListBox.Items(:) = [];
             app.EProblemsListBox.Items(:) = [];
@@ -326,8 +335,8 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.ETaskTypeDropDownLabel.Enable = value;
             app.EObjectiveTypeDropDown.Enable = value;
             app.EObjectiveTypeDropDownLabel.Enable = value;
-            app.ESpecialTypeDropDown.Enable = value;
-            app.ESpecialTypeDropDownLabel.Enable = value;
+            app.ECompetitiveButton.Enable = value;
+            app.EConstrainedButton.Enable = value;
             app.EAlgorithmsAddButton.Enable = value;
             app.EAlgorithmListLabel.Enable = value;
             app.EProblemsAddButton.Enable = value;
@@ -1671,11 +1680,6 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EloadAlgoProb();
         end
 
-        % Value changed function: ESpecialTypeDropDown
-        function ESpecialTypeDropDownValueChanged(app, event)
-            app.EloadAlgoProb();
-        end
-
         % Context menu opening function: AlgorithmsContextMenu
         function AlgorithmsContextMenuOpening(app, event)
             % select all algorithms
@@ -1946,15 +1950,6 @@ classdef MTO_GUI < matlab.apps.AppBase
             % save('MTOData_Temp', 'MTOData');
 
             app.EloadMetric(app.getDataLabels(MTOData));
-
-            % m = [MTOData.Problems.M];
-            % if all(m==1)
-            %     app.EloadMetric({'Single-objective', app.ESpecialTypeDropDown.Value});
-            % elseif all(m>1)
-            %     app.EloadMetric({'Multi-objective', app.ESpecialTypeDropDown.Value});
-            % else
-            %     app.EloadMetric({'Nothing'})
-            % end
 
             tEnd = toc(tStart);
             msg = ['All Use Time: ', char(duration([0, 0, tEnd]))];
@@ -3530,6 +3525,16 @@ classdef MTO_GUI < matlab.apps.AppBase
         function TestModuleTabButtonDown(app, event)
             app.TupdateUIAxes();
         end
+
+        % Value changed function: EConstrainedButton
+        function EConstrainedButtonValueChanged(app, event)
+            app.EloadAlgoProb();
+        end
+
+        % Value changed function: ECompetitiveButton
+        function ECompetitiveButtonValueChanged(app, event)
+            app.EloadAlgoProb();
+        end
     end
 
     % Component initialization
@@ -3541,7 +3546,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create MTOPlatformMToPv18UIFigure and hide until all components are created
             app.MTOPlatformMToPv18UIFigure = uifigure('Visible', 'off');
             app.MTOPlatformMToPv18UIFigure.Color = [1 1 1];
-            app.MTOPlatformMToPv18UIFigure.Position = [100 100 1071 744];
+            app.MTOPlatformMToPv18UIFigure.Position = [100 100 1045 744];
             app.MTOPlatformMToPv18UIFigure.Name = 'MTO-Platform (MToP) v1.8';
 
             % Create MTOPlatformGridLayout
@@ -3656,7 +3661,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create TaskLabel
             app.TaskLabel = uilabel(app.TP1GridLayout);
             app.TaskLabel.FontWeight = 'bold';
-            app.TaskLabel.Tooltip = {'Single-task EA Option'};
+            app.TaskLabel.Tooltip = {''};
             app.TaskLabel.Layout.Row = 2;
             app.TaskLabel.Layout.Column = 1;
             app.TaskLabel.Text = 'Task';
@@ -3664,7 +3669,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create SpecialLabel_2
             app.SpecialLabel_2 = uilabel(app.TP1GridLayout);
             app.SpecialLabel_2.FontWeight = 'bold';
-            app.SpecialLabel_2.Tooltip = {'Single-task EA Option'};
+            app.SpecialLabel_2.Tooltip = {''};
             app.SpecialLabel_2.Layout.Row = 4;
             app.SpecialLabel_2.Layout.Column = 1;
             app.SpecialLabel_2.Text = 'Special';
@@ -3693,7 +3698,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create ObjectiveLabel
             app.ObjectiveLabel = uilabel(app.TP1GridLayout);
             app.ObjectiveLabel.FontWeight = 'bold';
-            app.ObjectiveLabel.Tooltip = {'Single-task EA Option'};
+            app.ObjectiveLabel.Tooltip = {''};
             app.ObjectiveLabel.Layout.Row = 3;
             app.ObjectiveLabel.Layout.Column = 1;
             app.ObjectiveLabel.Text = 'Objective';
@@ -3884,7 +3889,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create EP1GridLayout
             app.EP1GridLayout = uigridlayout(app.EPanel1);
-            app.EP1GridLayout.ColumnWidth = {'2x', '1x', '1.2x'};
+            app.EP1GridLayout.ColumnWidth = {'2x', '1x', '1x'};
             app.EP1GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x'};
             app.EP1GridLayout.ColumnSpacing = 5;
             app.EP1GridLayout.RowSpacing = 7;
@@ -3948,7 +3953,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create ETaskTypeDropDownLabel
             app.ETaskTypeDropDownLabel = uilabel(app.EP1GridLayout);
             app.ETaskTypeDropDownLabel.FontWeight = 'bold';
-            app.ETaskTypeDropDownLabel.Tooltip = {'Single-task EA Option'};
+            app.ETaskTypeDropDownLabel.Tooltip = {''};
             app.ETaskTypeDropDownLabel.Layout.Row = 3;
             app.ETaskTypeDropDownLabel.Layout.Column = 1;
             app.ETaskTypeDropDownLabel.Text = 'Task';
@@ -3964,36 +3969,18 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.ETaskTypeDropDown.Layout.Column = [2 3];
             app.ETaskTypeDropDown.Value = 'Multi-task';
 
-            % Create ESpecialTypeDropDownLabel
-            app.ESpecialTypeDropDownLabel = uilabel(app.EP1GridLayout);
-            app.ESpecialTypeDropDownLabel.FontWeight = 'bold';
-            app.ESpecialTypeDropDownLabel.Tooltip = {'Single-task EA Option'};
-            app.ESpecialTypeDropDownLabel.Layout.Row = 5;
-            app.ESpecialTypeDropDownLabel.Layout.Column = 1;
-            app.ESpecialTypeDropDownLabel.Text = 'Special';
-
-            % Create ESpecialTypeDropDown
-            app.ESpecialTypeDropDown = uidropdown(app.EP1GridLayout);
-            app.ESpecialTypeDropDown.Items = {'None', 'Competitive', 'Constrained'};
-            app.ESpecialTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @ESpecialTypeDropDownValueChanged, true);
-            app.ESpecialTypeDropDown.FontWeight = 'bold';
-            app.ESpecialTypeDropDown.BackgroundColor = [1 1 1];
-            app.ESpecialTypeDropDown.Layout.Row = 5;
-            app.ESpecialTypeDropDown.Layout.Column = [2 3];
-            app.ESpecialTypeDropDown.Value = 'None';
-
             % Create EObjectiveTypeDropDownLabel
             app.EObjectiveTypeDropDownLabel = uilabel(app.EP1GridLayout);
             app.EObjectiveTypeDropDownLabel.FontWeight = 'bold';
-            app.EObjectiveTypeDropDownLabel.Tooltip = {'Single-task EA Option'};
+            app.EObjectiveTypeDropDownLabel.Tooltip = {''};
             app.EObjectiveTypeDropDownLabel.Layout.Row = 4;
             app.EObjectiveTypeDropDownLabel.Layout.Column = 1;
             app.EObjectiveTypeDropDownLabel.Text = 'Objective';
 
             % Create EObjectiveTypeDropDown
             app.EObjectiveTypeDropDown = uidropdown(app.EP1GridLayout);
-            app.EObjectiveTypeDropDown.Items = {'Single', 'Multi'};
-            app.EObjectiveTypeDropDown.ItemsData = {'Single-objective', 'Multi-objective'};
+            app.EObjectiveTypeDropDown.Items = {'Single', 'Multi', 'Many'};
+            app.EObjectiveTypeDropDown.ItemsData = {'Single-objective', 'Multi-objective', 'Many-objective'};
             app.EObjectiveTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EObjectiveTypeDropDownValueChanged, true);
             app.EObjectiveTypeDropDown.FontWeight = 'bold';
             app.EObjectiveTypeDropDown.BackgroundColor = [1 1 1];
@@ -4084,10 +4071,30 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create ESaveDecCheckBox
             app.ESaveDecCheckBox = uicheckbox(app.EP1GridLayout);
             app.ESaveDecCheckBox.Tooltip = {'Save decision variables flag'};
-            app.ESaveDecCheckBox.Text = 'Save Dec';
+            app.ESaveDecCheckBox.Text = 'SaveDec';
             app.ESaveDecCheckBox.FontWeight = 'bold';
             app.ESaveDecCheckBox.Layout.Row = 1;
             app.ESaveDecCheckBox.Layout.Column = [2 3];
+
+            % Create EConstrainedButton
+            app.EConstrainedButton = uibutton(app.EP1GridLayout, 'state');
+            app.EConstrainedButton.ValueChangedFcn = createCallbackFcn(app, @EConstrainedButtonValueChanged, true);
+            app.EConstrainedButton.Text = 'Constrained';
+            app.EConstrainedButton.BackgroundColor = [1 1 1];
+            app.EConstrainedButton.FontSize = 10;
+            app.EConstrainedButton.FontWeight = 'bold';
+            app.EConstrainedButton.Layout.Row = 5;
+            app.EConstrainedButton.Layout.Column = 1;
+
+            % Create ECompetitiveButton
+            app.ECompetitiveButton = uibutton(app.EP1GridLayout, 'state');
+            app.ECompetitiveButton.ValueChangedFcn = createCallbackFcn(app, @ECompetitiveButtonValueChanged, true);
+            app.ECompetitiveButton.Text = 'Competitive';
+            app.ECompetitiveButton.BackgroundColor = [1 1 1];
+            app.ECompetitiveButton.FontSize = 10;
+            app.ECompetitiveButton.FontWeight = 'bold';
+            app.ECompetitiveButton.Layout.Row = 5;
+            app.ECompetitiveButton.Layout.Column = [2 3];
 
             % Create EPanel2
             app.EPanel2 = uipanel(app.ExperimentsGridLayout);
