@@ -2640,11 +2640,11 @@ classdef MTO_GUI < matlab.apps.AppBase
 
                         if app.ESplitCheckBox.Value
                             legend_entries{end+1} = 'Pareto Front';
-                            plot_handles(end+1) = p;
+                            plot_handles(end+1) = s;
                         else
                             if i == 1
                                 legend_entry = 'Pareto Front';
-                                all_plot_handles(end + 1) = p;
+                                all_plot_handles(end + 1) = s;
                                 all_legend_entries{end + 1} = legend_entry;
                             end
                         end
