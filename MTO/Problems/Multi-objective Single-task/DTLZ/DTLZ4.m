@@ -45,6 +45,7 @@ methods
     function Prob = setParameter(Prob, Parameter)
         Prob.Mobj = str2double(Parameter{3});
         Prob.Dim = str2double(Parameter{4});
+        Prob.setRunParameter(Parameter(1:2));
     end
 
     function setTasks(Prob)
