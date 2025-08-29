@@ -138,7 +138,8 @@ methods
         [Objs, Cons] = Prob.Fnc{t}(x);
         for i = 1:lenPop
             Pop(i).Obj = Objs(i, :);
-            Pop(i).CV = sum(Cons(i, :));
+            Pop(i).Con = Cons(i, :);
+            Pop(i).CV = sum(max(0, Cons(i, :)));
         end
         Algo.FE = Algo.FE + lenPop;
 

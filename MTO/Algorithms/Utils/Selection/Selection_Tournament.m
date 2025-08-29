@@ -18,9 +18,12 @@ elseif n == 1
     Ep = varargin{1};
 end
 
-replace_cv = population.CVs > offspring.CVs & ...
-    population.CVs > Ep & offspring.CVs > Ep;
-equal_cv = population.CVs <= Ep & offspring.CVs <= Ep;
+popCVs = sum(max(0, population.Cons), 2);
+offCVs = sum(max(0, offspring.Cons), 2);
+
+replace_cv = popCVs > offCVs & ...
+    popCVs > Ep & offCVs > Ep;
+equal_cv = popCVs <= Ep & offCVs <= Ep;
 replace_f = population.Objs > offspring.Objs;
 replace = (equal_cv & replace_f) | replace_cv;
 replace = replace';

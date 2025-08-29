@@ -13,6 +13,7 @@ classdef Individual
 properties
     Dec % decision variables
     Obj % objective value
+    Con % constraint values
     CV % constraint violation
 end
 
@@ -23,6 +24,10 @@ methods
 
     function value = Objs(obj)
         value = cat(1, obj.Obj);
+    end
+
+    function value = Cons(obj)
+        value = cat(1, obj.Con);
     end
 
     function value = CVs(obj)

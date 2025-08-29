@@ -81,7 +81,7 @@ methods
 end
 end
 
-function [PopObj, PopCVs] = dtlz8(PopDec, M)
+function [PopObj, PopCon] = dtlz8(PopDec, M)
 %------------------------------- Copyright --------------------------------
 % Copyright (c) 2025 BIMK Group. You are free to use the PlatEMO for
 % research purposes. All publications which use this platform or any code
@@ -103,5 +103,4 @@ else
     minValue = sort(PopObj(:, 1:M - 1), 2);
     PopCon(:, M) = 1 - 2 * PopObj(:, M) - sum(minValue(:, 1:2), 2);
 end
-PopCVs = sum(max(0, PopCon), 2);
 end

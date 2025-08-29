@@ -20,8 +20,9 @@ end
 
 N = length(population);
 population = [population, offspring];
-CV = population.CVs; CV(CV < Ep) = 0;
-Obj = population.Objs;
-[~, rank] = sortrows([CV, Obj], [1, 2]);
+CVs = sum(max(0, population.Cons), 2);
+CVs(CVs < Ep) = 0;
+Objs = population.Objs;
+[~, rank] = sortrows([CVs, Objs], [1, 2]);
 population = population(rank(1:N));
 end

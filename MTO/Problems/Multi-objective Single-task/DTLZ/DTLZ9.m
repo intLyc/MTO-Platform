@@ -66,7 +66,7 @@ methods
 end
 end
 
-function [PopObj, PopCVs] = dtlz9(PopDec, M)
+function [PopObj, PopCon] = dtlz9(PopDec, M)
 %------------------------------- Copyright --------------------------------
 % Copyright (c) 2025 BIMK Group. You are free to use the PlatEMO for
 % research purposes. All publications which use this platform or any code
@@ -83,5 +83,4 @@ for m = 1:M
     PopObj(:, m) = sum(PopDec(:, (m - 1) * D / M + 1:m * D / M), 2);
 end
 PopCon = 1 - repmat(PopObj(:, M).^2, 1, M - 1) - PopObj(:, 1:M - 1).^2;
-PopCVs = sum(max(0, PopCon), 2);
 end

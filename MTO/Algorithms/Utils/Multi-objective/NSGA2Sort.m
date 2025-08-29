@@ -1,5 +1,6 @@
 function [rank, FrontNo, CrowdDis] = NSGA2Sort(population)
-FrontNo = NDSort(population.Objs, population.CVs, inf);
+CVs = sum(max(0, population.Cons), 2);
+FrontNo = NDSort(population.Objs, CVs, inf);
 CrowdDis = CrowdingDistance(population.Objs, FrontNo);
 [~, rank] = sortrows([FrontNo', -CrowdDis']);
 end

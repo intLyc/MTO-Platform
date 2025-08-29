@@ -19,7 +19,8 @@ else
 end
 
 %% Calculate the fitness of each solution
-CVs = population.CVs;
+Cons = population.Cons;
+CVs = sum(max(0, Cons), 2);
 CVs(CVs < Ep) = 0; % Epsilon Constraint
 Fitness = CalFitness(population.Objs, CVs);
 
