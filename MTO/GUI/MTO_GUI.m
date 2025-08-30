@@ -2192,14 +2192,6 @@ classdef MTO_GUI < matlab.apps.AppBase
             load([pathname, file_name], 'MTOData');
             app.EData = MTOData;
             app.EloadMetric(app.getDataLabels(MTOData));
-            % m = [app.EData.Problems.M];
-            % if all(m==1)
-            %     app.EloadMetric('Single-objective')
-            % elseif all(m>1)
-            %     app.EloadMetric('Multi-objective')
-            % else
-            %     app.EloadMetric({'Single-objective', 'Multi-objective'})
-            % end
             app.ETableReps = app.EData.Reps * ones([length(app.EData.Problems), length(app.EData.Algorithms)]);
             app.EresetTableAlgorithmDropDown({app.EData.Algorithms.Name});
             app.EreloadTableData();
@@ -2209,7 +2201,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         function ESaveTableButtonPushed(app, event)
             msg = 'Select Export Type';
             selection = uiconfirm(app.MTOPlatformMToPv18UIFigure, msg, 'Export', ...
-                                 'Options', {'Current Table (tex, xlsx, csv)', 'IOHanalyzer (csv)', 'Cancel'}, ...
+                                 'Options', {'Current Table (tex, xlsx, csv)', 'IOHanalyzer Data (csv)', 'Best Decision Variable (mat)', 'Cancel'}, ...
                                  'DefaultOption', 'Cancel', 'Icon', 'question');
 
             if contains(selection, 'Current Table')
@@ -2273,6 +2265,72 @@ classdef MTO_GUI < matlab.apps.AppBase
                 table_out = IOHconvert(app.EData.Metrics(metric_idx).Result);
                 writetable(table_out, [dir_name, file_name]);
                 disp('Done.')
+            elseif contains(selection, 'Best Decision Variable')
+                % save best dec of algorithms on problems
+
+                if ~isfield(app.EData.Results(1), 'Dec')
+                    msg = 'No decision variable data in current results!';
+                    uiconfirm(app.MTOPlatformMToPv18UIFigure, msg, 'warning', 'Icon', 'warning');
+                    return;
+                end
+                if contains(app.EDataTypeDropDown.Value, 'Reps') || ...
+                        contains(app.EDataTypeDropDown.Value, 'Time')
+                    msg = 'Please select metric data';
+                    uiconfirm(app.MTOPlatformMToPv18UIFigure, msg, 'warning', 'Icon', 'warning');
+                    return;
+                end
+                % check selected file name
+                filter = {'*.mat'; };
+                app.MTOPlatformMToPv18UIFigure.Visible = 'off';
+                [file_name, dir_name] = uiputfile(filter);
+                app.MTOPlatformMToPv18UIFigure.Visible = 'on';
+                figure(app.MTOPlatformMToPv18UIFigure);
+                drawnow;
+
+                if file_name == 0
+                    return;
+                end
+
+                % get best dec
+                prob_num = length(app.EData.Problems);
+                Decs = {};
+
+                table_data = app.EResultTableData;
+                m = size(table_data, 1);
+                idx = zeros(m, 2);
+                for i = 1:m
+                    slice = reshape(table_data(i,:,:), size(table_data,2), size(table_data,3));
+                    [~, linearIdx] = min(slice(:));
+                    [row, col] = ind2sub(size(slice), linearIdx);
+                    idx(i, :) = [row, col];
+                end
+
+                if m == prob_num
+                    % each problem contains tasks
+                    for p = 1:prob_num
+                        for t = 1:app.EData.Problems(p).T
+                            if max(app.EData.Problems(p).M) > 1
+                                Decs{p, t} = squeeze(app.EData.Results(p, idx(p,1), idx(p,2)).Dec(t,end,:,1:app.EData.Problems(p).D(t)));
+                            else
+                                Decs{p, t} = squeeze(app.EData.Results(p, idx(p,1), idx(p,2)).Dec(t,end,1:app.EData.Problems(p).D(t)))';
+                            end
+                        end
+                    end
+                else
+                    % each task
+                    task_count = 0;
+                    for p = 1:prob_num
+                        for t = 1:app.EData.Problems(p).T
+                            task_count = task_count + 1;
+                            if max(app.EData.Problems(p).M) > 1
+                                Decs{p, t} = squeeze(app.EData.Results(p, idx(task_count,1), idx(task_count,2)).Dec(t,end,:,1:app.EData.Problems(p).D(t)));
+                            else
+                                Decs{p, t} = squeeze(app.EData.Results(p, idx(task_count,1), idx(task_count,2)).Dec(t,end,1:app.EData.Problems(p).D(t)))';
+                            end
+                        end
+                    end
+                end
+                save([dir_name, file_name], 'Decs');
             end
         end
 
