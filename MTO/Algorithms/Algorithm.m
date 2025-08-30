@@ -20,7 +20,6 @@ properties
     Result_Num % Convergence Results Num
     Save_Dec % Save Decision Variables Flag
     Check_Status_Fn = @emptyFn % Check Status Function
-    Run_Time = 0 % Run Time
     Draw_Dec = false % Draw Decision Variables Flag
     Draw_Obj = false % Draw Objective Variables Flag
     dpd % DrawPopDec Object
@@ -128,20 +127,21 @@ methods
 
     function [Pop, Flag] = Evaluation(Algo, Pop, Prob, t)
         lenPop = length(Pop);
-        if Prob.Bounded
-            PopDec = max(0, min(1, Pop.Decs));
-        else
-            PopDec = Pop.Decs;
-        end
+        % Map to original decision space
+        PopDec = Pop.Decs;
         x = repmat(Prob.Ub{t} - Prob.Lb{t}, lenPop, 1) .* ...
             PopDec(:, 1:Prob.D(t)) + repmat(Prob.Lb{t}, lenPop, 1);
-        [Objs, Cons] = Prob.Fnc{t}(x);
+
+        % Call problem evaluation function
+        [Objs, Cons] = Prob.Evaluation(x, t);
+        Algo.FE = Algo.FE + lenPop;
+
+        % Update Population
         for i = 1:lenPop
             Pop(i).Obj = Objs(i, :);
             Pop(i).Con = Cons(i, :);
             Pop(i).CV = sum(max(0, Cons(i, :)));
         end
-        Algo.FE = Algo.FE + lenPop;
 
         if max(Prob.M) == 1 % Single-objective
             % Update Best
