@@ -64,7 +64,7 @@ methods
         Prob.setRunParameter(Parameter);
     end
 
-    function [Objs, Cons] = Evaluation(Prob, x, t)
+    function [Objs, Cons] = evaluate(Prob, x, t)
         % Evaluate the objective and constraint values of x on task t
         if Prob.Bounded
             x = max(min(x, Prob.Ub{t}), Prob.Lb{t});

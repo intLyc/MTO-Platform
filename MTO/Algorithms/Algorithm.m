@@ -133,7 +133,7 @@ methods
             PopDec(:, 1:Prob.D(t)) + repmat(Prob.Lb{t}, lenPop, 1);
 
         % Call problem evaluation function
-        [Objs, Cons] = Prob.Evaluation(x, t);
+        [Objs, Cons] = Prob.evaluate(x, t);
         Algo.FE = Algo.FE + lenPop;
 
         % Update Population
