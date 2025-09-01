@@ -1,5 +1,5 @@
 function [Obj, Con] = Schwefel(var, M, opt, g)
-% SCHWEFEL function
+% SCHWEFEL function problem2.26
 %   - var: design variable vector
 %   - M: rotation matrix
 %   - opt: shift vector
