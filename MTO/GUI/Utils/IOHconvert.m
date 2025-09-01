@@ -1,10 +1,20 @@
-function result_table = IOHconvert(metric_result)
+function result_table = IOHconvert(metric_result, problems)
 %% IOHconvert - Convert metric_result of MToP to IOHanalyzer csv format
 
 % Extract basic information
 num_algorithms = length(metric_result.ColumnName);
 num_rows = length(metric_result.RowName);
 num_reps = size(metric_result.ConvergeData.X, 3);
+
+num_probs = length(problems);
+if num_rows == num_probs % each problem metric
+    DimVector = zeros(1, num_probs);
+    for i = 1:num_probs
+        DimVector(i) = round(mean(problems(i).D));
+    end
+else % each task metric
+    DimVector = [problems.D];
+end
 
 % Get all data dimensions
 [~, ~, ~, num_gens] = size(metric_result.ConvergeData.X);
@@ -52,9 +62,9 @@ algo_names = cell(total_valid, 1);
 dims = cell(total_valid, 1);
 
 for k = 1:total_valid
+    dims{k} = DimVector(row_indices(k));
     task_names{k} = metric_result.RowName{row_indices(k)};
     algo_names{k} = metric_result.ColumnName{algo_indices(k)};
-    dims{k} = 0; % Placeholder, as dimension info is not provided in metric_result
 end
 
 % Create table

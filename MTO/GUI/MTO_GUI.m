@@ -2256,15 +2256,17 @@ classdef MTO_GUI < matlab.apps.AppBase
                 figure(app.MTOPlatformMToPv18UIFigure);
                 drawnow;
                 
-                % figure(app.MTOPlatformMToPv18UIFigure);
                 if file_name == 0
                     return;
                 end
+                if ~isfield(app.EData, 'Metrics') || isempty(app.EData.Metrics)
+                    msg = 'No metric data in current results!';
+                    uiconfirm(app.MTOPlatformMToPv18UIFigure, msg, 'warning', 'Icon', 'warning');
+                    return;
+                end
                 metric_idx = find(ismember({app.EData.Metrics.Name}, app.EDataTypeDropDown.Value));
-                disp('Exporting IOHanylyzer csv ...')
-                table_out = IOHconvert(app.EData.Metrics(metric_idx).Result);
+                table_out = IOHconvert(app.EData.Metrics(metric_idx).Result, app.EData.Problems);
                 writetable(table_out, [dir_name, file_name]);
-                disp('Done.')
             elseif contains(selection, 'Best Decision Variable')
                 % save best dec of algorithms on problems
 
