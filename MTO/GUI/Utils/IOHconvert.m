@@ -49,14 +49,16 @@ end
 % Convert indices to names (ensure same length)
 task_names = cell(total_valid, 1);
 algo_names = cell(total_valid, 1);
+dims = cell(total_valid, 1);
 
 for k = 1:total_valid
     task_names{k} = metric_result.RowName{row_indices(k)};
     algo_names{k} = metric_result.ColumnName{algo_indices(k)};
+    dims{k} = 0; % Placeholder, as dimension info is not provided in metric_result
 end
 
 % Create table
-result_table = table(fe_array, val_array, task_names, algo_names, rep_indices, ...
-    'VariableNames', {'EvaluationCount', 'Values', 'FunctionID', 'AlgorithmID', 'RunID'});
+result_table = table(fe_array, val_array, task_names, algo_names, dims, rep_indices, ...
+    'VariableNames', {'EvaluationCount', 'Values', 'FunctionID', 'AlgorithmID', 'Dim', 'RunID'});
 
 end
