@@ -30,61 +30,76 @@ classdef xNES_as < Algorithm
 
 properties (SetAccess = private)
     sigma0 = 0.3
+    useN = 1 % use Prob.N for sample points number
 end
 
 methods
     function Parameter = getParameter(Algo)
-        Parameter = {'sigma0', num2str(Algo.sigma0)};
+        Parameter = {'sigma0', num2str(Algo.sigma0), ...
+                'useN: (1: use Prob.N, 0: use 4+3*log(D))', num2str(Algo.useN)};
     end
 
     function Algo = setParameter(Algo, Parameter)
         Algo.sigma0 = str2double(Parameter{1});
+        Algo.useN = str2double(Parameter{2});
     end
 
     function run(Algo, Prob)
-        N = Prob.N;
         for t = 1:Prob.T
+            if Algo.useN
+                N{t} = Prob.N;
+            else
+                N{t} = fix(4 + 3 * log(Prob.D(t)));
+            end
             etax{t} = 1;
             etas0{t} = (9 + 3 * log(Prob.D(t))) / (5 * Prob.D(t) * sqrt(Prob.D(t)));
             etas{t} = etas0{t};
             etaB{t} = etas{t};
-            shape{t} = max(0.0, log(N / 2 + 1.0) - log(1:N));
-            shape{t} = shape{t} / sum(shape{t}) - 1 / N;
+            shape{t} = max(0.0, log(N{t} / 2 + 1.0) - log(1:N{t}));
+            shape{t} = shape{t} / sum(shape{t}) - 1 / N{t};
 
             % initialize
-            x{t} = mean(unifrnd(zeros(Prob.D(t), N), ones(Prob.D(t), N)), 2);
+            x{t} = mean(unifrnd(zeros(Prob.D(t), N{t}), ones(Prob.D(t), N{t})), 2);
             s{t} = Algo.sigma0;
             vs{t} = s{t};
             B{t} = eye(Prob.D(t)); % B = A/s; A*A' = C = covariance matrix
-            weights{t} = zeros(1, N);
-            for i = 1:N
+            weights{t} = zeros(1, N{t});
+            for i = 1:N{t}
                 sample{t}(i) = Individual();
                 sample2{t}(i) = Individual();
             end
         end
 
+        taskFE = zeros(1, Prob.T);
+        maxTaskFE = Prob.maxFE / Prob.T;
         while Algo.notTerminated(Prob, sample)
             for t = 1:Prob.T
+                if taskFE(t) > maxTaskFE
+                    continue;
+                end
                 % step 1: sampling & importance mixing
-                Z{t} = randn(Prob.D(t), N);
-                X{t} = repmat(x{t}, 1, N) + s{t} * B{t} * Z{t};
-                for i = 1:N
+                Z{t} = randn(Prob.D(t), N{t});
+                X{t} = repmat(x{t}, 1, N{t}) + s{t} * B{t} * Z{t};
+                for i = 1:N{t}
                     sample{t}(i).Dec = X{t}(:, i)';
                 end
 
                 % step 2: fitness reshaping
                 [sample{t}, rank{t}] = Algo.EvaluationAndSort(sample{t}, Prob, t);
+                taskFE(t) = taskFE(t) + N{t};
                 weights{t}(rank{t}) = shape{t};
 
                 % as: adaptation sampling
-                vX = repmat(x{t}, 1, N) + vs{t} * B{t} * Z{t};
+                vX = repmat(x{t}, 1, N{t}) + vs{t} * B{t} * Z{t};
                 w = mvnpdf(X{t}', x{t}', s{t} * B{t} * B{t}') ...
                     ./ mvnpdf(vX', x{t}', vs{t} * B{t} * B{t}');
                 [~, rank_temp] = sort(rank{t});
-                if ranksum(rank_temp, w .* rank_temp) < 0.5 - 1 / (3 * Prob.D(t) + 1)
-                    etas{t} = 0.9 * etas{t} + 0.1 * etas0{t};
-                else
-                    etas{t} = min(1, 1.1 * etas{t});
+                try
+                    if ranksum(rank_temp, w .* rank_temp) < 0.5 - 1 / (3 * Prob.D(t) + 1)
+                        etas{t} = 0.9 * etas{t} + 0.1 * etas0{t};
+                    else
+                        etas{t} = min(1, 1.1 * etas{t});
+                    end
                 end
 
                 % step 3: compute the gradient for x, s, and B
@@ -105,18 +120,12 @@ methods
     end
 
     function [sample, rank] = EvaluationAndSort(Algo, sample, Prob, t)
-        %% Boundary Constraint
-        boundCVs = zeros(length(sample), 1);
+        % Boundary constraint handling (projection method)
         for i = 1:length(sample)
-            % Boundary Constraint Violation
-            tempDec = sample(i).Dec;
-            tempDec(tempDec < 0) = 0;
-            tempDec(tempDec > 1) = 1;
-            boundCVs(i) = sum((sample(i).Dec - tempDec).^2);
+            sample(i).Dec = max(0, min(1, sample(i).Dec));
         end
         sample = Algo.Evaluation(sample, Prob, t);
-        boundCVs(boundCVs > 0) = boundCVs(boundCVs > 0) + max(sample.CVs);
-        [~, rank] = sortrows([sample.CVs + boundCVs, sample.Objs], [1, 2]);
+        [~, rank] = sortrows([sample.CVs, sample.Objs], [1, 2]);
     end
 end
 end
