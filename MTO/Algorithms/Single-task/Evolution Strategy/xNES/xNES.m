@@ -103,12 +103,12 @@ methods
     end
 
     function [sample, rank] = EvaluationAndSort(Algo, sample, Prob, t)
-        % Boundary constraint handling (projection method)
-        for i = 1:length(sample)
-            sample(i).Dec = max(0, min(1, sample(i).Dec));
-        end
+        % boundary constraint handling
+        Decs = sample.Decs;
+        tempDecs = max(min(Decs, 1), 0);
+        boundCVs = sum((Decs - tempDecs).^2, 2);
         sample = Algo.Evaluation(sample, Prob, t);
-        [~, rank] = sortrows([sample.CVs, sample.Objs], [1, 2]);
+        [~, rank] = sortrows([sample.CVs, sample.Objs, boundCVs]);
     end
 end
 end
