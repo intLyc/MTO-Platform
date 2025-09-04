@@ -50,7 +50,7 @@ methods
             shape{t} = shape{t} / sum(shape{t}) - 1 / N{t};
 
             % initialize
-            x{t} = mean(unifrnd(zeros(Prob.D(t), N{t}), ones(Prob.D(t), N{t})), 2);
+            x{t} = rand(Prob.D(t), 1);
             a{t} = log(Algo.sigma0); % fixed diagonal strength
             c{t} = 0;
             v{t} = normalize(randn(Prob.D(t), 1));

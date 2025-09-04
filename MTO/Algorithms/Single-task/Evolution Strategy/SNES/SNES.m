@@ -57,7 +57,7 @@ methods
             shape{t} = shape{t} / sum(shape{t}) - 1 / N{t};
 
             % initialize
-            x{t} = mean(unifrnd(zeros(Prob.D(t), N{t}), ones(Prob.D(t), N{t})), 2);
+            x{t} = rand(Prob.D(t), 1);
             S{t} = Algo.sigma0 * ones(Prob.D(t), 1); % Sigma vector
             weights{t} = zeros(1, N{t});
             for i = 1:N{t}

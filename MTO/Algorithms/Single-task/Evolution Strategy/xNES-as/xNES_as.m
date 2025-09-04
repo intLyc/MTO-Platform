@@ -59,7 +59,7 @@ methods
             shape{t} = shape{t} / sum(shape{t}) - 1 / N{t};
 
             % initialize
-            x{t} = mean(unifrnd(zeros(Prob.D(t), N{t}), ones(Prob.D(t), N{t})), 2);
+            x{t} = rand(Prob.D(t), 1);
             s{t} = Algo.sigma0;
             vs{t} = s{t};
             B{t} = eye(Prob.D(t)); % B = A/s; A*A' = C = covariance matrix
