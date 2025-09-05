@@ -280,7 +280,7 @@ end
 %% (D/2m) Group. D=300, m=50, D/(2m)
 
 function [Obj, Con] = Elliptic_G2(x, scale, rotation, shift, group)
-D = length(x);
+D = size(x, 2);
 m = 50; G = D / m / 2;
 x = repmat(scale, size(x, 1), 1) .* (x - repmat(shift, size(x, 1), 1));
 Obj = 0;
@@ -293,7 +293,7 @@ Con = zeros(size(x, 1), 1);
 end
 
 function [Obj, Con] = Rastrigin_G2(x, scale, rotation, shift, group)
-D = length(x);
+D = size(x, 2);
 m = 50; G = D / m / 2;
 x = repmat(scale, size(x, 1), 1) .* (x - repmat(shift, size(x, 1), 1));
 Obj = 0;
@@ -306,7 +306,7 @@ Con = zeros(size(x, 1), 1);
 end
 
 function [Obj, Con] = Ackley_G2(x, scale, rotation, shift, group)
-D = length(x);
+D = size(x, 2);
 m = 50; G = D / m / 2;
 x = repmat(scale, size(x, 1), 1) .* (x - repmat(shift, size(x, 1), 1));
 Obj = 0;
@@ -319,7 +319,7 @@ Con = zeros(size(x, 1), 1);
 end
 
 function [Obj, Con] = Schwefel2_G2(x, scale, rotation, shift, group)
-D = length(x);
+D = size(x, 2);
 m = 50; G = D / m / 2;
 x = repmat(scale, size(x, 1), 1) .* (x - repmat(shift, size(x, 1), 1));
 Obj = 0;
@@ -332,7 +332,7 @@ Con = zeros(size(x, 1), 1);
 end
 
 function [Obj, Con] = Rosenbrock_G2(x, scale, rotation, shift, group)
-D = length(x);
+D = size(x, 2);
 m = 50; G = D / m / 2;
 x = repmat(scale, size(x, 1), 1) .* (x - repmat(shift, size(x, 1), 1));
 Obj = 0;
@@ -347,7 +347,7 @@ end
 %% (D/m) Group. D=300, m=50, D/m
 
 function [Obj, Con] = Elliptic_G3(x, scale, rotation, shift, group)
-D = length(x);
+D = size(x, 2);
 m = 50; G = D / m;
 x = repmat(scale, size(x, 1), 1) .* (x - repmat(shift, size(x, 1), 1));
 Obj = 0;
@@ -359,7 +359,7 @@ Con = zeros(size(x, 1), 1);
 end
 
 function [Obj, Con] = Rastrigin_G3(x, scale, rotation, shift, group)
-D = length(x);
+D = size(x, 2);
 m = 50; G = D / m;
 x = repmat(scale, size(x, 1), 1) .* (x - repmat(shift, size(x, 1), 1));
 Obj = 0;
@@ -371,7 +371,7 @@ Con = zeros(size(x, 1), 1);
 end
 
 function [Obj, Con] = Ackley_G3(x, scale, rotation, shift, group)
-D = length(x);
+D = size(x, 2);
 m = 50; G = D / m;
 x = repmat(scale, size(x, 1), 1) .* (x - repmat(shift, size(x, 1), 1));
 Obj = 0;
@@ -383,7 +383,7 @@ Con = zeros(size(x, 1), 1);
 end
 
 function [Obj, Con] = Schwefel2_G3(x, scale, rotation, shift, group)
-D = length(x);
+D = size(x, 2);
 m = 50; G = D / m;
 x = repmat(scale, size(x, 1), 1) .* (x - repmat(shift, size(x, 1), 1));
 Obj = 0;
@@ -395,7 +395,7 @@ Con = zeros(size(x, 1), 1);
 end
 
 function [Obj, Con] = Rosenbrock_G3(x, scale, rotation, shift, group)
-D = length(x);
+D = size(x, 2);
 m = 50; G = D / m;
 x = repmat(scale, size(x, 1), 1) .* (x - repmat(shift, size(x, 1), 1));
 Obj = 0;
