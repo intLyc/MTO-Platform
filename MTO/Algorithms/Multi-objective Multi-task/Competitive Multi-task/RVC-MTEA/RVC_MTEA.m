@@ -66,6 +66,9 @@ methods
         population = Initialization(Algo, Prob, Individual_RVC, N);
         archive = population;
         for t = 1:Prob.T
+            % fill the archive to Prob.N
+            archive{t}(N + 1:Prob.N) = population{t}(1:Prob.N - N);
+
             Z{t} = min(population{t}.Objs, [], 1);
             Zall = min(Zall, Z{t});
             for i = 1:N
