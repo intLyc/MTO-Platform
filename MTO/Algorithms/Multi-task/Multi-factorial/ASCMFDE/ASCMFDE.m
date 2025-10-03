@@ -135,18 +135,33 @@ methods
                         newpos = Algo.F * ((pop_M(x2).Dec) - (pop_M(x3).Dec));
                 end
                 offspring(i).Dec = pop_M(x1).Dec + newpos;
+                offspring(i).Dec = Algo.mutate(offspring(i).Dec, 0.01);
                 offspring(i).Dec = DE_Crossover(offspring(i).Dec, population(i).Dec, Algo.CR);
             else
                 A = randperm(length(pop{target}), 3);
                 x1 = A(1); x2 = A(2); x3 = A(3);
 
                 offspring(i).Dec = pop{target}(x1).Dec + Algo.F * (pop{target}(x2).Dec - pop{target}(x3).Dec);
+                offspring(i).Dec = Algo.mutate(offspring(i).Dec, 0.01);
                 offspring(i).Dec = DE_Crossover(offspring(i).Dec, population(i).Dec, Algo.CR);
             end
 
             offspring(i).Dec(offspring(i).Dec > 1) = 1;
             offspring(i).Dec(offspring(i).Dec < 0) = 0;
         end
+    end
+
+    function object = mutate(Algo, p, mum)
+        dim = length(p);
+        rnvec_temp = p;
+        for i = 1:dim
+            if rand() < mum
+                rnvec_temp(i) = rand();
+            end
+        end
+        rnvec_temp(rnvec_temp > 1) = rand();
+        rnvec_temp(rnvec_temp < 0) = rand();
+        object = rnvec_temp;
     end
 end
 end
