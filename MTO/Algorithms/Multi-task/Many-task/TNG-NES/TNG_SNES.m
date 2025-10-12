@@ -3,11 +3,14 @@ classdef TNG_SNES < Algorithm
 
 %------------------------------- Reference --------------------------------
 % @Article{Li2024TNG-NES,
-%   title   = {Transfer Task-averaged Natural Gradient for Efficient Many-task Optimization},
-%   author  = {Li, Yanchi and Gong, Wenyin and Gu, Qiong},
-%   journal = {IEEE Transactions on Evolutionary Computation},
-%   year    = {2024},
-%   doi     = {10.1109/TEVC.2024.3459862},
+%   title      = {Transfer Task-averaged Natural Gradient for Efficient Many-task Optimization},
+%   author     = {Li, Yanchi and Gong, Wenyin and Gu, Qiong},
+%   journal    = {IEEE Transactions on Evolutionary Computation},
+%   year       = {2025},
+%   number     = {5},
+%   pages      = {1952-1965},
+%   volume     = {29},
+%   doi        = {10.1109/TEVC.2024.3459862},
 % }
 %--------------------------------------------------------------------------
 
