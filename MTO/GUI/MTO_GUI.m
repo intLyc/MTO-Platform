@@ -1697,7 +1697,14 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             algo_selected = app.EAlgorithmsListBox.Value;
             for i= 1:length(algo_selected)
-                eval(['algo_obj = ', algo_selected{i}, '(''', strrep(algo_selected{i}, '_', '-'), ''');']);
+                algo_name = algo_selected{i};
+                algo_dispname = strrep(algo_name, '_', '-');
+                if exist(algo_name, 'class')
+                    clear(algo_name);
+                end
+                rehash;
+                algo_obj = feval(algo_name, algo_dispname);
+
                 algo_node = uitreenode(app.EAlgorithmsTree);
                 algo_node.Text = algo_obj.Name;
                 algo_node.NodeData = algo_obj;
@@ -1739,7 +1746,14 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             prob_selected = app.EProblemsListBox.Value;
             for i= 1:length(prob_selected)
-                eval(['prob_obj = ', prob_selected{i}, '(''', strrep(prob_selected{i}, '_', '-'), ''');']);
+                prob_name = prob_selected{i};
+                prob_dispname = strrep(prob_name, '_', '-');
+                if exist(prob_name, 'class')
+                    clear(prob_name);
+                end
+                rehash;
+                prob_obj = feval(prob_name, prob_dispname);
+
                 prob_node = uitreenode(app.EProblemsTree);
                 prob_node.Text = prob_obj.Name;
                 prob_node.NodeData = prob_obj;
@@ -2215,7 +2229,6 @@ classdef MTO_GUI < matlab.apps.AppBase
                 figure(app.MTOPlatformMToPv18UIFigure);
                 drawnow;
                 
-                % figure(app.MTOPlatformMToPv18UIFigure);
                 if file_name == 0
                     return;
                 end
