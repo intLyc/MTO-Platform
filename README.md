@@ -2,7 +2,7 @@
 
 [![](https://img.shields.io/badge/Download-Latest-green)](https://github.com/intLyc/MTO-Platform/archive/refs/heads/master.zip)
 [![](https://img.shields.io/badge/Release-v1.8-orange)](#mto-platform)
-[![](https://img.shields.io/badge/Matlab-%3E%3DR2020b-blue)](#mto-platform)
+[![](https://img.shields.io/badge/Matlab-%3E%3DR2022b-blue)](#mto-platform)
 
 [![GitHub Repo stars](https://img.shields.io/github/stars/intLyc/MTO-Platform?style=social)](#mto-platform)
 [![GitHub forks](https://img.shields.io/github/forks/intLyc/MTO-Platform?style=social)](#mto-platform)
