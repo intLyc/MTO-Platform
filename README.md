@@ -1,7 +1,7 @@
 # Multitask Optimization Platform (MToP)
 
 [![](https://img.shields.io/badge/Download-Latest-green)](https://github.com/intLyc/MTO-Platform/archive/refs/heads/master.zip)
-[![](https://img.shields.io/badge/Release-v1.8-orange)](#mto-platform)
+[![](https://img.shields.io/badge/Release-v1.9-orange)](#mto-platform)
 [![](https://img.shields.io/badge/Matlab-%3E%3DR2022b-blue)](#mto-platform)
 
 [![GitHub Repo stars](https://img.shields.io/github/stars/intLyc/MTO-Platform?style=social)](#mto-platform)
@@ -43,6 +43,36 @@ MToP is a user-friendly tool with a graphical user interface that makes it easy 
 *Email: <int_lyc@cug.edu.cn>*
 
 *QQ Group: 862974231*
+
+## Release Highlights of MToP v1.9
+
+**New Algorithms:** 🆕
+- DTSKT (Single-objective Many-task TSMC 25)
+- MTEA-PAE (Single-objective Multi-task ASOC 25)
+- MO-MTEA-PAE (Multi-objective Multi-task ASOC 25)
+- EMTO-AI (Single-objective Multi-task TETCI 24)
+
+**New Problems:** 📊
+- STOP-G (Many-task optimization problems TCYB 2025)
+
+**New Features:** ✨
+- Global **random seed control** using rng(seed + rep -1) for better reproducibility
+- Add **IOHanalyzer** data type export to support more analysis tools
+- Add option to **save best decision variables** during optimization
+- Add competitive and constrained buttons to Experiment module for enhanced problem type support
+- Add context menus component for **batch editing of problem public parameters** with dedicated editing dialog (thanks @Zhizhou-Geng)
+- Integrate refresh functionality into right-click context menu with keyboard shortcuts
+
+**Optimizations and Improvements:** ⚡
+- Refactor constraint handling logic with full constraint support
+- Add Evaluation method to Problem class for flexible evaluation
+- Improve GUI display and user interface responsiveness
+- Change relative data load path for improved file management
+- Improve Experiment module buttons display and ordering
+- Update CMA-ES related algorithms to follow official implementation
+- Algorithm reloading now triggers automatically when clicking Add button
+
+<details><summary><strong>Older Release Highlights (Click to Expand)</strong></summary>
 
 ## Release Highlights of MToP v1.8
 
@@ -127,7 +157,7 @@ MToP is a user-friendly tool with a graphical user interface that makes it easy 
   - MKTDE (single-objective multi-task TEVC 2022)
   - CCEF-ECHT (constrained single-objective TSMC 2023)
 
-
+</details>
 
 ## Related Websites
 

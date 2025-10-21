@@ -2,7 +2,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
     % Properties that correspond to app components
     properties (Access = public)
-        MTOPlatformMToPv18UIFigure   matlab.ui.Figure
+        MToPv19UIFigure              matlab.ui.Figure
         MTOPlatformGridLayout        matlab.ui.container.GridLayout
         MTOPlatformTabGroup          matlab.ui.container.TabGroup
         TestModuleTab                matlab.ui.container.Tab
@@ -1135,7 +1135,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
             if data_num < 1
                 msg = 'Select at least 1 data node to split';
-                uiconfirm(app.MTOPlatformMToPv18UIFigure, msg, 'error', 'Icon','warning');
+                uiconfirm(app.MToPv19UIFigure, msg, 'error', 'Icon','warning');
                 result = false;
                 return;
             end
@@ -1160,7 +1160,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
             if data_num < 2
                 msg = 'Select at least 2 data node to merge';
-                uiconfirm(app.MTOPlatformMToPv18UIFigure, msg, 'error', 'Icon','warning');
+                uiconfirm(app.MToPv19UIFigure, msg, 'error', 'Icon','warning');
                 result = false;
                 return;
             end
@@ -1177,7 +1177,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             for i = 2:data_num
                 if data_selected(i).NodeData.Reps ~= reps
                     msg = 'The data''s reps not equal';
-                    uiconfirm(app.MTOPlatformMToPv18UIFigure, msg, 'error', 'Icon','warning');
+                    uiconfirm(app.MToPv19UIFigure, msg, 'error', 'Icon','warning');
                     result = false;
                     return;
                 end
@@ -1196,7 +1196,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                 % check algo length
                 if length(algorithms) ~= length(data_selected(i).NodeData.Algorithms)
                     msg = 'The data''s algorithms not equal';
-                    uiconfirm(app.MTOPlatformMToPv18UIFigure, msg, 'error', 'Icon','warning');
+                    uiconfirm(app.MToPv19UIFigure, msg, 'error', 'Icon','warning');
                     result = false;
                     return;
                 end
@@ -1204,14 +1204,14 @@ classdef MTO_GUI < matlab.apps.AppBase
                     % check algo name
                     if ~strcmp(data_selected(i).NodeData.Algorithms(algo).Name, algorithms(algo).Name)
                         msg = 'The data''s algorithms not equal';
-                        uiconfirm(app.MTOPlatformMToPv18UIFigure, msg, 'error', 'Icon','warning');
+                        uiconfirm(app.MToPv19UIFigure, msg, 'error', 'Icon','warning');
                         result = false;
                         return;
                     end
                     % check algo para length
                     if length(algorithms(algo).Para) ~= length(data_selected(i).NodeData.Algorithms(algo).Para)
                         msg = 'The data''s algorithms not equal';
-                        uiconfirm(app.MTOPlatformMToPv18UIFigure, msg, 'error', 'Icon','warning');
+                        uiconfirm(app.MToPv19UIFigure, msg, 'error', 'Icon','warning');
                         result = false;
                         return;
                     end
@@ -1219,7 +1219,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                         % check algo para name
                         if ~strcmp(data_selected(i).NodeData.Algorithms(algo).Para{pa}, algorithms(algo).Para{pa})
                             msg = 'The data''s algorithms not equal';
-                            uiconfirm(app.MTOPlatformMToPv18UIFigure, msg, 'error', 'Icon','warning');
+                            uiconfirm(app.MToPv19UIFigure, msg, 'error', 'Icon','warning');
                             result = false;
                             return;
                         end
@@ -1240,7 +1240,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                 % check prob length
                 if length(problems) ~= length(data_selected(i).NodeData.Problems)
                     msg = 'The data''s problems not equal';
-                    uiconfirm(app.MTOPlatformMToPv18UIFigure, msg, 'error', 'Icon','warning');
+                    uiconfirm(app.MToPv19UIFigure, msg, 'error', 'Icon','warning');
                     result = false;
                     return;
                 end
@@ -1253,7 +1253,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                             data_selected(i).NodeData.Problems(prob).N ~= problems(prob).N || ...
                             data_selected(i).NodeData.Problems(prob).maxFE ~= problems(prob).maxFE
                         msg = 'The data''s problems not equal';
-                        uiconfirm(app.MTOPlatformMToPv18UIFigure, msg, 'error', 'Icon','warning');
+                        uiconfirm(app.MToPv19UIFigure, msg, 'error', 'Icon','warning');
                         result = false;
                         return;
                     end
@@ -1278,7 +1278,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
             if data_num < 1
                 msg = 'Select at least 1 data node to precise';
-                uiconfirm(app.MTOPlatformMToPv18UIFigure, msg, 'error', 'Icon','warning');
+                uiconfirm(app.MToPv19UIFigure, msg, 'error', 'Icon','warning');
                 result = false;
                 return;
             end
@@ -1326,12 +1326,12 @@ classdef MTO_GUI < matlab.apps.AppBase
             % save data to folder in Data process module
 
             % check selected file name
-            app.MTOPlatformMToPv18UIFigure.Visible = 'off';
+            app.MToPv19UIFigure.Visible = 'off';
             [file_name, dir_name] = uiputfile('MTOData.mat');
-            app.MTOPlatformMToPv18UIFigure.Visible = 'on';
-            figure(app.MTOPlatformMToPv18UIFigure);
+            app.MToPv19UIFigure.Visible = 'on';
+            figure(app.MToPv19UIFigure);
             drawnow;
-            figure(app.MTOPlatformMToPv18UIFigure);
+            figure(app.MToPv19UIFigure);
             if file_name == 0
                 return;
             end
@@ -1792,13 +1792,13 @@ classdef MTO_GUI < matlab.apps.AppBase
             prob_num = length(app.EProblemsTree.Children);
             if algo_num == 0
                 msg = 'Please select the Algorithm first';
-                uiconfirm(app.MTOPlatformMToPv18UIFigure, msg, 'error', 'Icon','warning');
+                uiconfirm(app.MToPv19UIFigure, msg, 'error', 'Icon','warning');
                 app.EstartEnable(true);
                 return;
             end
             if prob_num == 0
                 msg = 'Please select the Problem first';
-                uiconfirm(app.MTOPlatformMToPv18UIFigure, msg, 'error', 'Icon','warning');
+                uiconfirm(app.MToPv19UIFigure, msg, 'error', 'Icon','warning');
                 app.EstartEnable(true);
                 return;
             end
@@ -1972,7 +1972,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             tEnd = toc(tStart);
             msg = ['All Use Time: ', char(duration([0, 0, tEnd]))];
-            uiconfirm(app.MTOPlatformMToPv18UIFigure, msg, 'success', 'Icon', 'success');
+            uiconfirm(app.MToPv19UIFigure, msg, 'success', 'Icon', 'success');
 
             app.EstartEnable(true);
             app.EreloadTableData();
@@ -1991,7 +1991,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             if strcmp(app.EPauseButton.Text, 'Pause')
                 msg = 'Are you sure to pause the experiment?';
-                selection = uiconfirm(app.MTOPlatformMToPv18UIFigure, msg, 'Confirm Pause', ...
+                selection = uiconfirm(app.MToPv19UIFigure, msg, 'Confirm Pause', ...
                                      'Options', {'Confirm', 'Cancel'}, ...
                                      'DefaultOption', 'Cancel', ...
                                      'Icon', 'warning'); % 'warning' might be more appropriate than 'success'
@@ -2010,7 +2010,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % stop this experiment
 
             msg = 'Are you sure to stop the experiment?';
-            selection = uiconfirm(app.MTOPlatformMToPv18UIFigure, msg, 'Confirm Stop', ...
+            selection = uiconfirm(app.MToPv19UIFigure, msg, 'Confirm Stop', ...
                                  'Options', {'Confirm', 'Cancel'}, ...
                                  'DefaultOption', 'Cancel', ...
                                  'Icon', 'warning'); % 'warning' might be more appropriate than 'success'
@@ -2028,7 +2028,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             algo_selected = app.EAlgorithmsTree.SelectedNodes;
             if isempty(algo_selected)
                 msg = 'Select Algorithm node in tree first';
-                uiconfirm(app.MTOPlatformMToPv18UIFigure, msg, 'error', 'Icon','warning');
+                uiconfirm(app.MToPv19UIFigure, msg, 'error', 'Icon','warning');
             end
 
             for i = 1:length(algo_selected)
@@ -2089,7 +2089,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Get selected problem nodes
             selected_nodes = app.EProblemsTree.SelectedNodes;
             if isempty(selected_nodes)
-                uialert(app.MTOPlatformMToPv18UIFigure, ...
+                uialert(app.MToPv19UIFigure, ...
                     'No nodes selected. Please select at least one problem node.', ...
                     'Warning', 'Icon', 'warning');
                 return;
@@ -2104,7 +2104,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
         
             if isempty(prob_nodes)
-                uialert(app.MTOPlatformMToPv18UIFigure, ...
+                uialert(app.MToPv19UIFigure, ...
                     'No top-level problem nodes selected. Please select proper problem nodes.', ...
                     'Warning', 'Icon', 'warning');
                 return;
@@ -2170,7 +2170,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             prob_selected = app.EProblemsTree.SelectedNodes;
             if isempty(prob_selected)
                 msg = 'Select Problem node in tree first';
-                uiconfirm(app.MTOPlatformMToPv18UIFigure, msg, 'error', 'Icon','warning');
+                uiconfirm(app.MToPv19UIFigure, msg, 'error', 'Icon','warning');
             end
 
             for i = 1:length(prob_selected)
@@ -2215,15 +2215,15 @@ classdef MTO_GUI < matlab.apps.AppBase
             % check data
             if isempty(app.EData)
                 msg = 'Please run experiment first';
-                uiconfirm(app.MTOPlatformMToPv18UIFigure, msg, 'error', 'Icon','warning');
+                uiconfirm(app.MToPv19UIFigure, msg, 'error', 'Icon','warning');
                 return;
             end
 
             % check selected file name
-            app.MTOPlatformMToPv18UIFigure.Visible = 'off';
+            app.MToPv19UIFigure.Visible = 'off';
             [file_name, dir_name] = uiputfile('MTOData.mat');
-            app.MTOPlatformMToPv18UIFigure.Visible = 'on';
-            figure(app.MTOPlatformMToPv18UIFigure);
+            app.MToPv19UIFigure.Visible = 'on';
+            figure(app.MToPv19UIFigure);
             drawnow;
             
             if file_name == 0
@@ -2273,10 +2273,10 @@ classdef MTO_GUI < matlab.apps.AppBase
             % load data from file
 
             % select mat file
-            app.MTOPlatformMToPv18UIFigure.Visible = 'off';
+            app.MToPv19UIFigure.Visible = 'off';
             [file_name, pathname] = uigetfile('*.mat', 'Select Data', './');
-            app.MTOPlatformMToPv18UIFigure.Visible = 'on';
-            figure(app.MTOPlatformMToPv18UIFigure);
+            app.MToPv19UIFigure.Visible = 'on';
+            figure(app.MToPv19UIFigure);
             drawnow;
 
             % check selected ile_name
@@ -2296,7 +2296,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Button pushed function: ESaveTableButton
         function ESaveTableButtonPushed(app, event)
             msg = 'Select Export Type';
-            selection = uiconfirm(app.MTOPlatformMToPv18UIFigure, msg, 'Export', ...
+            selection = uiconfirm(app.MToPv19UIFigure, msg, 'Export', ...
                                  'Options', {'Current Table (tex, xlsx, csv)', 'IOHanalyzer Data (csv)', 'Best Decision Variable (mat)', 'Cancel'}, ...
                                  'DefaultOption', 'Cancel', 'Icon', 'question');
 
@@ -2305,10 +2305,10 @@ classdef MTO_GUI < matlab.apps.AppBase
     
                 % check selected file name
                 filter = {'*.tex'; '*.xlsx';'*.csv';};
-                app.MTOPlatformMToPv18UIFigure.Visible = 'off';
+                app.MToPv19UIFigure.Visible = 'off';
                 [file_name, dir_name] = uiputfile(filter);
-                app.MTOPlatformMToPv18UIFigure.Visible = 'on';
-                figure(app.MTOPlatformMToPv18UIFigure);
+                app.MToPv19UIFigure.Visible = 'on';
+                figure(app.MToPv19UIFigure);
                 drawnow;
                 
                 if file_name == 0
@@ -2345,10 +2345,10 @@ classdef MTO_GUI < matlab.apps.AppBase
 
                  % check selected file name
                 filter = {'*.csv';};
-                app.MTOPlatformMToPv18UIFigure.Visible = 'off';
+                app.MToPv19UIFigure.Visible = 'off';
                 [file_name, dir_name] = uiputfile(filter);
-                app.MTOPlatformMToPv18UIFigure.Visible = 'on';
-                figure(app.MTOPlatformMToPv18UIFigure);
+                app.MToPv19UIFigure.Visible = 'on';
+                figure(app.MToPv19UIFigure);
                 drawnow;
                 
                 if file_name == 0
@@ -2356,7 +2356,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                 end
                 if ~isfield(app.EData, 'Metrics') || isempty(app.EData.Metrics)
                     msg = 'No metric data in current results!';
-                    uiconfirm(app.MTOPlatformMToPv18UIFigure, msg, 'warning', 'Icon', 'warning');
+                    uiconfirm(app.MToPv19UIFigure, msg, 'warning', 'Icon', 'warning');
                     return;
                 end
                 metric_idx = find(ismember({app.EData.Metrics.Name}, app.EDataTypeDropDown.Value));
@@ -2367,21 +2367,21 @@ classdef MTO_GUI < matlab.apps.AppBase
 
                 if ~isfield(app.EData.Results(1), 'Dec')
                     msg = 'No decision variable data in current results!';
-                    uiconfirm(app.MTOPlatformMToPv18UIFigure, msg, 'warning', 'Icon', 'warning');
+                    uiconfirm(app.MToPv19UIFigure, msg, 'warning', 'Icon', 'warning');
                     return;
                 end
                 if contains(app.EDataTypeDropDown.Value, 'Reps') || ...
                         contains(app.EDataTypeDropDown.Value, 'Time')
                     msg = 'Please select metric data';
-                    uiconfirm(app.MTOPlatformMToPv18UIFigure, msg, 'warning', 'Icon', 'warning');
+                    uiconfirm(app.MToPv19UIFigure, msg, 'warning', 'Icon', 'warning');
                     return;
                 end
                 % check selected file name
                 filter = {'*.mat'; };
-                app.MTOPlatformMToPv18UIFigure.Visible = 'off';
+                app.MToPv19UIFigure.Visible = 'off';
                 [file_name, dir_name] = uiputfile(filter);
-                app.MTOPlatformMToPv18UIFigure.Visible = 'on';
-                figure(app.MTOPlatformMToPv18UIFigure);
+                app.MToPv19UIFigure.Visible = 'on';
+                figure(app.MToPv19UIFigure);
                 drawnow;
 
                 if file_name == 0
@@ -2442,7 +2442,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     isempty(app.EResultConvergeData) || ...
                     isempty(app.ETableSelected)
                 msg = 'Select calculated metric data from table first!';
-                uiconfirm(app.MTOPlatformMToPv18UIFigure, msg, 'warning', 'Icon', 'warning');
+                uiconfirm(app.MToPv19UIFigure, msg, 'warning', 'Icon', 'warning');
                 return;
             end
 
@@ -2629,7 +2629,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     isempty(app.EResultParetoData) || ...
                     isempty(app.ETableSelected)
                 msg = 'Select calculated multi-objective metric data from table first!';
-                uiconfirm(app.MTOPlatformMToPv18UIFigure, msg, 'warning', 'Icon', 'warning');
+                uiconfirm(app.MToPv19UIFigure, msg, 'warning', 'Icon', 'warning');
                 return;
             end
 
@@ -2924,10 +2924,10 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % select mat file
             file_name_list = {};
-            app.MTOPlatformMToPv18UIFigure.Visible = 'off';
+            app.MToPv19UIFigure.Visible = 'off';
             [file_name, pathname] = uigetfile('*.mat', 'select the data mat', './', 'MultiSelect', 'on');
-            app.MTOPlatformMToPv18UIFigure.Visible = 'on';
-            figure(app.MTOPlatformMToPv18UIFigure);
+            app.MToPv19UIFigure.Visible = 'on';
+            figure(app.MToPv19UIFigure);
             drawnow;
             
             file_name_list = [file_name_list, file_name];
@@ -2962,7 +2962,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
             if data_num == 0
                 msg = 'Select data node in tree first';
-                uiconfirm(app.MTOPlatformMToPv18UIFigure, msg, 'error', 'Icon','warning');
+                uiconfirm(app.MToPv19UIFigure, msg, 'error', 'Icon','warning');
             end
 
             data_selected = data_selected(data_mark == 1);
@@ -2989,7 +2989,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
             if data_num == 0
                 msg = 'Select data node in tree first';
-                uiconfirm(app.MTOPlatformMToPv18UIFigure, msg, 'error', 'Icon','warning');
+                uiconfirm(app.MToPv19UIFigure, msg, 'error', 'Icon','warning');
             end
 
             data_selected = data_selected(data_mark == 1);
@@ -3013,7 +3013,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             for i = 1:length(data_selected)
                 if data_selected(i).NodeData.Reps <= 1
                     msg = ['The ', data_selected(i).Text, '''s reps <= 1'];
-                    uiconfirm(app.MTOPlatformMToPv18UIFigure, msg, 'error', 'Icon','warning');
+                    uiconfirm(app.MToPv19UIFigure, msg, 'error', 'Icon','warning');
                     continue;
                 end
                 for rep = 1:data_selected(i).NodeData.Reps
@@ -3062,7 +3062,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             for i = 1:length(data_selected)
                 if length(data_selected(i).NodeData.Algorithms) <= 1
                     msg = ['The ', data_selected(i).Text, '''s algorithms <= 1'];
-                    uiconfirm(app.MTOPlatformMToPv18UIFigure, msg, 'error', 'Icon','warning');
+                    uiconfirm(app.MToPv19UIFigure, msg, 'error', 'Icon','warning');
                     continue;
                 end
                 for algo = 1:length(data_selected(i).NodeData.Algorithms)
@@ -3112,7 +3112,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             for i = 1:length(data_selected)
                 if length(data_selected(i).NodeData.Problems) <= 1
                     msg = ['The ', data_selected(i).Text, '''s problems <= 1'];
-                    uiconfirm(app.MTOPlatformMToPv18UIFigure, msg, 'error', 'Icon','warning');
+                    uiconfirm(app.MToPv19UIFigure, msg, 'error', 'Icon','warning');
                     continue;
                 end
                 task = [data_selected(i).NodeData.Problems.T];
@@ -3706,14 +3706,14 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Create UIFigure and components
         function createComponents(app)
 
-            % Create MTOPlatformMToPv18UIFigure and hide until all components are created
-            app.MTOPlatformMToPv18UIFigure = uifigure('Visible', 'off');
-            app.MTOPlatformMToPv18UIFigure.Color = [1 1 1];
-            app.MTOPlatformMToPv18UIFigure.Position = [100 100 1045 744];
-            app.MTOPlatformMToPv18UIFigure.Name = 'MTO-Platform (MToP) v1.8';
+            % Create MToPv19UIFigure and hide until all components are created
+            app.MToPv19UIFigure = uifigure('Visible', 'off');
+            app.MToPv19UIFigure.Color = [1 1 1];
+            app.MToPv19UIFigure.Position = [100 100 1045 744];
+            app.MToPv19UIFigure.Name = 'MToP v1.9';
 
             % Create MTOPlatformGridLayout
-            app.MTOPlatformGridLayout = uigridlayout(app.MTOPlatformMToPv18UIFigure);
+            app.MTOPlatformGridLayout = uigridlayout(app.MToPv19UIFigure);
             app.MTOPlatformGridLayout.ColumnWidth = {'1x'};
             app.MTOPlatformGridLayout.RowHeight = {'1x'};
             app.MTOPlatformGridLayout.ColumnSpacing = 5;
@@ -4952,7 +4952,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.DDataTree.Layout.Column = 1;
 
             % Create SelectedAlgoContextMenu
-            app.SelectedAlgoContextMenu = uicontextmenu(app.MTOPlatformMToPv18UIFigure);
+            app.SelectedAlgoContextMenu = uicontextmenu(app.MToPv19UIFigure);
 
             % Create SelectedAlgoSelectAllMenu
             app.SelectedAlgoSelectAllMenu = uimenu(app.SelectedAlgoContextMenu);
@@ -4964,7 +4964,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EAlgorithmsTree.ContextMenu = app.SelectedAlgoContextMenu;
 
             % Create DDataContextMenu
-            app.DDataContextMenu = uicontextmenu(app.MTOPlatformMToPv18UIFigure);
+            app.DDataContextMenu = uicontextmenu(app.MToPv19UIFigure);
             app.DDataContextMenu.ContextMenuOpeningFcn = createCallbackFcn(app, @DDataContextMenuOpening, true);
 
             % Create DDataSelectAllMenu
@@ -4976,7 +4976,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.DDataTree.ContextMenu = app.DDataContextMenu;
 
             % Create SelectedProbContextMenu
-            app.SelectedProbContextMenu = uicontextmenu(app.MTOPlatformMToPv18UIFigure);
+            app.SelectedProbContextMenu = uicontextmenu(app.MToPv19UIFigure);
 
             % Create SelectedProbSelectAllMenu
             app.SelectedProbSelectAllMenu = uimenu(app.SelectedProbContextMenu);
@@ -4994,7 +4994,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EProblemsTree.ContextMenu = app.SelectedProbContextMenu;
 
             % Create AlgorithmsContextMenu
-            app.AlgorithmsContextMenu = uicontextmenu(app.MTOPlatformMToPv18UIFigure);
+            app.AlgorithmsContextMenu = uicontextmenu(app.MToPv19UIFigure);
 
             % Create AlgorithmsSelectAllMenu
             app.AlgorithmsSelectAllMenu = uimenu(app.AlgorithmsContextMenu);
@@ -5012,7 +5012,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EAlgorithmsListBox.ContextMenu = app.AlgorithmsContextMenu;
 
             % Create ProblemsContextMenu
-            app.ProblemsContextMenu = uicontextmenu(app.MTOPlatformMToPv18UIFigure);
+            app.ProblemsContextMenu = uicontextmenu(app.MToPv19UIFigure);
 
             % Create ProblemsSelectAllMenu
             app.ProblemsSelectAllMenu = uimenu(app.ProblemsContextMenu);
@@ -5030,7 +5030,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EProblemsListBox.ContextMenu = app.ProblemsContextMenu;
 
             % Show the figure after all components are created
-            app.MTOPlatformMToPv18UIFigure.Visible = 'on';
+            app.MToPv19UIFigure.Visible = 'on';
         end
     end
 
@@ -5044,7 +5044,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             createComponents(app)
 
             % Register the app with App Designer
-            registerApp(app, app.MTOPlatformMToPv18UIFigure)
+            registerApp(app, app.MToPv19UIFigure)
 
             % Execute the startup function
             runStartupFcn(app, @startupFcn)
@@ -5058,7 +5058,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         function delete(app)
 
             % Delete UIFigure when app is deleted
-            delete(app.MTOPlatformMToPv18UIFigure)
+            delete(app.MToPv19UIFigure)
         end
     end
 end
