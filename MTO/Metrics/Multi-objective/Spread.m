@@ -51,7 +51,7 @@ row = 1;
 for prob = 1:length(MTOData.Problems)
     % Get Optimum
     optimum = {};
-    % optimum = MTOData.Problems(prob).Optimum; % Real Pareto Front
+    real_optimum = MTOData.Problems(prob).Optimum; % Real Pareto Front
     for task = 1:MTOData.Problems(prob).T
         AllBestObj = [];
         AllBestCV = [];
@@ -92,7 +92,7 @@ for prob = 1:length(MTOData.Problems)
                 result.ParetoData.Obj{row, algo, rep} = squeeze(BestObj{rep}(:, :));
             end
         end
-        result.ParetoData.Optimum{row}(:, :) = optimum{task};
+        result.ParetoData.Optimum{row}(:, :) = real_optimum{task};
         row = row + 1;
     end
 end

@@ -51,6 +51,13 @@ result.ColumnName = {MTOData.Algorithms.Name};
 % Calculate Competitive HV
 for prob = 1:length(MTOData.Problems)
     % Get Optimum
+    AllOptimum = [];
+    for task = 1:MTOData.Problems(prob).T
+        AllOptimum = [AllOptimum; MTOData.Problems(prob).Optimum{task}];
+    end
+    AllCV = zeros(size(AllOptimum, 1), 1);
+    real_optimum = getBestObj(AllOptimum, AllCV);
+    
     AllBestObj = [];
     AllBestCV = [];
     for algo = 1:length(MTOData.Algorithms)
@@ -101,7 +108,7 @@ for prob = 1:length(MTOData.Problems)
             result.ConvergeData.X(prob, algo, rep, :) = [1:gen] ./ gen .* MTOData.Problems(prob).maxFE;
             result.ParetoData.Obj{prob, algo, rep} = squeeze(BestObj{rep}(:, :));
         end
-        result.ParetoData.Optimum{prob}(:, :) = optimum;
+        result.ParetoData.Optimum{prob}(:, :) = real_optimum;
     end
 end
 end
