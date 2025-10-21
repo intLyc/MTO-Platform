@@ -174,7 +174,7 @@ methods
             rnd_upper = population{t}(winner{t}(i)).Dec + rand(size(population{t}(winner{t}(i)).Dec)) .* (1 - population{t}(winner{t}(i)).Dec);
             vio_up = find(offspring(i).Dec > 1);
             offspring(i).Dec(vio_up) = rnd_upper(vio_up);
-            offspring(i).Dec = max(0, min(1, offspring(i).Dec));
+            offspring(i).Dec = real(max(0, min(1, offspring(i).Dec)));
         end
     end
 
@@ -219,7 +219,7 @@ methods
             rnd_upper = population{t}(loser{t}(i)).Dec + rand(size(population{t}(loser{t}(i)).Dec)) .* (1 - population{t}(loser{t}(i)).Dec);
             vio_up = find(offspring(i).Dec > 1);
             offspring(i).Dec(vio_up) = rnd_upper(vio_up);
-            offspring(i).Dec = max(0, min(1, offspring(i).Dec));
+            offspring(i).Dec = real(max(0, min(1, offspring(i).Dec)));
         end
     end
 end
