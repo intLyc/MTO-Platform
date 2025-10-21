@@ -149,10 +149,13 @@ classdef MTO_GUI < matlab.apps.AppBase
         DDataSelectAllMenu           matlab.ui.container.Menu
         SelectedProbContextMenu      matlab.ui.container.ContextMenu
         SelectedProbSelectAllMenu    matlab.ui.container.Menu
+        SetPublicParaMenu            matlab.ui.container.Menu
         AlgorithmsContextMenu        matlab.ui.container.ContextMenu
         AlgorithmsSelectAllMenu      matlab.ui.container.Menu
+        AlgorithmRefreshMenu         matlab.ui.container.Menu
         ProblemsContextMenu          matlab.ui.container.ContextMenu
         ProblemsSelectAllMenu        matlab.ui.container.Menu
+        ProblemRefreshMenu           matlab.ui.container.Menu
     end
 
     properties (Access = public)
@@ -1682,8 +1685,8 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EloadAlgoProb();
         end
 
-        % Context menu opening function: AlgorithmsContextMenu
-        function AlgorithmsContextMenuOpening(app, event)
+        % Menu selected function: AlgorithmsSelectAllMenu
+        function EAlgorithmsSelectAllMenuSelected(app, event)
             % select all algorithms
 
             if ~isempty(app.EAlgorithmsListBox.Items)
@@ -1732,7 +1735,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         end
 
         % Menu selected function: ProblemsSelectAllMenu
-        function EProblemsContextMenuOpening(app, event)
+        function EProblemsSelectAllMenuSelected(app, event)
             % select all problems
 
             if ~isempty(app.EProblemsListBox.Items)
@@ -2018,15 +2021,6 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
         end
 
-        % Context menu opening function: SelectedAlgoContextMenu
-        function SelectedAlgoContextMenuOpening(app, event)
-            % select all selected algorithms
-
-            if ~isempty(app.EAlgorithmsTree.Children)
-                app.EAlgorithmsTree.SelectedNodes = app.EAlgorithmsTree.Children;
-            end
-        end
-
         % Button pushed function: EAlgorithmsDelButton
         function EAlgorithmsDelButtonPushed(app, event)
             % delete selected algorithms from algorithms tree
@@ -2072,12 +2066,100 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
         end
 
+        % Menu selected function: SelectedAlgoSelectAllMenu
+        function ESelectedAlgoSelectAllMenuSelected(app, event)
+            % select all selected algorithms
+
+            if ~isempty(app.EAlgorithmsTree.Children)
+                app.EAlgorithmsTree.SelectedNodes = app.EAlgorithmsTree.Children;
+            end
+        end
+
         % Menu selected function: SelectedProbSelectAllMenu
-        function ESelectedProbContextMenuOpening(app, event)
+        function ESelectedProbSelectAllMenuSelected(app, event)
             % select all selected problems
 
             if ~isempty(app.EProblemsTree.Children)
                 app.EProblemsTree.SelectedNodes = app.EProblemsTree.Children;
+            end
+        end
+
+        % Menu selected function: SetPublicParaMenu
+        function ESetPublicParaMenuSelected(app, event)
+            % Get selected problem nodes
+            selected_nodes = app.EProblemsTree.SelectedNodes;
+            if isempty(selected_nodes)
+                uialert(app.MTOPlatformMToPv18UIFigure, ...
+                    'No nodes selected. Please select at least one problem node.', ...
+                    'Warning', 'Icon', 'warning');
+                return;
+            end
+        
+            % Filter top-level problem nodes (exclude parameter subnodes)
+            prob_nodes = [];
+            for i = 1:length(selected_nodes)
+                if isa(selected_nodes(i).Parent, 'matlab.ui.container.Tree')
+                    prob_nodes = [prob_nodes, selected_nodes(i)];
+                end
+            end
+        
+            if isempty(prob_nodes)
+                uialert(app.MTOPlatformMToPv18UIFigure, ...
+                    'No top-level problem nodes selected. Please select proper problem nodes.', ...
+                    'Warning', 'Icon', 'warning');
+                return;
+            end
+        
+            % ====== Create dialog with SetPublicPara component ======
+            screen_size = get(0, 'ScreenSize');
+            dlg_width = 152;
+            dlg_height = 145;
+            dlg = uifigure('Name', sprintf('Batch Edit %d Problem(s)', length(prob_nodes)), ...
+                           'Position', [(screen_size(3)-dlg_width)/2, ...
+                                        (screen_size(4)-dlg_height)/2, ...
+                                         dlg_width, dlg_height], ...
+                           'Color', [1 1 1]);
+            dlg.WindowStyle = 'modal';
+        
+            % Add the reusable component
+            paraUI = SetPublicPara(dlg);
+            paraUI.Position = [0 0 dlg_width dlg_height];
+        
+            % ====== Define callback for Apply event ======
+            addlistener(paraUI, 'ParametersApplied', @(src,evt)applyBatchEdit(paraUI.PublicParameters));
+        
+            % ====== Nested function ======
+            function applyBatchEdit(params)
+                % params = [N, maxFE, TaskNum, Dim]
+                param_names = {'N:', 'maxFE:', 'Task Num', 'Dim'};
+        
+                for n = 1:length(prob_nodes)
+                    current_params = prob_nodes(n).NodeData.getParameter();
+                    updated_params = current_params;
+        
+                    % Update each target parameter
+                    for p = 1:length(param_names)
+                        for i = 1:2:length(current_params)
+                            param_name = current_params{i};
+                            if contains(param_name, param_names{p}, 'IgnoreCase', true)
+                                updated_params{i + 1} = num2str(params(p));
+                                break;
+                            end
+                        end
+                    end
+                    parameter = updated_params(2:2:end);
+        
+                    % Apply update to problem data
+                    prob_nodes(n).NodeData.setParameter(parameter);
+
+                    parameter = prob_nodes(n).NodeData.getParameter();
+                    for x = 2:2:length(prob_nodes(n).Children)
+                        prob_nodes(n).Children(x).Text = parameter{x};
+                    end
+                end
+        
+                % Close dialog and show success alert
+                close(dlg);
             end
         end
 
@@ -3610,6 +3692,12 @@ classdef MTO_GUI < matlab.apps.AppBase
         function ECompetitiveButtonValueChanged(app, event)
             app.EloadAlgoProb();
         end
+
+        % Menu selected function: AlgorithmRefreshMenu, ProblemRefreshMenu
+        function RefreshMenuSelected(app, event)
+            rehash('path');
+            app.EloadAlgoProb();
+        end
     end
 
     % Component initialization
@@ -4865,11 +4953,11 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create SelectedAlgoContextMenu
             app.SelectedAlgoContextMenu = uicontextmenu(app.MTOPlatformMToPv18UIFigure);
-            app.SelectedAlgoContextMenu.ContextMenuOpeningFcn = createCallbackFcn(app, @SelectedAlgoContextMenuOpening, true);
 
             % Create SelectedAlgoSelectAllMenu
             app.SelectedAlgoSelectAllMenu = uimenu(app.SelectedAlgoContextMenu);
-            app.SelectedAlgoSelectAllMenu.Checked = 'on';
+            app.SelectedAlgoSelectAllMenu.MenuSelectedFcn = createCallbackFcn(app, @ESelectedAlgoSelectAllMenuSelected, true);
+            app.SelectedAlgoSelectAllMenu.Accelerator = 'a';
             app.SelectedAlgoSelectAllMenu.Text = 'Select All';
             
             % Assign app.SelectedAlgoContextMenu
@@ -4892,21 +4980,33 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create SelectedProbSelectAllMenu
             app.SelectedProbSelectAllMenu = uimenu(app.SelectedProbContextMenu);
-            app.SelectedProbSelectAllMenu.MenuSelectedFcn = createCallbackFcn(app, @ESelectedProbContextMenuOpening, true);
-            app.SelectedProbSelectAllMenu.Checked = 'on';
+            app.SelectedProbSelectAllMenu.MenuSelectedFcn = createCallbackFcn(app, @ESelectedProbSelectAllMenuSelected, true);
+            app.SelectedProbSelectAllMenu.Accelerator = 'a';
             app.SelectedProbSelectAllMenu.Text = 'Select All';
+
+            % Create SetPublicParaMenu
+            app.SetPublicParaMenu = uimenu(app.SelectedProbContextMenu);
+            app.SetPublicParaMenu.MenuSelectedFcn = createCallbackFcn(app, @ESetPublicParaMenuSelected, true);
+            app.SetPublicParaMenu.Accelerator = 'e';
+            app.SetPublicParaMenu.Text = 'Set Public Para';
             
             % Assign app.SelectedProbContextMenu
             app.EProblemsTree.ContextMenu = app.SelectedProbContextMenu;
 
             % Create AlgorithmsContextMenu
             app.AlgorithmsContextMenu = uicontextmenu(app.MTOPlatformMToPv18UIFigure);
-            app.AlgorithmsContextMenu.ContextMenuOpeningFcn = createCallbackFcn(app, @AlgorithmsContextMenuOpening, true);
 
             % Create AlgorithmsSelectAllMenu
             app.AlgorithmsSelectAllMenu = uimenu(app.AlgorithmsContextMenu);
-            app.AlgorithmsSelectAllMenu.Checked = 'on';
+            app.AlgorithmsSelectAllMenu.MenuSelectedFcn = createCallbackFcn(app, @EAlgorithmsSelectAllMenuSelected, true);
+            app.AlgorithmsSelectAllMenu.Accelerator = 'a';
             app.AlgorithmsSelectAllMenu.Text = 'Select All';
+
+            % Create AlgorithmRefreshMenu
+            app.AlgorithmRefreshMenu = uimenu(app.AlgorithmsContextMenu);
+            app.AlgorithmRefreshMenu.MenuSelectedFcn = createCallbackFcn(app, @RefreshMenuSelected, true);
+            app.AlgorithmRefreshMenu.Accelerator = 'r';
+            app.AlgorithmRefreshMenu.Text = 'Refresh';
             
             % Assign app.AlgorithmsContextMenu
             app.EAlgorithmsListBox.ContextMenu = app.AlgorithmsContextMenu;
@@ -4916,9 +5016,15 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create ProblemsSelectAllMenu
             app.ProblemsSelectAllMenu = uimenu(app.ProblemsContextMenu);
-            app.ProblemsSelectAllMenu.MenuSelectedFcn = createCallbackFcn(app, @EProblemsContextMenuOpening, true);
-            app.ProblemsSelectAllMenu.Checked = 'on';
+            app.ProblemsSelectAllMenu.MenuSelectedFcn = createCallbackFcn(app, @EProblemsSelectAllMenuSelected, true);
+            app.ProblemsSelectAllMenu.Accelerator = 'a';
             app.ProblemsSelectAllMenu.Text = 'Select All';
+
+            % Create ProblemRefreshMenu
+            app.ProblemRefreshMenu = uimenu(app.ProblemsContextMenu);
+            app.ProblemRefreshMenu.MenuSelectedFcn = createCallbackFcn(app, @RefreshMenuSelected, true);
+            app.ProblemRefreshMenu.Accelerator = 'r';
+            app.ProblemRefreshMenu.Text = 'Refresh';
             
             % Assign app.ProblemsContextMenu
             app.EProblemsListBox.ContextMenu = app.ProblemsContextMenu;
