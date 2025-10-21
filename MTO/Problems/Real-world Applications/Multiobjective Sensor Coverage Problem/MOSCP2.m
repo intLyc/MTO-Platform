@@ -72,7 +72,7 @@ methods
 
     function optimum = getOptimum(Prob)
         for t = 1:Prob.T
-            optimum{t} = [0, 25];
+            optimum{t} = [80, 40];
         end
     end
 end

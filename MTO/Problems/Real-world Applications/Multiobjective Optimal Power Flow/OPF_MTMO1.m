@@ -54,8 +54,8 @@ methods
     end
 
     function optimum = getOptimum(Prob)
-        optimum{1} = [0, 0];
-        optimum{2} = [0, 0];
+        optimum{1} = [1000, 1];
+        optimum{2} = [50000, 5];
     end
 end
 end
