@@ -41,6 +41,9 @@ methods
         % Initialization
         population = Initialization(Algo, Prob, Individual);
         for t = 1:Prob.T
+            for i = 1:Prob.N
+                population{t}(i).Dec = population{t}(i).Dec(1:Prob.D(t));
+            end
             [~, rank{t}] = sortrows([population{t}.CVs, population{t}.Objs], [1, 2]);
             a = 0; b = 0;
             for i = 1:round(Algo.A * Prob.N)
@@ -57,8 +60,8 @@ methods
             WW = WW ./ round(Algo.A * Prob.N); WW = WW.^(1/2);
             S{t} = WW;
         end
-        
-        while Algo.notTerminated(Prob)
+
+        while Algo.notTerminated(Prob, population)
             for t = 1:Prob.T
                 OO = population{t}(1);
                 OO.Dec = M{t}; OO = Algo.Evaluation(OO, Prob, t);
