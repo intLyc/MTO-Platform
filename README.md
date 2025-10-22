@@ -20,11 +20,11 @@ We introduce the multitask optimization platform, named **MToP**, for evolutiona
 
 MToP is a user-friendly tool with a graphical user interface that makes it easy to analyze results, export data, and plot schematics. More importantly, MToP is extensible, allowing users to develop new algorithms and define new problems.
 
-**Documents:**
+📄 **Documents:**
 [**[Paper]**](https://arxiv.org/abs/2312.08134) /
 [**[User Guide]**](./Doc/User-Guide.md)
 
-**Data:**
+💿 **Data:**
 In order to enhance reproducibility and avoid unnecessary repeated experiments, we provide the experimental data of algorithms on benchmark suites over 30 independent runs under fixed random seeds:
 [**[Google Drive]**](https://drive.google.com/drive/folders/1IpwXNuOYcnpC3IXbAx3VnLGVV899k3bG?usp=share_link)
 
