@@ -25,7 +25,7 @@ MToP is a user-friendly tool with a graphical user interface that makes it easy 
 [**[User Guide]**](./Doc/User-Guide.md)
 
 **Data:**
-To avoid unnecessary repeated experiments, we provide the experimental data of algorithms on benchmark suites under a specific random seed (Seed = 2333):
+In order to enhance reproducibility and avoid unnecessary repeated experiments, we provide the experimental data of algorithms on benchmark suites over 30 independent runs under fixed random seeds:
 [**[Google Drive]**](https://drive.google.com/drive/folders/1IpwXNuOYcnpC3IXbAx3VnLGVV899k3bG?usp=share_link)
 
 ## Copyright
