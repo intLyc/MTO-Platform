@@ -69,7 +69,7 @@ methods
 
         population_old = population;
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
 
             for t = 1:Prob.T
 

@@ -74,7 +74,7 @@ methods
         action_record1 = [];
         action_record2 = [];
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
 
             for t = 1:Prob.T
 

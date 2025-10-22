@@ -77,7 +77,7 @@ methods
         RMP = [RMP, rmp(1)];
         RMP1 = [RMP1, rmp(2)];
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
 
             %Generation
             offspring = Algo.Generation(population, rmp, arc);

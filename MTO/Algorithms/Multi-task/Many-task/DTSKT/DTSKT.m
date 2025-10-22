@@ -70,7 +70,7 @@ methods
             path{t} = population{t}(rank{t}(1)).Dec - M_old{t};
         end
 
-        while Algo.notTerminated(Prob)
+        while Algo.notTerminated(Prob, population)
             % Calculate COS
             CO = (1 / inf) .* ones(Prob.T);
             for t = 1:Prob.T - 1
