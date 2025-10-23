@@ -1,4 +1,4 @@
-function MTOData = MTO_CMD(AlgoCell, ProbCell, Reps, Par_Flag, Results_Num, Save_Dec, Save_Name)
+function MTOData = MTO_CMD(AlgoCell, ProbCell, Reps, Par_Flag, Results_Num, Save_Dec, Save_Name, Global_Seed)
 %% MTO Platform run with command line, save data in mat file
 % Input: algorithms char cell, problems char cell, no. of runs, parallel flag, no. of results, save decision variables flag, save file name
 % Output: none
@@ -66,6 +66,11 @@ Data.Results = {};
 Data.RunTimes = [];
 Results = {};
 
+% Set Global Seed
+if exist('Global_Seed', 'var') && ~isempty(Global_Seed)
+    seeds = (0:Reps - 1) + Global_Seed;
+end
+
 % Run
 for prob = 1:length(ProbObject)
     disp(['Problem: ', char(ProbObject{prob}.Name)]);
@@ -77,6 +82,7 @@ for prob = 1:length(ProbObject)
         if Par_Flag
             par_tool = Par(Reps);
             parfor rep = 1:Reps
+                rng(seeds(rep));
                 Par.tic
                 prob_obj.setTasks()
                 algo_obj.reset();
@@ -104,6 +110,7 @@ for prob = 1:length(ProbObject)
         else
             t_temp = [];
             for rep = 1:Reps
+                rng(seeds(rep));
                 tstart = tic;
                 prob_obj.setTasks()
                 algo_obj.reset();
@@ -130,11 +137,6 @@ for prob = 1:length(ProbObject)
             Data.RunTimes(prob, algo, :) = t_temp;
         end
     end
-    % save temporary data
-    % Data.Results = MakeGenEqual(Results);
-    % MTOData = Data;
-    % MTOData.Problems = MTOData.Problems(1:prob);
-    % save('MTOData_Temp', 'MTOData');
 end
 
 % save mat file
