@@ -1,7 +1,19 @@
 function MTOData = mto(varargin)
-%% MTO Platform
-% GUI: 'mto'
-% Command line: 'MTOData = mto(Algo_Cell, Prob_Cell, Reps, Par_flag, Results_Num, Save_Dec, Save_Name)'
+%% MTO Platform (MToP)
+% GUI: directly run 'mto'
+% Command-Line Examples:
+%   MTO_CMD({MFEA, MFDE},{CMT1, CMT2})
+%   MTO_CMD({MFEA, MFDE},{CMT1, CMT2}, 5, true, 100, false, 'MTOData.mat', 2333)
+%   MTO_CMD({MFEA, MFDE},{CMT1, CMT2}, 'Reps', 5, 'Par_Flag', true)
+% Input:
+%   AlgoCell: Cell array of algorithm objects or names
+%   ProbCell: Cell array of problem objects or names
+%   'Reps' (optional): Number of independent runs (default: 1)
+%   'Par_Flag' (optional): true/false for parallel calculation (default: false)
+%   'Results_Num' (optional): Number of results to save (default: 50)
+%   'Save_Dec' (optional): true/false for saving decision variables (default: false)
+%   'Save_Name' (optional): Name of the saved .mat file (default: 'MTOData.mat')
+%   'Global_Seed' (optional): Seed for random number generator (default: random)
 
 %------------------------------- Copyright --------------------------------
 % Copyright (c) Yanchi Li. You are free to use the MToP for research
@@ -12,38 +24,16 @@ function MTOData = mto(varargin)
 %--------------------------------------------------------------------------
 
 cd(fileparts(mfilename('fullpath')));
-addpath(genpath('./Algorithms/'));
-addpath(genpath('./Problems/'));
-addpath(genpath('./Metrics/'));
-addpath(genpath('./GUI/'));
+addpath(genpath(pwd));
 
-if isempty(varargin)
+if nargin == 0
     % run with GUI
     MTO_GUI();
+elseif nargin >= 2
+    % run with command line, return data
+    MTOData = MTO_CMD(varargin{:});
 else
-    % run with command line, save data in mat file
-    Reps = 1;
-    Par_flag = 0;
-    Results_Num = 50;
-    Save_Dec = false;
-    Save_Name = 'MTOData';
-    Algo_Cell = varargin{1};
-    Prob_Cell = varargin{2};
-    if length(varargin) >= 3
-        Reps = varargin{3};
-    end
-    if length(varargin) >= 4
-        Par_flag = varargin{4};
-    end
-    if length(varargin) >= 5
-        Results_Num = varargin{5};
-    end
-    if length(varargin) >= 6
-        Save_Dec = varargin{6};
-    end
-    if length(varargin) >= 7
-        Save_Name = varargin{7};
-    end
-    MTOData = MTO_CMD(Algo_Cell, Prob_Cell, Reps, Par_flag, Results_Num, Save_Dec, Save_Name);
+    error('Invalid number of input arguments.');
 end
+
 end
