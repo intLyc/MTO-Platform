@@ -37,6 +37,7 @@ methods
     end
 
     function run(Algo, Prob)
+        origin_probN = Prob.N;
         Prob.N = Algo.N;
         % Initialization
         population = Initialization(Algo, Prob, Individual);
@@ -123,6 +124,7 @@ methods
                 S{t} = WW;
             end
         end
+        Prob.N = origin_probN;
     end
 end
 end

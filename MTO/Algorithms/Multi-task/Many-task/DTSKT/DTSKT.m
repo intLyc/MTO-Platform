@@ -46,6 +46,7 @@ methods
     end
 
     function run(Algo, Prob)
+        origin_probN = Prob.N;
         % Initialization
         Prob.N = Algo.N;
         population = Initialization(Algo, Prob, Individual);
@@ -205,6 +206,7 @@ methods
                 M_old{t} = mean(population{t}.Decs);
             end
         end
+        Prob.N = origin_probN;
     end
 end
 end
