@@ -53,6 +53,7 @@ for i = 1:size(mean_converge, 1)
     ylabel('Objective value');
     yscale('log');
     grid on;
+    drawnow;
 end
 
 clear;
@@ -97,6 +98,7 @@ for i = 1:size(mean_converge, 1)
     ylabel('IGD value');
     yscale('log');
     grid on;
+    drawnow;
 end
 
 % plot Pareto front
@@ -121,6 +123,7 @@ for i = 1:size(result2.ParetoData.Obj, 1)
     xlabel('Objective 1');
     ylabel('Objective 2');
     grid on;
+    drawnow;
 end
 
 clear;
@@ -194,6 +197,7 @@ for i = 1:size(mean_converge, 1)
     ylabel('Objective value');
     yscale('log');
     grid on;
+    drawnow;
 end
 
 clear;
