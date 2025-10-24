@@ -123,6 +123,7 @@ for prob = 1:length(ProbObject)
         algo_obj = AlgoObject{algo};
         algo_obj.Result_Num = Results_Num;
         algo_obj.Save_Dec = Save_Dec;
+        algo_obj.drawInit(prob_obj);
 
         if Par_Flag
             % Use preallocated Results to allow indexed assignment inside parfor

@@ -17,12 +17,20 @@ addpath(genpath(pwd));
 %% ==========================================================
 disp('=== Example 1: Single-objective optimization with Obj metric ===');
 
+ga = GA();
+mfea = MFEA();
+mfea.Draw_Dec = true; % enable decision variable plotting
+
+p = CEC17_MTSO1_CI_HS();
+p.maxFE = 40000;
+
 MTOData = mto( ...
-    {GA, MFEA}, ...
-    {CEC17_MTSO1_CI_HS, CMT1}, ...
-    'Reps', 2, ...
+    {ga, mfea}, ...
+    {p}, ...
     'Save_Dec', true ...
 );
+
+mfea.dpd.close(); % close decision variable plot
 
 % print results
 result1 = Obj(MTOData);
@@ -62,12 +70,22 @@ clear;
 %% ==========================================================
 disp('=== Example 2: Multi-objective optimization with IGD metric ===');
 
+nsga2 = NSGA_II();
+mo_mfea = MO_MFEA();
+mo_mfea.Draw_Obj = true; % enable objective plotting
+mo_mfea.Draw_Dec = true; % enable decision variable plotting
+
+p = CEC17_MTMO1_CI_HS();
+p.maxFE = 40000;
+
 MTOData = mto( ...
-    {NSGA_II, MO_MFEA}, ...
-    {CEC17_MTMO1_CI_HS, MTMO_Instance2}, ...
-    'Reps', 2, ...
+    {nsga2, mo_mfea}, ...
+    {p}, ...
     'Save_Dec', true ...
 );
+
+mo_mfea.dpo.close(); % close objective plot
+mo_mfea.dpd.close(); % close decision variable plot
 
 % print results
 result2 = IGD(MTOData, false);
@@ -106,6 +124,7 @@ figure;
 for i = 1:size(result2.ParetoData.Obj, 1)
     nexttile;
     for j = 1:size(result2.ParetoData.Obj, 2)
+        % draw population
         scatter( ...
             result2.ParetoData.Obj{i, j, 1}(:, 1), ...
             result2.ParetoData.Obj{i, j, 1}(:, 2), ...
@@ -113,6 +132,7 @@ for i = 1:size(result2.ParetoData.Obj, 1)
         );
         hold on;
     end
+    % draw real Pareto front
     scatter( ...
         result2.ParetoData.Optimum{i}(:, 1), ...
         result2.ParetoData.Optimum{i}(:, 2), ...
@@ -133,40 +153,37 @@ clear;
 disp('=== Example 3: Modify algorithm and problem parameters before run ===');
 
 % Create algorithm with default parameters
+% Method 1: modify parameters via getParameter/setParameter
 mfea1 = MFEA();
 mfea1_para = mfea1.getParameter();
+disp('Default MFEA parameters:');
+disp(reshape(mfea1_para, 2, [])');
 mfea1_para_values = mfea1_para(2:2:end);
 mfea1_para_values{1} = '0.3'; % Modify RMP
 mfea1.setParameter(mfea1_para_values);
 mfea1.Name = 'MFEA-RMP0.3';
 
+% Method 2: modify parameters directly via properties
 mfea2 = MFEA();
-mfea2_para = mfea2.getParameter();
-mfea2_para_values = mfea2_para(2:2:end);
-mfea2_para_values{1} = '0.5'; % Modify RMP
-mfea2.setParameter(mfea2_para_values);
+mfea2.RMP = 0.5; % Modify RMP
 mfea2.Name = 'MFEA-RMP0.5';
 
 mfea3 = MFEA();
-mfea3_para = mfea3.getParameter();
-mfea3_para_values = mfea3_para(2:2:end);
-mfea3_para_values{1} = '0.7'; % Modify RMP
-mfea3.setParameter(mfea3_para_values);
+mfea3.RMP = 0.7; % Modify RMP
 mfea3.Name = 'MFEA-RMP0.7';
 
 % Create problem with default parameters
 ci_hs1 = CEC17_MTSO1_CI_HS();
 ci_hs1_para = ci_hs1.getParameter();
+disp('Default CEC17-MTSO1-CI-HS parameters:');
+disp(reshape(ci_hs1_para, 2, [])');
 ci_hs1_para_values = ci_hs1_para(2:2:end);
 ci_hs1_para_values{1} = '50'; % Modify N=50
 ci_hs1.setParameter(ci_hs1_para_values);
 ci_hs1.Name = 'CEC17-MTSO1-N50';
 
 ci_hs2 = CEC17_MTSO1_CI_HS();
-ci_hs2_para = ci_hs2.getParameter();
-ci_hs2_para_values = ci_hs2_para(2:2:end);
-ci_hs2_para_values{1} = '100'; % Modify N=100
-ci_hs2.setParameter(ci_hs2_para_values);
+ci_hs2.N = 100; % Modify N=100 directly
 ci_hs2.Name = 'CEC17-MTSO1-N100';
 
 MTOData = mto( ...
@@ -206,9 +223,17 @@ clear;
 %% ==========================================================
 disp('=== Example 4: Full experiment with parallel evaluation ===');
 
+alg1 = NSGA_II();
+alg2 = MO_MFEA();
+alg3 = MTDE_MKTA();
+p1 = CEC17_MTMO1_CI_HS();
+p1.N = 100;
+p2 = CEC17_MTMO8_NI_MS();
+p2.N = 120;
+
 MTOData = mto( ...
-    {NSGA_II, MO_MFEA, MTDE_MKTA}, ...
-    {CEC17_MTMO1_CI_HS, CEC17_MTMO2_CI_MS}, ...
+    {alg1, alg2, alg3}, ...
+    {p1, p2}, ...
     'Reps', 10, ...
     'Par_Flag', true, ...
     'Results_Num', 30, ...
@@ -220,5 +245,78 @@ MTOData = mto( ...
 result4 = IGD(MTOData, true);
 disp('Final IGD values from full experiment:');
 disp(mean(result4.TableData, 3));
+
+% plot convergence curves
+figure;
+mean_converge = squeeze(mean(result4.ConvergeData.Y, 3));
+mean_evaluations = squeeze(mean(result4.ConvergeData.X, 3));
+for i = 1:size(mean_converge, 1)
+    nexttile;
+    for j = 1:size(mean_converge, 2)
+        plot(squeeze(mean_evaluations(i, j, :)), ...
+            squeeze(mean_converge(i, j, :)), ...
+            'LineWidth', 1.5 ...
+        );
+        hold on;
+    end
+    title(result4.RowName{i});
+    legend(result4.ColumnName);
+    xlabel('Evaluations');
+    ylabel('IGD value');
+    yscale('log');
+    grid on;
+    drawnow;
+end
+
+% plot Pareto front
+figure;
+for i = 1:size(result4.ParetoData.Obj, 1)
+    nexttile;
+    for j = 1:size(result4.ParetoData.Obj, 2)
+        % draw population
+        if size(result4.ParetoData.Obj{i, j, 1}, 2) == 2
+            scatter( ...
+                result4.ParetoData.Obj{i, j, 1}(:, 1), ...
+                result4.ParetoData.Obj{i, j, 1}(:, 2), ...
+                10, 'filled' ...
+            );
+        elseif size(result4.ParetoData.Obj{i, j, 1}, 2) == 3
+            scatter3( ...
+                result4.ParetoData.Obj{i, j, 1}(:, 1), ...
+                result4.ParetoData.Obj{i, j, 1}(:, 2), ...
+                result4.ParetoData.Obj{i, j, 1}(:, 3), ...
+                10, 'filled' ...
+            );
+        end
+        hold on;
+    end
+
+    % draw real Pareto front
+    if size(result4.ParetoData.Optimum{i}, 2) == 2
+        scatter( ...
+            result4.ParetoData.Optimum{i}(:, 1), ...
+            result4.ParetoData.Optimum{i}(:, 2), ...
+            1.5, 'k', 'filled' ...
+        );
+        xlabel('Objective 1');
+        ylabel('Objective 2');
+    elseif size(result4.ParetoData.Optimum{i}, 2) == 3
+        scatter3( ...
+            result4.ParetoData.Optimum{i}(:, 1), ...
+            result4.ParetoData.Optimum{i}(:, 2), ...
+            result4.ParetoData.Optimum{i}(:, 3), ...
+            1.5, 'k', 'filled' ...
+        );
+        view([135 30]);
+        xlabel('Objective 1');
+        ylabel('Objective 2');
+        zlabel('Objective 3');
+    end
+    hold on;
+    title(result4.RowName{i});
+    legend([result4.ColumnName, {'Pareto Front'}]);
+    grid on;
+    drawnow;
+end
 
 disp('=== All experiments completed successfully. ===');
