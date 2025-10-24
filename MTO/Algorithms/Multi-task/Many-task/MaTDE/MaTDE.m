@@ -22,7 +22,7 @@ classdef MaTDE < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     Alpha = 0.1
     ArcUpdate = 0.2
     Shrink = 0.8

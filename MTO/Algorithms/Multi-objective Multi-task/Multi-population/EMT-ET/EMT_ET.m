@@ -22,7 +22,7 @@ classdef EMT_ET < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     G = 8
     P = 0.5
     MuC = 20

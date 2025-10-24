@@ -19,7 +19,7 @@ classdef CCEF_ECHT < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     PR0 = 0.1
     Alpha = 0.5
     Beta = 0.1

@@ -22,7 +22,7 @@ classdef MFEA_AKT < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     RMP = 0.3
     Gap = 20
     MuC = 2

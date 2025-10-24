@@ -21,7 +21,7 @@ classdef MTEA_PAE < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     Seg = 10
     TNum = 20
     TGap = 5

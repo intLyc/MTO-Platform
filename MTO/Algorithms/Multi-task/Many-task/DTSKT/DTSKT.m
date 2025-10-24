@@ -19,7 +19,7 @@ classdef DTSKT < Algorithm
 % T. Zhang, S. Li, and Q. Gu, MToP: A MATLAB Optimization Platform for
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
-properties (SetAccess = private)
+properties (SetAccess = public)
     A = 0.35
     Beta = 0.6
     RMP = 0.5

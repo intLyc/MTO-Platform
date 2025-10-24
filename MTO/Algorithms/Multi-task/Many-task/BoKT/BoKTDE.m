@@ -22,7 +22,7 @@ classdef BoKTDE < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     Sigma = 0.9
     F = 0.5
     CR = 0.7

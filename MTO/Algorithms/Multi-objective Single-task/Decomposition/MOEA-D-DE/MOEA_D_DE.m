@@ -32,7 +32,7 @@ classdef MOEA_D_DE < Algorithm
 % Computational Intelligence Magazine, 2017, 12(4): 73-87".
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     Delta = 0.9
     NR = 2
     F = 0.5

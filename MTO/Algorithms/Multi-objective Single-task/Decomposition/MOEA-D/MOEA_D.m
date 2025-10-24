@@ -32,7 +32,7 @@ classdef MOEA_D < Algorithm
 % Computational Intelligence Magazine, 2017, 12(4): 73-87".
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     Type = 1
     MuC = 20
     MuM = 15

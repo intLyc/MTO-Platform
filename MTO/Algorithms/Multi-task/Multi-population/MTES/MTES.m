@@ -22,7 +22,7 @@ classdef MTES < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     alpha0 = 0.1
     sigma0 = 0.1
     adjustGen = 100

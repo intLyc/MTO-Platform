@@ -26,7 +26,7 @@ classdef MTEA_D_TSD < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     TR0 = 0.2
     CF = 0.4
     SNum = 10

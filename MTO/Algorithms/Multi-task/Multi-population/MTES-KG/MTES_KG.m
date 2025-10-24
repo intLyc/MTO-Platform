@@ -22,7 +22,7 @@ classdef MTES_KG < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     tau0 = 2
     alpha = 0.5
     adjGap = 50

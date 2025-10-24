@@ -28,7 +28,7 @@ classdef SPEA2_DE < Algorithm
 % Computational Intelligence Magazine, 2017, 12(4): 73-87".
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     F = 0.5
     CR = 0.9
 end

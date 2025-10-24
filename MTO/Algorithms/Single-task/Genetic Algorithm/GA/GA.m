@@ -9,7 +9,7 @@ classdef GA < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     MuC = 2
     MuM = 5
 end

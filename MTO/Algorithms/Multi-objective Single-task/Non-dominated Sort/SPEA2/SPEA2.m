@@ -28,7 +28,7 @@ classdef SPEA2 < Algorithm
 % Computational Intelligence Magazine, 2017, 12(4): 73-87".
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     MuC = 20
     MuM = 15
 end

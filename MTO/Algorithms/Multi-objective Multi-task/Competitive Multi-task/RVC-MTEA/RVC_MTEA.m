@@ -19,7 +19,7 @@ classdef RVC_MTEA < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     TR = 0.3
     UR = 0.2
     Type = 1

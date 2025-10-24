@@ -22,7 +22,7 @@ classdef CEDA_MP < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     EC_Top = 0.2
     EC_Tc = 0.8
     EC_Cp = 5

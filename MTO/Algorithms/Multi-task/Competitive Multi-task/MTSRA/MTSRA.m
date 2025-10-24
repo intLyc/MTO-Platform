@@ -21,7 +21,7 @@ classdef MTSRA < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     P = 0.1
     H = 100
     RH = 100

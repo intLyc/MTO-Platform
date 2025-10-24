@@ -20,7 +20,7 @@ classdef MOMFEA_SADE < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     RMP = 0.3
     LP = 30
     F1 = 0.6

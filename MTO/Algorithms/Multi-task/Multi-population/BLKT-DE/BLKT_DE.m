@@ -19,7 +19,7 @@ classdef BLKT_DE < Algorithm
 % T. Zhang, S. Li, and Q. Gu, MToP: A MATLAB Optimization Platform for
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
-properties (SetAccess = private)
+properties (SetAccess = public)
     F = 0.5
     CR = 0.7
 end

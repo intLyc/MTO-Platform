@@ -26,7 +26,7 @@ classdef IMEA < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     TGap = 10
     TNum = 10
     MuC = 2

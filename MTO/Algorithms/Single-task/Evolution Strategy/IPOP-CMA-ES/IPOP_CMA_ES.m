@@ -21,7 +21,7 @@ classdef IPOP_CMA_ES < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     sigma0 = 0.3
 end
 

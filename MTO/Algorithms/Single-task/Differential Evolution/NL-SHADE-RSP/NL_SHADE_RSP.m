@@ -20,7 +20,7 @@ classdef NL_SHADE_RSP < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     Pmax = 0.4
     Pmin = 0.2
     H = 5

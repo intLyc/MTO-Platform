@@ -20,7 +20,7 @@ classdef MO_EMaTO_MKT < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     MuC = 20
     MuM = 15
     AMP0 = 0.9

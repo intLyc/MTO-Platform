@@ -20,7 +20,7 @@ classdef MM_DE < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     Alpha = 0.05
     T = 10
     LM = 3

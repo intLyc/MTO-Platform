@@ -22,7 +22,7 @@ classdef CEDA_MF < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     RMP = 0.3
     MuC = 2
     MuM = 5

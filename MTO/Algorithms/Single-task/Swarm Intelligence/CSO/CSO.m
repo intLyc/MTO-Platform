@@ -22,7 +22,7 @@ classdef CSO < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     Phi = 0.1
 end
 

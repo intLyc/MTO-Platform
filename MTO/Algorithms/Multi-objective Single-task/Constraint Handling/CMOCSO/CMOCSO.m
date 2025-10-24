@@ -19,7 +19,7 @@ classdef CMOCSO < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     MuC = 20
     MuM = 15
 end
@@ -95,7 +95,7 @@ methods
             offspring(count + 1) = winner(i);
             % Velocity update
             offspring(count).V = rand() * loser(i).V + ...
-            rand() .* (winner(i).Dec - loser(i).Dec) * y;
+                rand() .* (winner(i).Dec - loser(i).Dec) * y;
 
             % Position update
             n = randi(2, 1, 1);

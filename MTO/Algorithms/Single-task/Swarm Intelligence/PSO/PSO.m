@@ -21,7 +21,7 @@ classdef PSO < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     maxW = 0.9
     minW = 0.4
     C1 = 0.2

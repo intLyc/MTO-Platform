@@ -22,7 +22,7 @@ classdef TNG_SNES_EP < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     sigma0 = 0.3
     rho0 = 0.1
     alpha0 = 0.7

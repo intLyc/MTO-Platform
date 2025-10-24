@@ -32,7 +32,7 @@ classdef RVEA < Algorithm
 % Computational Intelligence Magazine, 2017, 12(4): 73-87".
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     Alpha = 2
     FR = 0.1
     MuC = 20

@@ -20,7 +20,7 @@ classdef OpenAI_ES < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     sigma = 1
     lr = 1e-3
     momentum = 0.9

@@ -22,7 +22,7 @@ classdef BoKTGA < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     Sigma = 0.9
     MuC = 2
     MuM = 5

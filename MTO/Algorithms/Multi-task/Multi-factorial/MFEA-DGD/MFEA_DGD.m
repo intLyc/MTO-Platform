@@ -19,7 +19,7 @@ classdef MFEA_DGD < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     RMP = 0.7
     Gamma = 0.1
 end

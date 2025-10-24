@@ -22,7 +22,7 @@ classdef jDE < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     T1 = 0.1
     T2 = 0.1
 end

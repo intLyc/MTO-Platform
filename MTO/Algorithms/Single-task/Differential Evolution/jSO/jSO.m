@@ -20,7 +20,7 @@ classdef jSO < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     Pmax = 0.25
     Pmin = 0.125
     H = 5

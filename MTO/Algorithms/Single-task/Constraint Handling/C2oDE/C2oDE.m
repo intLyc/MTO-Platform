@@ -22,7 +22,7 @@ classdef C2oDE < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     Beta = 6
     Mu = 1e-8
     P = 0.5

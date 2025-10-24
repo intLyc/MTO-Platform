@@ -20,7 +20,7 @@ classdef KLDE < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     LR = 0.2
     EP = 10
     F = 0.5

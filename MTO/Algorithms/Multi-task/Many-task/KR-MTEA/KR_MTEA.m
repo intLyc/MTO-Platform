@@ -14,7 +14,7 @@ classdef KR_MTEA < Algorithm
 % }
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     pTransfer = 0.5;
     Operator = 'GA/DE';
     mu = 2;

@@ -22,7 +22,7 @@ classdef AMT_NSGA_II < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     Delta = 10
     MuC = 20
     MuM = 15

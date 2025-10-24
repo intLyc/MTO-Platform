@@ -20,7 +20,7 @@ classdef EMT_GS < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     G = 10
     lrD = 0.0002
     lrG = 0.0003

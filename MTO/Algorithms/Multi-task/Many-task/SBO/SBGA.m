@@ -23,7 +23,7 @@ classdef SBGA < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     Benefit = 0.25
     Harm = 0.5
     MuC = 2

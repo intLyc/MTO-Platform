@@ -24,7 +24,7 @@ classdef CMO_LKT < Algorithm
 
 %%%%在另一任务变好时，完全学习他。随机学习自己是邻域学习，随机学习其他是种群。学习自己最好是邻域Niche最好，其他是随机NIche最好。
 %%%%变异策略，是每个小生境找到最差和最好的个体，将最好的随机选择几维替换掉最近的相应的维度，然后与最近的比较
-properties (SetAccess = private)
+properties (SetAccess = public)
     F = [0.6, 0.8, 1.0]
     CR = [0.1, 0.2, 1.0]
 end

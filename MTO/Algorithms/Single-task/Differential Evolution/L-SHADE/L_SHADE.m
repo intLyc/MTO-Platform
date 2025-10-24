@@ -20,7 +20,7 @@ classdef L_SHADE < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     P = 0.2
     H = 5
     R = 18

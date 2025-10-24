@@ -25,7 +25,7 @@ classdef SREMTO < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     TH = 0.3
     PAlpha = 0.7
     PBeta = 1

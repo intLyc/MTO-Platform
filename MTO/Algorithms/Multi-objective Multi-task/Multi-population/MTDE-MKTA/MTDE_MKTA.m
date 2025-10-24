@@ -22,7 +22,7 @@ classdef MTDE_MKTA < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     Tau1 = 0.2
     Tau2 = 0.1
 end

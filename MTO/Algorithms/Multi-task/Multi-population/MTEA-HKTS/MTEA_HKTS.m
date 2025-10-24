@@ -22,7 +22,7 @@ classdef MTEA_HKTS < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     pTransfer = 0.5;
     Operator = 'GA/DE';
     mu = 2;

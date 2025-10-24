@@ -19,7 +19,7 @@ classdef EMaTO_MKT < Algorithm
 % T. Zhang, S. Li, and Q. Gu, MToP: A MATLAB Optimization Platform for
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
-properties (SetAccess = private)
+properties (SetAccess = public)
     MuC = 2
     MuM = 5
     AMP0 = 0.9

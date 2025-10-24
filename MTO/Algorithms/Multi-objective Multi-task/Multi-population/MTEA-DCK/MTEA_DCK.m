@@ -22,7 +22,7 @@ classdef MTEA_DCK < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     Tau = 0.1
     TRC0 = 0.3
 end

@@ -22,7 +22,7 @@ classdef EMTO_AI < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     F = 0.5;
     CR = 0.6; %WCCI20 CR=0.9
 end

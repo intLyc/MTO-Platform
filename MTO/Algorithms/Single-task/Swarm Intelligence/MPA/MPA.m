@@ -21,7 +21,7 @@ classdef MPA < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     FADs = 0.2
     P = 0.5
 end

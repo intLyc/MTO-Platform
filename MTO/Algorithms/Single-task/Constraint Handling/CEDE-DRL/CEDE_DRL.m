@@ -22,7 +22,7 @@ classdef CEDE_DRL < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     Alpha = 0.5
     Pmin = 0.1
     RH = 10

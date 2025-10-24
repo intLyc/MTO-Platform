@@ -22,7 +22,7 @@ classdef SSLT_GA < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     Gamma = 0.9;
     Threshold = 150;
     Epsilon = 0.8;

@@ -28,7 +28,7 @@ classdef xNES_as < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     sigma0 = 0.3
     useN = 1 % use Prob.N for sample points number
 end

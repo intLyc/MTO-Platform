@@ -22,7 +22,7 @@ classdef MO_MFEA < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = private)
+properties (SetAccess = public)
     RMP = 0.3
     MuC = 20
     MuM = 15
