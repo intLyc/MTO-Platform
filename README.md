@@ -20,13 +20,18 @@ We introduce the multitask optimization platform, named **MToP**, for evolutiona
 
 MToP is a user-friendly tool with a graphical user interface that makes it easy to analyze results, export data, and plot schematics. More importantly, MToP is extensible, allowing users to develop new algorithms and define new problems.
 
-📄 **Documents:**
+### 📄 Documents
+
 [**[Paper]**](https://arxiv.org/abs/2312.08134) /
 [**[User Guide]**](./Doc/User-Guide.md)
 
-💿 **Data:**
+### 💿 Data
+
 In order to enhance reproducibility and avoid unnecessary repeated experiments, we provide the experimental data of algorithms on benchmark suites over 30 independent runs under fixed random seeds:
-[**[Google Drive]**](https://drive.google.com/drive/folders/1IpwXNuOYcnpC3IXbAx3VnLGVV899k3bG?usp=share_link)
+
+[**[Google Drive]**](https://drive.google.com/drive/folders/1IpwXNuOYcnpC3IXbAx3VnLGVV899k3bG?usp=share_link) /
+[**[Hugging Face]**](https://huggingface.co/datasets/intLyc/MToP-MTOData/tree/main) /
+[**[Baidu Netdisk]**](https://pan.baidu.com/s/1Pk06fBj_4gidkiZe4f1Oww?pwd=mtop)
 
 ## Copyright
 
@@ -47,6 +52,8 @@ In order to enhance reproducibility and avoid unnecessary repeated experiments, 
 *Email: <int_lyc@cug.edu.cn>*
 
 *QQ Group: 862974231*
+
+<img src="./Doc/ReadmeFigure/MToP-QQ-Group.jpg" width="150px">
 
 ## Release Highlights of MToP v1.9
 
@@ -171,4 +178,4 @@ In order to enhance reproducibility and avoid unnecessary repeated experiments, 
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=intLyc/MTO-Platform&type=Date)](https://star-history.com/#intLyc/MTO-Platform&Date)
+<img src="https://api.star-history.com/svg?repos=intLyc/MTO-Platform&type=Date" width="500px">
