@@ -22,7 +22,7 @@ classdef MTDE_ADKT < Algorithm
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties (SetAccess = public)
+properties (SetAccess = private)
     P = 0.1
     H = 100
     Gap = 50
@@ -151,11 +151,10 @@ methods
                     unionS = population{k};
 
                     transpop1 = population{k}(transfer_idx1);
-
-                    for a = 1:length(parent1)
-                        transpop1(a).Dec = Algo.D_Align(transpop1(a).Dec, unionS.Decs, unionT.Decs, mDec, t, k);
+                    transpop1_Decs = Algo.D_Align(unionS.Decs, unionT.Decs, mDec, t, k, transfer_idx1);
+                    for i = 1 : length(transfer_idx1)
+                        transpop1(i).Dec = transpop1_Decs(i,:);
                     end
-
                     offspring1 = Algo.Generation_1(parent1, transpop1, population{t}, union, pop_pbest);
                     offspring1 = Algo.Evaluation(offspring1, Prob, t);
                     [~, replace1] = Selection_Tournament(parent1, offspring1);
@@ -315,10 +314,11 @@ methods
         end
     end
 
-    function trans = D_Align(Algo, D, Ds_Dec, Dt_Dec, mDec, t, k)
+
+    function trans = D_Align(Algo, Ds_Dec, Dt_Dec, mDec, t, k, idx)
         mus = mean(Ds_Dec);
         mut = mean(Dt_Dec);
-
+        D = Ds_Dec(idx,:);
         D = D - repmat(mus, size(D, 1), 1);
         Ds_Dec = Ds_Dec - repmat(mus, size(Ds_Dec, 1), 1);
         Dt_Dec = Dt_Dec - repmat(mut, size(Dt_Dec, 1), 1);
