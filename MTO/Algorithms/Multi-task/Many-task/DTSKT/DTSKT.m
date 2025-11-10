@@ -3,12 +3,14 @@ classdef DTSKT < Algorithm
 
 %------------------------------- Reference --------------------------------
 % @Article{Zhang2025DTSKT,
-%   title      = {Distribution Direction-Assisted Two-Stage Knowledge Transfer for Many-Task Optimization},
-%   author     = {Zhang, Tingyu and Wu, Xinyi and Li, Yanchi and Gong, Wenyin and Qin, Hu},
-%   journal    = {IEEE Transactions on Systems, Man, and Cybernetics: Systems},
-%   year       = {2025},
-%   pages      = {1-15},
-%   doi        = {10.1109/TSMC.2025.3598800},
+%   title    = {Distribution Direction-Assisted Two-Stage Knowledge Transfer for Many-Task Optimization},
+%   author   = {Zhang, Tingyu and Wu, Xinyi and Li, Yanchi and Gong, Wenyin and Qin, Hu},
+%   journal  = {IEEE Transactions on Systems, Man, and Cybernetics: Systems},
+%   year     = {2025},
+%   number   = {10},
+%   pages    = {7551-7565},
+%   volume   = {55},
+%   doi      = {10.1109/TSMC.2025.3598800},
 % }
 %--------------------------------------------------------------------------
 
