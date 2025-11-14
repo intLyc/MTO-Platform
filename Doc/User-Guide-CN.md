@@ -68,6 +68,9 @@ function Tasks = setTasks()
 <img src="./ReadmeFigure/MTO-Platform%20Test%20Module%203.png" width="300px">
 <img src="./ReadmeFigure/MTO-Platform%20Test%20Module%204.png" width="300px">
 
+<img src="./ReadmeFigure/Test-Problem.png" width="600px">
+<img src="./ReadmeFigure/Test-Parameter.png" width="600px">
+
 * **算法选择:** 选择算法并展开，可双击修改参数
 * **问题选择:** 选择问题并展开，可双击修改参数
 * **运行:** 点击 **Start**
@@ -84,6 +87,8 @@ function Tasks = setTasks()
 <img src="./ReadmeFigure/MTO-Platform%20Experiment%20Module.png" width="300px">
 <img src="./ReadmeFigure/MTO-Platform%20Experiment%20Module%202.png" width="300px">
 <img src="./ReadmeFigure/MTO-Platform%20Experiment%20Module%203.png" width="300px">
+
+<img src="./ReadmeFigure/Exp-Flow.png" width="600px">
 
 1. **参数设置:**
 
@@ -124,6 +129,8 @@ function Tasks = setTasks()
    * 点击 **Load Data** 读取保存的数据
 
 ### 3. 数据处理模块
+
+<img src="./ReadmeFigure/DataProcess.png" width="600px">
 
 1. **读取数据:** 点击 **Load Data** 将数据加入 Data Tree
 2. **删除数据:** 选中数据点击 **Delete Data**

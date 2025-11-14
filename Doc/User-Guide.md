@@ -68,6 +68,9 @@ function Tasks = setTasks()
 <img src="./ReadmeFigure/MTO-Platform%20Test%20Module%203.png" width="300px">
 <img src="./ReadmeFigure/MTO-Platform%20Test%20Module%204.png" width="300px">
 
+<img src="./ReadmeFigure/Test-Problem.png" width="600px">
+<img src="./ReadmeFigure/Test-Parameter.png" width="600px">
+
 * **Algorithm selection:** select and open an algorithm to modify parameters (double-click).
 * **Problem selection:** select and open a problem to modify parameters.
 * **Run:** click **Start**.
@@ -84,6 +87,8 @@ function Tasks = setTasks()
 <img src="./ReadmeFigure/MTO-Platform%20Experiment%20Module.png" width="300px">
 <img src="./ReadmeFigure/MTO-Platform%20Experiment%20Module%202.png" width="300px">
 <img src="./ReadmeFigure/MTO-Platform%20Experiment%20Module%203.png" width="300px">
+
+<img src="./ReadmeFigure/Exp-Flow.png" width="600px">
 
 1. **Parameters:**
 
@@ -124,6 +129,8 @@ function Tasks = setTasks()
    * Click **Load Data** to read saved data
 
 ### 3. Data Process Module
+
+<img src="./ReadmeFigure/DataProcess.png" width="600px">
 
 1. **Read Data:** click **Load Data** to add data to Data Tree
 2. **Delete Data:** select and click **Delete Data**
