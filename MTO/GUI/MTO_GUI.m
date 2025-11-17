@@ -143,13 +143,13 @@ classdef MTO_GUI < matlab.apps.AppBase
         DDeleteDataButton            matlab.ui.control.Button
         DLoadDataButton              matlab.ui.control.Button
         DDataProcessModuleLabel      matlab.ui.control.Label
-        SelectedAlgoContextMenu      matlab.ui.container.ContextMenu
-        SelectedAlgoSelectAllMenu    matlab.ui.container.Menu
         DDataContextMenu             matlab.ui.container.ContextMenu
         DDataSelectAllMenu           matlab.ui.container.Menu
+        SelectedAlgoContextMenu      matlab.ui.container.ContextMenu
+        SelectedAlgoSelectAllMenu    matlab.ui.container.Menu
         SelectedProbContextMenu      matlab.ui.container.ContextMenu
         SelectedProbSelectAllMenu    matlab.ui.container.Menu
-        SetPublicParaMenu            matlab.ui.container.Menu
+        EditPublicParaMenu           matlab.ui.container.Menu
         AlgorithmsContextMenu        matlab.ui.container.ContextMenu
         AlgorithmsSelectAllMenu      matlab.ui.container.Menu
         AlgorithmRefreshMenu         matlab.ui.container.Menu
@@ -399,7 +399,6 @@ classdef MTO_GUI < matlab.apps.AppBase
             algo_node = uitreenode(app.TAlgorithmTree);
             algo_node.Text = algo_obj.Name;
             algo_node.NodeData = algo_obj;
-            algo_node.ContextMenu = app.SelectedProbContextMenu;
 
             % child parameter node
             parameter = algo_obj.getParameter();
@@ -407,10 +406,8 @@ classdef MTO_GUI < matlab.apps.AppBase
                 para_name_node = uitreenode(algo_node);
                 para_name_node.Text = ['[ ', parameter{p}, ' ]'];
                 para_name_node.NodeData = para_name_node.Text;
-                para_name_node.ContextMenu = app.SelectedAlgoContextMenu;
                 para_value_node = uitreenode(algo_node);
                 para_value_node.Text = parameter{p+1};
-                para_value_node.ContextMenu = app.SelectedAlgoContextMenu;
             end
 
             expand(algo_node);
@@ -430,7 +427,6 @@ classdef MTO_GUI < matlab.apps.AppBase
             prob_node = uitreenode(app.TProblemTree);
             prob_node.Text = prob_obj.Name;
             prob_node.NodeData = prob_obj;
-            prob_node.ContextMenu = app.SelectedProbContextMenu;
 
             % child parameter node
             parameter = prob_obj.getParameter();
@@ -438,10 +434,8 @@ classdef MTO_GUI < matlab.apps.AppBase
                 para_name_node = uitreenode(prob_node);
                 para_name_node.Text = ['[ ', parameter{p}, ' ]'];
                 para_name_node.NodeData = para_name_node.Text;
-                para_name_node.ContextMenu = app.SelectedProbContextMenu;
                 para_value_node = uitreenode(prob_node);
                 para_value_node.Text = parameter{p+1};
-                para_value_node.ContextMenu = app.SelectedProbContextMenu;
             end
 
             expand(prob_node);
@@ -1292,33 +1286,33 @@ classdef MTO_GUI < matlab.apps.AppBase
             data_node = uitreenode(app.DDataTree);
             data_node.Text = name;
             data_node.NodeData = MTOData;
-            data_node.ContextMenu = app.DDataContextMenu;
+            % data_node.ContextMenu = app.DDataContextMenu;
 
             % child node
             reps_node = uitreenode(data_node);
             reps_node.Text = ['Reps: ', num2str(data_node.NodeData.Reps)];
             reps_node.NodeData = reps_node.Text;
-            reps_node.ContextMenu = app.DDataContextMenu;
+            % reps_node.ContextMenu = app.DDataContextMenu;
 
             algo_node = uitreenode(data_node);
             algo_node.Text = 'Algorithms:';
             algo_node.NodeData = algo_node.Text;
-            algo_node.ContextMenu = app.DDataContextMenu;
+            % algo_node.ContextMenu = app.DDataContextMenu;
             for algo = 1:length(data_node.NodeData.Algorithms)
                 algo_child_node = uitreenode(algo_node);
                 algo_child_node.Text = data_node.NodeData.Algorithms(algo).Name;
                 algo_child_node.NodeData = algo_child_node.Text;
-                algo_child_node.ContextMenu = app.DDataContextMenu;
+                % algo_child_node.ContextMenu = app.DDataContextMenu;
             end
 
             prob_node = uitreenode(data_node);
             prob_node.Text = 'Problems:';
-            prob_node.ContextMenu = app.DDataContextMenu;
+            % prob_node.ContextMenu = app.DDataContextMenu;
             for prob = 1:length(data_node.NodeData.Problems)
                 prob_child_node = uitreenode(prob_node);
                 prob_child_node.Text = data_node.NodeData.Problems(prob).Name;
                 prob_child_node.NodeData = prob_child_node.Text;
-                prob_child_node.ContextMenu = app.DDataContextMenu;
+                % prob_child_node.ContextMenu = app.DDataContextMenu;
             end
         end
 
@@ -1711,7 +1705,6 @@ classdef MTO_GUI < matlab.apps.AppBase
                 algo_node = uitreenode(app.EAlgorithmsTree);
                 algo_node.Text = algo_obj.Name;
                 algo_node.NodeData = algo_obj;
-                algo_node.ContextMenu = app.SelectedAlgoContextMenu;
 
                 % child parameter node
                 parameter = algo_obj.getParameter();
@@ -1719,10 +1712,8 @@ classdef MTO_GUI < matlab.apps.AppBase
                     para_name_node = uitreenode(algo_node);
                     para_name_node.Text = ['[ ', parameter{p}, ' ]'];
                     para_name_node.NodeData = para_name_node.Text;
-                    para_name_node.ContextMenu = app.SelectedAlgoContextMenu;
                     para_value_node = uitreenode(algo_node);
                     para_value_node.Text = parameter{p+1};
-                    para_value_node.ContextMenu = app.SelectedAlgoContextMenu;
                 end
             end
 
@@ -1760,7 +1751,6 @@ classdef MTO_GUI < matlab.apps.AppBase
                 prob_node = uitreenode(app.EProblemsTree);
                 prob_node.Text = prob_obj.Name;
                 prob_node.NodeData = prob_obj;
-                prob_node.ContextMenu = app.SelectedProbContextMenu;
 
                 % child parameter node
                 parameter = prob_obj.getParameter();
@@ -1768,10 +1758,8 @@ classdef MTO_GUI < matlab.apps.AppBase
                     para_name_node = uitreenode(prob_node);
                     para_name_node.Text = ['[ ', parameter{p}, ' ]'];
                     para_name_node.NodeData = para_name_node.Text;
-                    para_name_node.ContextMenu = app.SelectedProbContextMenu;
                     para_value_node = uitreenode(prob_node);
                     para_value_node.Text = parameter{p+1};
-                    para_value_node.ContextMenu = app.SelectedProbContextMenu;
                 end
             end
 
@@ -2084,8 +2072,8 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
         end
 
-        % Menu selected function: SetPublicParaMenu
-        function ESetPublicParaMenuSelected(app, event)
+        % Menu selected function: EditPublicParaMenu
+        function EEditPublicParaMenuSelected(app, event)
             % Get selected problem nodes
             selected_nodes = app.EProblemsTree.SelectedNodes;
             if isempty(selected_nodes)
@@ -4951,6 +4939,18 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.DDataTree.Layout.Row = 1;
             app.DDataTree.Layout.Column = 1;
 
+            % Create DDataContextMenu
+            app.DDataContextMenu = uicontextmenu(app.MToPv19UIFigure);
+            app.DDataContextMenu.ContextMenuOpeningFcn = createCallbackFcn(app, @DDataContextMenuOpening, true);
+
+            % Create DDataSelectAllMenu
+            app.DDataSelectAllMenu = uimenu(app.DDataContextMenu);
+            app.DDataSelectAllMenu.Accelerator = 'a';
+            app.DDataSelectAllMenu.Text = 'Select All';
+            
+            % Assign app.DDataContextMenu
+            app.DDataTree.ContextMenu = app.DDataContextMenu;
+
             % Create SelectedAlgoContextMenu
             app.SelectedAlgoContextMenu = uicontextmenu(app.MToPv19UIFigure);
 
@@ -4963,18 +4963,6 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Assign app.SelectedAlgoContextMenu
             app.EAlgorithmsTree.ContextMenu = app.SelectedAlgoContextMenu;
 
-            % Create DDataContextMenu
-            app.DDataContextMenu = uicontextmenu(app.MToPv19UIFigure);
-            app.DDataContextMenu.ContextMenuOpeningFcn = createCallbackFcn(app, @DDataContextMenuOpening, true);
-
-            % Create DDataSelectAllMenu
-            app.DDataSelectAllMenu = uimenu(app.DDataContextMenu);
-            app.DDataSelectAllMenu.Checked = 'on';
-            app.DDataSelectAllMenu.Text = 'Select All';
-            
-            % Assign app.DDataContextMenu
-            app.DDataTree.ContextMenu = app.DDataContextMenu;
-
             % Create SelectedProbContextMenu
             app.SelectedProbContextMenu = uicontextmenu(app.MToPv19UIFigure);
 
@@ -4984,11 +4972,11 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.SelectedProbSelectAllMenu.Accelerator = 'a';
             app.SelectedProbSelectAllMenu.Text = 'Select All';
 
-            % Create SetPublicParaMenu
-            app.SetPublicParaMenu = uimenu(app.SelectedProbContextMenu);
-            app.SetPublicParaMenu.MenuSelectedFcn = createCallbackFcn(app, @ESetPublicParaMenuSelected, true);
-            app.SetPublicParaMenu.Accelerator = 'e';
-            app.SetPublicParaMenu.Text = 'Set Public Para';
+            % Create EditPublicParaMenu
+            app.EditPublicParaMenu = uimenu(app.SelectedProbContextMenu);
+            app.EditPublicParaMenu.MenuSelectedFcn = createCallbackFcn(app, @EEditPublicParaMenuSelected, true);
+            app.EditPublicParaMenu.Accelerator = 'e';
+            app.EditPublicParaMenu.Text = 'Edit Public Para';
             
             % Assign app.SelectedProbContextMenu
             app.EProblemsTree.ContextMenu = app.SelectedProbContextMenu;
