@@ -2,9 +2,9 @@ function MTOData = mto(varargin)
 %% MTO Platform (MToP)
 % GUI: directly run 'mto'
 % Command-Line Examples:
-%   mto({MFEA, MFDE},{CMT1, CMT2})
-%   mto({MFEA, MFDE},{CMT1, CMT2}, 5, true, 100, false, 'MTOData.mat', 2333)
-%   mto({MFEA, MFDE},{CMT1, CMT2}, 'Reps', 5, 'Par_Flag', true)
+%   mto({MFEA, MFDE}, {CMT1, CMT2})
+%   mto({MFEA, MFDE}, {CMT1, CMT2}, 5, true, 100, false, 'MTOData.mat', 2333)
+%   mto({MFEA, MFDE}, {CMT1, CMT2}, 'Reps', 5, 'Par_Flag', true)
 % Input:
 %   AlgoCell: Cell array of algorithm objects or names
 %   ProbCell: Cell array of problem objects or names
