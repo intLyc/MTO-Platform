@@ -64,7 +64,8 @@ methods
                     offspring(i).Dec = mDec{t} + d;
                 end
                 population{t} = offspring;
-                [population{t}, rank{t}] = Algo.EvaluationAndSort(population{t}, Prob, t);
+                population{t} = Algo.Evaluation(population{t}, Prob, t);
+                rank{t} = RankWithBoundaryHandling(population{t}, Prob, 'projection');
 
                 x = [];
                 x(1, :, :) = population{t}(rank{t}(1:mu)).Decs;
@@ -82,21 +83,6 @@ methods
                 end
             end
         end
-    end
-
-    function [sample, rank] = EvaluationAndSort(Algo, sample, Prob, t)
-        %% Boundary Constraint
-        boundCVs = zeros(length(sample), 1);
-        for i = 1:length(sample)
-            % Boundary Constraint Violation
-            tempDec = sample(i).Dec;
-            tempDec(tempDec < 0) = 0;
-            tempDec(tempDec > 1) = 1;
-            boundCVs(i) = sum((sample(i).Dec - tempDec).^2);
-        end
-        sample = Algo.Evaluation(sample, Prob, t);
-        boundCVs(boundCVs > 0) = boundCVs(boundCVs > 0) + max(sample.CVs);
-        [~, rank] = sortrows([sample.CVs + boundCVs, sample.Objs], [1, 2]);
     end
 end
 end

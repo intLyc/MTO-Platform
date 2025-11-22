@@ -82,7 +82,8 @@ methods
                 for i = 1:lambda{t}
                     sample{t}(i).Dec = mDec{t} + sigma{t} * (sqrt(C{t}) .* randn(n{t}, 1))';
                 end
-                [sample{t}, rank{t}] = Algo.EvaluationAndSort(sample{t}, Prob, t);
+                sample{t} = Algo.Evaluation(sample{t}, Prob, t);
+                rank{t} = RankWithBoundaryHandling(sample{t}, Prob, 'projection');
                 taskFE(t) = taskFE(t) + lambda{t};
 
                 % Update mean decision variables
@@ -100,15 +101,6 @@ methods
                 sigma{t} = sigma{t} * exp(cs{t} / damps{t} * (norm(ps{t}) / chiN{t} - 1));
             end
         end
-    end
-
-    function [sample, rank] = EvaluationAndSort(Algo, sample, Prob, t)
-        % Boundary constraint handling (projection method)
-        for i = 1:length(sample)
-            sample(i).Dec = max(0, min(1, sample(i).Dec));
-        end
-        sample = Algo.Evaluation(sample, Prob, t);
-        [~, rank] = sortrows([sample.CVs, sample.Objs], [1, 2]);
     end
 end
 end

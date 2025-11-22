@@ -80,7 +80,8 @@ methods
                 end
 
                 % step 2: fitness reshaping
-                [sample{t}, rank{t}] = Algo.EvaluationAndSort(sample{t}, Prob, t);
+                sample{t} = Algo.Evaluation(sample{t}, Prob, t);
+                rank{t} = RankWithBoundaryHandling(sample{t}, Prob, 'penalty');
                 taskFE(t) = taskFE(t) + N{t};
                 weights{t}(rank{t}) = shape{t};
 
@@ -93,19 +94,6 @@ methods
                 S{t} = S{t} .* exp(dS);
             end
         end
-    end
-
-    function [sample, rank] = EvaluationAndSort(Algo, sample, Prob, t)
-        % boundary constraint
-        boundCVs = zeros(length(sample), 1);
-        for i = 1:length(sample)
-            tempDec = max(0, min(1, sample(i).Dec));
-            boundCVs(i) = sum((sample(i).Dec - tempDec).^2);
-        end
-        sample = Algo.Evaluation(sample, Prob, t);
-        boundCVs(boundCVs > 0) = boundCVs(boundCVs > 0) + max(sample.CVs);
-        % get rank based on constraint and objective
-        [~, rank] = sortrows([sample.CVs + boundCVs, sample.Objs], [1, 2]);
     end
 end
 end

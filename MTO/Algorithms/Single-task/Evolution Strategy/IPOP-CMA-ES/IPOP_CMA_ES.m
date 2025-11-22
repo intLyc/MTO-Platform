@@ -78,7 +78,8 @@ methods
                 for i = 1:lambda{t}
                     sample{t}(i).Dec = mDec{t} + sigma{t} * (B{t} * (D{t} .* randn(n{t}, 1)))';
                 end
-                [sample{t}, rank{t}] = Algo.EvaluationAndSort(sample{t}, Prob, t);
+                sample{t} = Algo.Evaluation(sample{t}, Prob, t);
+                rank{t} = RankWithBoundaryHandling(sample{t}, Prob, 'projection');
                 if isempty(ObjHist{t})
                     ObjHist{t} = sample{t}(rank{t}(1)).Obj;
                 else
@@ -132,15 +133,6 @@ methods
                 end
             end
         end
-    end
-
-    function [sample, rank] = EvaluationAndSort(Algo, sample, Prob, t)
-        % Boundary constraint handling (projection method)
-        for i = 1:length(sample)
-            sample(i).Dec = max(0, min(1, sample(i).Dec));
-        end
-        sample = Algo.Evaluation(sample, Prob, t);
-        [~, rank] = sortrows([sample.CVs, sample.Objs], [1, 2]);
     end
 end
 end

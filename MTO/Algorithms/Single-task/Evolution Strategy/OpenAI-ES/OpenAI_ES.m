@@ -1,5 +1,5 @@
 classdef OpenAI_ES < Algorithm
-% <Single-task> <Single-objective> <None/Constrained>
+% <Single-task> <Single-objective> <None>
 
 %------------------------------- Reference --------------------------------
 % @Misc{Salimans2017OpenAI-ES,

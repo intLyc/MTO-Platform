@@ -190,18 +190,23 @@ methods
     end
 
     function [sample, rank] = EvaluationAndSort(Algo, sample, Prob, t)
-        %% Boundary constraint handling
-        boundCVs = zeros(length(sample), 1);
-        for i = 1:length(sample)
-            % Boundary constraint violation
-            tempDec = sample(i).Dec;
-            tempDec(tempDec < -0.05) = -0.05;
-            tempDec(tempDec > 1.05) = 1.05;
-            boundCVs(i) = sum((sample(i).Dec - tempDec).^2);
+        if Prob.Bounded
+            %% Boundary constraint handling
+            boundCVs = zeros(length(sample), 1);
+            for i = 1:length(sample)
+                % Boundary constraint violation
+                tempDec = sample(i).Dec;
+                tempDec(tempDec < -0.05) = -0.05;
+                tempDec(tempDec > 1.05) = 1.05;
+                boundCVs(i) = sum((sample(i).Dec - tempDec).^2);
+            end
+            sample = Algo.Evaluation(sample, Prob, t);
+            boundCVs(boundCVs > 0) = boundCVs(boundCVs > 0) + max(sample.CVs);
+            [~, rank] = sortrows([sample.CVs + boundCVs, sample.Objs], [1, 2]);
+        else
+            sample = Algo.Evaluation(sample, Prob, t);
+            [~, rank] = sortrows([sample.CVs, sample.Objs], [1, 2]);
         end
-        sample = Algo.Evaluation(sample, Prob, t);
-        boundCVs(boundCVs > 0) = boundCVs(boundCVs > 0) + max(sample.CVs);
-        [~, rank] = sortrows([sample.CVs + boundCVs, sample.Objs], [1, 2]);
     end
 end
 end
