@@ -79,7 +79,7 @@ methods
                     sample{t}(i).Dec = mDec{t} + sigma{t} * (B{t} * (D{t} .* randn(n{t}, 1)))';
                 end
                 sample{t} = Algo.Evaluation(sample{t}, Prob, t);
-                rank{t} = RankWithBoundaryHandling(sample{t}, Prob, 'projection');
+                rank{t} = RankWithBoundaryHandling(sample{t}, Prob);
                 if isempty(ObjHist{t})
                     ObjHist{t} = sample{t}(rank{t}(1)).Obj;
                 else

@@ -65,7 +65,7 @@ methods
                 end
                 population{t} = offspring;
                 population{t} = Algo.Evaluation(population{t}, Prob, t);
-                rank{t} = RankWithBoundaryHandling(population{t}, Prob, 'projection');
+                rank{t} = RankWithBoundaryHandling(population{t}, Prob);
 
                 x = [];
                 x(1, :, :) = population{t}(rank{t}(1:mu)).Decs;

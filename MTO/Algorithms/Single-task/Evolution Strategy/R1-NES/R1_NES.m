@@ -79,7 +79,7 @@ methods
 
                 % step 2: fitness reshaping
                 sample{t} = Algo.Evaluation(sample{t}, Prob, t);
-                rank{t} = RankWithBoundaryHandling(sample{t}, Prob, 'penalty');
+                rank{t} = RankWithBoundaryHandling(sample{t}, Prob);
                 taskFE(t) = taskFE(t) + N{t};
                 weights{t}(rank{t}) = shape{t};
 

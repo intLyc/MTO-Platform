@@ -100,7 +100,7 @@ methods
 
                 % fitness reshaping
                 sample{t} = Algo.Evaluation(sample{t}, Prob, t);
-                rank = RankWithBoundaryHandling(sample{t}, Prob, 'penalty');
+                rank = RankWithBoundaryHandling(sample{t}, Prob);
                 weights(rank) = shape;
 
                 % adaptive transfer control

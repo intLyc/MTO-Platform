@@ -83,7 +83,7 @@ methods
                     sample{t}(i).Dec = mDec{t} + sigma{t} * (sqrt(C{t}) .* randn(n{t}, 1))';
                 end
                 sample{t} = Algo.Evaluation(sample{t}, Prob, t);
-                rank{t} = RankWithBoundaryHandling(sample{t}, Prob, 'projection');
+                rank{t} = RankWithBoundaryHandling(sample{t}, Prob);
                 taskFE(t) = taskFE(t) + lambda{t};
 
                 % Update mean decision variables
