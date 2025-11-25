@@ -7,7 +7,6 @@ if Prob.Bounded
         tempDec = max(0, min(1, sample(i).Dec));
         penalty(i) = sum((sample(i).Dec - tempDec).^2);
     end
-    penalty(penalty > 0) = penalty(penalty > 0) + max(sample.CVs);
     % get rank based on constraint and objective
     [~, rank] = sortrows([sample.CVs, sample.Objs + penalty], [1, 2]);
 else
