@@ -1,4 +1,4 @@
-function rank = RankWithBoundaryHandling(sample, Prob, varargin)
+function rank = RankWithBoundaryHandling(sample, Prob)
 % Rank the population with boundary constraint handling
 if Prob.Bounded
     % Penalty method

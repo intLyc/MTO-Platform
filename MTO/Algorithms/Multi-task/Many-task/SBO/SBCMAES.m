@@ -74,7 +74,7 @@ methods
         % Initialization
         population = Initialization(Algo, Prob, IndividualSBO);
         for t = 1:Prob.T
-            [~, rank] = sortrows([population{t}.CVs, population{t}.Objs], [1, 2]);
+            rank = RankWithBoundaryHandling(population{t}, Prob);
             for i = 1:length(population{t})
                 population{t}(rank(i)).rankO = i;
                 population{t}(rank(i)).MFFactor = t;
@@ -121,7 +121,7 @@ methods
 
                 % Evaluation
                 offspring{t} = Algo.Evaluation(offspring{t}, Prob, t);
-                [~, rank] = sortrows([offspring{t}.CVs, offspring{t}.Objs], [1, 2]);
+                rank = RankWithBoundaryHandling(offspring{t}, Prob);
                 for i = 1:length(rank)
                     offspring{t}(rank(i)).rankC = i;
                 end
