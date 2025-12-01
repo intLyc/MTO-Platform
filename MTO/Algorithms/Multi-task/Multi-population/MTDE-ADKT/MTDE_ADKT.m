@@ -17,8 +17,8 @@ classdef MTDE_ADKT < Algorithm
 %------------------------------- Copyright --------------------------------
 % Copyright (c) Yanchi Li. You are free to use the MToP for research
 % purposes. All publications which use this platform should acknowledge
-% the use of "MToP" or "MTO-Platform" and cite as "Y. Li, W. Gong, F. Ming,
-% T. Zhang, S. Li, and Q. Gu, MToP: A MATLAB Optimization Platform for
+% the use of MToP and cite as "Y. Li, W. Gong, T. Zhang, F. Ming,
+% S. Li, Q. Gu, and Y.-S. Ong, MToP: A MATLAB Benchmarking Platform for
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
@@ -152,8 +152,8 @@ methods
 
                     transpop1 = population{k}(transfer_idx1);
                     transpop1_Decs = Algo.D_Align(unionS.Decs, unionT.Decs, mDec, t, k, transfer_idx1);
-                    for i = 1 : length(transfer_idx1)
-                        transpop1(i).Dec = transpop1_Decs(i,:);
+                    for i = 1:length(transfer_idx1)
+                        transpop1(i).Dec = transpop1_Decs(i, :);
                     end
                     offspring1 = Algo.Generation_1(parent1, transpop1, population{t}, union, pop_pbest);
                     offspring1 = Algo.Evaluation(offspring1, Prob, t);
@@ -314,11 +314,10 @@ methods
         end
     end
 
-
     function trans = D_Align(Algo, Ds_Dec, Dt_Dec, mDec, t, k, idx)
         mus = mean(Ds_Dec);
         mut = mean(Dt_Dec);
-        D = Ds_Dec(idx,:);
+        D = Ds_Dec(idx, :);
         D = D - repmat(mus, size(D, 1), 1);
         Ds_Dec = Ds_Dec - repmat(mus, size(Ds_Dec, 1), 1);
         Dt_Dec = Dt_Dec - repmat(mut, size(Dt_Dec, 1), 1);

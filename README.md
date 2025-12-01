@@ -10,7 +10,7 @@
 
 <img src="./Doc/ReadmeFigure/CMT-LandScape.png" width="200px"><img src="./Doc/ReadmeFigure/MaT-LandScape.png" width="200px"><img src="./Doc/ReadmeFigure/CpMT-LandScape.png" width="200px">
 
-We introduce the multitask optimization platform, named **MToP**, for evolutionary multitasking:
+We introduce the multitask benchmarking platform, named **MToP**, for evolutionary multitasking:
 
 - 50+ multitask evolutionary algorithms for multitask optimization
 - 50+ single-task evolutionary algorithms that can handle multitask optimization problems
@@ -35,12 +35,12 @@ In order to enhance reproducibility and avoid unnecessary repeated experiments, 
 
 ## Copyright
 
-> Copyright (c) Yanchi Li. You are free to use the MToP for research purposes. All publications which use this platform should acknowledge the use of *"MToP"* or *"MTO-Platform"* and cite as *"Y. Li, W. Gong, F. Ming, T. Zhang, S. Li, and Q. Gu, MToP: A MATLAB Optimization Platform for Evolutionary Multitasking, 2023, arXiv:2312.08134"*
+> Copyright (c) Yanchi Li. You are free to use the MToP for research purposes. All publications which use this platform should acknowledge the use of MToP and cite as "Y. Li, W. Gong, T. Zhang, F. Ming, S. Li, Q. Gu, and Y.-S. Ong, MToP: A MATLAB Benchmarking Platform for Evolutionary Multitasking, 2023, arXiv:2312.08134"
 
 ```
 @Article{Li2023MToP,
-  title   = {{MToP}: A {MATLAB} Optimization Platform for Evolutionary Multitasking},
-  author  = {Yanchi Li and Wenyin Gong and Fei Ming and Tingyu Zhang and Shuijia Li and Qiong Gu},
+  title   = {{MToP}: A {MATLAB} Benchmarking Platform for Evolutionary Multitasking},
+  author  = {Yanchi Li and Wenyin Gong and Tingyu Zhang and Fei Ming and Shuijia Li and Qiong Gu and Yew-Soon Ong},
   journal = {arXiv preprint arXiv:2312.08134},
   year    = {2023},
   eprint  = {2312.08134},
