@@ -22,8 +22,14 @@ MToP is a user-friendly tool with a graphical user interface that makes it easy 
 
 ### 📄 Documents
 
-[**[Paper]**](https://arxiv.org/abs/2312.08134) /
+[**[Paper]**](https://arxiv.org/abs/2312.08134)
+: Paper introducing MToP in detail.
+
 [**[User Guide]**](./Doc/User-Guide.md)
+: Brief guide on how to use MToP.
+
+[**[Tables]**](./Doc/tables.pdf)
+: Tables of algorithms, problems, and metrics.
 
 ### 💿 Data
 
