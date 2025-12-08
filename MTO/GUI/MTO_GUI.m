@@ -2285,7 +2285,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         function ESaveTableButtonPushed(app, event)
             msg = 'Select Export Type';
             selection = uiconfirm(app.MToPv19UIFigure, msg, 'Export', ...
-                                 'Options', {'Current Table (tex, xlsx, csv)', 'IOHanalyzer Data (csv)', 'Best Decision Variable (mat)', 'Cancel'}, ...
+                                 'Options', {'Current Table (tex, xlsx, csv)', 'IOHanalyzer Data (csv)', 'Best Dec/PopDecs (mat)', 'Cancel'}, ...
                                  'DefaultOption', 'Cancel', 'Icon', 'question');
 
             if contains(selection, 'Current Table')
@@ -2422,6 +2422,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Cell selection callback: EUITable
         function EUITableCellSelection(app, event)
             app.ETableSelected = event.Indices;
+            app.ETableSelected(app.ETableSelected(:,1) > size(app.ETableView,1),:) = [];
         end
 
         % Button pushed function: EConvergeButton
