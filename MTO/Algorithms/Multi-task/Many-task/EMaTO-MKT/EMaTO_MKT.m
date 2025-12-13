@@ -2,13 +2,15 @@ classdef EMaTO_MKT < Algorithm
 % <Many-task> <Single-objective> <None>
 
 %------------------------------- Reference --------------------------------
-% @Article{Liang2021EMaTO-MKT,
-%   title    = {Evolutionary Many-task Optimization Based on Multi-source Knowledge Transfer},
-%   author   = {Liang, Zhengping and Xu, Xiuju and Liu, Ling and Tu, Yaofeng and Zhu, Zexuan},
-%   journal  = {IEEE Transactions on Evolutionary Computation},
-%   year     = {2021},
-%   pages    = {1-1},
-%   doi      = {10.1109/TEVC.2021.3101697},
+% @Article{Liang2022EMaTO-MKT,
+%   title      = {Evolutionary Many-Task Optimization Based on Multi-Source Knowledge Transfer},
+%   author     = {Liang, Zhengping and Xu, Xiuju and Liu, Ling and Tu, Yaofeng and Zhu, Zexuan},
+%   journal    = {IEEE Transactions on Evolutionary Computation},
+%   year       = {2022},
+%   number     = {2},
+%   pages      = {319-333},
+%   volume     = {26},
+%   doi        = {10.1109/TEVC.2021.3101697},
 % }
 %--------------------------------------------------------------------------
 

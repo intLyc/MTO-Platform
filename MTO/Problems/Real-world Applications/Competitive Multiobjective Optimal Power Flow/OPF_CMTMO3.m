@@ -8,7 +8,10 @@ classdef OPF_CMTMO3 < Problem
 %   title    = {Evolutionary Competitive Multiobjective Multitasking: One-Pass Optimization of Heterogeneous Pareto Solutions},
 %   author   = {Li, Yanchi and Wu, Xinyi and Gong, Wenyin and Xu, Meng and Wang, Yubo and Gu, Qiong},
 %   journal  = {IEEE Transactions on Evolutionary Computation},
-%   year     = {2024},
+%   year     = {2025},
+%   volume   = {29},
+%   number   = {6},
+%   pages    = {2757-2770},
 %   doi      = {10.1109/TEVC.2024.3524508},
 % }
 %--------------------------------------------------------------------------
