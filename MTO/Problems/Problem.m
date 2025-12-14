@@ -25,8 +25,8 @@ properties
     Ub % (cell) Upper Bound for each task
     maxFE % (integer) Maximum evaluations
 
-    GlobalBest = true % (boolean) Use global best solution
-    Bounded = true % (boolean) Use bounded solution
+    Bounded = true % (boolean) Is the problem bounded
+    ReEvalBest = false % (boolean) Re-evaluate the best solution
 end
 
 methods

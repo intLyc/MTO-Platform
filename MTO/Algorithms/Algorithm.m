@@ -132,6 +132,14 @@ methods
         x = repmat(Prob.Ub{t} - Prob.Lb{t}, lenPop, 1) .* ...
             PopDec(:, 1:Prob.D(t)) + repmat(Prob.Lb{t}, lenPop, 1);
 
+        % Re-evaluate the best solution found so far
+        if Prob.ReEvalBest && max(Prob.M) == 1 ...
+                && ~isempty(Algo.Best) && ~isempty(Algo.Best{t})
+            BestDec = Algo.Best{t}.Dec;
+            BestX = (Prob.Ub{t} - Prob.Lb{t}) .* BestDec(1:Prob.D(t)) + Prob.Lb{t};
+            x = [x; BestX];
+        end
+
         % Call problem evaluation function
         [Objs, Cons] = Prob.evaluate(x, t);
         Algo.FE = Algo.FE + lenPop;
@@ -155,11 +163,18 @@ methods
             BestTemp.Dec = Pop(idx).Dec;
             BestTemp.Obj = Pop(idx).Obj;
             BestTemp.CV = Pop(idx).CV;
-            if Prob.GlobalBest
+
+            if Prob.ReEvalBest && ~isempty(Algo.Best{t})
+                Algo.FE = Algo.FE + 1;
+                Algo.Best{t}.Obj = Objs(lenPop + 1, :);
+                Algo.Best{t}.Con = Cons(lenPop + 1, :);
+                Algo.Best{t}.CV = sum(max(0, Cons(lenPop + 1, :)));
+
                 BestTemp = [BestTemp, Algo.Best{t}];
                 [~, ~, idx] = min_FP([BestTemp.Obj], [BestTemp.CV]);
                 BestTemp = BestTemp(idx);
             end
+            
             Algo.Best{t} = BestTemp;
             % Set Best Update Flag
             if idx == 1
