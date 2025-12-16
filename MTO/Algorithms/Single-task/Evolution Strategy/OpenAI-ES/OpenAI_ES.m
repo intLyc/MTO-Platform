@@ -12,31 +12,29 @@ classdef OpenAI_ES < Algorithm
 % }
 %--------------------------------------------------------------------------
 
-%------------------------------- Copyright --------------------------------
-% Copyright (c) Yanchi Li. You are free to use the MToP for research
-% purposes. All publications which use this platform should acknowledge
-% the use of MToP and cite as "Y. Li, W. Gong, T. Zhang, F. Ming,
-% S. Li, Q. Gu, and Y.-S. Ong, MToP: A MATLAB Benchmarking Platform for
-% Evolutionary Multitasking, 2023, arXiv:2312.08134"
-%--------------------------------------------------------------------------
-
 properties (SetAccess = public)
-    sigma = 1
-    lr = 1e-3
-    momentum = 0.9
+    sigma = 0.1 % Initial step size
+    lr = 0.01 % Learning rate (Adam typically requires smaller LR than SGD)
+    beta1 = 0.9 % Exponential decay rate for the first moment estimates
+    beta2 = 0.999 % Exponential decay rate for the second moment estimates
+    epsilon = 1e-8 % Small constant to prevent division by zero
 end
 
 methods
     function Parameter = getParameter(Algo)
         Parameter = {'sigma', num2str(Algo.sigma), ...
                 'learning rate', num2str(Algo.lr), ...
-                'momentum', num2str(Algo.momentum)};
+                'beta1', num2str(Algo.beta1), ...
+                'beta2', num2str(Algo.beta2), ...
+                'epsilon', num2str(Algo.epsilon)};
     end
 
     function Algo = setParameter(Algo, Parameter)
         Algo.sigma = str2double(Parameter{1});
         Algo.lr = str2double(Parameter{2});
-        Algo.momentum = str2double(Parameter{3});
+        Algo.beta1 = str2double(Parameter{3});
+        Algo.beta2 = str2double(Parameter{4});
+        Algo.epsilon = str2double(Parameter{5});
     end
 
     function run(Algo, Prob)
@@ -47,19 +45,32 @@ methods
         end
 
         for t = 1:Prob.T
-            range = mean(Prob.Ub{t} - Prob.Lb{t});
-            sigma{t} = Algo.sigma / range;
-            x{t} = mean(unifrnd(zeros(Prob.D(t), N), ones(Prob.D(t), N)), 2);
+            % Initialize x in [0, 1]
+            x{t} = rand(Prob.D(t), 1);
+
+            % Adam: Initialize 1st moment vector (m) and 2nd moment vector (v)
+            m{t} = zeros(Prob.D(t), 1);
             v{t} = zeros(Prob.D(t), 1);
+
             sample{t}(1:N) = Individual();
         end
 
         while Algo.notTerminated(Prob, sample)
+            % ---- Linear Sigma Decay ----
+            % Decay sigma from 100% to 10% over the course of optimization
+            progress = Algo.FE / Prob.maxFE;
+            decay = 1 - 0.99 * progress;
+
             for t = 1:Prob.T
+                % Apply decay to sigma
+                current_sigma = Algo.sigma * decay;
+
                 % ---- Antithetic Sampling ----
                 Z_half = randn(Prob.D(t), N / 2);
                 Z = [Z_half, -Z_half];
-                X = repmat(x{t}, 1, N) + sigma{t} * Z;
+
+                % Add noise in normalized space
+                X = repmat(x{t}, 1, N) + current_sigma * Z;
 
                 % ---- Decode samples ----
                 for i = 1:N
@@ -68,7 +79,7 @@ methods
 
                 % ---- Evaluate fitness ----
                 mean_sample = Individual();
-                mean_sample.Dec = x{t}'; % mean decision variable
+                mean_sample.Dec = x{t}';
                 sample{t} = Algo.Evaluation([sample{t}, mean_sample], Prob, t);
                 sample{t} = sample{t}(1:N);
 
@@ -80,11 +91,29 @@ methods
                 shaped = ranks / (N - 1) - 0.5;
 
                 % ---- Gradient estimation ----
-                grad = (Z * shaped') / (N * sigma{t});
+                % Note: As sigma decreases, this raw gradient magnitude increases.
+                % Adam will handle this scaling automatically.
+                grad = (Z * shaped') / (N * current_sigma);
 
-                % ---- Momentum update ----
-                v{t} = Algo.momentum * v{t} + (1 - Algo.momentum) * grad;
-                x{t} = x{t} + Algo.lr * v{t};
+                % ---- Adam Optimizer Update ----
+                % 1. Update biased first moment estimate
+                m{t} = Algo.beta1 * m{t} + (1 - Algo.beta1) * grad;
+
+                % 2. Update biased second raw moment estimate
+                v{t} = Algo.beta2 * v{t} + (1 - Algo.beta2) * (grad.^2);
+
+                % 3. Compute bias-corrected first moment estimate
+                m_hat = m{t} / (1 - Algo.beta1^Algo.Gen);
+
+                % 4. Compute bias-corrected second raw moment estimate
+                v_hat = v{t} / (1 - Algo.beta2^Algo.Gen);
+
+                % 5. Update parameters
+                % Using '+' because 'grad' points to higher fitness rank (better solution)
+                x{t} = x{t} + Algo.lr * m_hat ./ (sqrt(v_hat) + Algo.epsilon);
+                if Prob.Bounded
+                    x{t} = max(0, min(1, x{t}));
+                end
             end
         end
     end
