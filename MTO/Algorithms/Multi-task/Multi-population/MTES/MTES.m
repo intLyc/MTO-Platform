@@ -46,7 +46,7 @@ methods
         for t = 1:Prob.T
             alpha(t) = Algo.alpha0;
             sigma(t) = Algo.sigma0 * initESSigmaScale(Prob);
-            x(:, t) = initESMean(Prob, t)';
+            x(:, t) = [initESMean(Prob, t)'; rand(max(Prob.D) - Prob.D(t), 1)];
             for i = 1:Prob.N
                 sample{t}(i) = Individual();
             end
