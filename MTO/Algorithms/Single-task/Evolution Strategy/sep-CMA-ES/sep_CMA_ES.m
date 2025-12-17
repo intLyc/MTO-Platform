@@ -59,11 +59,11 @@ methods
             ccov{t} = (1 / mueff{t}) * (2 / (n{t} + sqrt(2))^2) + (1 - 1 / mueff{t}) * min(1, (2 * mueff{t} - 1) / ((n{t} + 2)^2 + mueff{t}));
             ccov{t} = (n{t} + 2) / 3 * ccov{t};
             % Initialization
-            mDec{t} = rand(1, n{t});
+            mDec{t} = initESMean(Prob, t);
             ps{t} = zeros(n{t}, 1);
             pc{t} = zeros(n{t}, 1);
             C{t} = ones(n{t}, 1);
-            sigma{t} = Algo.sigma0;
+            sigma{t} = Algo.sigma0 * initESSigmaScale(Prob);
             chiN{t} = sqrt(n{t}) * (1 - 1 / (4 * n{t}) + 1 / (21 * n{t}^2));
             for i = 1:lambda{t}
                 sample{t}(i) = Individual();

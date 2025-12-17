@@ -58,8 +58,8 @@ methods
             shape{t} = shape{t} / sum(shape{t}) - 1 / N{t};
 
             % initialize
-            x{t} = rand(Prob.D(t), 1);
-            s{t} = Algo.sigma0;
+            x{t} = initESMean(Prob, t)';
+            s{t} = Algo.sigma0 * initESSigmaScale(Prob);
             B{t} = eye(Prob.D(t)); % B = A/s; A*A' = C = covariance matrix
             weights{t} = zeros(1, N{t});
             for i = 1:N{t}

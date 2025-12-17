@@ -50,8 +50,8 @@ methods
             shape{t} = shape{t} / sum(shape{t}) - 1 / N{t};
 
             % initialize
-            x{t} = rand(Prob.D(t), 1);
-            a{t} = log(Algo.sigma0); % fixed diagonal strength
+            x{t} = initESMean(Prob, t)';
+            a{t} = log(Algo.sigma0 * initESSigmaScale(Prob)); % fixed diagonal strength
             c{t} = 0;
             v{t} = normalize(randn(Prob.D(t), 1));
             r{t} = exp(c{t});

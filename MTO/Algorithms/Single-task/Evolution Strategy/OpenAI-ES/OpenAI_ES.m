@@ -46,7 +46,7 @@ methods
 
         for t = 1:Prob.T
             % Initialize x in [0, 1]
-            x{t} = rand(Prob.D(t), 1);
+            x{t} = initESMean(Prob, t)';
 
             % Adam: Initialize 1st moment vector (m) and 2nd moment vector (v)
             m{t} = zeros(Prob.D(t), 1);
@@ -54,6 +54,8 @@ methods
 
             sample{t}(1:N) = Individual();
         end
+
+        sigma = Algo.sigma * initESSigmaScale(Prob);
 
         while Algo.notTerminated(Prob, sample)
             % ---- Linear Sigma Decay ----
@@ -63,7 +65,7 @@ methods
 
             for t = 1:Prob.T
                 % Apply decay to sigma
-                current_sigma = Algo.sigma * decay;
+                current_sigma = sigma * decay;
 
                 % ---- Antithetic Sampling ----
                 Z_half = randn(Prob.D(t), N / 2);

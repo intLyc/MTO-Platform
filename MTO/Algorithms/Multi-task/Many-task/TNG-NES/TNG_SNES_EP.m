@@ -61,7 +61,7 @@ methods
         for t = 1:Prob.T
             etax(t) = 1;
             etaS(t) = (3 + log(maxD)) / (5 * sqrt(maxD)); % Learning rate
-            x(:, t) = mean(unifrnd(zeros(maxD, N), ones(maxD, N)), 2);
+            x(:, t) = [initESMean(Prob, t)'; rand(maxD - Prob.D(t), 1)];
 
             % Step size control parameters
             cs{t} = (mueff + 2) / (maxD + mueff + 3);
@@ -74,7 +74,7 @@ methods
             ps{t} = zeros(maxD, 1);
             pc{t} = zeros(maxD, 1);
             C{t} = ones(maxD, 1);
-            sigma{t} = Algo.sigma0;
+            sigma{t} = Algo.sigma0 * initESSigmaScale(Prob);
             S(:, t) = sigma{t} * sqrt(C{t}); % Sigma vector
             chiN{t} = sqrt(maxD) * (1 - 1 / (4 * maxD) + 1 / (21 * maxD^2));
             hth{t} = (1.4 + 2 / (maxD + 1)) * chiN{t};

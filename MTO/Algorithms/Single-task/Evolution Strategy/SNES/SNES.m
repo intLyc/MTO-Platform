@@ -57,8 +57,8 @@ methods
             shape{t} = shape{t} / sum(shape{t}) - 1 / N{t};
 
             % initialize
-            x{t} = rand(Prob.D(t), 1);
-            S{t} = Algo.sigma0 * ones(Prob.D(t), 1); % Sigma vector
+            x{t} = initESMean(Prob, t)';
+            S{t} = Algo.sigma0 * initESSigmaScale(Prob) * ones(Prob.D(t), 1); % Sigma vector
             weights{t} = zeros(1, N{t});
             for i = 1:N{t}
                 sample{t}(i) = Individual();

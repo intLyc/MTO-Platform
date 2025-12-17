@@ -67,7 +67,7 @@ methods
             MD{t} = ones(D, 1);
             C{t} = MB{t} * diag(MD{t}.^2) * MB{t}';
             invsqrtC{t} = MB{t} * diag(MD{t}.^-1) * MB{t}';
-            sigma{t} = Algo.sigma0;
+            sigma{t} = Algo.sigma0 * initESSigmaScale(Prob);
             eigenFE{t} = 0;
         end
 
@@ -80,7 +80,7 @@ methods
                 population{t}(rank(i)).MFFactor = t;
                 population{t}(rank(i)).BelongT = t;
             end
-            mDec{t} = weights * population{t}(rank(1:mu)).Decs;
+            mDec{t} = [initESMean(Prob, t), rand(1, D - Prob.D(t))];
         end
 
         RIJ = 0.5 * ones(Prob.T, Prob.T); % transfer rates

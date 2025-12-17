@@ -45,8 +45,8 @@ methods
     function run(Algo, Prob)
         for t = 1:Prob.T
             alpha(t) = Algo.alpha0;
-            sigma(t) = Algo.sigma0;
-            x(:, t) = mean(unifrnd(zeros(max(Prob.D), Prob.N), ones(max(Prob.D), Prob.N)), 2);
+            sigma(t) = Algo.sigma0 * initESSigmaScale(Prob);
+            x(:, t) = initESMean(Prob, t)';
             for i = 1:Prob.N
                 sample{t}(i) = Individual();
             end

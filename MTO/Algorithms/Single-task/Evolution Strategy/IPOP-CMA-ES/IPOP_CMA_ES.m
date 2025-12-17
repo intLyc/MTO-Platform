@@ -50,14 +50,14 @@ methods
             c1{t} = 2 / ((n{t} + 1.3)^2 + mueff{t});
             cmu{t} = min(1 - c1{t}, 2 * (mueff{t} - 2 + 1 / mueff{t}) / ((n{t} + 2)^2 + 2 * mueff{t} / 2));
             % Initialization
-            mDec{t} = rand(1, n{t});
+            mDec{t} = initESMean(Prob, t);
             ps{t} = zeros(n{t}, 1);
             pc{t} = zeros(n{t}, 1);
             B{t} = eye(n{t}, n{t});
             D{t} = ones(n{t}, 1);
             C{t} = B{t} * diag(D{t}.^2) * B{t}';
             invsqrtC{t} = B{t} * diag(D{t}.^-1) * B{t}';
-            sigma{t} = Algo.sigma0;
+            sigma{t} = Algo.sigma0 * initESSigmaScale(Prob);
             eigenFE{t} = 0;
             chiN{t} = sqrt(n{t}) * (1 - 1 / (4 * n{t}) + 1 / (21 * n{t}^2));
             for i = 1:lambda{t}
@@ -113,12 +113,13 @@ methods
                 preGen = 10 + (30 * fix(n{t} / lambda{t}));
                 ObjHist{t} = ObjHist{t}(max(1, length(ObjHist{t}) - preGen):end);
                 ObjList = [ObjHist{t}, [sample{t}.Objs]'];
-                if all(sigma{t} * (max(abs(pc{t}), sqrt(diag(C{t})))) < 1e-12 * Algo.sigma0) || ...
+                if all(sigma{t} * (max(abs(pc{t}), sqrt(diag(C{t})))) < ...
+                        1e-12 * Algo.sigma0 * initESSigmaScale(Prob)) || ...
                         any(sigma{t} * sqrt(diag(C{t})) > 1e8) || ...
                         sigma{t} * max(D{t}) == 0 || ...
                         max(ObjList) - min(ObjList) < 1e-12
-                    mDec{t} = rand(1, n{t});
-                    sigma{t} = Algo.sigma0;
+                    mDec{t} = initESMean(Prob, t);
+                    sigma{t} = Algo.sigma0 * initESSigmaScale(Prob);
                     lambda{t} = lambda{t} * 2;
                     mu{t} = round(lambda{t} / 2); % effective solutions number
                     weights{t} = log(mu{t} + 0.5) - log(1:mu{t});

@@ -66,9 +66,9 @@ methods
             etas0(t) = (9 + 3 * log(Prob.D(t))) / (5 * Prob.D(t) * sqrt(Prob.D(t)));
             etas(t) = etas0(t);
             etaB(t) = etas(t);
-            x(:, t) = mean(unifrnd(zeros(maxD, N), ones(maxD, N)), 2);
-            s(t) = Algo.sigma0;
-            vvs(t) = Algo.sigma0;
+            x(:, t) = [initESMean(Prob, t)'; rand(maxD - Prob.D(t), 1)];
+            s(t) = Algo.sigma0 * initESSigmaScale(Prob);
+            vvs(t) = s(t);
             B(:, :, t) = eye(maxD);
             for i = 1:N
                 sample{t}(i) = Individual();

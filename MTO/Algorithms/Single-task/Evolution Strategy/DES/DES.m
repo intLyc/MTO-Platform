@@ -30,7 +30,7 @@ methods
         maxn = max(Prob.D);
         for t = 1:Prob.T
             n{t} = Prob.D(t); % dimension
-            mDec{t} = mean(population{t}.Decs, 1);
+            mDec{t} = initESMean(Prob, t);
             cc{t} = 1 / sqrt(n{t});
             cd{t} = mu / (mu + 2);
             ce{t} = 2 / (n{t}.^2);

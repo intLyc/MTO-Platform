@@ -58,14 +58,14 @@ methods
             c1{t} = 2 / ((n{t} + 1.3)^2 + mueff{t});
             cmu{t} = min(1 - c1{t}, 2 * (mueff{t} - 2 + 1 / mueff{t}) / ((n{t} + 2)^2 + 2 * mueff{t} / 2));
             % Initialization
-            mDec{t} = rand(1, n{t});
+            mDec{t} = initESMean(Prob, t);
             ps{t} = zeros(n{t}, 1);
             pc{t} = zeros(n{t}, 1);
             B{t} = eye(n{t}, n{t});
             D{t} = ones(n{t}, 1);
             C{t} = B{t} * diag(D{t}.^2) * B{t}';
             invsqrtC{t} = B{t} * diag(D{t}.^-1) * B{t}';
-            sigma{t} = Algo.sigma0;
+            sigma{t} = Algo.sigma0 * initESSigmaScale(Prob);
             eigenFE{t} = 0;
             chiN{t} = sqrt(n{t}) * (1 - 1 / (4 * n{t}) + 1 / (21 * n{t}^2));
             for i = 1:lambda{t}

@@ -60,8 +60,8 @@ methods
         for t = 1:Prob.T
             etax(t) = 1;
             etaS(t) = (3 + log(Prob.D(t))) / (5 * sqrt(Prob.D(t))); % Learning rate
-            x(:, t) = mean(unifrnd(zeros(maxD, N), ones(maxD, N)), 2);
-            S(:, t) = Algo.sigma0 * ones(maxD, 1); % Sigma vector
+            x(:, t) = [initESMean(Prob, t)'; rand(maxD - Prob.D(t), 1)];
+            S(:, t) = Algo.sigma0 * initESSigmaScale(Prob) * ones(maxD, 1); % Sigma vector
             for i = 1:N
                 sample{t}(i) = Individual();
             end
