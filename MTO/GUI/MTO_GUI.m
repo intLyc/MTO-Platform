@@ -1902,12 +1902,12 @@ classdef MTO_GUI < matlab.apps.AppBase
                         t_temp = [];
                         for rep = 1:MTOData.Reps
                             tstart = tic;
-                            prob_obj.setTasks();
-                            algo_obj.reset();
-                            algo_obj.Check_Status_Fn = @app.EcheckPauseStopStatus;
                             if app.ERngSeedCheckBox.Value
                                 rng(seeds(rep));
                             end
+                            prob_obj.setTasks();
+                            algo_obj.reset();
+                            algo_obj.Check_Status_Fn = @app.EcheckPauseStopStatus;
                             algo_obj.run(prob_obj);
                             algo_obj.Check_Status_Fn = @emptyFn;
                             tmp = algo_obj.getResult(prob_obj);
