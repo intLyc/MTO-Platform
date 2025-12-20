@@ -112,6 +112,10 @@ classdef MTO_GUI < matlab.apps.AppBase
         DDataTree                    matlab.ui.container.Tree
         DPanel1                      matlab.ui.container.Panel
         DP1GridLayout                matlab.ui.container.GridLayout
+        GridLayout6                  matlab.ui.container.GridLayout
+        DDataLengthButton            matlab.ui.control.Button
+        DDataLengthEditField         matlab.ui.control.NumericEditField
+        DDataLengthLabel             matlab.ui.control.Label
         DP1Panel5                    matlab.ui.container.Panel
         DP1P5GridLayout              matlab.ui.container.GridLayout
         DPreisionEditField           matlab.ui.control.NumericEditField
@@ -1335,22 +1339,38 @@ classdef MTO_GUI < matlab.apps.AppBase
         end
 
         function NewResults = DReduceResults(app, Results, N, M)
-            results_num = size(Results(1, 1, 1).CV, 2);
-            if results_num <= N
-                NewResults = Results;
-                return;
-            end
-            % process CV
-            NewResults = [];
-            for i = 1:size(Results, 1)
-                for j = 1:size(Results, 2)
-                    for k = 1:size(Results, 3)
-                        NewResults(i,j,k).CV(:,:,:) = app.DReduceResultNum(Results(i,j,k).CV(:,:,:), 2, 3, N);
+            % DReduceResults - Downsample simulation results to a fixed number of points
+            % Logic follows the equidistant sampling strategy from gen2eva.
+            % Parameters:
+            %   Results : 3D struct array (Prob x Algo x Rep)
+            %   N       : Target number of generations/points
+            %   M       : Number of objectives (determines Obj storage format)
+        
+            [nProb, nAlgo, nRep] = size(Results);
+            NewResults = Results; 
+            
+            for i = 1:nProb
+                for j = 1:nAlgo
+                    for k = 1:nRep
+                        % Check current generation count from CV (Task x Gen x Pop)
+                        currGen = size(Results(i,j,k).CV, 2);
+                        
+                        if currGen <= N
+                            NewResults(i,j,k) = Results(i,j,k);
+                            continue;
+                        end
+                        
+                        % Process Constraint Violation (CV): 3D Tensor (Task x Gen x Pop)
+                        NewResults(i,j,k).CV = app.DReduceResultNum(Results(i,j,k).CV, 2, 3, N);
+                        
                         if M == 1
-                            NewResults(i,j,k).Obj(:,:,:) = app.DReduceResultNum(Results(i,j,k).Obj(:,:,:), 2, 3, N);
+                            % Process Objective: 3D Tensor (Task x Gen x Obj)
+                            NewResults(i,j,k).Obj = app.DReduceResultNum(Results(i,j,k).Obj, 2, 3, N);
                         else
-                            for t = 1:size(Results(i,j,k).CV, 1)
-                                NewResults(i,j,k).Obj{t} = app.DReduceResultNum(Results(i,j,k).Obj{t}, 1, 3, N);
+                            % Process Objective: Cell array where Obj{t} is 2D (Gen x Obj)
+                            for t = 1:length(Results(i,j,k).Obj)
+                                % For 2D matrix (Gen x Obj), Gen is at Dimension 1
+                                NewResults(i,j,k).Obj{t} = app.DReduceResultNum(Results(i,j,k).Obj{t}, 1, 2, N);
                             end
                         end
                     end
@@ -1359,70 +1379,62 @@ classdef MTO_GUI < matlab.apps.AppBase
         end
 
         function NewResult = DReduceResultNum(app, Result, D, Dim, N)
-            Gap = size(Result,D) ./ (N);
-            if Dim == 3
-                if D == 1
-                    NewResult = Result(1:N,:,:);
-                elseif D == 2
-                    NewResult = Result(:,1:N,:);
-                end
-            elseif Dim == 4
-                if D == 4
-                    NewResult = Result(:,:,:,1:N);
-                end
-            end
-
+            % DReduceResultNum - Core sampling logic based on index gaps
+            % Parameters:
+            %   Result : The input data tensor
+            %   D      : Dimension index representing Generations
+            %   Dim    : Total number of dimensions in Result
+            %   N      : Target sampling points
+        
+            origLen = size(Result, D);
+            Gap = origLen / N;
+            
+            % Preallocate output container
+            newSize = size(Result);
+            newSize(D) = N;
+            NewResult = zeros(newSize);
+            
+            % Dual-pointer sampling logic (consistent with gen2eva)
             idx = 1;
             i = 1;
-            while i <= size(Result,D)
-                if i >= ((idx) * Gap)
-                    if Dim == 3
-                        if D == 1
-                            NewResult(idx,:,:) = Result(i,:,:);
-                        elseif D == 2
-                            NewResult(:,idx,:) = Result(:,i,:);
-                        end
-                    elseif Dim == 4
-                        if D == 4
-                            NewResult(:,:,:,idx) = Result(:,:,:,i);
-                        end
-                    end
+            while i <= origLen
+                % Check if current index i meets the gap threshold for the next sample
+                if i >= (idx * Gap)
+                    NewResult = app.assignSubscript(NewResult, Result, idx, i, D, Dim);
                     idx = idx + 1;
                 else
                     i = i + 1;
                 end
-                if idx > N
-                    break;
+                
+                if idx > N, break; end
+            end
+            
+            % Boundary Alignment: Ensure the first and last points are preserved
+            NewResult = app.assignSubscript(NewResult, Result, 1, 1, D, Dim);
+            NewResult = app.assignSubscript(NewResult, Result, N, origLen, D, Dim);
+            
+            % Tail Filling: Fill remaining slots if floating point precision causes gaps
+            if idx <= N
+                for x = idx:N
+                    NewResult = app.assignSubscript(NewResult, Result, x, origLen, D, Dim);
                 end
             end
-            if Dim == 3
-                if D == 1
-                    NewResult(1,:,:) = Result(1,:,:);
-                    NewResult(end,:,:) = Result(end,:,:);
-                elseif D == 2
-                    NewResult(:,1,:) = Result(:,1,:);
-                    NewResult(:,end,:) = Result(:,end,:);
-                end
-            elseif Dim == 4
-                if D == 4
-                    NewResult(:,:,:,1) = Result(:,:,:,1);
-                    NewResult(:,:,:,end) = Result(:,:,:,end);
-                end
-            end
-            if idx - 1 < N
-                for x = idx - 1:N
-                    if Dim == 3
-                        if D == 1
-                            NewResult(x,:,:) = Result(end,:,:);
-                        elseif D == 2
-                            NewResult(:,x,:) = Result(:,end,:);
-                        end
-                    elseif Dim == 4
-                        if D == 4
-                            NewResult(:,:,:,x) = Result(:,:,:,end);
-                        end
-                    end
-                end
+        end
+        
+        function Target = assignSubscript(app, Target, Source, targetIdx, sourceIdx, D, Dim)
+            % assignSubscript - Helper to perform dynamic slicing on N-D Tensors
+            switch Dim
+                case 2
+                    if D == 1, Target(targetIdx, :) = Source(sourceIdx, :);
+                    else, Target(:, targetIdx) = Source(:, sourceIdx); end
+                case 3
+                    if D == 1, Target(targetIdx, :, :) = Source(sourceIdx, :, :);
+                    elseif D == 2, Target(:, targetIdx, :) = Source(:, sourceIdx, :);
+                    else, Target(:, :, targetIdx) = Source(:, :, sourceIdx); end
+                case 4
+                    if D == 1, Target(targetIdx, :, :, :) = Source(sourceIdx, :, :, :);
+                    elseif D == 2, Target(:, targetIdx, :, :) = Source(:, sourceIdx, :, :);
+                    elseif D == 4, Target(:, :, :, targetIdx) = Source(:, :, :, sourceIdx); end
             end
         end
     end
@@ -3576,8 +3588,54 @@ classdef MTO_GUI < matlab.apps.AppBase
                 app.DputDataNode([data_selected(d).Text, ' (Preision)'], MTOData);
                 drawnow;
             end
+        end
+
+        % Button pushed function: DDataLengthButton
+        function DDataLengthButtonPushed(app, event)
+            if ~app.DcheckPrecisionData()
+                return;
+            end
             
-            
+            data_selected = app.DDataTree.SelectedNodes;
+            data_selected = data_selected(app.DDataFlag == 1);
+
+            data_length = app.DDataLengthEditField.Value;
+
+            for d = 1:length(data_selected)
+                % Create a copy of NodeData to modify
+                MTOData = data_selected(d).NodeData;
+                
+                % 1. Process Results (CV and Obj)
+                % M is used to determine if Obj is a 3D Tensor or a Cell array
+                M = max([data_selected(d).NodeData.Problems.M]);
+                MTOData.Results = app.DReduceResults(data_selected(d).NodeData.Results, data_length, M);
+                
+                % 2. Process Metrics (TableData and ConvergeData)
+                if isfield(MTOData, 'Metrics')
+                    for i = 1:length(MTOData.Metrics)
+                        % Only reduce metrics that contain ConvergeData (X and Y)
+                        if isfield(MTOData.Metrics(i).Result, 'ConvergeData')
+                            % In ConvergeData, the generation/length dimension is typically D=4
+                            % for a 4D tensor structure (Prob x Algo x Rep x Gen)
+                            
+                            % Reduce X-axis data (Evaluation counts or Generations)
+                            MTOData.Metrics(i).Result.ConvergeData.X = app.DReduceResultNum(...
+                                MTOData.Metrics(i).Result.ConvergeData.X, 4, 4, data_length);
+                            
+                            % Reduce Y-axis data (Metric values)
+                            MTOData.Metrics(i).Result.ConvergeData.Y = app.DReduceResultNum(...
+                                MTOData.Metrics(i).Result.ConvergeData.Y, 4, 4, data_length);
+                        end
+                        
+                        % Note: ParetoData and TableData usually do not depend on the 
+                        % generation length (they store final results), so they are kept as is.
+                    end
+                end
+                
+                % Save the reduced data as a new node in the UI tree
+                app.DputDataNode([data_selected(d).Text, ' (Reduced)'], MTOData);
+                drawnow;
+            end
         end
 
         % Node text changed function: DDataTree
@@ -4657,7 +4715,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create DP1GridLayout
             app.DP1GridLayout = uigridlayout(app.DPanel1);
             app.DP1GridLayout.ColumnWidth = {'1x'};
-            app.DP1GridLayout.RowHeight = {'fit', 'fit', '1x', 'fit', '1x', 'fit', '1x', 'fit', '1x', 'fit', '1x', 'fit', '2x'};
+            app.DP1GridLayout.RowHeight = {'fit', 'fit', '1x', 'fit', '1x', 'fit', '1x', 'fit', '1x', 'fit', '1x', 'fit', '1x', 'fit', '2x'};
             app.DP1GridLayout.BackgroundColor = [1 1 1];
 
             % Create DDataProcessModuleLabel
@@ -4829,7 +4887,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.DP1Panel4 = uipanel(app.DP1GridLayout);
             app.DP1Panel4.BorderType = 'none';
             app.DP1Panel4.BackgroundColor = [1 1 1];
-            app.DP1Panel4.Layout.Row = 12;
+            app.DP1Panel4.Layout.Row = 14;
             app.DP1Panel4.Layout.Column = 1;
 
             % Create DP1P4GridLayout
@@ -4916,6 +4974,43 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.DPreisionEditField.Layout.Row = 2;
             app.DPreisionEditField.Layout.Column = 2;
             app.DPreisionEditField.Value = -4;
+
+            % Create GridLayout6
+            app.GridLayout6 = uigridlayout(app.DP1GridLayout);
+            app.GridLayout6.ColumnWidth = {'1x', '2x', '2x', '1x'};
+            app.GridLayout6.RowHeight = {'fit', 'fit'};
+            app.GridLayout6.Layout.Row = 12;
+            app.GridLayout6.Layout.Column = 1;
+            app.GridLayout6.BackgroundColor = [1 1 1];
+
+            % Create DDataLengthLabel
+            app.DDataLengthLabel = uilabel(app.GridLayout6);
+            app.DDataLengthLabel.HorizontalAlignment = 'center';
+            app.DDataLengthLabel.VerticalAlignment = 'bottom';
+            app.DDataLengthLabel.Layout.Row = 1;
+            app.DDataLengthLabel.Layout.Column = [1 4];
+            app.DDataLengthLabel.Text = 'Select data node, reduce Data Length, click adjust';
+
+            % Create DDataLengthEditField
+            app.DDataLengthEditField = uieditfield(app.GridLayout6, 'numeric');
+            app.DDataLengthEditField.Limits = [1 Inf];
+            app.DDataLengthEditField.RoundFractionalValues = 'on';
+            app.DDataLengthEditField.ValueDisplayFormat = '%d';
+            app.DDataLengthEditField.HorizontalAlignment = 'center';
+            app.DDataLengthEditField.FontWeight = 'bold';
+            app.DDataLengthEditField.Tooltip = {''};
+            app.DDataLengthEditField.Layout.Row = 2;
+            app.DDataLengthEditField.Layout.Column = 2;
+            app.DDataLengthEditField.Value = 30;
+
+            % Create DDataLengthButton
+            app.DDataLengthButton = uibutton(app.GridLayout6, 'push');
+            app.DDataLengthButton.ButtonPushedFcn = createCallbackFcn(app, @DDataLengthButtonPushed, true);
+            app.DDataLengthButton.BackgroundColor = [1 1 1];
+            app.DDataLengthButton.FontWeight = 'bold';
+            app.DDataLengthButton.Layout.Row = 2;
+            app.DDataLengthButton.Layout.Column = 3;
+            app.DDataLengthButton.Text = 'DataLen Reduce';
 
             % Create DPanel2
             app.DPanel2 = uipanel(app.DataProcessGridLayout);
