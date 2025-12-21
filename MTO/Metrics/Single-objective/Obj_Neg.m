@@ -1,7 +1,7 @@
 function result = Obj_Neg(MTOData, varargin)
-% <Multi-task/Many-task> <Single-objective> <None/Constrained>
+% <Single-task/Multi-task/Many-task> <Single-objective> <None/Constrained>
 
-% Objective Value (negative)
+% Objective Value (negative) for maximization problems
 
 %------------------------------- Copyright --------------------------------
 % Copyright (c) Yanchi Li. You are free to use the MToP for research
