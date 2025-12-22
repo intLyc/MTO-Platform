@@ -14,7 +14,9 @@ classdef OpenAI_ES < Algorithm
 
 properties (SetAccess = public)
     sigma = 0.1 % Initial step size
-    lr = 0.01 % Learning rate (Adam typically requires smaller LR than SGD)
+    sigma_decay = 0.2 % Decay rate for sigma
+    lr = 0.01 % Learning rate
+    lr_decay = 0.1 % Decay rate for learning rate
     beta1 = 0.9 % Exponential decay rate for the first moment estimates
     beta2 = 0.999 % Exponential decay rate for the second moment estimates
     epsilon = 1e-8 % Small constant to prevent division by zero
@@ -23,7 +25,9 @@ end
 methods
     function Parameter = getParameter(Algo)
         Parameter = {'sigma', num2str(Algo.sigma), ...
+                'sigma decay', num2str(Algo.sigma_decay), ...
                 'learning rate', num2str(Algo.lr), ...
+                'lr decay', num2str(Algo.lr_decay), ...
                 'beta1', num2str(Algo.beta1), ...
                 'beta2', num2str(Algo.beta2), ...
                 'epsilon', num2str(Algo.epsilon)};
@@ -31,10 +35,12 @@ methods
 
     function Algo = setParameter(Algo, Parameter)
         Algo.sigma = str2double(Parameter{1});
-        Algo.lr = str2double(Parameter{2});
-        Algo.beta1 = str2double(Parameter{3});
-        Algo.beta2 = str2double(Parameter{4});
-        Algo.epsilon = str2double(Parameter{5});
+        Algo.sigma_decay = str2double(Parameter{2});
+        Algo.lr = str2double(Parameter{3});
+        Algo.lr_decay = str2double(Parameter{4});
+        Algo.beta1 = str2double(Parameter{5});
+        Algo.beta2 = str2double(Parameter{6});
+        Algo.epsilon = str2double(Parameter{7});
     end
 
     function run(Algo, Prob)
@@ -58,15 +64,14 @@ methods
         sigma = Algo.sigma * initESSigmaScale(Prob);
 
         while Algo.notTerminated(Prob, sample)
-            % ---- Linear Sigma Decay ----
-            % Decay sigma from 100% to 10% over the course of optimization
+            % ---- Decay sigma and learning rate ----
             progress = Algo.FE / Prob.maxFE;
-            decay = 1 - 0.99 * progress;
+            sigma_decay_factor = Algo.sigma_decay^progress;
+            current_sigma = sigma * sigma_decay_factor;
+            lr_decay_factor = Algo.lr_decay^progress;
+            current_lr = Algo.lr * lr_decay_factor;
 
             for t = 1:Prob.T
-                % Apply decay to sigma
-                current_sigma = sigma * decay;
-
                 % ---- Antithetic Sampling ----
                 Z_half = randn(Prob.D(t), N / 2);
                 Z = [Z_half, -Z_half];
@@ -112,7 +117,7 @@ methods
 
                 % 5. Update parameters
                 % Using '+' because 'grad' points to higher fitness rank (better solution)
-                x{t} = x{t} + Algo.lr * m_hat ./ (sqrt(v_hat) + Algo.epsilon);
+                x{t} = x{t} + current_lr * m_hat ./ (sqrt(v_hat) + Algo.epsilon);
                 if Prob.Bounded
                     x{t} = max(0, min(1, x{t}));
                 end
