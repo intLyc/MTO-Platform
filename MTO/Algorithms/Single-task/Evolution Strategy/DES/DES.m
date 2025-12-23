@@ -31,6 +31,7 @@ methods
         for t = 1:Prob.T
             n{t} = Prob.D(t); % dimension
             mDec{t} = initESMean(Prob, t);
+            Algo.Mean{t} = mDec{t};
             cc{t} = 1 / sqrt(n{t});
             cd{t} = mu / (mu + 2);
             ce{t} = 2 / (n{t}.^2);
@@ -47,6 +48,7 @@ methods
             for t = 1:Prob.T
                 oldDec = mDec{t};
                 mDec{t} = mean(population{t}(rank{t}(1:mu)).Decs);
+                Algo.Mean{t} = mDec{t};
                 delta = mDec{t} - oldDec;
                 p{t} = (1 - cc{t}) * p{t} + sqrt(cc{t} * (2 - cc{t}) * mu) * delta;
 

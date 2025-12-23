@@ -59,6 +59,7 @@ methods
 
             % initialize
             x{t} = initESMean(Prob, t)';
+            Algo.Mean{t} = x{t}';
             s{t} = Algo.sigma0 * initESSigmaScale(Prob);
             B{t} = eye(Prob.D(t)); % B = A/s; A*A' = C = covariance matrix
             weights{t} = zeros(1, N{t});
@@ -96,6 +97,7 @@ methods
 
                 % step 4: compute the update
                 x{t} = x{t} + dx;
+                Algo.Mean{t} = x{t}';
                 s{t} = s{t} * exp(ds);
                 B{t} = B{t} * expm(dB);
                 B{t} = triu(B{t}) + triu(B{t}, 1)'; % enforce symmetry

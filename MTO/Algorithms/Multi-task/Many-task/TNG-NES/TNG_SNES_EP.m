@@ -62,6 +62,7 @@ methods
             etax(t) = 1;
             etaS(t) = (3 + log(maxD)) / (5 * sqrt(maxD)); % Learning rate
             x(:, t) = [initESMean(Prob, t)'; rand(maxD - Prob.D(t), 1)];
+            Algo.Mean{t} = x(:, t)';
 
             % Step size control parameters
             cs{t} = (mueff + 2) / (maxD + mueff + 3);
@@ -162,6 +163,7 @@ methods
                 % update distribution parameter
                 dx = etax(t) * S(:, t) .* tGx;
                 x(:, t) = x(:, t) + dx;
+                Algo.Mean{t} = x(:, t)';
 
                 dS = 0.5 * tGS;
                 S(:, t) = S(:, t) .* exp(dS);

@@ -47,6 +47,7 @@ methods
             alpha(t) = Algo.alpha0;
             sigma(t) = Algo.sigma0 * initESSigmaScale(Prob);
             x(:, t) = [initESMean(Prob, t)'; rand(max(Prob.D) - Prob.D(t), 1)];
+            Algo.Mean{t} = x(:, t)';
             for i = 1:Prob.N
                 sample{t}(i) = Individual();
             end
@@ -96,6 +97,7 @@ methods
                     alpha(t) = sigma(t)^2;
                 end
                 x(:, t) = min(1, max(0, x(:, t)));
+                Algo.Mean{t} = x(:, t)';
             end
         end
     end

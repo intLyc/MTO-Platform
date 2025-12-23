@@ -51,6 +51,7 @@ methods
 
             % initialize
             x{t} = initESMean(Prob, t)';
+            Algo.Mean{t} = x{t}';
             a{t} = log(Algo.sigma0 * initESSigmaScale(Prob)); % fixed diagonal strength
             c{t} = 0;
             v{t} = normalize(randn(Prob.D(t), 1));
@@ -101,6 +102,7 @@ methods
 
                 % step 4: compute the update
                 x{t} = x{t} + etax{t} * dx;
+                Algo.Mean{t} = x{t}';
                 a{t} = a{t} + etaa{t} * da;
 
                 r{t} = sqrt(u{t}' * u{t});

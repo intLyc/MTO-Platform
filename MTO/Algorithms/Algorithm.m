@@ -16,6 +16,7 @@ properties
     Gen % Generations
     FE_Gen % FE in each Gen
     Best % Best individual found (Single-objective)
+    Mean % Mean of distribution (for evolution strategies)
     Result % Result after run
     Result_Num % Convergence Results Num
     Save_Dec % Save Decision Variables Flag
@@ -133,11 +134,16 @@ methods
             PopDec(:, 1:Prob.D(t)) + repmat(Prob.Lb{t}, lenPop, 1);
 
         % Re-evaluate the best solution found so far
-        if Prob.ReEvalBest && max(Prob.M) == 1 ...
-                && ~isempty(Algo.Best) && ~isempty(Algo.Best{t})
-            BestDec = Algo.Best{t}.Dec;
-            BestX = (Prob.Ub{t} - Prob.Lb{t}) .* BestDec(1:Prob.D(t)) + Prob.Lb{t};
-            x = [x; BestX];
+        if Prob.ReEvalBest && max(Prob.M) == 1
+            if ~isempty(Algo.Mean) && ~isempty(Algo.Mean{t}) % For evolution strategies
+                EvalDec = Algo.Mean{t};
+                EvalX = (Prob.Ub{t} - Prob.Lb{t}) .* EvalDec(1:Prob.D(t)) + Prob.Lb{t};
+                x = [x; EvalX];
+            elseif ~isempty(Algo.Best) && ~isempty(Algo.Best{t}) % For population-based algorithms
+                EvalDec = Algo.Best{t}.Dec;
+                EvalX = (Prob.Ub{t} - Prob.Lb{t}) .* EvalDec(1:Prob.D(t)) + Prob.Lb{t};
+                x = [x; EvalX];
+            end
         end
 
         % Call problem evaluation function
@@ -174,7 +180,7 @@ methods
                 [~, ~, idx] = min_FP([BestTemp.Obj], [BestTemp.CV]);
                 BestTemp = BestTemp(idx);
             end
-            
+
             Algo.Best{t} = BestTemp;
             % Set Best Update Flag
             if idx == 1

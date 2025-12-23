@@ -64,6 +64,7 @@ methods
             cmu{t} = min(1 - c1{t}, 2 * (mueff - 2 + 1 / mueff) / ((n + 2)^2 + 2 * mueff / 2));
             % Initialization
             mDec{t} = [initESMean(Prob, t), rand(1, n - Prob.D(t))];
+            Algo.Mean{t} = mDec{t};
             ps{t} = zeros(n, 1);
             pc{t} = zeros(n, 1);
             B{t} = eye(n, n);
@@ -149,6 +150,7 @@ methods
                 % Update mean decision variables
                 oldDec = mDec{t};
                 mDec{t} = weights * sample{t}(rank{t}(1:mu)).Decs;
+                Algo.Mean{t} = mDec{t};
                 % Update evolution paths
                 ps{t} = (1 - cs{t}) * ps{t} + sqrt(cs{t} * (2 - cs{t}) * mueff) * invsqrtC{t} * (mDec{t} - oldDec)' / sigma{t};
                 hsig = norm(ps{t}) / sqrt(1 - (1 - cs{t})^(2 * (ceil((Algo.FE - lambda * (t - 1)) / (lambda * Prob.T)) + 1))) < hth;

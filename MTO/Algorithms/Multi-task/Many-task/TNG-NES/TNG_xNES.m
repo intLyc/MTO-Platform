@@ -67,6 +67,7 @@ methods
             etas(t) = etas0(t);
             etaB(t) = etas(t);
             x(:, t) = [initESMean(Prob, t)'; rand(maxD - Prob.D(t), 1)];
+            Algo.Mean{t} = x(:, t)';
             s(t) = Algo.sigma0 * initESSigmaScale(Prob);
             vvs(t) = s(t);
             B(:, :, t) = eye(maxD);
@@ -153,6 +154,7 @@ methods
                 dB = triu(dB) + triu(dB, 1)'; % enforce symmetry
 
                 x(:, t) = x(:, t) + dx;
+                Algo.Mean{t} = x(:, t)';
                 vvs(t) = s(t) * exp(1.5 * ds);
                 s(t) = s(t) * exp(ds);
                 B(:, :, t) = B(:, :, t) * expm(dB);

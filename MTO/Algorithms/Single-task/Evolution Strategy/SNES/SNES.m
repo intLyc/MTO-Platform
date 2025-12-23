@@ -58,6 +58,7 @@ methods
 
             % initialize
             x{t} = initESMean(Prob, t)';
+            Algo.Mean{t} = x{t}';
             S{t} = Algo.sigma0 * initESSigmaScale(Prob) * ones(Prob.D(t), 1); % Sigma vector
             weights{t} = zeros(1, N{t});
             for i = 1:N{t}
@@ -91,6 +92,7 @@ methods
 
                 % step 4: compute the update
                 x{t} = x{t} + dx;
+                Algo.Mean{t} = x{t}';
                 S{t} = S{t} .* exp(dS);
             end
         end

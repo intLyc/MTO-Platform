@@ -81,6 +81,7 @@ methods
                 population{t}(rank(i)).BelongT = t;
             end
             mDec{t} = [initESMean(Prob, t), rand(1, D - Prob.D(t))];
+            Algo.Mean{t} = mDec{t};
         end
 
         RIJ = 0.5 * ones(Prob.T, Prob.T); % transfer rates
@@ -130,6 +131,7 @@ methods
                 % Update mean decision variables
                 oldDec = mDec{t};
                 mDec{t} = weights * offspring{t}(rank(1:mu)).Decs;
+                Algo.Mean{t} = mDec{t};
                 % Update evolution paths
                 ps{t} = (1 - cs{t}) * ps{t} + sqrt(cs{t} * (2 - cs{t}) * mueff) * invsqrtC{t} * (mDec{t} - oldDec)' / sigma{t};
                 hsig = norm(ps{t}) / sqrt(1 - (1 - cs{t})^(2 * (ceil((Algo.FE - lambda * (t - 1)) / (lambda * Prob.T)) + 1))) < hth;

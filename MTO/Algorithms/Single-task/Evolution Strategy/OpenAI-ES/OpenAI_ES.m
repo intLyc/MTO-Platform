@@ -53,6 +53,7 @@ methods
         for t = 1:Prob.T
             % Initialize x in [0, 1]
             x{t} = initESMean(Prob, t)';
+            Algo.Mean{t} = x{t}';
 
             % Adam: Initialize 1st moment vector (m) and 2nd moment vector (v)
             m{t} = zeros(Prob.D(t), 1);
@@ -121,6 +122,7 @@ methods
                 if Prob.Bounded
                     x{t} = max(0, min(1, x{t}));
                 end
+                Algo.Mean{t} = x{t}';
             end
         end
     end

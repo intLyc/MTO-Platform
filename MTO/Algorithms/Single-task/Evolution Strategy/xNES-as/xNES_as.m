@@ -60,6 +60,7 @@ methods
 
             % initialize
             x{t} = initESMean(Prob, t)';
+            Algo.Mean{t} = x{t}';
             s{t} = Algo.sigma0 * initESSigmaScale(Prob);
             vs{t} = s{t};
             B{t} = eye(Prob.D(t)); % B = A/s; A*A' = C = covariance matrix
@@ -112,6 +113,7 @@ methods
 
                 % step 4: compute the update
                 x{t} = x{t} + dx;
+                Algo.Mean{t} = x{t}';
                 vs{t} = s{t} * exp(1.5 * ds);
                 s{t} = s{t} * exp(ds);
                 B{t} = B{t} * expm(dB);
