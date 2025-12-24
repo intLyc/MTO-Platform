@@ -175,11 +175,10 @@ methods
                 Algo.Best{t}.Obj = Objs(lenPop + 1, :);
                 Algo.Best{t}.Con = Cons(lenPop + 1, :);
                 Algo.Best{t}.CV = sum(max(0, Cons(lenPop + 1, :)));
-
-                BestTemp = [BestTemp, Algo.Best{t}];
-                [~, ~, idx] = min_FP([BestTemp.Obj], [BestTemp.CV]);
-                BestTemp = BestTemp(idx);
             end
+            BestTemp = [BestTemp, Algo.Best{t}];
+            [~, ~, idx] = min_FP([BestTemp.Obj], [BestTemp.CV]);
+            BestTemp = BestTemp(idx);
 
             Algo.Best{t} = BestTemp;
             % Set Best Update Flag
