@@ -11,43 +11,76 @@ function population = Initialization_MF(Algo, Prob, Individual_Class)
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-% Generate initial populaiton
-for i = 1:Prob.N * Prob.T
-    population(i) = Individual_Class();
-    population(i).Dec = rand(1, max(Prob.D));
-end
+TotalN = Prob.N * Prob.T;
+maxD = max(Prob.D);
+
+% Generate Random Population
+population(1, TotalN) = Individual_Class();
+PopDec = rand(TotalN, maxD); % Decision variables in [0,1]
+DecCell = num2cell(PopDec, 2);
+[population.Dec] = deal(DecCell{:});
+
+InitVec = inf(1, Prob.T);
+InitCell = repmat({InitVec}, 1, TotalN);
+[population.MFObj] = deal(InitCell{:});
+[population.MFCV] = deal(InitCell{:});
+
 for t = 1:Prob.T
+    % Evaluate Initial Population
     population = Algo.Evaluation(population, Prob, t);
-    for i = 1:length(population)
-        population(i).MFObj(t) = population(i).Obj;
-        population(i).MFCV(t) = population(i).CV;
+
+    Objs = population.Objs;
+    CVs = population.CVs;
+    % Store MFObj and MFCV for single-objective problems
+    CurrentObj = Objs(:, 1);
+    CurrentCV = CVs;
+
+    for i = 1:TotalN
+        population(i).MFObj(t) = CurrentObj(i);
+        population(i).MFCV(t) = CurrentCV(i);
     end
 end
 
-% Calculate facotrial ranks
+AllMFObj = reshape([population.MFObj], Prob.T, TotalN)';
+AllMFCV = reshape([population.MFCV], Prob.T, TotalN)';
+
+MatRank = zeros(TotalN, Prob.T);
 for t = 1:Prob.T
-    for i = 1:length(population)
-        Obj(i, 1) = population(i).MFObj(t);
-        CV(i, 1) = population(i).MFCV(t);
-    end
-    [~, rank] = sortrows([CV, Obj], [1, 2]);
-    for i = 1:length(population)
-        population(rank(i)).MFRank(t) = i;
-    end
+    colObj = AllMFObj(:, t);
+    colCV = AllMFCV(:, t);
+
+    % sortrows: first by CV, then by Obj
+    [~, sortedIdx] = sortrows([colCV, colObj]);
+
+    % Assign ranks
+    ranks = zeros(TotalN, 1);
+    ranks(sortedIdx) = 1:TotalN;
+    MatRank(:, t) = ranks;
 end
 
-% Calculate skill factor
+RankCell = num2cell(MatRank, 2);
+[population.MFRank] = deal(RankCell{:});
+
+% Assign skill factors based on ranks
 record = zeros(1, Prob.T);
-for i = 1:Prob.N * Prob.T
-    [~, idx] = sort(population(i).MFRank);
-    j = 1; factor = idx(j);
-    % Generate Uniform Skill Factor
-    while record(factor) >= Prob.N
-        j = j + 1; factor = idx(j);
+FinalFactor = zeros(TotalN, 1);
+for i = 1:TotalN
+    [~, idx] = sort(MatRank(i, :));
+    j = 1;
+    factor = idx(j);
+    while record(factor) >= Prob.N && j < Prob.T
+        j = j + 1;
+        factor = idx(j);
     end
     record(factor) = record(factor) + 1;
-    population(i).MFFactor = factor;
-    population(i).Obj = population(i).MFObj(population(i).MFFactor);
-    population(i).CV = population(i).MFCV(population(i).MFFactor);
+    FinalFactor(i) = factor;
+end
+
+FactorCell = num2cell(FinalFactor);
+[population.MFFactor] = deal(FactorCell{:});
+for i = 1:TotalN
+    f = FinalFactor(i);
+    population(i).Obj = population(i).MFObj(f);
+    population(i).CV = population(i).MFCV(f);
 end
 end

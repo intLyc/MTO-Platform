@@ -1,4 +1,4 @@
-function index = RouletteSelection(Roulette, varargin)
+function index = RouletteSelection(Roulette, Num)
 %% Roulette selection
 % Input: Roulette, Num
 % Output: index
@@ -12,26 +12,23 @@ function index = RouletteSelection(Roulette, varargin)
 % Computational Intelligence Magazine, 2017, 12(4): 73-87".
 %--------------------------------------------------------------------------
 
-n = length(varargin);
-if n == 0
+if nargin < 2
     Num = 1;
-elseif n == 1
-    Num = varargin{1};
 end
 
-sumR = sum(Roulette);
-if sumR ~= 1
-    Roulette = Roulette ./ sumR;
+% Prepare Cumulative Distribution
+Roulette = Roulette(:)';
+Cumulative = cumsum(Roulette);
+MaxVal = Cumulative(end);
+
+% Handle the case when all values are zero
+if MaxVal == 0
+    index = randi(length(Roulette), Num, 1);
+    return;
 end
 
-index = zeros(Num, 1);
-for i = 1:Num
-    r = rand();
-    for x = 1:length(Roulette)
-        if r <= sum(Roulette(1:x))
-            index(i) = x;
-            break;
-        end
-    end
-end
+% Vectorized Sampling
+Randoms = rand(Num, 1) * MaxVal;
+% Inverse Transform Sampling
+[~, index] = max(Randoms <= Cumulative, [], 2);
 end

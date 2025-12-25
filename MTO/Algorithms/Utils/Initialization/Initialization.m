@@ -1,4 +1,4 @@
-function population = Initialization(Algo, Prob, Individual_Class, varargin)
+function population = Initialization(Algo, Prob, Individual_Class, N)
 %% Multi-task - Initialize and evaluate the population
 % Input: Algorithm, Problem, Individual_Class
 % Output: population
@@ -11,25 +11,21 @@ function population = Initialization(Algo, Prob, Individual_Class, varargin)
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-n = numel(varargin);
-if n == 0
+if nargin < 4
     N = Prob.N;
-elseif n == 1
-    N = varargin{1};
-else
-    return;
 end
 
+population = cell(1, Prob.T);
+maxD = max(Prob.D);
+
 for t = 1:Prob.T
-    for i = 1:N
-        population{t}(i) = Individual_Class();
-        % switch gene_type
-        % case 'unified'
-        population{t}(i).Dec = rand(1, max(Prob.D));
-        % case 'real'
-        % population{t}(i).Dec = (Prob.Ub{t} - Prob.Lb{t}) .* rand(1, max(Prob.D)) + Prob.Lb{t};
-        % end
-    end
-    population{t} = Algo.Evaluation(population{t}, Prob, t);
+    % Generate Random Population
+    PopDec = rand(N, maxD); % Decision variables in [0,1]
+    CurrentPop(1, N) = Individual_Class();
+    DecCell = num2cell(PopDec, 2);
+    [CurrentPop.Dec] = deal(DecCell{:});
+
+    % Evaluate Initial Population
+    population{t} = Algo.Evaluation(CurrentPop, Prob, t);
 end
 end

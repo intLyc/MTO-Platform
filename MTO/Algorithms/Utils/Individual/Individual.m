@@ -11,27 +11,49 @@ classdef Individual
 %% Individual Base Class
 
 properties
-    Dec % decision variables
-    Obj % objective value
-    Con % constraint values
-    CV % constraint violation
+    Dec double % Decision variables (1xD)
+    Obj double % Objective values (1xM)
+    Con double % Constraint values (1xC)
+    CV double % Constraint violation (1x1)
 end
 
 methods
     function value = Decs(obj)
-        value = cat(1, obj.Dec);
+        % Return matrix of Decision variables (NxD)
+        if isempty(obj)
+            value = [];
+        else
+            % vertcat is the standard optimized concatenation
+            value = vertcat(obj.Dec);
+        end
     end
 
     function value = Objs(obj)
-        value = cat(1, obj.Obj);
+        % Return matrix of Objective values (NxM)
+        if isempty(obj)
+            value = [];
+        else
+            value = vertcat(obj.Obj);
+        end
     end
 
     function value = Cons(obj)
-        value = cat(1, obj.Con);
+        % Return matrix of Constraint values (NxC)
+        if isempty(obj)
+            value = [];
+        else
+            value = vertcat(obj.Con);
+        end
     end
 
     function value = CVs(obj)
-        value = cat(1, obj.CV);
+        % Return vector of Constraint Violations (Nx1)
+        if isempty(obj)
+            value = [];
+        else
+            % CV is usually a scalar, simple concatenation is fast
+            value = [obj.CV]';
+        end
     end
 end
 end

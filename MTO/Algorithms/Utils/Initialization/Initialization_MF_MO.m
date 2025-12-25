@@ -11,17 +11,28 @@ function population = Initialization_MF_MO(Algo, Prob, Individual_Class)
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-% Generate initial population
-population = Individual_Class.empty();
-for t = 1:Prob.T
-    for i = 1:Prob.N
-        pop_t(i) = Individual_Class();
-        pop_t(i).Dec = rand(1, max(Prob.D));
-    end
+N = Prob.N;
+T = Prob.T;
+TotalN = N * T;
+maxD = max(Prob.D);
+
+population(1, TotalN) = Individual_Class();
+
+for t = 1:T
+    idx_start = (t - 1) * N + 1;
+    idx_end = t * N;
+    pop_t = population(idx_start:idx_end);
+
+    % Generate Random Decision Variables
+    PopDec = rand(N, maxD); % Decision variables in [0,1]
+    DecCell = num2cell(PopDec, 2);
+    [pop_t.Dec] = deal(DecCell{:});
+
+    % Evaluate Initial Sub-population for task t
     pop_t = Algo.Evaluation(pop_t, Prob, t);
-    for i = 1:length(pop_t)
-        pop_t(i).MFFactor = t;
-    end
-    population = [population, pop_t];
+
+    % Assign MFFactor
+    [pop_t.MFFactor] = deal(t);
+    population(idx_start:idx_end) = pop_t;
 end
 end

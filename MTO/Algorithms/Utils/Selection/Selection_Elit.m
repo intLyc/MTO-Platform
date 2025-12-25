@@ -1,4 +1,4 @@
-function [population, rank] = Selection_Elit(population, offspring, varargin)
+function [population, rank] = Selection_Elit(population, offspring, Ep)
 %% Elite selection
 % Input: population (old), offspring, epsilon (constraint)
 % Output: population (new)
@@ -11,18 +11,20 @@ function [population, rank] = Selection_Elit(population, offspring, varargin)
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-n = length(varargin);
-if n == 0
+if nargin < 3
     Ep = 0;
-elseif n == 1
-    Ep = varargin{1};
 end
 
 N = length(population);
-population = [population, offspring];
-CVs = sum(max(0, population.Cons), 2);
-CVs(CVs < Ep) = 0;
-Objs = population.Objs;
-[~, rank] = sortrows([CVs, Objs], [1, 2]);
-population = population(rank(1:N));
+pool = [population, offspring];
+
+AllCV = pool.CVs;
+AllObj = pool.Objs;
+
+AllCV(AllCV <= Ep) = 0;
+
+[~, rank] = sortrows([AllCV, AllObj], [1, 2]);
+
+rank = rank(1:N);
+population = pool(rank);
 end

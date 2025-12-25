@@ -11,16 +11,19 @@ function population = Selection_MF(population, offspring, Prob)
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-population = [population, offspring];
+pool = [population, offspring];
+Factors = [pool.MFFactor];
+Objs = pool.Objs;
+CVs = pool.CVs;
 
-%% Improved Selection for Uniform Skill Factors
-pop_temp = population.empty();
+NextIdx = [];
 for t = 1:Prob.T
-    population_t = population([population.MFFactor] == t);
-    [~, rank] = sortrows([population_t.CVs, population_t.Objs], [1, 2]);
-    pop_temp = [pop_temp, population_t(rank(1:Prob.N))];
+    idx = find(Factors == t);
+    [~, rank] = sortrows([CVs(idx), Objs(idx, :)]);
+    count = min(length(rank), Prob.N);
+    NextIdx = [NextIdx, idx(rank(1:count))];
 end
-population = pop_temp;
+population = pool(NextIdx);
 
 %% Original Multifactorial Selection
 % for t = 1:Prob.T

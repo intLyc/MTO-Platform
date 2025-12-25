@@ -1,4 +1,4 @@
-function [population, replace] = Selection_Tournament(population, offspring, varargin)
+function [population, replace] = Selection_Tournament(population, offspring, Ep)
 %% Tournament selection
 % Input: population (old), offspring, epsilon (constraint)
 % Output: population (new)
@@ -11,21 +11,23 @@ function [population, replace] = Selection_Tournament(population, offspring, var
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-n = length(varargin);
-if n == 0
+if nargin < 3
     Ep = 0;
-elseif n == 1
-    Ep = varargin{1};
 end
 
-popCVs = sum(max(0, population.Cons), 2);
-offCVs = sum(max(0, offspring.Cons), 2);
+PopObj = population.Objs;
+PopCV = population.CVs;
+OffObj = offspring.Objs;
+OffCV = offspring.CVs;
 
-replace_cv = popCVs > offCVs & ...
-    popCVs > Ep & offCVs > Ep;
-equal_cv = popCVs <= Ep & offCVs <= Ep;
-replace_f = population.Objs > offspring.Objs;
-replace = (equal_cv & replace_f) | replace_cv;
-replace = replace';
+% Apply epsilon constraint handling
+PopCV(PopCV <= Ep) = 0;
+OffCV(OffCV <= Ep) = 0;
+
+% Selection
+case1 = (OffCV == 0) & (PopCV > 0);
+case2 = (PopCV > 0) & (OffCV > 0) & (OffCV <= PopCV);
+case3 = (PopCV == 0) & (OffCV == 0) & (OffObj <= PopObj);
+replace = case1 | case2 | case3;
 population(replace) = offspring(replace);
 end

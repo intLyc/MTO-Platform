@@ -13,17 +13,17 @@ classdef Problem < handle
 properties (Constant)
     defaultT = 50 % Default tasks number
     defaultD = 50 % Default dimension for each task
-    defaultN = 100 % Default population size for each task
+    defaultN = 50 % Default population size for each task
 end
 
 properties
     Name char % Algorithm/Problem Name
 
-    T (1, 1) double % Tasks number
-    N (1, 1) double % Population size for each task
-    M (:, 1) double % Objective number for each task
-    D (:, 1) double % Dimension for each task
-    maxFE (1, 1) double % Maximum evaluations
+    T double % Tasks number
+    N double % Population size for each task
+    M double % Objective number for each task
+    D double % Dimension for each task
+    maxFE double % Maximum evaluations
 
     Fnc cell % Function handle for each task
     Lb cell % Lower Bound for each task
