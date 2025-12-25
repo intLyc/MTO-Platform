@@ -10,29 +10,37 @@ classdef Problem < handle
 % Evolutionary Multitasking, 2023, arXiv:2312.08134"
 %--------------------------------------------------------------------------
 
-properties
+properties (Constant)
     defaultT = 50 % Default tasks number
     defaultD = 50 % Default dimension for each task
     defaultN = 100 % Default population size for each task
+end
 
-    Name % (cell) Problems Name List
-    T % (integer) Tasks number
-    N % (integer) Population size for each task
-    M % (vector) Objective number for each task
-    D % (vector) Dimension for each task
-    Fnc % (cell) Function for each task
-    Lb % (cell) Lower Bound for each task
-    Ub % (cell) Upper Bound for each task
-    maxFE % (integer) Maximum evaluations
+properties
+    Name char % Algorithm/Problem Name
 
-    Bounded = true % (boolean) Is the problem bounded
-    ReEvalBest = false % (boolean) Re-evaluate the best solution
+    T (1, 1) double % Tasks number
+    N (1, 1) double % Population size for each task
+    M (:, 1) double % Objective number for each task
+    D (:, 1) double % Dimension for each task
+    maxFE (1, 1) double % Maximum evaluations
+
+    Fnc cell % Function handle for each task
+    Lb cell % Lower Bound for each task
+    Ub cell % Upper Bound for each task
+
+    Bounded logical = true % Is the problem bounded
+    ReEvalBest logical = false % Re-evaluate the best solution
+end
+
+methods (Abstract)
+    setTasks(Prob)
 end
 
 methods
-    function Prob = Problem(varargin)
-        if nargin == 1 && ~isempty(varargin{1})
-            Prob.Name = char(varargin{1});
+    function Prob = Problem(name)
+        if nargin > 0 && ~isempty(name)
+            Prob.Name = char(name);
         else
             Prob.Name = strrep(class(Prob), '_', '-');
         end
@@ -71,9 +79,5 @@ methods
         end
         [Objs, Cons] = Prob.Fnc{t}(x);
     end
-end
-
-methods (Abstract)
-    setTasks(Prob)
 end
 end
