@@ -11,35 +11,31 @@ classdef Algorithm < handle
 %--------------------------------------------------------------------------
 
 properties
-    Name % Algorithm Name
-    FE % Function evaluations
-    Gen % Generations
-    FE_Gen % FE in each Gen
-    Best % Best individual found (Single-objective)
-    Mean % Mean of distribution (for evolution strategies)
-    Result % Result after run
-    Result_Num % Convergence Results Num
-    Save_Dec % Save Decision Variables Flag
-    Check_Status_Fn = @emptyFn % Check Status Function
-    Draw_Dec = false % Draw Decision Variables Flag
-    Draw_Obj = false % Draw Objective Variables Flag
+    Name char % Algorithm Name
+    FE double = 0 % Function evaluations
+    Gen double = 1 % Generations
+    FE_Gen double % FE in each Gen
+    Best cell % Best individual found
+    Mean cell % Mean of distribution
+    Result struct % Result structure array
+    Result_Num double % Convergence Results Num
+    Save_Dec logical = false % Save Decision Variables Flag
+    Check_Status_Fn = @(varargin)[]
+    Draw_Dec logical = false
+    Draw_Obj logical = false
     dpd % DrawPopDec Object
     dpo % DrawPopObj Object
 end
 
 methods
-    function Algo = Algorithm(varargin)
+    function Algo = Algorithm(name)
         % Algorithm constructor, cannot be changed
-        if nargin == 1 && ~isempty(varargin{1})
-            Algo.Name = varargin{1};
-        elseif nargin == 0
+        if nargin > 0 && ~isempty(name)
+            Algo.Name = name;
+        else
             Algo.Name = strrep(class(Algo), '_', '-');
         end
-        Algo.FE = 0;
-        Algo.Gen = 1;
-        Algo.FE_Gen = [];
-        Algo.Best = {};
-        Algo.Result = [];
+        Algo.reset();
     end
 
     function reset(Algo)
@@ -47,7 +43,7 @@ methods
         Algo.Gen = 1;
         Algo.FE_Gen = [];
         Algo.Best = {};
-        Algo.Result = [];
+        Algo.Result = struct('Obj', {}, 'CV', {}, 'Dec', {});
     end
 
     function Parameter = getParameter(Algo)
@@ -62,13 +58,25 @@ methods
     end
 
     function Result = getResult(Algo, Prob)
+        % Get the final result after the run
         Result = gen2eva(Algo.Result, Algo.FE_Gen, Algo.Result_Num);
         if Algo.Save_Dec
+            maxD = max(Prob.D);
             for t = 1:size(Result, 1)
+                currLb = Prob.Lb{t};
+                currUb = Prob.Ub{t};
+                currD = Prob.D(t);
+                Range = currUb - currLb;
                 for idx = 1:size(Result, 2)
-                    Result(t, idx).Dec(:, 1:Prob.D(t)) = Prob.Lb{t} + ...
-                        Result(t, idx).Dec(:, 1:Prob.D(t)) .* (Prob.Ub{t} - Prob.Lb{t});
-                    Result(t, idx).Dec(:, Prob.D(t) + 1:max(Prob.D)) = NaN;
+                    DecNorm = Result(t, idx).Dec;
+                    RealDec = currLb + DecNorm(:, 1:currD) .* Range;
+                    if currD < maxD
+                        ExtendedDec = nan(size(RealDec, 1), maxD);
+                        ExtendedDec(:, 1:currD) = RealDec;
+                        Result(t, idx).Dec = ExtendedDec;
+                    else
+                        Result(t, idx).Dec = RealDec;
+                    end
                 end
             end
         else
@@ -85,13 +93,9 @@ methods
         end
     end
 
-    function flag = notTerminated(Algo, varargin)
-        if length(varargin) == 1
-            Prob = varargin{1};
-        elseif length(varargin) == 2
-            Prob = varargin{1};
-            Pop = varargin{2};
-
+    function flag = notTerminated(Algo, Prob, Pop)
+        if nargin > 2 && ~isempty(Pop)
+            % Update Visualization
             if Algo.Draw_Dec && ~isempty(Algo.dpd)
                 Algo.dpd.update(Algo, Prob, Pop);
                 drawnow('limitrate');
@@ -102,24 +106,32 @@ methods
             end
         end
 
-        if Algo.FE == 0
+        % Check Termination Condition
+        if Algo.FE <= 0
             flag = true;
             return;
         end
         flag = Algo.FE < Prob.maxFE;
 
+        gen = Algo.Gen;
+        isSingleObj = max(Prob.M) == 1;
         for t = 1:Prob.T
-            if max(Prob.M) == 1 % Single-objective
-                Algo.Result(t, Algo.Gen).Obj = Algo.Best{t}.Obj;
-                Algo.Result(t, Algo.Gen).CV = Algo.Best{t}.CV;
-                Algo.Result(t, Algo.Gen).Dec = Algo.Best{t}.Dec;
-            else % Multi-objective
-                Algo.Result(t, Algo.Gen).Obj = Pop{t}.Objs;
-                Algo.Result(t, Algo.Gen).CV = Pop{t}.CVs;
-                Algo.Result(t, Algo.Gen).Dec = Pop{t}.Decs;
+            if isSingleObj
+                % Single-objective: Record Best solution
+                bestSol = Algo.Best{t};
+                Algo.Result(t, gen).Obj = bestSol.Obj;
+                Algo.Result(t, gen).CV = bestSol.CV;
+                Algo.Result(t, gen).Dec = bestSol.Dec;
+            else
+                % Multi-objective: Record Population
+                popSol = Pop{t};
+                Algo.Result(t, gen).Obj = popSol.Objs;
+                Algo.Result(t, gen).CV = popSol.CVs;
+                Algo.Result(t, gen).Dec = popSol.Decs;
             end
         end
-        Algo.FE_Gen(Algo.Gen) = Algo.FE;
+        % Stage update
+        Algo.FE_Gen(gen) = Algo.FE;
         Algo.Gen = Algo.Gen + 1;
 
         drawnow('limitrate');
@@ -127,68 +139,82 @@ methods
     end
 
     function [Pop, Flag] = Evaluation(Algo, Pop, Prob, t)
+        % Mapping Decision Variables to Real Values
         lenPop = length(Pop);
-        % Map to original decision space
-        PopDec = Pop.Decs;
-        x = repmat(Prob.Ub{t} - Prob.Lb{t}, lenPop, 1) .* ...
-            PopDec(:, 1:Prob.D(t)) + repmat(Prob.Lb{t}, lenPop, 1);
+        D = Prob.D(t);
+        Decs = Pop.Decs;
+        % Range scaling: x = Dec * (Ub - Lb) + Lb
+        % Assumes Ub/Lb are row vectors (1xD) and Decs is (NxD)
+        Range = Prob.Ub{t} - Prob.Lb{t};
+        Lower = Prob.Lb{t};
+        x = Decs(:, 1:D) .* Range + Lower;
 
-        % Re-evaluate the best solution found so far
-        if Prob.ReEvalBest && max(Prob.M) == 1
-            if ~isempty(Algo.Mean) && ~isempty(Algo.Mean{t}) % For evolution strategies
+        % Re-evaluate the best solution found so far for noisy problems
+        reEvalMode = Prob.ReEvalBest && max(Prob.M) == 1;
+        if reEvalMode
+            EvalDec = [];
+            if ~isempty(Algo.Mean) && ~isempty(Algo.Mean{t}) % Evolution Strategy
                 EvalDec = Algo.Mean{t};
-                EvalX = (Prob.Ub{t} - Prob.Lb{t}) .* EvalDec(1:Prob.D(t)) + Prob.Lb{t};
-                x = [x; EvalX];
-            elseif ~isempty(Algo.Best) && ~isempty(Algo.Best{t}) % For population-based algorithms
+            elseif ~isempty(Algo.Best) && ~isempty(Algo.Best{t}) % Population-based EA
                 EvalDec = Algo.Best{t}.Dec;
-                EvalX = (Prob.Ub{t} - Prob.Lb{t}) .* EvalDec(1:Prob.D(t)) + Prob.Lb{t};
-                x = [x; EvalX];
+            end
+            if ~isempty(EvalDec)
+                EvalX = EvalDec(1:D) .* Range + Lower;
+                x = [x; EvalX]; % Append to end
+            else
+                reEvalMode = false; % Fallback if no best exists yet
             end
         end
 
-        % Call problem evaluation function
+        % Problem Evaluation
         [Objs, Cons] = Prob.evaluate(x, t);
-        Algo.FE = Algo.FE + lenPop;
+        % Update FE count based on actual evaluations performed
+        Algo.FE = Algo.FE + size(x, 1);
 
         % Update Population
-        for i = 1:lenPop
-            Pop(i).Obj = Objs(i, :);
-            Pop(i).Con = Cons(i, :);
-            Pop(i).CV = sum(max(0, Cons(i, :)));
-        end
+        PopObjs = Objs(1:lenPop, :);
+        PopCons = Cons(1:lenPop, :);
+        PopCVs = sum(max(0, PopCons), 2);
+        objCell = num2cell(PopObjs, 2);
+        conCell = num2cell(PopCons, 2);
+        cvCell = num2cell(PopCVs, 2);
+        [Pop.Obj] = objCell{:};
+        [Pop.Con] = conCell{:};
+        [Pop.CV] = cvCell{:};
 
-        if max(Prob.M) == 1 % Single-objective
-            % Update Best
+        % Update Global Best (Single-objective)
+        Flag = false;
+        if max(Prob.M) == 1
+            % Initialize Best if empty
             if isempty(Algo.Best)
-                for k = 1:Prob.T
-                    Algo.Best{k} = Individual.empty();
-                end
+                Algo.Best = cell(1, Prob.T);
             end
-            [~, ~, idx] = min_FP([Pop.Obj], [Pop.CV]);
-            BestTemp = Individual();
-            BestTemp.Dec = Pop(idx).Dec;
-            BestTemp.Obj = Pop(idx).Obj;
-            BestTemp.CV = Pop(idx).CV;
+            [~, ~, idx] = min_FP(PopObjs, PopCVs);
+            bestInPop = Pop(idx);
 
-            if Prob.ReEvalBest && ~isempty(Algo.Best{t})
-                Algo.FE = Algo.FE + 1;
-                Algo.Best{t}.Obj = Objs(lenPop + 1, :);
-                Algo.Best{t}.Con = Cons(lenPop + 1, :);
-                Algo.Best{t}.CV = sum(max(0, Cons(lenPop + 1, :)));
+            % Update re-evaluated best solution
+            if reEvalMode && ~isempty(Algo.Best{t})
+                oldBest = Algo.Best{t};
+                oldBest.Obj = Objs(end, :);
+                oldBest.Con = Cons(end, :);
+                oldBest.CV = sum(max(0, Cons(end, :)));
+                Algo.Best{t} = oldBest;
             end
-            BestTemp = [BestTemp, Algo.Best{t}];
-            [~, ~, idx] = min_FP([BestTemp.Obj], [BestTemp.CV]);
-            BestTemp = BestTemp(idx);
 
-            Algo.Best{t} = BestTemp;
-            % Set Best Update Flag
-            if idx == 1
+            % Final Comparison
+            if isempty(Algo.Best{t})
+                Algo.Best{t} = bestInPop;
                 Flag = true;
             else
-                Flag = false;
+                oldBest = Algo.Best{t};
+                candObjs = [bestInPop.Obj; oldBest.Obj];
+                candCVs = [bestInPop.CV; oldBest.CV];
+                [~, ~, bestIdx] = min_FP(candObjs, candCVs);
+                if bestIdx == 1 % New best found
+                    Algo.Best{t} = bestInPop;
+                    Flag = true;
+                end
             end
-        else % Multi-objective
-            Flag = false;
         end
     end
 end

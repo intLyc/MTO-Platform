@@ -1,17 +1,19 @@
-function [minObj, minCV, min_idx] = min_FP(Obj, CV, varargin)
-%% Minimal Feasible Priority / Epsilon Constraint
+function [minObj, minCV, min_idx] = min_FP(Obj, CV, ep)
+% Handle optional epsilon parameter
+if nargin < 3, ep = 0; end
 
-n = numel(varargin);
-if n == 0
-    ep = 0;
-elseif n == 1
-    ep = varargin{1};
-end
+% Apply epsilon-constraint handling
 CV(CV <= ep) = 0;
 
+% Identify the minimum constraint violation level
 minCV = min(CV);
-idx_min_cv = find(CV == minCV);
-obj_temp = Obj(idx_min_cv);
-[minObj, idx_temp] = min(obj_temp);
-min_idx = idx_min_cv(idx_temp);
+
+% infinity masking:
+% Assign Inf to objectives of individuals that do not satisfy the minCV.
+% This avoids the overhead of 'find' and index mapping.
+search_obj = Obj;
+search_obj(CV > minCV) = inf;
+
+% Select the best individual (Lexicographic selection)
+[minObj, min_idx] = min(search_obj);
 end
