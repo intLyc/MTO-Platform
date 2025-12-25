@@ -67,21 +67,25 @@ methods
             MD{t} = ones(D, 1);
             C{t} = MB{t} * diag(MD{t}.^2) * MB{t}';
             invsqrtC{t} = MB{t} * diag(MD{t}.^-1) * MB{t}';
+            mDec{t} = [initESMean(Prob, t), rand(1, D - Prob.D(t))];
+            Algo.Mean{t} = mDec{t};
             sigma{t} = Algo.sigma0 * initESSigmaScale(Prob);
             eigenFE{t} = 0;
         end
 
         % Initialization
-        population = Initialization(Algo, Prob, IndividualSBO);
         for t = 1:Prob.T
+            for i = 1:lambda
+                population{t}(i) = IndividualSBO();
+                population{t}(i).Dec = mDec{t} + sigma{t} * (MB{t} * (MD{t} .* randn(D, 1)))';
+            end
+            population{t} = Algo.Evaluation(population{t}, Prob, t);
             rank = RankWithBoundaryHandling(population{t}, Prob);
             for i = 1:length(population{t})
                 population{t}(rank(i)).rankO = i;
                 population{t}(rank(i)).MFFactor = t;
                 population{t}(rank(i)).BelongT = t;
             end
-            mDec{t} = [initESMean(Prob, t), rand(1, D - Prob.D(t))];
-            Algo.Mean{t} = mDec{t};
         end
 
         RIJ = 0.5 * ones(Prob.T, Prob.T); % transfer rates
