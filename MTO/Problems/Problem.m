@@ -13,7 +13,7 @@ classdef Problem < handle
 properties (Constant)
     defaultT = 50 % Default tasks number
     defaultD = 50 % Default dimension for each task
-    defaultN = 50 % Default population size for each task
+    defaultN = 100 % Default population size for each task
 end
 
 properties
