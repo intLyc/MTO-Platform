@@ -13,7 +13,7 @@ classdef OpenAI_ES < Algorithm
 %--------------------------------------------------------------------------
 
 properties (SetAccess = public)
-    sigma = 0.1 % Initial step size
+    sigma = 0.3 % Initial step size
     sigma_decay = 0.2 % Decay rate for sigma
     lr = 0.01 % Learning rate
     lr_decay = 0.1 % Decay rate for learning rate
