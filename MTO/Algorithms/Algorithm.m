@@ -194,11 +194,10 @@ methods
 
             % Update re-evaluated best solution
             if reEvalMode && ~isempty(Algo.Best{t})
-                oldBest = Algo.Best{t};
-                oldBest.Obj = Objs(end, :);
-                oldBest.Con = Cons(end, :);
-                oldBest.CV = sum(max(0, Cons(end, :)));
-                Algo.Best{t} = oldBest;
+                Algo.Best{t}.Dec = EvalDec;
+                Algo.Best{t}.Obj = Objs(end, :);
+                Algo.Best{t}.Con = Cons(end, :);
+                Algo.Best{t}.CV = sum(max(0, Cons(end, :)));
             end
 
             % Final Comparison
