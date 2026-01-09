@@ -66,7 +66,7 @@ methods
             D{t} = ones(n{t}, 1);
             C{t} = B{t} * diag(D{t}.^2) * B{t}';
             invsqrtC{t} = B{t} * diag(D{t}.^-1) * B{t}';
-            sigma{t} = Algo.sigma0 * initESSigmaScale(Prob);
+            sigma{t} = Algo.sigma0 * initESSigmaScale(Prob, t);
             eigenFE{t} = 0;
             chiN{t} = sqrt(n{t}) * (1 - 1 / (4 * n{t}) + 1 / (21 * n{t}^2));
             for i = 1:lambda{t}

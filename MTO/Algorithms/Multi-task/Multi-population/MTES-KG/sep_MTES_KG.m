@@ -64,7 +64,7 @@ methods
             ps{t} = zeros(n, 1);
             pc{t} = zeros(n, 1);
             C{t} = ones(n, 1);
-            sigma{t} = Algo.sigma0 * initESSigmaScale(Prob);
+            sigma{t} = Algo.sigma0 * initESSigmaScale(Prob, t);
             eigenFE{t} = 0;
             for i = 1:lambda
                 sample{t}(i) = Individual();

@@ -60,7 +60,7 @@ methods
             % initialize
             x{t} = initESMean(Prob, t)';
             Algo.Mean{t} = x{t}';
-            s{t} = Algo.sigma0 * initESSigmaScale(Prob);
+            s{t} = Algo.sigma0 * initESSigmaScale(Prob, t);
             B{t} = eye(Prob.D(t)); % B = A/s; A*A' = C = covariance matrix
             weights{t} = zeros(1, N{t});
             for i = 1:N{t}

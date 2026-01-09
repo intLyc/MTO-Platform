@@ -75,7 +75,7 @@ methods
             ps{t} = zeros(maxD, 1);
             pc{t} = zeros(maxD, 1);
             C{t} = ones(maxD, 1);
-            sigma{t} = Algo.sigma0 * initESSigmaScale(Prob);
+            sigma{t} = Algo.sigma0 * initESSigmaScale(Prob, t);
             S(:, t) = sigma{t} * sqrt(C{t}); % Sigma vector
             chiN{t} = sqrt(maxD) * (1 - 1 / (4 * maxD) + 1 / (21 * maxD^2));
             hth{t} = (1.4 + 2 / (maxD + 1)) * chiN{t};

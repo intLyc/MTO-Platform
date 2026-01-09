@@ -69,7 +69,7 @@ methods
             invsqrtC{t} = MB{t} * diag(MD{t}.^-1) * MB{t}';
             mDec{t} = [initESMean(Prob, t), rand(1, D - Prob.D(t))];
             Algo.Mean{t} = mDec{t};
-            sigma{t} = Algo.sigma0 * initESSigmaScale(Prob);
+            sigma{t} = Algo.sigma0 * initESSigmaScale(Prob, t);
             eigenFE{t} = 0;
         end
 

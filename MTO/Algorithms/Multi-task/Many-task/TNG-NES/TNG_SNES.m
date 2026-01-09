@@ -62,7 +62,7 @@ methods
             etaS(t) = (3 + log(Prob.D(t))) / (5 * sqrt(Prob.D(t))); % Learning rate
             x(:, t) = [initESMean(Prob, t)'; rand(maxD - Prob.D(t), 1)];
             Algo.Mean{t} = x(:, t)';
-            S(:, t) = Algo.sigma0 * initESSigmaScale(Prob) * ones(maxD, 1); % Sigma vector
+            S(:, t) = Algo.sigma0 * initESSigmaScale(Prob, t) * ones(maxD, 1); % Sigma vector
             for i = 1:N
                 sample{t}(i) = Individual();
             end

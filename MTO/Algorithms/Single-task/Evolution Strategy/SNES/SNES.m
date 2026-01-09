@@ -59,7 +59,7 @@ methods
             % initialize
             x{t} = initESMean(Prob, t)';
             Algo.Mean{t} = x{t}';
-            S{t} = Algo.sigma0 * initESSigmaScale(Prob) * ones(Prob.D(t), 1); % Sigma vector
+            S{t} = Algo.sigma0 * initESSigmaScale(Prob, t) * ones(Prob.D(t), 1); % Sigma vector
             weights{t} = zeros(1, N{t});
             for i = 1:N{t}
                 sample{t}(i) = Individual();

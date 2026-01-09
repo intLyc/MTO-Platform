@@ -62,13 +62,13 @@ methods
             sample{t}(1:N) = Individual();
         end
 
-        sigma = Algo.sigma * initESSigmaScale(Prob);
+        sigma{t} = Algo.sigma * initESSigmaScale(Prob, t);
 
         while Algo.notTerminated(Prob, sample)
             % ---- Decay sigma and learning rate ----
             progress = Algo.FE / Prob.maxFE;
             sigma_decay_factor = Algo.sigma_decay^progress;
-            current_sigma = sigma * sigma_decay_factor;
+            current_sigma = sigma{t} * sigma_decay_factor;
             lr_decay_factor = Algo.lr_decay^progress;
             current_lr = Algo.lr * lr_decay_factor;
 

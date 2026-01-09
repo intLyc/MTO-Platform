@@ -68,7 +68,7 @@ methods
             etaB(t) = etas(t);
             x(:, t) = [initESMean(Prob, t)'; rand(maxD - Prob.D(t), 1)];
             Algo.Mean{t} = x(:, t)';
-            s(t) = Algo.sigma0 * initESSigmaScale(Prob);
+            s(t) = Algo.sigma0 * initESSigmaScale(Prob, t);
             vvs(t) = s(t);
             B(:, :, t) = eye(maxD);
             for i = 1:N

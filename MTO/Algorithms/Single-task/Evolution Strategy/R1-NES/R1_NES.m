@@ -52,7 +52,7 @@ methods
             % initialize
             x{t} = initESMean(Prob, t)';
             Algo.Mean{t} = x{t}';
-            a{t} = log(Algo.sigma0 * initESSigmaScale(Prob)); % fixed diagonal strength
+            a{t} = log(Algo.sigma0 * initESSigmaScale(Prob, t)); % fixed diagonal strength
             c{t} = 0;
             v{t} = normalize(randn(Prob.D(t), 1));
             r{t} = exp(c{t});

@@ -45,7 +45,7 @@ methods
     function run(Algo, Prob)
         for t = 1:Prob.T
             alpha(t) = Algo.alpha0;
-            sigma(t) = Algo.sigma0 * initESSigmaScale(Prob);
+            sigma(t) = Algo.sigma0 * initESSigmaScale(Prob, t);
             x(:, t) = [initESMean(Prob, t)'; rand(max(Prob.D) - Prob.D(t), 1)];
             Algo.Mean{t} = x(:, t)';
             for i = 1:Prob.N

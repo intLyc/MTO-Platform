@@ -64,7 +64,7 @@ methods
             ps{t} = zeros(n{t}, 1);
             pc{t} = zeros(n{t}, 1);
             C{t} = ones(n{t}, 1);
-            sigma{t} = Algo.sigma0 * initESSigmaScale(Prob);
+            sigma{t} = Algo.sigma0 * initESSigmaScale(Prob, t);
             chiN{t} = sqrt(n{t}) * (1 - 1 / (4 * n{t}) + 1 / (21 * n{t}^2));
             for i = 1:lambda{t}
                 sample{t}(i) = Individual();
