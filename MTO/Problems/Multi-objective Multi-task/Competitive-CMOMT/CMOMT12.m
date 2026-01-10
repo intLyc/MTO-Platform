@@ -26,6 +26,7 @@ methods
     function Prob = CMOMT12(varargin)
         Prob = Prob@Problem(varargin);
         Prob.maxFE = 1000 * 360;
+        Prob.N = 120;
     end
 
     function setTasks(Prob)

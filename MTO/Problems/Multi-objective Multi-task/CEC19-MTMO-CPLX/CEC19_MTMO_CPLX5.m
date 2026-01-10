@@ -13,6 +13,7 @@ methods
     function Prob = CEC19_MTMO_CPLX5(varargin)
         Prob = Prob@Problem(varargin);
         Prob.maxFE = 1000 * 240;
+        Prob.N = 120;
     end
 
     function setTasks(Prob)

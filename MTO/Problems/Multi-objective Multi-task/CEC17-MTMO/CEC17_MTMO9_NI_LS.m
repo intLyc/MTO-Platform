@@ -23,6 +23,7 @@ methods
     function Prob = CEC17_MTMO9_NI_LS(varargin)
         Prob = Prob@Problem(varargin);
         Prob.maxFE = 1000 * 240;
+        Prob.N = 120;
     end
 
     function setTasks(Prob)
