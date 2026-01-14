@@ -23,99 +23,178 @@ classdef MTES < Algorithm
 %--------------------------------------------------------------------------
 
 properties (SetAccess = public)
-    alpha0 = 0.1
-    sigma0 = 0.1
-    adjustGen = 100
+    sigma = 0.3 % Initial step size
+    sigma_decay = 0.2 % Decay rate for sigma
+    lr = 0.1 % Learning rate
+    lr_decay = 0.1 % Decay rate for learning rate
 end
 
 methods
     function Parameter = getParameter(Algo)
-        Parameter = {'alpha0', num2str(Algo.alpha0), ...
-                'sigma0', num2str(Algo.sigma0), ...
-                'adjustGen', num2str(Algo.adjustGen)};
+        Parameter = {'sigma', num2str(Algo.sigma), ...
+                'sigma decay', num2str(Algo.sigma_decay), ...
+                'learning rate', num2str(Algo.lr), ...
+                'lr decay', num2str(Algo.lr_decay)};
     end
 
     function Algo = setParameter(Algo, Parameter)
         i = 1;
-        Algo.alpha0 = str2double(Parameter{i}); i = i + 1;
-        Algo.sigma0 = str2double(Parameter{i}); i = i + 1;
-        Algo.adjustGen = str2double(Parameter{i}); i = i + 1;
+        Algo.sigma = str2double(Parameter{i}); i = i + 1;
+        Algo.sigma_decay = str2double(Parameter{i}); i = i + 1;
+        Algo.lr = str2double(Parameter{i}); i = i + 1;
+        Algo.lr_decay = str2double(Parameter{i}); i = i + 1;
     end
 
     function run(Algo, Prob)
+        if mod(Prob.N, 2) ~= 0
+            N = Prob.N + 1;
+        else
+            N = Prob.N;
+        end
+
+        % Initialization
         for t = 1:Prob.T
-            alpha(t) = Algo.alpha0;
-            sigma(t) = Algo.sigma0 * initESSigmaScale(Prob, t);
-            x(:, t) = [initESMean(Prob, t)'; rand(max(Prob.D) - Prob.D(t), 1)];
-            Algo.Mean{t} = x(:, t)';
-            for i = 1:Prob.N
+            % Initialize Mean x
+            x{t} = [initESMean(Prob, t)'; rand(max(Prob.D) - Prob.D(t), 1)];
+            Algo.Mean{t} = x{t}';
+
+            % Initialize individuals
+            for i = 1:N
                 sample{t}(i) = Individual();
             end
-            shape{t} = max(0.0, log(Prob.N / 2 + 1.0) - log(1:Prob.N));
-            shape{t} = shape{t} / sum(shape{t});
+
+            % Initial sigma per task
+            sigma_init{t} = Algo.sigma * initESSigmaScale(Prob, t);
         end
-        d = zeros(Prob.T);
+
+        % ---- Initialize D^0 (Static) ----
+        % Calculate initial distances between all task pairs
+        current_dist = zeros(Prob.T);
         for t = 1:Prob.T
             for k = t:Prob.T
-                d(t, k) = norm(x(:, t) - x(:, k));
-                d(k, t) = d(t, k);
+                current_dist(t, k) = norm(x{t} - x{k});
+                current_dist(k, t) = current_dist(t, k);
             end
-            d0(t) = sum(d(t, :) / (Prob.T - 1));
         end
 
-        while Algo.notTerminated(Prob, sample)
-            dold = d;
-            xold = x;
-            for t = 1:Prob.T
-                Z{t} = randn(max(Prob.D), Prob.N);
-                X{t} = repmat(x(:, t), 1, Prob.N) + sigma(t) * Z{t};
-                for i = 1:Prob.N
-                    sample{t}(i).Dec = X{t}(:, i)';
-                end
-                sample{t} = Algo.Evaluation(sample{t}, Prob, t);
-                fitness = Algo.getFitness(sample{t});
-                A = (fitness - mean(fitness)) / std(fitness);
+        D0 = zeros(1, Prob.T);
+        for t = 1:Prob.T
+            % Average distance to other tasks (excluding self if T > 1)
+            if Prob.T > 1
+                dists = current_dist(t, :);
+                dists(t) = [];
+                D0(t) = mean(dists);
+            else
+                D0(t) = 1.0; % Fallback for single task
+            end
+        end
 
-                % Calculate transfer coefﬁcient
-                m = zeros(1, Prob.T);
+        % Store distance for the first iteration (D_{t-1})
+        last_dist = current_dist;
+
+        % Main Loop
+        while Algo.notTerminated(Prob, sample)
+            xold = x; % Store x^t for calculating update
+
+            % Update Hyperparameters
+            progress = Algo.FE / Prob.maxFE;
+            sigma_decay_factor = Algo.sigma_decay^progress;
+            lr_decay_factor = Algo.lr_decay^progress;
+            current_lr = Algo.lr * lr_decay_factor;
+
+            % --- Step 1: Compute Gradients (Standard SGD) ---
+            sgd_step = cell(1, Prob.T);
+
+            for t = 1:Prob.T
+                current_sigma = sigma_init{t} * sigma_decay_factor;
+
+                % Sampling
+                Z = randn(max(Prob.D), N);
+                X = repmat(x{t}, 1, N) + current_sigma * Z;
+
+                for i = 1:N
+                    sample{t}(i).Dec = X(:, i)';
+                end
+
+                sample{t} = Algo.Evaluation(sample{t}, Prob, t);
+
+                % Centered Rank Shaping
+                sortedIdx = RankWithBoundaryHandling(sample{t}, Prob);
+                ranks = zeros(1, N);
+                ranks(sortedIdx) = N - 1:-1:0; % Minimizing fitness
+                shaped = ranks / (N - 1) - 0.5;
+
+                % Gradient estimation
+                grad = (Z * shaped') / (N * current_sigma);
+
+                % SGD Update
+                sgd_step{t} = current_lr * grad;
+            end
+
+            % --- Step 2: Calculate Transfer Coefficients ---
+            current_dist = zeros(Prob.T);
+            for t = 1:Prob.T
+                for k = t:Prob.T
+                    current_dist(t, k) = norm(x{t} - x{k});
+                    current_dist(k, t) = current_dist(t, k);
+                end
+            end
+
+            for t = 1:Prob.T
+                % Calculate raw transfer coefficients
+                m_raw = zeros(1, Prob.T);
                 for k = 1:Prob.T
                     if k == t
                         continue;
                     end
-                    d(t, k) = norm(xold(:, t) - xold(:, k));
-                    m(k) = max(0, dold(t, k) - d(t, k));
-                end
-                m = m / (sum(m) + d0(t));
-                m(t) = 1 - sum(m);
 
-                xtemp = x(:, t);
-                x(:, t) = sum(repmat(m, max(Prob.D), 1) .* x, 2) + alpha(t) / (Prob.N * sigma(t)) * Z{t} * A;
+                    % Calculate distance change
+                    delta = last_dist(t, k) - current_dist(t, k);
 
-                if mod(Algo.Gen, Algo.adjustGen) == 0
-                    % Adjust sigma and alpha
-                    sigma(t) = min(median(abs(x(:, t) - xtemp)), 1);
-                    alpha(t) = sigma(t)^2;
+                    % Logic check
+                    if delta <= 0
+                        m_raw(k) = 0;
+                    else
+                        m_raw(k) = delta;
+                    end
                 end
-                x(:, t) = min(1, max(0, x(:, t)));
-                Algo.Mean{t} = x(:, t)';
+
+                % Normalize
+                denom = sum(m_raw) + D0(t);
+
+                if denom > 1e-15
+                    m_norm = m_raw / denom;
+                else
+                    m_norm = zeros(1, Prob.T);
+                end
+
+                % Self coefficient
+                m_self = 1 - sum(m_norm);
+
+                % --- Step 3: Update Mean Vector ---
+                weighted_means = zeros(max(Prob.D), 1);
+
+                % Add contribution from other tasks
+                for k = 1:Prob.T
+                    if k ~= t
+                        weighted_means = weighted_means + m_norm(k) * xold{k};
+                    end
+                end
+
+                % Add contribution from self
+                weighted_means = weighted_means + m_self * xold{t};
+
+                % Apply mixture + SGD Step
+                x{t} = weighted_means + sgd_step{t};
+
+                % Boundary Constraint
+                x{t} = max(0, min(1, x{t}));
+                Algo.Mean{t} = x{t}';
             end
-        end
-    end
 
-    function fitness = getFitness(Algo, sample)
-        %% Boundary Constraint
-        boundCVs = zeros(length(sample), 1);
-        for i = 1:length(sample)
-            % Boundary Constraint Violation
-            tempDec = sample(i).Dec;
-            tempDec(tempDec < 0) = 0;
-            tempDec(tempDec > 1) = 1;
-            boundCVs(i) = sum((sample(i).Dec - tempDec).^2);
+            % Update history for next generation
+            last_dist = current_dist;
         end
-        CVs = sample.CVs;
-        boundCVs(boundCVs > 0) = boundCVs(boundCVs > 0) + max(CVs);
-        CVs = CVs + boundCVs;
-        fitness =- (1e6 * CVs + sample.Objs);
     end
 end
 end
