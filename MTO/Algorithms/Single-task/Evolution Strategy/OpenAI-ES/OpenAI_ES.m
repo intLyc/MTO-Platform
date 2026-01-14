@@ -1,5 +1,5 @@
 classdef OpenAI_ES < Algorithm
-% <Single-task> <Single-objective> <None>
+% <Single-task> <Single-objective> <None/Constrained>
 
 %------------------------------- Reference --------------------------------
 % @Misc{Salimans2017OpenAI-ES,
@@ -85,10 +85,9 @@ methods
                 sample{t} = Algo.Evaluation(sample{t}, Prob, t);
 
                 % ---- Centered rank shaping ----
-                fitness = [sample{t}.Objs];
-                [~, sortIdx] = sort(fitness);
+                sortedIdx = RankWithBoundaryHandling(sample{t}, Prob);
                 ranks = zeros(1, N);
-                ranks(sortIdx) = N - 1:-1:0; % Minimizing fitness
+                ranks(sortedIdx) = N - 1:-1:0; % Minimizing fitness
                 shaped = ranks / (N - 1) - 0.5;
 
                 % ---- Gradient estimation ----
