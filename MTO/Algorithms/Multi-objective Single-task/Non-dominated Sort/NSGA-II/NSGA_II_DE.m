@@ -35,18 +35,21 @@ classdef NSGA_II_DE < Algorithm
 properties (SetAccess = public)
     F = 0.5
     CR = 0.9
+    MuM = 15
 end
 
 methods
     function Parameter = getParameter(Algo)
         Parameter = {'F: Mutation Factor', num2str(Algo.F), ...
-                'CR: Crossover Rate', num2str(Algo.CR)};
+                'CR: Crossover Rate', num2str(Algo.CR), ...
+                'MuM: Polynomial Mutation', num2str(Algo.MuM)};
     end
 
     function setParameter(Algo, Parameter)
         i = 1;
         Algo.F = str2double(Parameter{i}); i = i + 1;
         Algo.CR = str2double(Parameter{i}); i = i + 1;
+        Algo.MuM = str2double(Parameter{i}); i = i + 1;
     end
 
     function run(Algo, Prob)
@@ -79,6 +82,7 @@ methods
 
             offspring(i).Dec = population(x1).Dec + Algo.F * (population(x2).Dec - population(x3).Dec);
             offspring(i).Dec = DE_Crossover(offspring(i).Dec, population(i).Dec, Algo.CR);
+            offspring(i).Dec = GA_Mutation(offspring(i).Dec, Algo.MuM);
 
             offspring(i).Dec(offspring(i).Dec > 1) = 1;
             offspring(i).Dec(offspring(i).Dec < 0) = 0;
