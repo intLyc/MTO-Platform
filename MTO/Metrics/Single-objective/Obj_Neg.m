@@ -13,5 +13,6 @@ function result = Obj_Neg(MTOData, varargin)
 
 result = Obj(MTOData, varargin);
 result.Metric = 'Max';
+result.IsRelative = false; % absolute metric
 result.TableData = -result.TableData;
 result.ConvergeData.Y = -result.ConvergeData.Y;

@@ -18,6 +18,7 @@ if length(varargin) >= 1
 end
 
 result.Metric = 'Max';
+result.IsRelative = true; % Need recalculation, the reference point changes
 result.RowName = {};
 result.ColumnName = {};
 % Data for Table

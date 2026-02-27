@@ -18,6 +18,7 @@ if length(varargin) >= 1
 end
 
 result.Metric = 'Min';
+result.IsRelative = true;
 result.RowName = {};
 result.ColumnName = {};
 % Data for Table

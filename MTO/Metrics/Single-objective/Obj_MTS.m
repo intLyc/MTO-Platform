@@ -21,6 +21,7 @@ function result = Obj_MTS(MTOData, varargin)
 %--------------------------------------------------------------------------
 
 result.Metric = 'Min';
+result.IsRelative = false; % absolute metric
 result.RowName = {};
 result.ColumnName = {};
 % Data for Table

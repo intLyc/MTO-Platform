@@ -12,6 +12,7 @@ function result = Run_Time(MTOData, varargin)
 %--------------------------------------------------------------------------
 
 result.Metric = 'Min';
+result.IsRelative = false; % absolute metric
 result.RowName = {MTOData.Problems.Name};
 result.ColumnName = {MTOData.Algorithms.Name};
 % Data for Table

@@ -12,6 +12,7 @@ function result = Obj_NBR(MTOData, varargin)
 %--------------------------------------------------------------------------
 
 result.Metric = 'Max';
+result.IsRelative = false; % absolute metric
 result.RowName = {};
 result.ColumnName = {};
 % Data for Table

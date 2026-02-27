@@ -14,6 +14,7 @@ function result = Obj_UV(MTOData, varargin)
 %--------------------------------------------------------------------------
 
 result.Metric = 'Min';
+result.IsRelative = false; % absolute metric
 result.RowName = {};
 result.ColumnName = {};
 % Data for Table

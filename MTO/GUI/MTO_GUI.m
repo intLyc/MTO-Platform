@@ -2862,10 +2862,9 @@ classdef MTO_GUI < matlab.apps.AppBase
                         metric_data = squeeze(app.EResultTableData(prob_list(i), algo_list(j), :));
                         [~, rank] = sort(metric_data);
                         mid_idx = rank(ceil(end / 2));
-
-                        % Unify
+                        
                         data = app.EResultParetoData.Obj{prob_list(i), algo_list(j), mid_idx};
-                        data = (data - min_data) ./ (max_data - min_data);
+                        % data = (data - min_data) ./ (max_data - min_data); % Unify
                         for k = 1:size(app.EResultParetoData.Obj{prob_list(i), algo_list(j), mid_idx}, 1)
                             p(j) = plot(ax, data(k,:));
                             p(j).Color = color_list(j,:);
@@ -3205,8 +3204,18 @@ classdef MTO_GUI < matlab.apps.AppBase
                 MTOData.Reps = MTOData.Reps + data_selected(i).NodeData.Reps;
             end
             % merge metric
-            if isfield(data_selected(1).NodeData,'Metrics')
-                metric_name = {data_selected(1).NodeData.Metrics.Name};
+            if isfield(data_selected(1).NodeData, 'Metrics') && ~isempty(data_selected(1).NodeData.Metrics)
+                all_metrics = data_selected(1).NodeData.Metrics;
+                metric_names = {all_metrics.Name};
+                
+                % remove relative metrics
+                is_relative = false(1, length(all_metrics));
+                for m = 1:length(all_metrics)
+                    if isfield(all_metrics(m).Result, 'IsRelative') && ~isempty(all_metrics(m).Result.IsRelative)
+                        is_relative(m) = all_metrics(m).Result.IsRelative;
+                    end
+                end
+                metric_name = metric_names(~is_relative);
             else
                 metric_name = {};
             end
@@ -3217,9 +3226,6 @@ classdef MTO_GUI < matlab.apps.AppBase
                     metric_name = intersect(metric_name, {});
                 end
             end
-            % remove HV
-            contains_HV = contains(metric_name, 'HV');
-            metric_name = metric_name(~contains_HV);
 
             del_metric_idx = [];
             for i = 1:length(metric_name)
@@ -3227,6 +3233,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                 idx = find(strcmp({data_selected(1).NodeData.Metrics.Name}, metric_name{i}));
                 MTOData.Metrics(i).Name = metric_name{i};
                 MTOData.Metrics(i).Result.Metric = data_selected(1).NodeData.Metrics(idx).Result.Metric;
+                MTOData.Metrics(i).Result.IsRelative = data_selected(1).NodeData.Metrics(idx).Result.IsRelative;
                 MTOData.Metrics(i).Result.RowName = data_selected(1).NodeData.Metrics(idx).Result.RowName;
                 MTOData.Metrics(i).Result.ColumnName = data_selected(1).NodeData.Metrics(idx).Result.ColumnName;
                 reps = 0;
@@ -3335,8 +3342,19 @@ classdef MTO_GUI < matlab.apps.AppBase
                 idx = idx + length(data_selected(i).NodeData.Algorithms);
             end
             % merge metric
-            if isfield(data_selected(1).NodeData,'Metrics')
-                metric_name = {data_selected(1).NodeData.Metrics.Name};
+            % merge metric
+            if isfield(data_selected(1).NodeData, 'Metrics') && ~isempty(data_selected(1).NodeData.Metrics)
+                all_metrics = data_selected(1).NodeData.Metrics;
+                metric_names = {all_metrics.Name};
+                
+                % remove relative metrics
+                is_relative = false(1, length(all_metrics));
+                for m = 1:length(all_metrics)
+                    if isfield(all_metrics(m).Result, 'IsRelative') && ~isempty(all_metrics(m).Result.IsRelative)
+                        is_relative(m) = all_metrics(m).Result.IsRelative;
+                    end
+                end
+                metric_name = metric_names(~is_relative);
             else
                 metric_name = {};
             end
@@ -3347,16 +3365,14 @@ classdef MTO_GUI < matlab.apps.AppBase
                     metric_name = intersect(metric_name, {});
                 end
             end
-            % remove HV
-            contains_HV = contains(metric_name, 'HV');
-            metric_name = metric_name(~contains_HV);
-
+            
             del_metric_idx = [];
             for i = 1:length(metric_name)
                 flag = true;
                 idx = find(strcmp({data_selected(1).NodeData.Metrics.Name}, metric_name{i}));
                 MTOData.Metrics(i).Name = metric_name{i};
                 MTOData.Metrics(i).Result.Metric = data_selected(1).NodeData.Metrics(idx).Result.Metric;
+                MTOData.Metrics(i).Result.IsRelative = data_selected(1).NodeData.Metrics(idx).Result.IsRelative;
                 MTOData.Metrics(i).Result.RowName = data_selected(1).NodeData.Metrics(idx).Result.RowName;
                 algo = 0;
                 for j = 1:length(data_selected)
@@ -3485,6 +3501,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                 idx = find(strcmp({data_selected(1).NodeData.Metrics.Name}, metric_name{i}));
                 MTOData.Metrics(i).Name = metric_name{i};
                 MTOData.Metrics(i).Result.Metric = data_selected(1).NodeData.Metrics(idx).Result.Metric;
+                MTOData.Metrics(i).Result.IsRelative = data_selected(1).NodeData.Metrics(idx).Result.IsRelative;
                 MTOData.Metrics(i).Result.ColumnName = data_selected(1).NodeData.Metrics(idx).Result.ColumnName;
                 prob = 0;
                 for j = 1:length(data_selected)
