@@ -2449,7 +2449,9 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             prob_list = unique(app.ETableSelected(:, 1));
 
-            if app.ESplitCheckBox.Value
+            IsSplitDraw = app.ESplitCheckBox.Value | (length(prob_list)<=1);
+
+            if IsSplitDraw
                 weidth = 340;
                 height = 300;
                 position = [10,50,weidth,height];
@@ -2484,7 +2486,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             plot_with_ranges = strcmp(app.EConvergeTypeDropDown.Value, 'Log Range') || strcmp(app.EConvergeTypeDropDown.Value, 'Norm Range');
 
             for i = 1:length(prob_list)
-                if app.ESplitCheckBox.Value
+                if IsSplitDraw
                     fig = figure('Position',position);
                     if position(1)<1600
                         position = position + [weidth,0,0,0];
@@ -2569,7 +2571,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     xlim_max = max(xlim_max, x(end));
                     xlim_min = min(xlim_min, x(1));
 
-                    if app.ESplitCheckBox.Value
+                    if IsSplitDraw
                         % Add to legend entries - ensure it's a string
                         algo_name = app.EUITable.ColumnName{algo_list(j)}; % Use {} to get content
                         legend_entries{end+1} = strrep(algo_name, '_', '\_');
@@ -2589,7 +2591,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     xlim(ax, [xlim_min, xlim_max]);
                 end
 
-                if app.ESplitCheckBox.Value
+                if IsSplitDraw
                     set(ax,'OuterPosition',[0,0,1,1]);
                     % Set labels
                     if strcmp(app.EConvergeTypeDropDown.Value, 'Log Type2')
@@ -2612,7 +2614,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     set(ax, 'LooseInset', get(ax, 'TightInset') + 0.02);
                 end
             end
-            if ~app.ESplitCheckBox.Value
+            if ~IsSplitDraw
                 xlabel(t, 'Evaluation', 'FontWeight', 'bold', 'FontSize', 16);
                 if strcmp(app.EConvergeTypeDropDown.Value, 'Log Type2')
                     ylabel(t, ['Log - ', strrep(app.EDataTypeDropDown.Value, '_', ' ')], 'FontWeight', 'bold', 'FontSize', 16);
@@ -2636,7 +2638,9 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             prob_list = unique(app.ETableSelected(:, 1));
 
-            if app.ESplitCheckBox.Value
+            IsSplitDraw = app.ESplitCheckBox.Value | (length(prob_list)<=1);
+
+            if IsSplitDraw
                 weidth = 340;
                 height = 300;
                 position = [10,50,weidth,height];
@@ -2668,7 +2672,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             fontsize = 12;
                 
             for i = 1:length(prob_list)
-                if app.ESplitCheckBox.Value
+                if IsSplitDraw
                     fig = figure('Position',position);
                     if position(1)<1600
                         position = position + [weidth,0,0,0];
@@ -2733,7 +2737,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                         p.LineWidth = 2;
                         hold(ax, 'on');
 
-                        if app.ESplitCheckBox.Value
+                        if IsSplitDraw
                             legend_entries{end+1} = 'Pareto Front';
                             plot_handles(end+1) = p;
                         else
@@ -2758,7 +2762,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                         s.MarkerFaceAlpha = 0.65;
                         s.MarkerFaceColor = color_list(j,:);
                         s.SizeData = 40;
-                        if app.ESplitCheckBox.Value
+                        if IsSplitDraw
                             legend_entries{end+1} = char(strrep(app.EUITable.ColumnName(algo_list(j)), '_', '\_'));
                             plot_handles(end+1) = s;
                         else
@@ -2774,7 +2778,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     xlabel(ax, '$f_1$', 'interpreter', 'latex');
                     ylabel(ax, '$f_2$', 'interpreter', 'latex');
 
-                    if app.ESplitCheckBox.Value
+                    if IsSplitDraw
                         legend(ax, plot_handles, legend_entries, 'Location', 'best');
                     end
 
@@ -2794,7 +2798,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                         s.SizeData = 3;
                         hold(ax, 'on');
 
-                        if app.ESplitCheckBox.Value
+                        if IsSplitDraw
                             legend_entries{end+1} = 'Pareto Front';
                             plot_handles(end+1) = s;
                         else
@@ -2821,7 +2825,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                         s.MarkerFaceColor = color_list(j,:);
                         s.SizeData = 40;
 
-                        if app.ESplitCheckBox.Value
+                        if IsSplitDraw
                             legend_entries{end+1} = char(strrep(app.EUITable.ColumnName(algo_list(j)), '_', '\_'));
                             plot_handles(end+1) = s;
                         else
@@ -2838,7 +2842,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     ylabel(ax, '$f_2$', 'interpreter', 'latex');
                     zlabel(ax, '$f_3$', 'interpreter', 'latex');
 
-                    if app.ESplitCheckBox.Value
+                    if IsSplitDraw
                         legend(ax, plot_handles, legend_entries, 'Location', 'best');
                     end
 
@@ -2871,7 +2875,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                             p(j).LineWidth = 1.5;
                             hold(ax, 'on');
                         end
-                        if app.ESplitCheckBox.Value
+                        if IsSplitDraw
                             legend_entries{end+1} = char(strrep(app.EUITable.ColumnName(algo_list(j)), '_', '\_'));
                             plot_handles(end+1) = p(j);
                         else
@@ -2883,18 +2887,18 @@ classdef MTO_GUI < matlab.apps.AppBase
                         end
                     end
 
-                    ylim([0,1]);
+                    % ylim([0,1]); % Unify
                     xlabel(ax, 'Dimension', 'interpreter', 'latex');
-                    ylabel(ax, 'Unified $f$', 'interpreter', 'latex');
+                    ylabel(ax, '$f$', 'interpreter', 'latex');
 
-                    if app.ESplitCheckBox.Value
+                    if IsSplitDraw
                         legend(ax, plot_handles, legend_entries, 'Location', 'best');
                     end
                     
                     title(ax, strrep(app.EUITable.RowName(prob_list(i)), '_', '\_'),'FontWeight','bold')
                     grid(ax, 'on');
                 end
-                if app.ESplitCheckBox.Value
+                if IsSplitDraw
                     set(ax,'OuterPosition',[0,0,1,1]);
                     set(ax,'FontWeight','bold'); set(get(fig,'Children'),'FontSize',fontsize);
                     set(ax,'LooseInset',get(ax,'TightInset')+0.02)
@@ -2903,7 +2907,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                     set(ax,'LooseInset',get(ax,'TightInset')+0.02)
                 end
             end
-            if ~app.ESplitCheckBox.Value
+            if ~IsSplitDraw
                 lgd = legend(ax, all_plot_handles, all_legend_entries, 'Orientation', 'horizontal', 'FontSize', 14);
                 lgd.Layout.Tile = 'south';
             end
