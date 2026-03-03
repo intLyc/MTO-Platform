@@ -1,4 +1,4 @@
-function score = getHV(PopObj, optimum)
+function score = getHV(PopObj, optimum, normalize_flag)
 
 % This code is copy from PlatEMO(https://github.com/BIMK/PlatEMO).
 %------------------------------- Copyright --------------------------------
@@ -10,16 +10,26 @@ function score = getHV(PopObj, optimum)
 % Computational Intelligence Magazine, 2017, 12(4): 73-87".
 %--------------------------------------------------------------------------
 
+if nargin < 3
+    normalize_flag = true;
+end
+
 if size(PopObj, 2) ~= size(optimum, 2)
     score = nan;
 else
     [N, M] = size(PopObj);
-    fmin = min(min(PopObj, [], 1), zeros(1, M));
-    fmax = max(optimum, [], 1);
-    fmax(fmax <= fmin) = fmin(fmax <= fmin) +1e-6;
-    PopObj = (PopObj - repmat(fmin, N, 1)) ./ repmat((fmax - fmin) * 1.1, N, 1);
-    PopObj(any(PopObj > 1, 2), :) = [];
-    RefPoint = ones(1, M);
+    if normalize_flag
+        fmin = min(min(PopObj, [], 1), zeros(1, M));
+        fmax = max(optimum, [], 1);
+        fmax(fmax <= fmin) = fmin(fmax <= fmin) +1e-6;
+        PopObj = (PopObj - repmat(fmin, N, 1)) ./ repmat((fmax - fmin) * 1.1, N, 1);
+        PopObj(any(PopObj > 1, 2), :) = [];
+        RefPoint = ones(1, M);
+    else
+        PopObj(any(PopObj > optimum, 2), :) = [];
+        RefPoint = optimum;
+    end
+
     if isempty(PopObj)
         score = 0;
     elseif M < 4

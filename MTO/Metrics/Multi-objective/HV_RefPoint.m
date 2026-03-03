@@ -71,7 +71,7 @@ for prob = 1:length(MTOData.Problems)
                         Obj = squeeze(MTOData.Results(prob, algo, rep).Obj{task}(g, :, :));
                         CV = squeeze(MTOData.Results(prob, algo, rep).CV(task, g, :));
                         BestObj{rep} = getBestObj(Obj, CV);
-                        hv(rep, g) = getHV(BestObj{rep}, ref_point{task});
+                        hv(rep, g) = getHV(BestObj{rep}, ref_point{task}, false);
                     end
                 end
             else
@@ -80,7 +80,7 @@ for prob = 1:length(MTOData.Problems)
                         Obj = squeeze(MTOData.Results(prob, algo, rep).Obj{task}(g, :, :));
                         CV = squeeze(MTOData.Results(prob, algo, rep).CV(task, g, :));
                         BestObj{rep} = getBestObj(Obj, CV);
-                        hv(rep, g) = getHV(BestObj{rep}, ref_point{task});
+                        hv(rep, g) = getHV(BestObj{rep}, ref_point{task}, false);
                     end
                 end
             end
