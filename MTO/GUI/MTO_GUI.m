@@ -2693,7 +2693,8 @@ classdef MTO_GUI < matlab.apps.AppBase
 
                 M = size(app.EResultParetoData.Obj{prob_list(i),1,1}, 2);
                 if M == 2
-                    if ~isempty(app.EResultParetoData.Optimum)
+                    if ~isempty(app.EResultParetoData.Optimum) && ...
+                            size(app.EResultParetoData.Optimum{prob_list(i)}, 1) > 2
                         % draw optimum
                         x = squeeze(app.EResultParetoData.Optimum{prob_list(i)}(:, 1));
                         y = squeeze(app.EResultParetoData.Optimum{prob_list(i)}(:, 2));
@@ -2785,7 +2786,8 @@ classdef MTO_GUI < matlab.apps.AppBase
                     title(ax, strrep(app.EUITable.RowName(prob_list(i)), '_', '\_'),'FontWeight','bold')
                     grid(ax, 'on');
                 elseif M == 3
-                    if ~isempty(app.EResultParetoData.Optimum)
+                    if ~isempty(app.EResultParetoData.Optimum) && ...
+                            size(app.EResultParetoData.Optimum{prob_list(i)}, 1) > 2
                         % draw optimum
                         x = squeeze(app.EResultParetoData.Optimum{prob_list(i)}(:, 1));
                         y = squeeze(app.EResultParetoData.Optimum{prob_list(i)}(:, 2));
