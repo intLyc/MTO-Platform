@@ -19,7 +19,9 @@ if size(PopObj, 2) ~= size(optimum, 2)
 else
     [N, M] = size(PopObj);
     if normalize_flag
-        fmin = min(min(PopObj, [], 1), zeros(1, M));
+        % fmin = min(min(PopObj, [], 1), zeros(1, M));
+        % Use the minimum of the known Pareto front as fmin for normalization
+        fmin = min(optimum, [], 1);
         fmax = max(optimum, [], 1);
         fmax(fmax <= fmin) = fmin(fmax <= fmin) +1e-6;
         PopObj = (PopObj - repmat(fmin, N, 1)) ./ repmat((fmax - fmin) * 1.1, N, 1);
