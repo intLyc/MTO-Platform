@@ -121,13 +121,21 @@ methods
                 bestSol = Algo.Best{t};
                 Algo.Result(t, gen).Obj = bestSol.Obj;
                 Algo.Result(t, gen).CV = bestSol.CV;
-                Algo.Result(t, gen).Dec = bestSol.Dec;
+                if Algo.Save_Dec
+                    Algo.Result(t, gen).Dec = bestSol.Dec;
+                else
+                    Algo.Result(t, gen).Dec = [];
+                end
             else
                 % Multi-objective: Record Population
                 popSol = Pop{t};
                 Algo.Result(t, gen).Obj = popSol.Objs;
                 Algo.Result(t, gen).CV = popSol.CVs;
-                Algo.Result(t, gen).Dec = popSol.Decs;
+                if Algo.Save_Dec
+                    Algo.Result(t, gen).Dec = popSol.Decs;
+                else
+                    Algo.Result(t, gen).Dec = [];
+                end
             end
         end
         % Stage update
