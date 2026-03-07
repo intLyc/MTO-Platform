@@ -51,18 +51,23 @@ result.ColumnName = {MTOData.Algorithms.Name};
 row = 1;
 for prob = 1:length(MTOData.Problems)
     % Get Optimum
-    optimum = {};
-    real_optimum = MTOData.Problems(prob).Optimum; % Real Pareto Front
+    optimum = MTOData.Problems(prob).Optimum; % Real Pareto Front
     for task = 1:MTOData.Problems(prob).T
-        AllBestObj = [];
-        AllBestCV = [];
+        fmax{task} = -inf(1, MTOData.Problems(prob).M(task));
+        fmin{task} = inf(1, MTOData.Problems(prob).M(task));
         for algo = 1:length(MTOData.Algorithms)
             for rep = 1:MTOData.Reps
-                AllBestObj = [AllBestObj; squeeze(MTOData.Results(prob, algo, rep).Obj{task}(end, :, :))];
-                AllBestCV = [AllBestCV; squeeze(MTOData.Results(prob, algo, rep).CV(task, end, :))];
+                Obj = MTOData.Results(prob, algo, rep).Obj{task};
+                CV = MTOData.Results(prob, algo, rep).CV(task, :, :);
+                FlattenObj = reshape(Obj, [], size(Obj, 3));
+                FlattenCV = reshape(CV, [], 1);
+                FeasibleObj = FlattenObj(FlattenCV <= 0, :);
+                if ~isempty(FeasibleObj)
+                    fmax{task} = max(fmax{task}, max(FeasibleObj, [], 1));
+                    fmin{task} = min(fmin{task}, min(FeasibleObj, [], 1));
+                end
             end
         end
-        optimum{task} = getBestObj(AllBestObj, AllBestCV);
         for algo = 1:length(MTOData.Algorithms)
             gen = size(MTOData.Results(prob, algo, 1).Obj{task}, 1);
             hv = zeros(MTOData.Reps, gen);
@@ -73,7 +78,7 @@ for prob = 1:length(MTOData.Problems)
                         Obj = squeeze(MTOData.Results(prob, algo, rep).Obj{task}(g, :, :));
                         CV = squeeze(MTOData.Results(prob, algo, rep).CV(task, g, :));
                         BestObj{rep} = getBestObj(Obj, CV);
-                        hv(rep, g) = getHV(BestObj{rep}, optimum{task});
+                        hv(rep, g) = getHV(BestObj{rep}, fmax{task}, fmin{task});
                     end
                 end
             else
@@ -82,7 +87,7 @@ for prob = 1:length(MTOData.Problems)
                         Obj = squeeze(MTOData.Results(prob, algo, rep).Obj{task}(g, :, :));
                         CV = squeeze(MTOData.Results(prob, algo, rep).CV(task, g, :));
                         BestObj{rep} = getBestObj(Obj, CV);
-                        hv(rep, g) = getHV(BestObj{rep}, optimum{task});
+                        hv(rep, g) = getHV(BestObj{rep}, fmax{task}, fmin{task});
                     end
                 end
             end
@@ -93,7 +98,7 @@ for prob = 1:length(MTOData.Problems)
                 result.ParetoData.Obj{row, algo, rep} = squeeze(BestObj{rep}(:, :));
             end
         end
-        result.ParetoData.Optimum{row}(:, :) = real_optimum{task};
+        result.ParetoData.Optimum{row}(:, :) = optimum{task};
         row = row + 1;
     end
 end

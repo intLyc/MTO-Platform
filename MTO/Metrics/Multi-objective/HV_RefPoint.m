@@ -53,14 +53,8 @@ for prob = 1:length(MTOData.Problems)
     % Get Optimum
     ref_point = MTOData.Problems(prob).Optimum; % Reference Point
     for task = 1:MTOData.Problems(prob).T
-        AllBestObj = [];
-        AllBestCV = [];
-        for algo = 1:length(MTOData.Algorithms)
-            for rep = 1:MTOData.Reps
-                AllBestObj = [AllBestObj; squeeze(MTOData.Results(prob, algo, rep).Obj{task}(end, :, :))];
-                AllBestCV = [AllBestCV; squeeze(MTOData.Results(prob, algo, rep).CV(task, end, :))];
-            end
-        end
+        fmax{task} = -inf(1, MTOData.Problems(prob).M(task));
+        fmax{task} = max(fmax{task}, max(ref_point{task}, [], 1));
         for algo = 1:length(MTOData.Algorithms)
             gen = size(MTOData.Results(prob, algo, 1).Obj{task}, 1);
             hv = zeros(MTOData.Reps, gen);
@@ -71,7 +65,7 @@ for prob = 1:length(MTOData.Problems)
                         Obj = squeeze(MTOData.Results(prob, algo, rep).Obj{task}(g, :, :));
                         CV = squeeze(MTOData.Results(prob, algo, rep).CV(task, g, :));
                         BestObj{rep} = getBestObj(Obj, CV);
-                        hv(rep, g) = getHV(BestObj{rep}, ref_point{task}, false);
+                        hv(rep, g) = getHV(BestObj{rep}, fmax{task});
                     end
                 end
             else
@@ -80,7 +74,7 @@ for prob = 1:length(MTOData.Problems)
                         Obj = squeeze(MTOData.Results(prob, algo, rep).Obj{task}(g, :, :));
                         CV = squeeze(MTOData.Results(prob, algo, rep).CV(task, g, :));
                         BestObj{rep} = getBestObj(Obj, CV);
-                        hv(rep, g) = getHV(BestObj{rep}, ref_point{task}, false);
+                        hv(rep, g) = getHV(BestObj{rep}, fmax{task});
                     end
                 end
             end

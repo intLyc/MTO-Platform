@@ -59,17 +59,24 @@ for prob = 1:length(MTOData.Problems)
     AllCV = zeros(size(AllOptimum, 1), 1);
     real_optimum = getBestObj(AllOptimum, AllCV);
 
-    AllBestObj = [];
-    AllBestCV = [];
+    fmax{prob} = -inf(1, mean(MTOData.Problems(prob).M));
+    fmin{prob} = inf(1, mean(MTOData.Problems(prob).M));
     for algo = 1:length(MTOData.Algorithms)
         for task = 1:MTOData.Problems(prob).T
             for rep = 1:MTOData.Reps
-                AllBestObj = [AllBestObj; squeeze(MTOData.Results(prob, algo, rep).Obj{task}(end, :, :))];
-                AllBestCV = [AllBestCV; squeeze(MTOData.Results(prob, algo, rep).CV(task, end, :))];
+                Obj_raw = MTOData.Results(prob, algo, rep).Obj{task};
+                CV_raw = MTOData.Results(prob, algo, rep).CV(task, :, :);
+                FlattenObj = reshape(Obj_raw, [], size(Obj_raw, 3));
+                FlattenCV = reshape(CV_raw, [], 1);
+                FeasibleObj = FlattenObj(FlattenCV <= 0, :);
+                if ~isempty(FeasibleObj)
+                    fmax{prob} = max(fmax{prob}, max(FeasibleObj, [], 1));
+                    fmin{prob} = min(fmin{prob}, min(FeasibleObj, [], 1));
+                end
             end
         end
     end
-    optimum = getBestObj(AllBestObj, AllBestCV);
+
     for algo = 1:length(MTOData.Algorithms)
         gen = size(MTOData.Results(prob, algo, 1).Obj{1}, 1);
         hv = zeros(MTOData.Reps, gen);
@@ -85,7 +92,7 @@ for prob = 1:length(MTOData.Problems)
                         CV = [CV; CV_t];
                     end
                     BestObj{rep} = getBestObj(Obj, CV);
-                    hv(rep, g) = getHV(BestObj{rep}, optimum);
+                    hv(rep, g) = getHV(BestObj{rep}, fmax{prob}, fmin{prob});
                 end
             end
         else
@@ -99,7 +106,7 @@ for prob = 1:length(MTOData.Problems)
                         CV = [CV; CV_t];
                     end
                     BestObj{rep} = getBestObj(Obj, CV);
-                    hv(rep, g) = getHV(BestObj{rep}, optimum);
+                    hv(rep, g) = getHV(BestObj{rep}, fmax{prob}, fmin{prob});
                 end
             end
         end
