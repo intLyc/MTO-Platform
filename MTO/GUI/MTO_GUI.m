@@ -3239,7 +3239,11 @@ classdef MTO_GUI < matlab.apps.AppBase
                 idx = find(strcmp({data_selected(1).NodeData.Metrics.Name}, metric_name{i}));
                 MTOData.Metrics(i).Name = metric_name{i};
                 MTOData.Metrics(i).Result.Metric = data_selected(1).NodeData.Metrics(idx).Result.Metric;
-                MTOData.Metrics(i).Result.IsRelative = data_selected(1).NodeData.Metrics(idx).Result.IsRelative;
+                if isfield(data_selected(1).NodeData.Metrics(idx).Result, 'IsRelative')
+                    MTOData.Metrics(i).Result.IsRelative = data_selected(1).NodeData.Metrics(idx).Result.IsRelative;
+                else
+                    MTOData.Metrics(i).Result.IsRelative = false;
+                end
                 MTOData.Metrics(i).Result.RowName = data_selected(1).NodeData.Metrics(idx).Result.RowName;
                 MTOData.Metrics(i).Result.ColumnName = data_selected(1).NodeData.Metrics(idx).Result.ColumnName;
                 reps = 0;
@@ -3378,7 +3382,11 @@ classdef MTO_GUI < matlab.apps.AppBase
                 idx = find(strcmp({data_selected(1).NodeData.Metrics.Name}, metric_name{i}));
                 MTOData.Metrics(i).Name = metric_name{i};
                 MTOData.Metrics(i).Result.Metric = data_selected(1).NodeData.Metrics(idx).Result.Metric;
-                MTOData.Metrics(i).Result.IsRelative = data_selected(1).NodeData.Metrics(idx).Result.IsRelative;
+                if isfield(data_selected(1).NodeData.Metrics(idx).Result, 'IsRelative')
+                    MTOData.Metrics(i).Result.IsRelative = data_selected(1).NodeData.Metrics(idx).Result.IsRelative;
+                else
+                    MTOData.Metrics(i).Result.IsRelative = false;
+                end
                 MTOData.Metrics(i).Result.RowName = data_selected(1).NodeData.Metrics(idx).Result.RowName;
                 algo = 0;
                 for j = 1:length(data_selected)
@@ -3507,7 +3515,11 @@ classdef MTO_GUI < matlab.apps.AppBase
                 idx = find(strcmp({data_selected(1).NodeData.Metrics.Name}, metric_name{i}));
                 MTOData.Metrics(i).Name = metric_name{i};
                 MTOData.Metrics(i).Result.Metric = data_selected(1).NodeData.Metrics(idx).Result.Metric;
-                MTOData.Metrics(i).Result.IsRelative = data_selected(1).NodeData.Metrics(idx).Result.IsRelative;
+                if isfield(data_selected(1).NodeData.Metrics(idx).Result, 'IsRelative')
+                    MTOData.Metrics(i).Result.IsRelative = data_selected(1).NodeData.Metrics(idx).Result.IsRelative;
+                else
+                    MTOData.Metrics(i).Result.IsRelative = false;
+                end
                 MTOData.Metrics(i).Result.ColumnName = data_selected(1).NodeData.Metrics(idx).Result.ColumnName;
                 prob = 0;
                 for j = 1:length(data_selected)
