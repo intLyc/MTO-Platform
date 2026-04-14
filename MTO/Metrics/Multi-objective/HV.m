@@ -57,9 +57,9 @@ for prob = 1:length(MTOData.Problems)
         fmin{task} = inf(1, MTOData.Problems(prob).M(task));
         for algo = 1:length(MTOData.Algorithms)
             for rep = 1:MTOData.Reps
-                Obj = MTOData.Results(prob, algo, rep).Obj{task};
-                CV = MTOData.Results(prob, algo, rep).CV(task, :, :);
-                FlattenObj = reshape(Obj, [], size(Obj, 3));
+                Obj = MTOData.Results(prob, algo, rep).Obj{task}(end, :, :);
+                CV = MTOData.Results(prob, algo, rep).CV(task, end, :);
+                FlattenObj = reshape(Obj, [], size(MTOData.Results(prob, algo, rep).Obj{task}, 3));
                 FlattenCV = reshape(CV, [], 1);
                 FeasibleObj = FlattenObj(FlattenCV <= 0, :);
                 if ~isempty(FeasibleObj)
