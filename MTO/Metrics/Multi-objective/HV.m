@@ -53,8 +53,7 @@ for prob = 1:length(MTOData.Problems)
     % Get Optimum
     optimum = MTOData.Problems(prob).Optimum; % Real Pareto Front
     for task = 1:MTOData.Problems(prob).T
-        fmax{task} = -inf(1, MTOData.Problems(prob).M(task));
-        fmin{task} = inf(1, MTOData.Problems(prob).M(task));
+        MergedObj = [];
         for algo = 1:length(MTOData.Algorithms)
             for rep = 1:MTOData.Reps
                 Obj = MTOData.Results(prob, algo, rep).Obj{task}(end, :, :);
@@ -62,12 +61,20 @@ for prob = 1:length(MTOData.Problems)
                 FlattenObj = reshape(Obj, [], size(MTOData.Results(prob, algo, rep).Obj{task}, 3));
                 FlattenCV = reshape(CV, [], 1);
                 FeasibleObj = FlattenObj(FlattenCV <= 0, :);
-                if ~isempty(FeasibleObj)
-                    fmax{task} = max(fmax{task}, max(FeasibleObj, [], 1));
-                    fmin{task} = min(fmin{task}, min(FeasibleObj, [], 1));
-                end
+                MergedObj = [MergedObj; FeasibleObj];
             end
         end
+
+        if ~isempty(MergedObj)
+            ND = NDSort(MergedObj, 1) == 1;
+            NDSet = MergedObj(ND, :);
+            fmax{task} = max(NDSet, [], 1);
+            fmin{task} = min(NDSet, [], 1);
+        else
+            fmax{task} = ones(1, MTOData.Problems(prob).M(task));
+            fmin{task} = zeros(1, MTOData.Problems(prob).M(task));
+        end
+
         for algo = 1:length(MTOData.Algorithms)
             gen = size(MTOData.Results(prob, algo, 1).Obj{task}, 1);
             hv = zeros(MTOData.Reps, gen);

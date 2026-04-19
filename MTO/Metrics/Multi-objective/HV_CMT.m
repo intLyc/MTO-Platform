@@ -59,8 +59,7 @@ for prob = 1:length(MTOData.Problems)
     AllCV = zeros(size(AllOptimum, 1), 1);
     real_optimum = getBestObj(AllOptimum, AllCV);
 
-    fmax{prob} = -inf(1, mean(MTOData.Problems(prob).M));
-    fmin{prob} = inf(1, mean(MTOData.Problems(prob).M));
+    MergedObj = [];
     for algo = 1:length(MTOData.Algorithms)
         for task = 1:MTOData.Problems(prob).T
             for rep = 1:MTOData.Reps
@@ -70,11 +69,20 @@ for prob = 1:length(MTOData.Problems)
                 FlattenCV = reshape(CV_raw, [], 1);
                 FeasibleObj = FlattenObj(FlattenCV <= 0, :);
                 if ~isempty(FeasibleObj)
-                    fmax{prob} = max(fmax{prob}, max(FeasibleObj, [], 1));
-                    fmin{prob} = min(fmin{prob}, min(FeasibleObj, [], 1));
+                    MergedObj = [MergedObj; FeasibleObj];
                 end
             end
         end
+    end
+
+    if ~isempty(MergedObj)
+        ND = NDSort(MergedObj, 1) == 1;
+        NDSet = MergedObj(ND, :);
+        fmax{prob} = max(NDSet, [], 1);
+        fmin{prob} = min(NDSet, [], 1);
+    else
+        fmax{prob} = ones(1, mean(MTOData.Problems(prob).M));
+        fmin{prob} = zeros(1, mean(MTOData.Problems(prob).M));
     end
 
     for algo = 1:length(MTOData.Algorithms)
