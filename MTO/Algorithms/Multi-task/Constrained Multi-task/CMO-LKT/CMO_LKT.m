@@ -19,7 +19,7 @@ classdef CMO_LKT < Algorithm
 % purposes. All publications which use this platform should acknowledge
 % the use of MToP and cite as "Y. Li, W. Gong, T. Zhang, F. Ming,
 % S. Li, Q. Gu, and Y.-S. Ong, MToP: A MATLAB Benchmarking Platform for
-% Evolutionary Multitasking, 2023, arXiv:2312.08134"
+% Evolutionary Multitasking, ACM Trans. Evol. Learn. Optim., 2026"
 %--------------------------------------------------------------------------
 
 %%%%在另一任务变好时，完全学习他。随机学习自己是邻域学习，随机学习其他是种群。学习自己最好是邻域Niche最好，其他是随机NIche最好。

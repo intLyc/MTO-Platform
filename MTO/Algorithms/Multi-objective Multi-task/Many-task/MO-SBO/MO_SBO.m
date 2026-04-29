@@ -20,7 +20,7 @@ classdef MO_SBO < Algorithm
 % purposes. All publications which use this platform should acknowledge
 % the use of MToP and cite as "Y. Li, W. Gong, T. Zhang, F. Ming,
 % S. Li, Q. Gu, and Y.-S. Ong, MToP: A MATLAB Benchmarking Platform for
-% Evolutionary Multitasking, 2023, arXiv:2312.08134"
+% Evolutionary Multitasking, ACM Trans. Evol. Learn. Optim., 2026"
 %--------------------------------------------------------------------------
 
 properties (SetAccess = public)
