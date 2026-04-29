@@ -44,7 +44,7 @@ In order to enhance reproducibility and avoid unnecessary repeated experiments, 
 > Copyright (c) Yanchi Li. You are free to use the MToP for research purposes. All publications which use this platform should acknowledge the use of MToP and cite as "Y. Li, W. Gong, T. Zhang, F. Ming, S. Li, Q. Gu, and Y.-S. Ong, MToP: A MATLAB Benchmarking Platform for Evolutionary Multitasking, ACM Trans. Evol. Learn. Optim., 2026"
 
 ```
-@Article{Li2023MToP,
+@Article{Li2026MToP,
   title   = {{MToP}: A {MATLAB} Benchmarking Platform for Evolutionary Multitasking},
   author  = {Li, Yanchi and Gong, Wenyin and Zhang, Tingyu and Ming, Fei and Li, Shuijia and Gu, Qiong and Ong, Yew-Soon},
   journal = {ACM Transactions on Evolutionary Learning and Optimization}, 
