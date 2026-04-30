@@ -129,11 +129,11 @@ methods
             else
                 % Multi-objective: Record Population
                 popSol = Pop{t};
-                % make population size equal to Prob.N
+                % make population size equals Prob.N
                 current_size = length(popSol);
                 if current_size > 0 && current_size < Prob.N
-                    num_to_add =;
-                    popSol = [popSol, popSol(randi(Prob.N - current_size, 1, num_to_add))];
+                    num_to_add = Prob.N - current_size;
+                    popSol = [popSol, popSol(randi(current_size, 1, num_to_add))];
                 end
                 % record population
                 Algo.Result(t, gen).Obj = popSol.Objs;
