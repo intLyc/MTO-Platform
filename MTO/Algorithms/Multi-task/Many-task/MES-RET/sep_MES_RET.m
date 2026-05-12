@@ -21,7 +21,7 @@ classdef sep_MES_RET < Algorithm
 
 properties (SetAccess = public)
     sigma0 = 0.3
-    tau = 2
+    tau = 1
 end
 
 methods
