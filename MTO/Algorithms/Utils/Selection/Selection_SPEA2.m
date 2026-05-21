@@ -1,4 +1,4 @@
-function [population, Fitness, Next] = Selection_SPEA2(population, N, Epsilon)
+function [population, Fitness, Next, FitAll] = Selection_SPEA2(population, N, Epsilon)
 % This code is copy from PlatEMO(https://github.com/BIMK/PlatEMO).
 
 % The environmental selection of SPEA2
@@ -23,6 +23,7 @@ Cons = population.Cons;
 CVs = sum(max(0, Cons), 2);
 CVs(CVs < Ep) = 0; % Epsilon Constraint
 Fitness = CalFitness(population.Objs, CVs);
+FitAll = Fitness;
 
 %% Environmental selection
 Next = Fitness < 1;
