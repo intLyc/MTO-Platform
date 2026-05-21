@@ -1,7 +1,7 @@
 # Multitask Optimization Platform (MToP)
 
 [![](https://img.shields.io/badge/Download-Latest-green)](https://github.com/intLyc/MTO-Platform/archive/refs/heads/master.zip)
-[![](https://img.shields.io/badge/Release-v1.9-orange)](#mto-platform)
+[![](https://img.shields.io/badge/Release-v1.10-orange)](#mto-platform)
 [![](https://img.shields.io/badge/Matlab-%3E%3DR2022b-blue)](#mto-platform)
 
 [![GitHub Repo stars](https://img.shields.io/github/stars/intLyc/MTO-Platform?style=social)](#mto-platform)
@@ -22,7 +22,7 @@ MToP is a user-friendly tool with a graphical user interface that makes it easy 
 
 ### 📄 Documents
 
-[**[Paper]**](https://arxiv.org/abs/2312.08134)
+[**[Paper]**](https://dl.acm.org/doi/10.1145/3812535)
 : Paper introducing MToP in detail.
 
 [**[User Guide]**](./Doc/User-Guide.md)
@@ -63,6 +63,32 @@ In order to enhance reproducibility and avoid unnecessary repeated experiments, 
 *QQ Group: 862974231*
 
 <img src="./Doc/ReadmeFigure/MToP-QQ-Group.jpg" width="150px">
+
+## Release Highlights of MToP v1.10
+
+**New Algorithms:** 🆕
+- MES-RET (Single-objective Many-task ICML 2026)
+- MMTO-TGT (Multi-objective Multi-task TEVC 2026)
+- EMT-MSKT (Multi-objective Multi-task TSMC 2026)
+
+**New Features & Enhancements:** ✨
+- Adopt penalty methods to improve boundary handling for ES
+- Introduce a data length reduction function in the Data Process Module
+- Enhance Hypervolume (HV) and HV_CMT calculations, including the addition of the `HV_RefPoint` function
+- Refactor Evolution Strategies (e.g., MTES, OpenAI-ES) with SGD, Adam optimizer, and learning rate/sigma decay
+- Enhance command-line usage examples to support direct plotting
+
+**Documentation:** 📄
+- Update the User Guide and provide a Chinese version
+- Add comprehensive algorithm, problem, and metric reference tables, alongside new guideline figures
+- Update MToP's copyright and publication references to 2026
+
+**Optimizations and Bug Fixes:** ⚡
+- Fix population size processing bugs on tasks with different objectives
+- Fix Pareto Front drawing issues when dimensions > 3
+- Optimize and simplify evaluation logic, fitness ranking, and context menus
+- Handle missing `IsRelative` fields dynamically in metrics results to improve data merging stability
+
 
 ## Release Highlights of MToP v1.9
 
