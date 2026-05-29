@@ -71,8 +71,8 @@ methods
     end
 
     function setTasks(Prob)
-        if count(py.sys.path, 'Problems/Test/MaT-Gym') == 0
-            py.sys.path().append('Problems/Test/MaT-Gym');
+        if count(py.sys.path, 'Problems/Policy Search/MaT-Gym') == 0
+            py.sys.path().append('Problems/Policy Search/MaT-Gym');
         end
         try
             py.importlib.reload(py.importlib.import_module('gym_runner'));
