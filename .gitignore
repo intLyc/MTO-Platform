@@ -4,5 +4,8 @@ MTOData*
 # test file
 test/
 
+# python cache
+__pycache__
+
 # macos trash
 .DS_Store
