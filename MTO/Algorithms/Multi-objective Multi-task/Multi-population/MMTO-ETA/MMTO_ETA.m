@@ -53,8 +53,8 @@ methods
                 population{t}(i).CR = rand();
             end
             rwd{t} = zeros();
-            rwd_history{t} = []; % 初始化每个任务的 rwd 历史
-            pro_history{t} = []; % 初始化每个任务的 pro 历史
+            rwd_history{t} = []; % Initialize rwd history for each task
+            pro_history{t} = []; % Initialize pro history for each task
         end
 
         while Algo.notTerminated(Prob, population)
@@ -89,65 +89,20 @@ methods
                 [population{t}, Fitness{t}, Next] = Selection_SPEA2(population{t}, Prob.N);
                 allStrategies = [offspring.S];
 
-                % 统计每种策略的个体总数
+                % Count the total number of individuals for each strategy
                 strategyCounts = histcounts(allStrategies, 1:4);
-                % 获取存活个体的索引
-                survivedIndices = Next(Prob.N + 1:end); % offspring 部分的存活情况
+                % Get the indices of surviving individuals
+                survivedIndices = Next(Prob.N + 1:end); % Survival status of the offspring part
 
-                % 获取存活的个体策略编号
+                % Get the strategy numbers of surviving individuals
                 survivedStrategies = allStrategies(survivedIndices);
-                % 统计存活的个体中各策略的数量
+                % Count the number of each strategy among the surviving individuals
                 survivedCounts = histcounts(survivedStrategies, 1:4);
                 rwd{t} = rwd{t} + survivedCounts ./ strategyCounts;
                 rwd_history{t} = [rwd_history{t}; rwd{t}];
                 pro_history{t} = [pro_history{t}; pro{t}];
             end
         end
-        %         % 定义颜色和线型
-        %         colors = lines(3); % 或者 parula(3), turbo(3) 等
-        %         lineStyles = {'-', '--', ':'};
-        %
-        %         for t = 1:Prob.T
-        %             figure('Color', 'w');
-        %             set(gcf, 'Renderer', 'painters'); % 高清绘图
-        %             hold on;
-        %
-        %             % 提取当前任务数据
-        %             pro_t = pro_history{t};
-        %             p1 = pro_t(:, 1);
-        %             p2 = pro_t(:, 2);
-        %             p3 = pro_t(:, 3);
-        %             x = 1:length(p1);
-        %
-        %             % 绘制三条线（无阴影）
-        %             for i = 1:3
-        %                 p = pro_t(:, i);
-        %                 plot(x, p, 'Color', colors(i, :), 'LineStyle', lineStyles{i}, ...
-        %                     'LineWidth', 2.5, 'DisplayName', sprintf('s%d', i));
-        %             end
-        %
-        %             % 自动设置 Y 轴范围（加上下边距）
-        %             all_probs = [p1; p2; p3];
-        %             minY = max(0, min(all_probs) - 0.05);
-        %             maxY = min(1, max(all_probs) + 0.05);
-        %             ylim([minY, maxY]);
-        %
-        %             % 添加标题、标签、美化
-        %             title(sprintf('Task %d - Probability Trends', t), 'FontSize', 14, 'FontWeight', 'bold');
-        %             xlabel('Iteration', 'FontSize', 12);
-        %             ylabel('Probability', 'FontSize', 12);
-        %             legend('show', 'Location', 'northwest');
-        %             grid on;
-        %
-        %             % 坐标轴美化
-        %             ax = gca;
-        %             ax.FontSize = 12;
-        %             ax.GridAlpha = 0.25;
-        %             ax.LineWidth = 1;
-        %             ax.Box = 'off';
-        %             hold off;
-        %         end
-
     end
 
     function offspring = Generation(Algo, population, Prob, Model, t, R, pro)
