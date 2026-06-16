@@ -25,17 +25,20 @@ classdef MTEA_DCK < Algorithm
 properties (SetAccess = public)
     Tau = 0.1
     TRC0 = 0.3
+    BoundType = 1
 end
 
 methods
     function Parameter = getParameter(Algo)
         Parameter = {'Tau', num2str(Algo.Tau), ...
-                'TRC0', num2str(Algo.TRC0)};
+                'TRC0', num2str(Algo.TRC0), ...
+                'BoundType', num2str(Algo.BoundType)};
     end
 
     function Algo = setParameter(Algo, Parameter)
         Algo.Tau = str2double(Parameter{1});
         Algo.TRC0 = str2double(Parameter{2});
+        Algo.BoundType = str2double(Parameter{3});
     end
 
     function run(Algo, Prob)
@@ -168,13 +171,17 @@ methods
             offspring(i).V = temp(2, :);
 
             % Boundary check
-            rnd_lower = 0 + rand(size(population{t}(winner{t}(i)).Dec)) .* (population{t}(winner{t}(i)).Dec - 0);
-            vio_low = find(offspring(i).Dec < 0);
-            offspring(i).Dec(vio_low) = rnd_lower(vio_low);
-            rnd_upper = population{t}(winner{t}(i)).Dec + rand(size(population{t}(winner{t}(i)).Dec)) .* (1 - population{t}(winner{t}(i)).Dec);
-            vio_up = find(offspring(i).Dec > 1);
-            offspring(i).Dec(vio_up) = rnd_upper(vio_up);
-            offspring(i).Dec = real(max(0, min(1, offspring(i).Dec)));
+            if Algo.BoundType == 1
+                rnd_lower = 0 + rand(size(population{t}(winner{t}(i)).Dec)) .* (population{t}(winner{t}(i)).Dec - 0);
+                vio_low = find(offspring(i).Dec < 0);
+                offspring(i).Dec(vio_low) = rnd_lower(vio_low);
+                rnd_upper = population{t}(winner{t}(i)).Dec + rand(size(population{t}(winner{t}(i)).Dec)) .* (1 - population{t}(winner{t}(i)).Dec);
+                vio_up = find(offspring(i).Dec > 1);
+                offspring(i).Dec(vio_up) = rnd_upper(vio_up);
+                offspring(i).Dec = real(max(0, min(1, offspring(i).Dec)));
+            elseif Algo.BoundType == 2
+                offspring(i).Dec = real(max(0, min(1, offspring(i).Dec)));
+            end
         end
     end
 
