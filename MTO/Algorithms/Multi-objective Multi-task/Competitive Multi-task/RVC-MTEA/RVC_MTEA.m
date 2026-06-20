@@ -30,6 +30,7 @@ properties (SetAccess = public)
     NR = 2
     MuC = 20
     MuM = 15
+    useDT = false
 end
 
 methods
@@ -40,7 +41,8 @@ methods
                 'Delta: Probability of choosing parents locally', num2str(Algo.Delta), ...
                 'NR: Maximum number of solutions replaced by each offspring', num2str(Algo.NR), ...
                 'MuC: Simulated Binary Crossover', num2str(Algo.MuC), ...
-                'MuM: Polynomial Mutation', num2str(Algo.MuM)};
+                'MuM: Polynomial Mutation', num2str(Algo.MuM), ...
+                'Use DirectTransfer', num2str(Algo.useDT)};
     end
 
     function Algo = setParameter(Algo, Parameter)
@@ -51,6 +53,7 @@ methods
         Algo.NR = str2double(Parameter{5});
         Algo.MuC = str2double(Parameter{6});
         Algo.MuM = str2double(Parameter{7});
+        Algo.useDT = str2double(Parameter{8});
     end
 
     function run(Algo, Prob)
@@ -150,6 +153,37 @@ methods
                     population{t}(P(find(g_old >= g_new & CVP == CVO | CVP > CVO, Algo.NR))) = offspring;
                     archive{t} = [archive{t}, offspring];
                 end
+
+                if Algo.useDT % Use direct transfer for one solution
+                    % Extra cross-task evaluation after all N individuals in task t have evolved
+                    other_task = randi(Prob.T);
+                    while other_task == t
+                        other_task = randi(Prob.T);
+                    end
+                    candidate = population{other_task}(randi(N));
+                    if Prob.D(other_task) < Prob.D(t)
+                        donor = population{t}(randi(N));
+                        candidate.Dec(Prob.D(other_task) + 1:Prob.D(t)) = donor.Dec(Prob.D(other_task) + 1:Prob.D(t));
+                    end
+                    candidate = Algo.Evaluation(candidate, Prob, t);
+                    Z{t} = min(Z{t}, candidate.Obj);
+
+                    switch Algo.Type
+                        case 1
+                            g_old = max(abs(population{t}.Objs - repmat(Z{t}, N, 1)) .* W, [], 2);
+                            g_new = max(repmat(abs(candidate.Obj - Z{t}), N, 1) .* W, [], 2);
+                        case 2
+                            Zmax = max(population{t}.Objs, [], 1);
+                            g_old = max(abs(population{t}.Objs - repmat(Z{t}, N, 1)) ./ repmat(Zmax - Z{t}, N, 1) .* W, [], 2);
+                            g_new = max(repmat(abs(candidate.Obj - Z{t}) ./ (Zmax - Z{t}), N, 1) .* W, [], 2);
+                    end
+                    CVP = population{t}.CVs;
+                    replace = find((g_old >= g_new & CVP == candidate.CV) | CVP > candidate.CV, Algo.NR);
+                    if ~isempty(replace)
+                        population{t}(replace) = candidate;
+                        archive{t} = [archive{t}, candidate];
+                    end
+                end
             end
 
             % Update success search direction
@@ -165,10 +199,11 @@ methods
 
             % Update archive using non-dominated sorting and truncation
             allArc = [archive{:}];
-            tempN = length(allArc) / Prob.T;
+            counts = cellfun(@length, archive);
+            cumCounts = [0, cumsum(counts)];
             FrontNo = NDSort(allArc.Objs, allArc.CVs, inf);
             for t = 1:Prob.T
-                FrontNo_t = FrontNo((t - 1) * tempN + (1:tempN));
+                FrontNo_t = FrontNo(cumCounts(t) + (1:counts(t)));
                 next = FrontNo_t == 1;
                 if sum(next) < Prob.N
                     [~, rank] = sort(FrontNo_t);
