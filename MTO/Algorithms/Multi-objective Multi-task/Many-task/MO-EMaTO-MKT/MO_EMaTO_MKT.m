@@ -134,7 +134,7 @@ methods
     function [clusterModel, population] = LEKT(Algo, population, task_num, difference)
         clusterModel = struct;
         K = Algo.K; %cluster numbers
-        knowledge_task_num = Algo.KTN; %number of tasks involved in knowledge transfer
+        knowledge_task_num = min(Algo.KTN, task_num); %number of tasks involved in knowledge transfer
         TempPopulation = population;
         dim = length(TempPopulation{1}(1).Dec);
         for i = 1:task_num
