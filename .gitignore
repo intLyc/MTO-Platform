@@ -9,3 +9,6 @@ __pycache__
 
 # macos trash
 .DS_Store
+
+# github files
+.github/
