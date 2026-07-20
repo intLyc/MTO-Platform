@@ -201,7 +201,7 @@ methods
             end
             % Generate samples using the transferred variance information
             for i = tr_num + 1:tr_num * 2
-                u = v .* CMA.sigma{t} .* sqrt(CMA.C{t})' .* randn(1, CMA.n{t});
+                u = v .* CMA.sigma{t} .* sqrt(max(0, CMA.C{t}))' .* randn(1, CMA.n{t});
                 CMA.sample{t}(i).Dec = CMA.mDec{t} + u;
             end
         end
@@ -280,7 +280,7 @@ methods
         CMA.mDec{t} = CMA.weights{t} * rankDecs;
         Algo.Mean{t} = CMA.mDec{t};
         % Update evolution paths
-        CMA.ps{t} = (1 - CMA.cs{t}) * CMA.ps{t} + sqrt(CMA.cs{t} * (2 - CMA.cs{t}) * CMA.mueff{t}) * (CMA.mDec{t} - oldDec)' ./ sqrt(CMA.C{t}) / CMA.sigma{t};
+        CMA.ps{t} = (1 - CMA.cs{t}) * CMA.ps{t} + sqrt(CMA.cs{t} * (2 - CMA.cs{t}) * CMA.mueff{t}) * (CMA.mDec{t} - oldDec)' ./ sqrt(max(0, CMA.C{t})) / CMA.sigma{t};
         hsig = norm(CMA.ps{t}) / sqrt(1 - (1 - CMA.cs{t})^(2 * (ceil((Algo.FE - CMA.lambda{t} * (t - 1)) / (CMA.lambda{t} * Prob.T)) + 1))) < CMA.hth{t};
         CMA.pc{t} = (1 - CMA.cc{t}) * CMA.pc{t} + hsig * sqrt(CMA.cc{t} * (2 - CMA.cc{t}) * CMA.mueff{t}) * (CMA.mDec{t} - oldDec)' / CMA.sigma{t};
         % Update covariance matrix
@@ -292,7 +292,7 @@ methods
 
         if ~isempty(CMA.PreviousPara{t})
             CMA.sigma_ratio(t) = CMA.sigma{t} / CMA.PreviousPara{t}.sigma;
-            CMA.std_ratio(t, 1:CMA.n{t}) = sqrt(CMA.C{t})' ./ CMA.PreviousPara{t}.std;
+            CMA.std_ratio(t, 1:CMA.n{t}) = sqrt(max(0, CMA.C{t}))' ./ CMA.PreviousPara{t}.std;
             CMA.mdec_matrix(t, 1:CMA.n{t}) = CMA.mDec{t};
         end
     end
@@ -300,7 +300,7 @@ methods
     function Para = SavePara(Algo, CMA, t)
         % Save parameters for the next generation
         Para = struct();
-        Para.std = sqrt(CMA.C{t})';
+        Para.std = sqrt(max(0, CMA.C{t}))';
         Para.sigma = CMA.sigma{t};
         bestObj = CMA.gBest{t}.Obj;
         bestCV = CMA.gBest{t}.CV;
@@ -311,7 +311,7 @@ methods
         % Check stopping criteria (sigma * max(pc, std) < 1e-12)
         for t = 1:Prob.T
             if CMA.StopFlag(t), continue; end % Skip the task that has stopped
-            if all(CMA.sigma{t} * (max(abs(CMA.pc{t}), sqrt(CMA.C{t}))) < 1e-12)
+            if all(CMA.sigma{t} * (max(abs(CMA.pc{t}), sqrt(max(0, CMA.C{t})))) < 1e-12)
                 CMA.StopFlag(t) = true;
             end
         end

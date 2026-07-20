@@ -300,10 +300,11 @@ methods
             else
                 CMA.C{t} = triu(CMA.C{t}) + triu(CMA.C{t}, 1)'; % enforce symmetry
                 [CMA.B{t}, CMA.D{t}] = eig(CMA.C{t}); % eigen decomposition, B==normalized eigenvectors
-                if min(diag(CMA.D{t})) < 0
+                CMA.D{t} = real(diag(CMA.D{t})); % ensure real eigenvalues (avoid complex from numerical asymmetry)
+                if min(CMA.D{t}) < 0
                     CMA.StopFlag(t) = true;
                 else
-                    CMA.D{t} = sqrt(diag(CMA.D{t})); % D contains standard deviations now
+                    CMA.D{t} = sqrt(max(0, CMA.D{t})); % D contains standard deviations now
                 end
             end
             if CMA.StopFlag(t)
@@ -315,7 +316,7 @@ methods
         % Update knowledge extraction parameters
         if ~isempty(CMA.PreviousPara{t})
             CMA.sigma_ratio(t) = CMA.sigma{t} / CMA.PreviousPara{t}.sigma;
-            CMA.std_ratio(t, 1:CMA.n{t}) = sqrt(diag(CMA.C{t}))' ./ CMA.PreviousPara{t}.std;
+            CMA.std_ratio(t, 1:CMA.n{t}) = sqrt(max(0, diag(CMA.C{t})))' ./ CMA.PreviousPara{t}.std;
             CMA.mdec_matrix(t, 1:CMA.n{t}) = CMA.mDec{t};
         end
     end
@@ -323,7 +324,7 @@ methods
     function Para = SavePara(Algo, CMA, t)
         % Save parameters for the next generation
         Para = struct();
-        Para.std = sqrt(diag(CMA.C{t}))';
+        Para.std = sqrt(max(0, diag(CMA.C{t})))';
         Para.sigma = CMA.sigma{t};
         bestObj = CMA.gBest{t}.Obj;
         bestCV = CMA.gBest{t}.CV;
@@ -333,7 +334,7 @@ methods
     function CMA = CheckStop(Algo, Prob, CMA)
         % Check stopping criteria (sigma * max(pc, std) < 1e-12)
         for t = 1:Prob.T
-            if all(CMA.sigma{t} * (max(abs(CMA.pc{t}), sqrt(diag(CMA.C{t})))) < 1e-12)
+            if all(CMA.sigma{t} * (max(abs(CMA.pc{t}), sqrt(max(0, diag(CMA.C{t}))))) < 1e-12)
                 CMA.StopFlag(t) = true;
             end
         end
