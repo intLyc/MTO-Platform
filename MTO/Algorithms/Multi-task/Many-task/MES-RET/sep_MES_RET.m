@@ -189,8 +189,13 @@ methods
             mStep_partial = mean(sqrt(sum((decs(:, 1:eff_dim) - CMA.mDec{t}(1:eff_dim)).^2, 2)));
             % Generate tr_num samples toward the mean in the effective dimension
             for i = 1:tr_num
-                u = m(1:eff_dim) - CMA.mDec{t}(1:eff_dim) + CMA.sigma{t} * (sqrt(CMA.C{t}(1:eff_dim)) .* randn(eff_dim, 1))';
-                CMA.sample{t}(i).Dec(1:eff_dim) = CMA.mDec{t}(1:eff_dim) + u / norm(u) * mStep_partial;
+                u = m(1:eff_dim) - CMA.mDec{t}(1:eff_dim) + CMA.sigma{t} * (sqrt(max(0, CMA.C{t}(1:eff_dim))) .* randn(eff_dim, 1))';
+                u_norm = norm(u);
+                if u_norm > 1e-12
+                    CMA.sample{t}(i).Dec(1:eff_dim) = CMA.mDec{t}(1:eff_dim) + u / u_norm * mStep_partial;
+                else
+                    CMA.sample{t}(i).Dec(1:eff_dim) = CMA.mDec{t}(1:eff_dim);
+                end
             end
 
             % Covariance: Distribution variation sampling

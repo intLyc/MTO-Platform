@@ -191,7 +191,12 @@ methods
             for i = 1:tr_num
                 temp = (CMA.B{t} * (CMA.D{t} .* randn(CMA.n{t}, 1)))';
                 u = m(1:eff_dim) - CMA.mDec{t}(1:eff_dim) + CMA.sigma{t} * temp(1:eff_dim);
-                CMA.sample{t}(i).Dec(1:eff_dim) = CMA.mDec{t}(1:eff_dim) + u / norm(u) * mStep_partial;
+                u_norm = norm(u);
+                if u_norm > 1e-12
+                    CMA.sample{t}(i).Dec(1:eff_dim) = CMA.mDec{t}(1:eff_dim) + u / u_norm * mStep_partial;
+                else
+                    CMA.sample{t}(i).Dec(1:eff_dim) = CMA.mDec{t}(1:eff_dim);
+                end
             end
 
             % Covariance: Distribution variation sampling
@@ -202,7 +207,7 @@ methods
             end
             % Generate samples using the transferred variance information
             for i = tr_num + 1:tr_num * 2
-                u = v .* CMA.sigma{t} .* sqrt(diag(CMA.C{t}))' .* randn(1, CMA.n{t});
+                u = v .* CMA.sigma{t} .* sqrt(max(0, diag(CMA.C{t})))' .* randn(1, CMA.n{t});
                 CMA.sample{t}(i).Dec = CMA.mDec{t} + u;
             end
         end
