@@ -339,14 +339,19 @@ methods
     function CMA = CheckStop(Algo, Prob, CMA)
         % Check stopping criteria (sigma * max(pc, std) < 1e-12)
         for t = 1:Prob.T
+            if CMA.StopFlag(t), continue; end % Skip the task that has stopped
             if all(CMA.sigma{t} * (max(abs(CMA.pc{t}), sqrt(max(0, diag(CMA.C{t}))))) < 1e-12)
                 CMA.StopFlag(t) = true;
             end
         end
-        % If all tasks stop, reset the stop flags to continue
+        % If all tasks stop, reset distribution (same as CMA-ES)
         if all(CMA.StopFlag)
             for t = 1:Prob.T
                 CMA.StopFlag(t) = false;
+                CMA.B{t} = eye(CMA.n{t}, CMA.n{t});
+                CMA.D{t} = ones(CMA.n{t}, 1);
+                CMA.C{t} = eye(CMA.n{t}, CMA.n{t});
+                CMA.invsqrtC{t} = eye(CMA.n{t}, CMA.n{t});
             end
         end
     end

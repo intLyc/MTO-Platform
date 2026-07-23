@@ -320,10 +320,11 @@ methods
                 CMA.StopFlag(t) = true;
             end
         end
-        % If all tasks stop, reset the stop flags to continue
+        % If all tasks stop, reset distribution (same as sep-CMA-ES)
         if all(CMA.StopFlag)
             for t = 1:Prob.T
                 CMA.StopFlag(t) = false;
+                CMA.C{t} = ones(CMA.n{t}, 1);
             end
         end
     end
