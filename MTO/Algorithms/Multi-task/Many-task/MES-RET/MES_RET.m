@@ -305,7 +305,8 @@ methods
             else
                 CMA.C{t} = triu(CMA.C{t}) + triu(CMA.C{t}, 1)'; % enforce symmetry
                 [CMA.B{t}, CMA.D{t}] = eig(CMA.C{t}); % eigen decomposition, B==normalized eigenvectors
-                CMA.D{t} = real(diag(CMA.D{t})); % ensure real eigenvalues (avoid complex from numerical asymmetry)
+                CMA.B{t} = real(CMA.B{t}); % ensure real eigenvectors (avoid complex from LAPACK fallback)
+                CMA.D{t} = real(diag(CMA.D{t})); % ensure real eigenvalues
                 if min(CMA.D{t}) < 0
                     CMA.StopFlag(t) = true;
                 else
