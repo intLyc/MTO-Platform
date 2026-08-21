@@ -131,9 +131,9 @@ methods
                 parent2 = population{t}(par2_idx);
                 parent3 = population{t}(par3_idx);
 
-                replace1 = logical.empty();
-                replace2 = logical.empty();
-                replace3 = logical.empty();
+                replace1 = false(1, 0);
+                replace2 = false(1, 0);
+                replace3 = false(1, 0);
 
                 offspring1 = Individual_DE.empty();
                 offspring2 = Individual_DE.empty();
@@ -158,6 +158,7 @@ methods
                     offspring1 = Algo.Generation_1(parent1, transpop1, population{t}, union, pop_pbest);
                     offspring1 = Algo.Evaluation(offspring1, Prob, t);
                     [~, replace1] = Selection_Tournament(parent1, offspring1);
+                    replace1 = reshape(replace1, 1, []);
                     n_succ1 = length(find(replace1 == 1));
                     r_succ1 = n_succ1 / length(parent1);
                     r_suc1{t} = [r_suc1{t}, r_succ1];
@@ -170,6 +171,7 @@ methods
                     offspring2 = Algo.Generation_1(parent2, transpop2, population{t}, union, pop_pbest);
                     offspring2 = Algo.Evaluation(offspring2, Prob, t);
                     [~, replace2] = Selection_Tournament(parent2, offspring2);
+                    replace2 = reshape(replace2, 1, []);
                     n_succ2 = length(find(replace2 == 1));
                     r_succ2 = n_succ2 / length(parent2);
                     r_suc2{t} = [r_suc2{t}, r_succ2];
@@ -182,6 +184,7 @@ methods
                     offspring3 = Algo.Generation_3(parent3, population{t}, union, pop_pbest);
                     offspring3 = Algo.Evaluation(offspring3, Prob, t);
                     [~, replace3] = Selection_Tournament(parent3, offspring3);
+                    replace3 = reshape(replace3, 1, []);
                     n_succ3 = length(find(replace3 == 1));
                     r_succ3 = n_succ3 / length(parent3);
                     r_suc3{t} = [r_suc3{t}, r_succ3];

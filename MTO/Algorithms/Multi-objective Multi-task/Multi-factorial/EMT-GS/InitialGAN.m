@@ -83,9 +83,12 @@ end
 function x = gatext(x)
     x = gather(extractdata(x));
 end
-%% gpu dl array wrapper
+%% GPU/CPU dl array wrapper
 function dlx = gpdl(x, labels)
-    dlx = gpuArray(dlarray(x, labels));
+    dlx = dlarray(x, labels);
+    if canUseGPU
+        dlx = gpuArray(dlx);
+    end
 end
 %% Weight initialization
 function parameter = initializeGaussian(parameterSize, sigma)

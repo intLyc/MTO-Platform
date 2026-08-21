@@ -73,6 +73,7 @@ methods
                 offspring = Algo.Evaluation(offspring, Prob, t);
                 % Selection
                 [population{t}, replace] = Selection_Tournament(population{t}, offspring);
+                replace = reshape(replace, 1, []);
 
                 % Update succ and fail memory
                 ns = accumarray(flag(:), replace(:), [4, 1], @sum, 0);

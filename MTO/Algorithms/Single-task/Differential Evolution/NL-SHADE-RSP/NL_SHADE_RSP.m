@@ -98,6 +98,7 @@ methods
                 offspring = Algo.Evaluation(offspring, Prob, t);
                 % Selection
                 [~, replace] = Selection_Tournament(population{t}, offspring);
+                replace = reshape(replace, 1, []);
 
                 % Calculate probability of archive use
                 delta_fa = mean(population{t}(replace & arc_flag).Objs' - offspring(replace & arc_flag).Objs');

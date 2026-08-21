@@ -18,7 +18,9 @@ properties
     Best cell % Best individual found
     Mean cell % Mean of distribution
     Result struct % Result structure array
-    Result_Num double % Convergence Results Num
+    Result_Num double = 50 % Convergence Results Num
+    Result_Buffer struct % Full results saved only at FE checkpoints
+    Result_Buffer_FE double % FE associated with each buffered checkpoint
     Save_Dec logical = false % Save Decision Variables Flag
     Check_Status_Fn = @(varargin)[]
     Draw_Dec logical = false
@@ -44,6 +46,8 @@ methods
         Algo.FE_Gen = [];
         Algo.Best = {};
         Algo.Result = struct('Obj', {}, 'CV', {}, 'Dec', {});
+        Algo.Result_Buffer = struct('Obj', {}, 'CV', {}, 'Dec', {}, 'PopSize', {});
+        Algo.Result_Buffer_FE = [];
     end
 
     function Parameter = getParameter(Algo)
@@ -59,29 +63,7 @@ methods
 
     function Result = getResult(Algo, Prob)
         % Get the final result after the run
-        Result = gen2eva(Algo.Result, Algo.FE_Gen, Algo.Result_Num);
-        if Algo.Save_Dec
-            maxD = max(Prob.D);
-            for t = 1:size(Result, 1)
-                currLb = Prob.Lb{t};
-                currUb = Prob.Ub{t};
-                currD = Prob.D(t);
-                Range = currUb - currLb;
-                for idx = 1:size(Result, 2)
-                    DecNorm = Result(t, idx).Dec;
-                    RealDec = currLb + DecNorm(:, 1:currD) .* Range;
-                    if currD < maxD
-                        ExtendedDec = nan(size(RealDec, 1), maxD);
-                        ExtendedDec(:, 1:currD) = RealDec;
-                        Result(t, idx).Dec = ExtendedDec;
-                    else
-                        Result(t, idx).Dec = RealDec;
-                    end
-                end
-            end
-        else
-            Result = rmfield(Result, 'Dec');
-        end
+        Result = FinalizeAlgorithmResult(Algo, Prob);
     end
 
     function drawInit(Algo, Prob)
@@ -113,40 +95,12 @@ methods
         end
         flag = Algo.FE < Prob.maxFE;
 
-        gen = Algo.Gen;
-        isSingleObj = max(Prob.M) == 1;
-        for t = 1:Prob.T
-            if isSingleObj
-                % Single-objective: Record Best solution
-                bestSol = Algo.Best{t};
-                Algo.Result(t, gen).Obj = bestSol.Obj;
-                Algo.Result(t, gen).CV = bestSol.CV;
-                if Algo.Save_Dec
-                    Algo.Result(t, gen).Dec = bestSol.Dec;
-                else
-                    Algo.Result(t, gen).Dec = [];
-                end
-            else
-                % Multi-objective: Record Population
-                popSol = Pop{t};
-                % make population size equals Prob.N
-                current_size = length(popSol);
-                if current_size > 0 && current_size < Prob.N
-                    num_to_add = Prob.N - current_size;
-                    popSol = [popSol, popSol(randi(current_size, 1, num_to_add))];
-                end
-                % record population
-                Algo.Result(t, gen).Obj = popSol.Objs;
-                Algo.Result(t, gen).CV = popSol.CVs;
-                if Algo.Save_Dec
-                    Algo.Result(t, gen).Dec = popSol.Decs;
-                else
-                    Algo.Result(t, gen).Dec = [];
-                end
-            end
+        if nargin < 3
+            Pop = [];
         end
+        RecordAlgorithmResult(Algo, Prob, Pop);
         % Stage update
-        Algo.FE_Gen(gen) = Algo.FE;
+        Algo.FE_Gen(Algo.Gen) = Algo.FE;
         Algo.Gen = Algo.Gen + 1;
 
         drawnow('limitrate');
