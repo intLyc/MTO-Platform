@@ -53,8 +53,7 @@ methods
                     offspring(i) = population{t}(i);
                     offspring(i).x = mvnrnd(population{t}(i).x, population{t}(i).sigma^2 * population{t}(i).C, 1);
                     offspring(i).Dec = offspring(i).x;
-                    offspring(i).Dec(offspring(i).Dec > 1) = 1;
-                    offspring(i).Dec(offspring(i).Dec < 0) = 0;
+                    offspring(i).Dec = BoundaryClip(offspring(i).Dec);
                 end
                 offspring = Algo.Evaluation(offspring, Prob, t);
 

@@ -176,15 +176,10 @@ methods
 
             % Boundary check
             if Algo.BoundType == 1
-                rnd_lower = 0 + rand(size(population{t}(winner{t}(i)).Dec)) .* (population{t}(winner{t}(i)).Dec - 0);
-                vio_low = find(offspring(i).Dec < 0);
-                offspring(i).Dec(vio_low) = rnd_lower(vio_low);
-                rnd_upper = population{t}(winner{t}(i)).Dec + rand(size(population{t}(winner{t}(i)).Dec)) .* (1 - population{t}(winner{t}(i)).Dec);
-                vio_up = find(offspring(i).Dec > 1);
-                offspring(i).Dec(vio_up) = rnd_upper(vio_up);
-                offspring(i).Dec = real(max(0, min(1, offspring(i).Dec)));
+                offspring(i).Dec = BoundaryRandomParent(offspring(i).Dec, ...
+                    population{t}(winner{t}(i)).Dec);
             elseif Algo.BoundType == 2
-                offspring(i).Dec = real(max(0, min(1, offspring(i).Dec)));
+                offspring(i).Dec = BoundaryClip(offspring(i).Dec);
             end
         end
     end
@@ -223,13 +218,8 @@ methods
             offspring(i).Dec = population{t}(loser{t}(i)).Dec + offspring(i).V;
 
             % Boundary check
-            rnd_lower = 0 + rand(size(population{t}(loser{t}(i)).Dec)) .* (population{t}(loser{t}(i)).Dec - 0);
-            vio_low = find(offspring(i).Dec < 0);
-            offspring(i).Dec(vio_low) = rnd_lower(vio_low);
-            rnd_upper = population{t}(loser{t}(i)).Dec + rand(size(population{t}(loser{t}(i)).Dec)) .* (1 - population{t}(loser{t}(i)).Dec);
-            vio_up = find(offspring(i).Dec > 1);
-            offspring(i).Dec(vio_up) = rnd_upper(vio_up);
-            offspring(i).Dec = real(max(0, min(1, offspring(i).Dec)));
+            offspring(i).Dec = BoundaryRandomParent(offspring(i).Dec, ...
+                population{t}(loser{t}(i)).Dec);
         end
     end
 end

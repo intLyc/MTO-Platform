@@ -116,7 +116,7 @@ methods
                 sd = alpha * ds * Qs * Qt';
                 vec = sd + d2;
                 vec = real(vec);
-                vec = max(0, min(1, vec));
+                vec = BoundaryClip(vec);
                 offspring(randi(Prob.N)).Dec = vec;
                 offspring = Algo.Evaluation(offspring, Prob, t);
                 population{t} = [population{t}, offspring];
@@ -191,7 +191,7 @@ methods
                 offspring(i).Dec = x1Dec + offspring(i).F * (x2Dec - x3Dec);
             end
             offspring(i).Dec = DE_Crossover(offspring(i).Dec, xiDec, offspring(i).CR);
-            offspring(i).Dec = min(max(offspring(i).Dec, 0), 1);
+            offspring(i).Dec = BoundaryClip(offspring(i).Dec);
             idx = find(isnan(offspring(i).Dec));
             offspring(i).Dec(idx) = rand(1, length(idx));
             offspring(i).Dec = real(offspring(i).Dec);

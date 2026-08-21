@@ -137,10 +137,7 @@ methods
             % offspring(i).Dec(offspring(i).Dec > 1) = 1;
             % offspring(i).Dec(offspring(i).Dec < 0) = 0;
 
-            vio_low = find(offspring(i).Dec < 0);
-            offspring(i).Dec(vio_low) = (population{k}(i).Dec(vio_low) + 0) / 2;
-            vio_up = find(offspring(i).Dec > 1);
-            offspring(i).Dec(vio_up) = (population{k}(i).Dec(vio_up) + 1) / 2;
+            offspring(i).Dec = BoundaryMidpoint(offspring(i).Dec, population{k}(i).Dec);
         end
     end
 end

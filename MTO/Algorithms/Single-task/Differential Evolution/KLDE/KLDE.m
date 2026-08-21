@@ -102,7 +102,7 @@ methods
                 offspring(i).Dec = population(x1).Dec + Algo.F * (population(x2).Dec - population(x3).Dec);
             end
             offspring(i).Dec = DE_Crossover(offspring(i).Dec, population(i).Dec, Algo.CR);
-            population(i).Dec = max(min(population(i).Dec, 1), 0);
+            population(i).Dec = BoundaryClip(population(i).Dec);
         end
     end
 end

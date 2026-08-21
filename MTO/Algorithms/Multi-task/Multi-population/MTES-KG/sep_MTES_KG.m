@@ -166,9 +166,7 @@ methods
             % Boundary constraint handling
             boundCVs = zeros(length(sample), 1);
             for i = 1:length(sample)
-                tempDec = sample(i).Dec;
-                tempDec = max(-0.05, min(1.05, tempDec));
-                boundCVs(i) = sum((sample(i).Dec - tempDec).^2);
+                boundCVs(i) = BoundaryViolation(sample(i).Dec, -0.05, 1.05);
             end
             boundCVs(boundCVs > 0) = boundCVs(boundCVs > 0) + max(sample.CVs);
             [~, rank] = sortrows([sample.CVs + boundCVs, sample.Objs], [1, 2]);

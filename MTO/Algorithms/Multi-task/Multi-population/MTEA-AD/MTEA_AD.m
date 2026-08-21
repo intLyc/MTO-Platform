@@ -71,8 +71,7 @@ methods
                     for i = 1:size(tfsol, 1)
                         c = Individual();
                         c.Dec = tfsol(i, :);
-                        c.Dec(c.Dec > 1) = 1;
-                        c.Dec(c.Dec < 0) = 0;
+                        c.Dec = BoundaryClip(c.Dec);
                         transfer_pop = [transfer_pop, c];
                     end
 
@@ -114,8 +113,7 @@ methods
             offspring(count + 1).Dec(swap_indicator) = temp;
 
             for x = count:count + 1
-                offspring(x).Dec(offspring(x).Dec > 1) = 1;
-                offspring(x).Dec(offspring(x).Dec < 0) = 0;
+                offspring(x).Dec = BoundaryClip(offspring(x).Dec);
             end
             count = count + 2;
         end

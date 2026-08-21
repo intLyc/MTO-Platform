@@ -68,8 +68,7 @@ methods
             % Position update
             pop_loser(i).Dec = pop_loser(i).Dec + pop_loser(i).V;
 
-            pop_loser(i).Dec(pop_loser(i).Dec > 1) = 1;
-            pop_loser(i).Dec(pop_loser(i).Dec < 0) = 0;
+            pop_loser(i).Dec = BoundaryClip(pop_loser(i).Dec);
         end
     end
 end

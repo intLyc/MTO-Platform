@@ -348,30 +348,7 @@ methods
             % offspring(i).Dec(offspring(i).Dec < 0) = 0;
 
             % CEC06-CSO CEC10-CSO CEC17-CSO
-            vio_low = find(offspring(i).Dec < 0);
-            if rand() < 0.5
-                offspring(i).Dec(vio_low) = 2 * 0 - offspring(i).Dec(vio_low);
-                vio_temp = offspring(i).Dec(vio_low) > 1;
-                offspring(i).Dec(vio_low(vio_temp)) = 1;
-            else
-                if rand() < 0.5
-                    offspring(i).Dec(vio_low) = 0;
-                else
-                    offspring(i).Dec(vio_low) = 1;
-                end
-            end
-            vio_up = find(offspring(i).Dec > 1);
-            if rand() < 0.5
-                offspring(i).Dec(vio_up) = 2 * 1 - offspring(i).Dec(vio_up);
-                vio_temp = offspring(i).Dec(vio_up) < 0;
-                offspring(i).Dec(vio_up(vio_temp)) = 1;
-            else
-                if rand() < 0.5
-                    offspring(i).Dec(vio_up) = 0;
-                else
-                    offspring(i).Dec(vio_up) = 1;
-                end
-            end
+            offspring(i).Dec = BoundaryReflectRandom(offspring(i).Dec);
         end
     end
 end

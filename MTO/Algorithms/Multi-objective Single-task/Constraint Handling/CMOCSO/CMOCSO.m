@@ -106,8 +106,7 @@ methods
             offspring(count + 1).Dec = GA_Mutation(offspring(count + 1).Dec, Algo.MuM);
 
             for x = count:count + 1
-                offspring(x).Dec(offspring(x).Dec > 1) = 1;
-                offspring(x).Dec(offspring(x).Dec < 0) = 0;
+                offspring(x).Dec = BoundaryClip(offspring(x).Dec);
             end
             count = count + 2;
         end
@@ -127,8 +126,7 @@ methods
             offspring(count + 1).Dec = GA_Mutation(offspring(count + 1).Dec, Algo.MuM);
 
             for x = count:count + 1
-                offspring(x).Dec(offspring(x).Dec > 1) = 1;
-                offspring(x).Dec(offspring(x).Dec < 0) = 0;
+                offspring(x).Dec = BoundaryClip(offspring(x).Dec);
             end
             count = count + 2;
         end

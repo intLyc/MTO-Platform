@@ -138,8 +138,7 @@ methods
         offspring.Dec = DE_Crossover(offspring.Dec, population(1).Dec, Algo.CR);
         offspring.Dec = GA_Mutation(offspring.Dec, Algo.MuM);
 
-        offspring.Dec(offspring.Dec > 1) = 1;
-        offspring.Dec(offspring.Dec < 0) = 0;
+        offspring.Dec = BoundaryClip(offspring.Dec);
     end
 end
 end

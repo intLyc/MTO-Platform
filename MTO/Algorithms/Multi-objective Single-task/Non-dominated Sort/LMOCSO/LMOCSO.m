@@ -87,7 +87,7 @@ methods
         offspring = [off_loser, winner];
         for i = 1:length(offspring)
             offspring(i).Dec = GA_Mutation(offspring(i).Dec, 20);
-            offspring(i).Dec = max(0, min(1, offspring(i).Dec));
+            offspring(i).Dec = BoundaryClip(offspring(i).Dec);
         end
     end
 

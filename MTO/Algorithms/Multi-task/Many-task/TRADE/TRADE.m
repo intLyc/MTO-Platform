@@ -189,10 +189,7 @@ methods
                 population(i).F * (population(x1).Dec - union(x2).Dec);
             offspring(i).Dec = DE_Crossover(offspring(i).Dec, population(i).Dec, population(i).CR);
 
-            vio_low = find(offspring(i).Dec < 0);
-            offspring(i).Dec(vio_low) = (population(i).Dec(vio_low) + 0) / 2;
-            vio_up = find(offspring(i).Dec > 1);
-            offspring(i).Dec(vio_up) = (population(i).Dec(vio_up) + 1) / 2;
+            offspring(i).Dec = BoundaryMidpoint(offspring(i).Dec, population(i).Dec);
         end
     end
 end

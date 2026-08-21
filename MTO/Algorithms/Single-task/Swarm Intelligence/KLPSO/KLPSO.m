@@ -131,7 +131,7 @@ methods
                 % Position update
                 population(i).Dec = population(i).Dec + population(i).V;
             end
-            population(i).Dec = max(min(population(i).Dec, 1), 0);
+            population(i).Dec = BoundaryClip(population(i).Dec);
         end
     end
 end

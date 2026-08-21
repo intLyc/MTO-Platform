@@ -188,7 +188,7 @@ methods
                 x{t} = weighted_means + sgd_step{t};
 
                 % Boundary Constraint
-                x{t} = max(0, min(1, x{t}));
+                x{t} = BoundaryClip(x{t}, Prob);
                 Algo.Mean{t} = x{t}';
             end
 

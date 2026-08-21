@@ -376,8 +376,7 @@ methods
                 if cvScale < 1, cvScale = 1; end
                 penalty = zeros(length(sample), 1);
                 for i = 1:length(sample)
-                    tempDec = max(0, min(1, sample(i).Dec));
-                    violation = sum((sample(i).Dec - tempDec).^2);
+                    violation = BoundaryViolation(sample(i).Dec);
                     penalty(i) = violation * cvScale;
                 end
                 % get rank based on constraint violation
@@ -389,8 +388,7 @@ methods
                 if objScale < 1, objScale = 1; end
                 penalty = zeros(length(sample), 1);
                 for i = 1:length(sample)
-                    tempDec = max(0, min(1, sample(i).Dec));
-                    violation = sum((sample(i).Dec - tempDec).^2);
+                    violation = BoundaryViolation(sample(i).Dec);
                     penalty(i) = violation * objScale;
                 end
                 % get rank based on constraint and objective

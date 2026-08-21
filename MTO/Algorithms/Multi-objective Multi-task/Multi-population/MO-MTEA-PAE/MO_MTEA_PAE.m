@@ -133,7 +133,7 @@ methods
                             temp.KT = 2;
                             temp.OP = 0;
                         end
-                        temp.Dec = max(0, min(1, temp.Dec));
+                        temp.Dec = BoundaryClip(temp.Dec);
                         trPop(count) = temp;
                         count = count + 1;
                     end
@@ -220,7 +220,7 @@ methods
             end
 
             Off(i).KT = 0;
-            Off(i).Dec = max(0, min(1, Off(i).Dec));
+            Off(i).Dec = BoundaryClip(Off(i).Dec);
         end
     end
 end

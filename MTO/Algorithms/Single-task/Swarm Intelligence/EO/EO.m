@@ -102,8 +102,7 @@ methods
             G = G0 .* F;
             offspring(i).Dec = CeqDec + (population(i).Dec - CeqDec) .* F + (G ./ lambda * Algo.V) .* (1 - F);
 
-            offspring(i).Dec(offspring(i).Dec > 1) = 1;
-            offspring(i).Dec(offspring(i).Dec < 0) = 0;
+            offspring(i).Dec = BoundaryClip(offspring(i).Dec);
         end
     end
 end

@@ -197,10 +197,7 @@ methods
             boundCVs = zeros(length(sample), 1);
             for i = 1:length(sample)
                 % Boundary constraint violation
-                tempDec = sample(i).Dec;
-                tempDec(tempDec < -0.05) = -0.05;
-                tempDec(tempDec > 1.05) = 1.05;
-                boundCVs(i) = sum((sample(i).Dec - tempDec).^2);
+                boundCVs(i) = BoundaryViolation(sample(i).Dec, -0.05, 1.05);
             end
             sample = Algo.Evaluation(sample, Prob, t);
             boundCVs(boundCVs > 0) = boundCVs(boundCVs > 0) + max(sample.CVs);

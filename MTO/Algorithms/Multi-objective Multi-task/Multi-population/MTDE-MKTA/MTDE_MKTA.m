@@ -148,7 +148,7 @@ methods
 
             offspring(i).Dec = xDec1 + offspring(i).F * (xDec2 - xDec3);
             offspring(i).Dec = DE_Crossover(offspring(i).Dec, xDeci, offspring(i).CR);
-            offspring(i).Dec = min(max(offspring(i).Dec, 0), 1);
+            offspring(i).Dec = BoundaryClip(offspring(i).Dec);
         end
     end
 end

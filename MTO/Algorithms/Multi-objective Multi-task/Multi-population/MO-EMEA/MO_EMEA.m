@@ -87,8 +87,7 @@ methods
                         for i = 1:size(inject, 1)
                             c = Individual();
                             c.Dec = [inject(i, :), rand(1, max(Prob.D) - Prob.D(t))];
-                            c.Dec(c.Dec > 1) = 1;
-                            c.Dec(c.Dec < 0) = 0;
+                            c.Dec = BoundaryClip(c.Dec);
                             inject_pop = [inject_pop, c];
                         end
                     end
@@ -127,8 +126,7 @@ methods
             offspring(count + 1).Dec = GA_Mutation(offspring(count + 1).Dec, Algo.MuM);
 
             for x = count:count + 1
-                offspring(x).Dec(offspring(x).Dec > 1) = 1;
-                offspring(x).Dec(offspring(x).Dec < 0) = 0;
+                offspring(x).Dec = BoundaryClip(offspring(x).Dec);
             end
             count = count + 2;
         end

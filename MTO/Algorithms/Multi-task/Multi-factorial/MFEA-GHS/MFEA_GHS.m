@@ -105,7 +105,7 @@ methods
                 if rand() < 0.5
                     tmp = population(p(r1));
                     tmp.Dec = population(p(r1)).Dec .* M{t1, t2};
-                    tmp.Dec(tmp.Dec > 1) = 1; tmp.Dec(tmp.Dec < 0) = 0;
+                    tmp.Dec = BoundaryClip(tmp.Dec);
                     offspring(count).Dec = GA_Crossover(tmp.Dec, population(p(r2)).Dec, Algo.MuC);
                     if rand() > mod(Algo.Gen, 2) % OBL
                         offspring(count + 1).Dec = 1 - offspring(count).Dec;
@@ -115,7 +115,7 @@ methods
                 else
                     tmp = population(p(r2));
                     tmp.Dec = population(p(r2)).Dec .* M{t2, t1};
-                    tmp.Dec(tmp.Dec > 1) = 1; tmp.Dec(tmp.Dec < 0) = 0;
+                    tmp.Dec = BoundaryClip(tmp.Dec);
                     offspring(count).Dec = GA_Crossover(population(p(r1)).Dec, tmp.Dec, Algo.MuC);
                     if rand() > mod(Algo.Gen, 2) % OBL
                         offspring(count + 1).Dec = 1 - offspring(count).Dec;
@@ -135,8 +135,7 @@ methods
                 offspring(count + 1).MFFactor = population(p2).MFFactor;
             end
             for x = count:count + 1
-                offspring(x).Dec(offspring(x).Dec > 1) = 1;
-                offspring(x).Dec(offspring(x).Dec < 0) = 0;
+                offspring(x).Dec = BoundaryClip(offspring(x).Dec);
             end
             count = count + 2;
         end

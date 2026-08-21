@@ -119,7 +119,7 @@ methods
                 % Using '+' because 'grad' points to higher fitness rank
                 x{t} = x{t} + current_lr * m_hat ./ (sqrt(v_hat) +1e-8);
                 if Prob.Bounded
-                    x{t} = max(0, min(1, x{t}));
+                    x{t} = BoundaryClip(x{t}, Prob);
                 end
                 Algo.Mean{t} = x{t}';
             end

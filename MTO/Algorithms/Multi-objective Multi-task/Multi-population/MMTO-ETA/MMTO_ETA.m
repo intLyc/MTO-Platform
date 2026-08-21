@@ -193,8 +193,7 @@ methods
                 offspring(i).S = 3;
             end
             offspring(i).Dec = DE_Crossover(offspring(i).Dec, xiDec, offspring(i).CR);
-            offspring(i).Dec = min(max(offspring(i).Dec, 0), 1);
-            offspring(i).Dec = real(offspring(i).Dec);
+            offspring(i).Dec = BoundaryClip(offspring(i).Dec);
         end
     end
 

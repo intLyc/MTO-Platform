@@ -128,12 +128,8 @@ methods
                                 if (rand() < Algo.Beta) || j == l
                                     s.Dec(j) = s.Dec(j) + normrnd(0, 1) * s.Reg(j);
                                 end
-                                if s.Dec(j) > 1
-                                    s.Dec(j) = population{t}(idx(i)).Dec(j) + rand() * (1 - population{t}(idx(i)).Dec(j));
-                                end
-                                if s.Dec(j) < 0
-                                    s.Dec(j) = 0 + rand() * (population{t}(idx(i)).Dec(j) - 0);
-                                end
+                                s.Dec(j) = BoundaryRandomParentScalar(s.Dec(j), ...
+                                    population{t}(idx(i)).Dec(j));
                             end
                             % Compare
                             s = Algo.Evaluation(s, Prob, t);
@@ -186,12 +182,7 @@ methods
                 population(i).F * (population(x1).Dec - population(x2).Dec);
             offspring(i).Dec = DE_Crossover(offspring(i).Dec, population(i).Dec, population(i).CR);
 
-            rnd_lower = 0 + rand(size(population(i).Dec)) .* (population(i).Dec - 0);
-            vio_low = find(offspring(i).Dec < 0);
-            offspring(i).Dec(vio_low) = rnd_lower(vio_low);
-            rnd_upper = population(i).Dec + rand(size(population(i).Dec)) .* (1 - population(i).Dec);
-            vio_up = find(offspring(i).Dec > 1);
-            offspring(i).Dec(vio_up) = rnd_upper(vio_up);
+            offspring(i).Dec = BoundaryRandomParent(offspring(i).Dec, population(i).Dec);
 
             % Region Mutation and Crossover
             offspring(i).Reg = population(i).Reg + ...

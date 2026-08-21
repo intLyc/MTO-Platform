@@ -178,8 +178,7 @@ methods
             offspring(count + 1).Dec = GA_Mutation(offspring(count + 1).Dec, Algo.mum);
 
             for x = count:count + 1
-                offspring(x).Dec(offspring(x).Dec > 1) = 1;
-                offspring(x).Dec(offspring(x).Dec < 0) = 0;
+                offspring(x).Dec = BoundaryClip(offspring(x).Dec);
             end
             count = count + 2;
         end
@@ -194,8 +193,7 @@ methods
             offspring(i).Dec = DE_Crossover(offspring(i).Dec, population(i).Dec, population(i).CR);
 
             rand_Dec = rand(1, length(offspring(i).Dec));
-            offspring(i).Dec(offspring(i).Dec > 1) = rand_Dec(offspring(i).Dec > 1);
-            offspring(i).Dec(offspring(i).Dec < 0) = rand_Dec(offspring(i).Dec < 0);
+            offspring(i).Dec = BoundaryRandomReset(offspring(i).Dec, rand_Dec);
         end
     end
 

@@ -202,8 +202,7 @@ methods
 
             end
 
-            offspring(i).Dec(offspring(i).Dec > 1) = 1;
-            offspring(i).Dec(offspring(i).Dec < 0) = 0;
+            offspring(i).Dec = BoundaryClip(offspring(i).Dec);
 
         end
     end
@@ -265,8 +264,7 @@ methods
                 offspring(i).MFFactor = population(p(1)).MFFactor;
             end
 
-            offspring(i).Dec(offspring(i).Dec > 1) = 1;
-            offspring(i).Dec(offspring(i).Dec < 0) = 0;
+            offspring(i).Dec = BoundaryClip(offspring(i).Dec);
 
         end
     end

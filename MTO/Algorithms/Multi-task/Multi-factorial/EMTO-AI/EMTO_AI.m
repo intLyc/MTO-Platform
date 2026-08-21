@@ -194,8 +194,7 @@ methods
             end
             %Out of bounds handling
             rand_Dec = rand(1, length(offspring(i).Dec));
-            offspring(i).Dec(offspring(i).Dec > 1) = rand_Dec(offspring(i).Dec > 1);
-            offspring(i).Dec(offspring(i).Dec < 0) = rand_Dec(offspring(i).Dec < 0);
+            offspring(i).Dec = BoundaryRandomReset(offspring(i).Dec, rand_Dec);
         end
 
     end %Generation

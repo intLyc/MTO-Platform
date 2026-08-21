@@ -282,10 +282,7 @@ methods
             % offspring(i).Dec(offspring(i).Dec > 1) = 1;
             % offspring(i).Dec(offspring(i).Dec < 0) = 0;
 
-            vio_low = find(offspring1(i).Dec < 0);
-            offspring1(i).Dec(vio_low) = (transpop(i).Dec(vio_low) + 0) / 2;
-            vio_up = find(offspring1(i).Dec > 1);
-            offspring1(i).Dec(vio_up) = (transpop(i).Dec(vio_up) + 1) / 2;
+            offspring1(i).Dec = BoundaryMidpoint(offspring1(i).Dec, transpop(i).Dec);
         end
     end
 
@@ -307,10 +304,7 @@ methods
                 parent3(i).F * (population(x1).Dec - union(x2).Dec);
             offspring3(i).Dec = DE_Crossover(offspring3(i).Dec, parent3(i).Dec, parent3(i).CR);
 
-            vio_low = find(offspring3(i).Dec < 0);
-            offspring3(i).Dec(vio_low) = (parent3(i).Dec(vio_low) + 0) / 2;
-            vio_up = find(offspring3(i).Dec > 1);
-            offspring3(i).Dec(vio_up) = (parent3(i).Dec(vio_up) + 1) / 2;
+            offspring3(i).Dec = BoundaryMidpoint(offspring3(i).Dec, parent3(i).Dec);
         end
     end
 

@@ -231,14 +231,13 @@ methods
                             total2 = total2 + 1;
                         else
                             u = normrnd(q2m, q2c);
-                            u = max(0, min(1, u));
+                            u = BoundaryClip(u);
                             mask = [mask, 2];
                             total3 = total3 + 1;
                         end
                     end
                     offspring(i).Dec = u;
-                    offspring(i).Dec(offspring(i).Dec > 1) = 1;
-                    offspring(i).Dec(offspring(i).Dec < 0) = 0;
+                    offspring(i).Dec = BoundaryClip(offspring(i).Dec);
                 end
 
                 % Evaluation

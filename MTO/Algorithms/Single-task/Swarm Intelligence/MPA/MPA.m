@@ -107,8 +107,7 @@ methods
         end
 
         for i = 1:n
-            offspring(i).Dec(offspring(i).Dec > 1) = 1;
-            offspring(i).Dec(offspring(i).Dec < 0) = 0;
+            offspring(i).Dec = BoundaryClip(offspring(i).Dec);
         end
     end
 

@@ -322,8 +322,7 @@ methods
                 Algo.F * (population(x2).Dec - population(x3).Dec);
             offspring(i).Dec = DE_Crossover(offspring(i).Dec, population(i).Dec, Algo.Cr);
 
-            offspring(i).Dec(offspring(i).Dec > 1) = 1;
-            offspring(i).Dec(offspring(i).Dec < 0) = 0;
+            offspring(i).Dec = BoundaryClip(offspring(i).Dec);
 
         end
     end
@@ -340,8 +339,7 @@ methods
         for i = 1:num
             offspring(i) = population(i);
             offspring(i).Dec = DE_Crossover(population(i).Dec, mean_target_source, Algo.Cr);
-            offspring(i).Dec(offspring(i).Dec > 1) = 1;
-            offspring(i).Dec(offspring(i).Dec < 0) = 0;
+            offspring(i).Dec = BoundaryClip(offspring(i).Dec);
         end
     end
 
@@ -370,8 +368,7 @@ methods
                 Algo.F * (merge_population(x1).Dec - merge_population(i).Dec) + 0.5 * (merge_population(x2).Dec - merge_population(x3).Dec);
 
             offspring(i).Dec = DE_Crossover(offspring(i).Dec, merge_population(i).Dec, Algo.Cr);
-            offspring(i).Dec(offspring(i).Dec > 1) = 1;
-            offspring(i).Dec(offspring(i).Dec < 0) = 0;
+            offspring(i).Dec = BoundaryClip(offspring(i).Dec);
         end
     end
 

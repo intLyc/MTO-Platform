@@ -112,8 +112,7 @@ methods
         for i = 1:Algo.G
             if rand() < Algo.P
                 transfer_pop(i).Dec = 2 * rand() * transfer_pop(i).Dec;
-                transfer_pop(i).Dec(transfer_pop(i).Dec > 1) = 1;
-                transfer_pop(i).Dec(transfer_pop(i).Dec < 0) = 0;
+                transfer_pop(i).Dec = BoundaryClip(transfer_pop(i).Dec);
             end
         end
     end
@@ -132,8 +131,7 @@ methods
             offspring(count + 1).Dec = GA_Mutation(offspring(count + 1).Dec, Algo.MuM);
 
             for x = count:count + 1
-                offspring(x).Dec(offspring(x).Dec > 1) = 1;
-                offspring(x).Dec(offspring(x).Dec < 0) = 0;
+                offspring(x).Dec = BoundaryClip(offspring(x).Dec);
             end
             count = count + 2;
         end

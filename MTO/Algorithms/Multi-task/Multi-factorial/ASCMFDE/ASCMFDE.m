@@ -146,8 +146,7 @@ methods
                 offspring(i).Dec = DE_Crossover(offspring(i).Dec, population(i).Dec, Algo.CR);
             end
 
-            offspring(i).Dec(offspring(i).Dec > 1) = 1;
-            offspring(i).Dec(offspring(i).Dec < 0) = 0;
+            offspring(i).Dec = BoundaryClip(offspring(i).Dec);
         end
     end
 

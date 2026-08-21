@@ -134,8 +134,7 @@ methods
                 end
             end
 
-            offspring(i).Dec(offspring(i).Dec > 1) = 1;
-            offspring(i).Dec(offspring(i).Dec < 0) = 0;
+            offspring(i).Dec = BoundaryClip(offspring(i).Dec);
 
             offspring(i).isChild = true;
             offspring(i).ST = DE_Pool(i);

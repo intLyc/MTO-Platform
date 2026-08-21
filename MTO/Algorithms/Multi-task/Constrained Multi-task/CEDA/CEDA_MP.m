@@ -117,8 +117,7 @@ methods
             swap_indicator = (rand(1, length(population(i).Dec)) >= 0.5);
             offspring(i).Dec(swap_indicator) = tempDec(swap_indicator);
 
-            offspring(i).Dec(offspring(i).Dec > 1) = 1;
-            offspring(i).Dec(offspring(i).Dec < 0) = 0;
+            offspring(i).Dec = BoundaryClip(offspring(i).Dec);
         end
     end
 
@@ -148,8 +147,7 @@ methods
             swap_indicator = (rand(1, length(population(i).Dec)) >= 0.5);
             offspring(i).Dec(swap_indicator) = tempDec(swap_indicator);
 
-            offspring(i).Dec(offspring(i).Dec > 1) = 1;
-            offspring(i).Dec(offspring(i).Dec < 0) = 0;
+            offspring(i).Dec = BoundaryClip(offspring(i).Dec);
         end
     end
 end

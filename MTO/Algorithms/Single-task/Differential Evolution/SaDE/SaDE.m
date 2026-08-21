@@ -129,8 +129,7 @@ methods
                     offspring(i).Dec = population(i).Dec + rand() * (population(x1).Dec - population(i).Dec) + ...
                         offspring(i).F * (population(x2).Dec - population(x3).Dec);
             end
-            idx = offspring(i).Dec < 0 | offspring(i).Dec > 1;
-            offspring(i).Dec(idx) = rand(size(offspring(i).Dec(idx)));
+            offspring(i).Dec = BoundaryRandomResample(offspring(i).Dec);
         end
     end
 end

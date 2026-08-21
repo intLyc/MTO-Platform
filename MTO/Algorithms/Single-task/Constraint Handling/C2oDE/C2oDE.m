@@ -123,38 +123,14 @@ methods
                 rand() * (population(x1).Dec - population(i).Dec) + ...
                 F * (population(x2).Dec - population(x3).Dec);
 
-            offspring(i).Dec(offspring(i).Dec > 1) = 1;
-            offspring(i).Dec(offspring(i).Dec < 0) = 0;
+            offspring(i).Dec = BoundaryClip(offspring(i).Dec);
 
             % boundary check
             for x = j:j + 2
                 % offspring(x).Dec(offspring(x).Dec > 1) = 1;
                 % offspring(x).Dec(offspring(x).Dec < 0) = 0;
 
-                vio_low = find(offspring(x).Dec < 0);
-                if rand() < 0.5
-                    offspring(x).Dec(vio_low) = 2 * 0 - offspring(x).Dec(vio_low);
-                    vio_temp = offspring(x).Dec(vio_low) > 1;
-                    offspring(x).Dec(vio_low(vio_temp)) = 1;
-                else
-                    if rand() < 0.5
-                        offspring(x).Dec(vio_low) = 0;
-                    else
-                        offspring(x).Dec(vio_low) = 1;
-                    end
-                end
-                vio_up = find(offspring(x).Dec > 1);
-                if rand() < 0.5
-                    offspring(x).Dec(vio_up) = 2 * 1 - offspring(x).Dec(vio_up);
-                    vio_temp = offspring(x).Dec(vio_up) < 0;
-                    offspring(x).Dec(vio_up(vio_temp)) = 1;
-                else
-                    if rand() < 0.5
-                        offspring(x).Dec(vio_up) = 0;
-                    else
-                        offspring(x).Dec(vio_up) = 1;
-                    end
-                end
+                offspring(x).Dec = BoundaryReflectRandom(offspring(x).Dec);
             end
         end
     end

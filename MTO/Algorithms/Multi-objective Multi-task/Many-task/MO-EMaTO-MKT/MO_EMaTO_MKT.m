@@ -123,8 +123,7 @@ methods
                 end
 
                 for x = count:count + 1
-                    offspring{t}(x).Dec(offspring{t}(x).Dec > 1) = 1;
-                    offspring{t}(x).Dec(offspring{t}(x).Dec < 0) = 0;
+                    offspring{t}(x).Dec = BoundaryClip(offspring{t}(x).Dec);
                 end
                 count = count + 2;
             end

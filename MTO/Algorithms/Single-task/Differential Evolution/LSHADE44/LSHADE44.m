@@ -206,8 +206,7 @@ methods
                     offspring(i).Dec = DE_Crossover_Exp(offspring(i).Dec, population(i).Dec, population(i).CR);
             end
 
-            offspring(i).Dec(offspring(i).Dec > 1) = 1;
-            offspring(i).Dec(offspring(i).Dec < 0) = 0;
+            offspring(i).Dec = BoundaryClip(offspring(i).Dec);
 
             % vio_low = find(offspring(i).Dec < 0);
             % offspring(i).Dec(vio_low) = (population(i).Dec(vio_low) + 0) / 2;

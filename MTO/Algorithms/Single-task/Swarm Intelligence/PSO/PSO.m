@@ -90,8 +90,7 @@ methods
             % Position update
             population(i).Dec = population(i).Dec + population(i).V;
 
-            population(i).Dec(population(i).Dec > 1) = 1;
-            population(i).Dec(population(i).Dec < 0) = 0;
+            population(i).Dec = BoundaryClip(population(i).Dec);
         end
     end
 end

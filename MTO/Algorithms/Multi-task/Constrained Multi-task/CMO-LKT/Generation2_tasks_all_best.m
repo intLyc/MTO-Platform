@@ -76,8 +76,7 @@ for n = 1:size(Niche2, 1)
             end
         end
 
-        off_Niche2(i).Dec(off_Niche2(i).Dec > 1) = 1;
-        off_Niche2(i).Dec(off_Niche2(i).Dec < 0) = 0;
+        off_Niche2(i).Dec = BoundaryClip(off_Niche2(i).Dec);
     end
     offspring2 = [offspring2 off_Niche2];
 end

@@ -72,8 +72,7 @@ methods
                     if flag == 0
                         offspring(i) = population{t}(i);
                         offspring(i).Dec = normrnd(M{t}, S{t});
-                        offspring(i).Dec(offspring(i).Dec > 1) = 1;
-                        offspring(i).Dec(offspring(i).Dec < 0) = 0;
+                        offspring(i).Dec = BoundaryClip(offspring(i).Dec);
                         offspring(i) = Algo.Evaluation(offspring(i), Prob, t);
                         if offspring(i).Obj > OO.Obj
                             flag = 1;
@@ -83,8 +82,7 @@ methods
                         offspring(i) = population{t}(i);
                         offspring(i).Dec = 2 .* M{t} - offspring(i - 1).Dec;
                         flag = 0;
-                        offspring(i).Dec(offspring(i).Dec > 1) = 1;
-                        offspring(i).Dec(offspring(i).Dec < 0) = 0;
+                        offspring(i).Dec = BoundaryClip(offspring(i).Dec);
                     end
                 end
                 offspring(Prob.N - 1) = population{t}(rank{t}(1));

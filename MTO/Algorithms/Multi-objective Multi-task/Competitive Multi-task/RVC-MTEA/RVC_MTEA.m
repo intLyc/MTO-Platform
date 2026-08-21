@@ -130,7 +130,7 @@ methods
                             search_dir = population{k}(j).SD ./ norm(population{k}(j).SD) .* norm(population{t}(i).SD);
                         end
                         offspring.Dec = offspring.Dec + 2 * rand() * search_dir;
-                        offspring.Dec = max(0, min(1, offspring.Dec));
+                        offspring.Dec = BoundaryClip(offspring.Dec);
                     end
                     offspring = Algo.Evaluation(offspring, Prob, t);
                     % Update the ideal point
@@ -222,7 +222,7 @@ methods
         offspring = population(1);
         offspring.Dec = GA_Crossover(population(1).Dec, population(2).Dec, Algo.MuC);
         offspring.Dec = GA_Mutation(offspring.Dec, Algo.MuM);
-        offspring.Dec = max(0, min(1, offspring.Dec));
+        offspring.Dec = BoundaryClip(offspring.Dec);
     end
 
     function Del = Truncation(Algo, PopObj, K)

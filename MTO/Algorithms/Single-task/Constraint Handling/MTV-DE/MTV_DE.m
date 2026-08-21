@@ -83,8 +83,7 @@ methods
                 offspring(j + k).Dec = population(x1).Dec + Algo.F * (population(x2).Dec - population(x3).Dec);
                 offspring(j + k).Dec = DE_Crossover(offspring(j + k).Dec, population(i).Dec, Algo.CR);
 
-                offspring(j + k).Dec(offspring(j + k).Dec > 1) = 1;
-                offspring(j + k).Dec(offspring(j + k).Dec < 0) = 0;
+                offspring(j + k).Dec = BoundaryClip(offspring(j + k).Dec);
             end
         end
     end

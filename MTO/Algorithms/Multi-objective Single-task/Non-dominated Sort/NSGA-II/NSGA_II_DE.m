@@ -84,8 +84,7 @@ methods
             offspring(i).Dec = DE_Crossover(offspring(i).Dec, population(i).Dec, Algo.CR);
             offspring(i).Dec = GA_Mutation(offspring(i).Dec, Algo.MuM);
 
-            offspring(i).Dec(offspring(i).Dec > 1) = 1;
-            offspring(i).Dec(offspring(i).Dec < 0) = 0;
+            offspring(i).Dec = BoundaryClip(offspring(i).Dec);
         end
     end
 end

@@ -112,8 +112,7 @@ methods
                 offspring(count).MFFactor = t;
                 offspring(count).Dec = w1' .* P(:, a)' + (1 - w1)' .* Q(:, b)';
                 offspring(count).Dec = GA_Mutation(offspring(count).Dec, Algo.MuM);
-                offspring(count).Dec(offspring(count).Dec > 1) = 1;
-                offspring(count).Dec(offspring(count).Dec < 0) = 0;
+                offspring(count).Dec = BoundaryClip(offspring(count).Dec);
                 idx = find(isnan(offspring(count).Dec));
                 offspring(count).Dec(idx) = rand(1, length(idx));
                 count = count + 1;
@@ -147,8 +146,7 @@ methods
                 offspring(count + 1).MFFactor = population(p2).MFFactor;
             end
             for x = count:count + 1
-                offspring(x).Dec(offspring(x).Dec > 1) = 1;
-                offspring(x).Dec(offspring(x).Dec < 0) = 0;
+                offspring(x).Dec = BoundaryClip(offspring(x).Dec);
             end
             count = count + 2;
         end

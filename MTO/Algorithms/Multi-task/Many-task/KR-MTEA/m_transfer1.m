@@ -32,12 +32,7 @@ for n = 1:nTransfer
         else
             new_pop(n).Dec(i) = new_pop(n).Dec(i) + mThis(i) - mPrev(order(i));
         end
-        if new_pop(n).Dec(i) > 1
-            new_pop(n).Dec(i) = 1;
-        end
-        if new_pop(n).Dec(i) < 0
-            new_pop(n).Dec(i) = 0;
-        end
+        new_pop(n).Dec(i) = BoundaryClip(new_pop(n).Dec(i));
     end
 end
 

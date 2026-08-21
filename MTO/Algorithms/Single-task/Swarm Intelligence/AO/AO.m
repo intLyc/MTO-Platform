@@ -80,8 +80,7 @@ methods
                     offspring(i).Dec = QF * Algo.Best{t}.Dec - (G1 * population(i).Dec * rand()) - G2 .* Algo.Levy(max(Prob.D)) + rand() * G1;
                 end
             end
-            offspring(i).Dec(offspring(i).Dec > 1) = 1;
-            offspring(i).Dec(offspring(i).Dec < 0) = 0;
+            offspring(i).Dec = BoundaryClip(offspring(i).Dec);
 
             offspring(i) = Algo.Evaluation(offspring(i), Prob, t);
             population(i) = Selection_Tournament(population(i), offspring(i));

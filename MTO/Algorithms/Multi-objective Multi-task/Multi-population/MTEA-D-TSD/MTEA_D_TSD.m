@@ -200,7 +200,7 @@ methods
     function offspring = Transfer(Algo, population, search_dir)
         offspring = population(1);
         offspring.Dec = population(1).Dec + 2 * rand() * search_dir;
-        offspring.Dec = min(max(offspring.Dec, 0), 1);
+        offspring.Dec = BoundaryClip(offspring.Dec);
     end
 
     function offspring = Generation(Algo, population)
@@ -208,7 +208,7 @@ methods
         offspring.Dec = population(1).Dec + Algo.F * (population(2).Dec - population(3).Dec);
         offspring.Dec = DE_Crossover(offspring.Dec, population(1).Dec, Algo.CR);
         offspring.Dec = GA_Mutation(offspring.Dec, Algo.MuM);
-        offspring.Dec = min(max(offspring.Dec, 0), 1);
+        offspring.Dec = BoundaryClip(offspring.Dec);
     end
 end
 end

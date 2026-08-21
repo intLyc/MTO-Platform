@@ -182,7 +182,7 @@ methods
             end
             offspring(i).Dec = xDeci + offspring(i).F * (xDec1 - xDeci) + offspring(i).F * (xDec2 - xDec3);
             offspring(i).Dec = DE_Crossover(offspring(i).Dec, xDeci, offspring(i).CR);
-            offspring(i).Dec = real(min(max(offspring(i).Dec, 0), 1));
+            offspring(i).Dec = BoundaryClip(offspring(i).Dec);
         end
     end
 
@@ -200,7 +200,7 @@ methods
             sigma = cov(Dec);
             offspring(i).Dec = mvnrnd(mu, sigma);
             offspring(i).Dec = GA_Mutation(offspring(i).Dec, 20);
-            offspring(i).Dec = real(min(max(offspring(i).Dec, 0), 1));
+            offspring(i).Dec = BoundaryClip(offspring(i).Dec);
         end
         offspring(1:half) = Algo.Evaluation(offspring(1:half), Prob, t);
 
@@ -219,7 +219,7 @@ methods
                 offspring(i + half).Dec = mvnrnd(mu, sigma);
                 offspring(i + half).Dec = GA_Mutation(offspring(i + half).Dec, 20);
             end
-            offspring(i + half).Dec = real(min(max(offspring(i + half).Dec, 0), 1));
+            offspring(i + half).Dec = BoundaryClip(offspring(i + half).Dec);
         end
         offspring(1 + half:N) = Algo.Evaluation(offspring(1 + half:N), Prob, t);
     end

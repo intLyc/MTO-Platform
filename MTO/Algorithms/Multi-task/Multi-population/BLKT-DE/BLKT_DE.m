@@ -84,7 +84,7 @@ methods
                     dp2 = Algo.correDecode(population, subpop{k}(r2, :), divD);
                     dp3 = Algo.correDecode(population, subpop{k}(r3, :), divD);
                     v = dp1 + Algo.F * (dp2 - dp3);
-                    v = min(1, max(0, v));
+                    v = BoundaryClip(v);
                     u = Algo.correDecode(population, subpop{k}(i, :), divD);
                     u = DE_Crossover(v, u, Algo.CR);
                     offspring_temp = [offspring_temp; u];
@@ -141,7 +141,7 @@ methods
 
             offspring(i).Dec = population(x1).Dec + Algo.F * (population(x2).Dec - population(x3).Dec);
             offspring(i).Dec = DE_Crossover(offspring(i).Dec, population(i).Dec, Algo.CR);
-            offspring(i).Dec = min(1, max(0, offspring(i).Dec));
+            offspring(i).Dec = BoundaryClip(offspring(i).Dec);
         end
     end
 end

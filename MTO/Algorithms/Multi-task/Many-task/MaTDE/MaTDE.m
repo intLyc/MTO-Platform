@@ -130,8 +130,7 @@ methods
             offspring(i).Dec = DE_Crossover(offspring(i).Dec, population(i).Dec, population(i).CR);
 
             rand_Dec = rand(1, length(offspring(i).Dec));
-            offspring(i).Dec(offspring(i).Dec > 1) = rand_Dec(offspring(i).Dec > 1);
-            offspring(i).Dec(offspring(i).Dec < 0) = rand_Dec(offspring(i).Dec < 0);
+            offspring(i).Dec = BoundaryRandomReset(offspring(i).Dec, rand_Dec);
         end
     end
 
