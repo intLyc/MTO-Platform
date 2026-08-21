@@ -55,8 +55,7 @@ methods
                 if t == k
                     archive{t, k} = b_x;
                 else
-                    Algo.Evaluation(b_x, Prob, k);
-                    archive{t, k} = b_x;
+                    archive{t, k} = Algo.Evaluation(b_x, Prob, k);
                 end
             end
         end

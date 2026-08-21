@@ -1,7 +1,7 @@
 function MTOData = MTO_CMD(AlgoCell, ProbCell, varargin)
 %% MTO_CMD - Hybrid command-line runner for MToP (preserves original data structure)
 % Supports both positional and Name-Value pair style inputs,
-% and preallocates Results as the original struct array so MakeGenEqual works.
+% and preserves the original result data layout.
 %
 % Examples:
 %   MTO_CMD({MFEA, MFDE},{CMT1, CMT2})
@@ -105,10 +105,15 @@ for algo = 1:length(AlgoObject)
 end
 Data.Results = {};
 Data.RunTimes = [];
-% Prepare Results as preallocated struct array to match original layout
+% Prepare Results as a preallocated struct array to match the saved layout
 nProb = length(ProbObject);
 nAlgo = length(AlgoObject);
-Results = repmat(struct('Obj', [], 'Dec', [], 'CV', []), [nProb, nAlgo, Reps]);
+if Save_Dec
+    emptyResult = struct('Obj', [], 'Dec', [], 'CV', []);
+else
+    emptyResult = struct('Obj', [], 'CV', []);
+end
+Results = repmat(emptyResult, [nProb, nAlgo, Reps]);
 
 %% ------------------- Global Seed ---------------------------------------
 seeds = (0:Reps - 1) + Global_Seed;
@@ -160,7 +165,7 @@ for prob = 1:length(ProbObject)
 end
 
 %% ------------------- Save ----------------------------------------------
-Data.Results = MakeGenEqual(Results);
+Data.Results = MakeCMDGenEqual(Results);
 MTOData = Data;
 save(Save_Name, 'MTOData');
 fprintf('** Results saved to "%s"\n', Save_Name);
@@ -169,8 +174,12 @@ end
 
 %% ------------------- Helper: Convert result -----------------------------
 function out = ConvertResult(tmp, prob_obj)
-% Ensure out is always a struct with fields Obj/Dec/CV (possibly empty)
-out = struct('Obj', [], 'Dec', [], 'CV', []);
+% Keep the output fields consistent with Algorithm.getResult.
+if isfield(tmp, 'Dec')
+    out = struct('Obj', [], 'Dec', [], 'CV', []);
+else
+    out = struct('Obj', [], 'CV', []);
+end
 for t = 1:size(tmp, 1)
     for g = 1:size(tmp, 2)
         if max(prob_obj.M) > 1
@@ -189,6 +198,54 @@ for t = 1:size(tmp, 1)
             end
         end
         out.CV(t, g, :) = tmp(t, g).CV;
+    end
+end
+end
+
+%% ------------------- Helper: Equalize saved generations -----------------
+function Results = MakeCMDGenEqual(Results)
+% Equalize repetitions without changing the GUI result utility.
+for prob = 1:size(Results, 1)
+    for algo = 1:size(Results, 2)
+        maxGen = 0;
+        for rep = 1:size(Results, 3)
+            if iscell(Results(prob, algo, rep).Obj)
+                Gen = size(Results(prob, algo, rep).Obj{1}, 1);
+            else
+                Gen = size(Results(prob, algo, rep).Obj, 2);
+            end
+            maxGen = max(maxGen, Gen);
+        end
+
+        for rep = 1:size(Results, 3)
+            if iscell(Results(prob, algo, rep).Obj)
+                for t = 1:numel(Results(prob, algo, rep).Obj)
+                    Gen = size(Results(prob, algo, rep).Obj{t}, 1);
+                    for g = Gen + 1:maxGen
+                        Results(prob, algo, rep).Obj{t}(g, :, :) = ...
+                            Results(prob, algo, rep).Obj{t}(Gen, :, :);
+                        Results(prob, algo, rep).CV(t, g, :) = ...
+                            Results(prob, algo, rep).CV(t, Gen, :);
+                        if isfield(Results, 'Dec')
+                            Results(prob, algo, rep).Dec(t, g, :, :) = ...
+                                Results(prob, algo, rep).Dec(t, Gen, :, :);
+                        end
+                    end
+                end
+            else
+                Gen = size(Results(prob, algo, rep).Obj, 2);
+                for g = Gen + 1:maxGen
+                    Results(prob, algo, rep).Obj(:, g, :) = ...
+                        Results(prob, algo, rep).Obj(:, Gen, :);
+                    Results(prob, algo, rep).CV(:, g, :) = ...
+                        Results(prob, algo, rep).CV(:, Gen, :);
+                    if isfield(Results, 'Dec')
+                        Results(prob, algo, rep).Dec(:, g, :) = ...
+                            Results(prob, algo, rep).Dec(:, Gen, :);
+                    end
+                end
+            end
+        end
     end
 end
 end
