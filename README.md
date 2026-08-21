@@ -39,6 +39,14 @@ In order to enhance reproducibility and avoid unnecessary repeated experiments, 
 [**[Hugging Face]**](https://huggingface.co/datasets/intLyc/MToP-MTOData/tree/main) /
 [**[Baidu Netdisk]**](https://pan.baidu.com/s/1Pk06fBj_4gidkiZe4f1Oww?pwd=mtop)
 
+### Requirements
+
+- MATLAB R2022b or later.
+- Statistics and Machine Learning Toolbox. MToP algorithms, problems, and metrics use functions such as `pdist2`, `mvnpdf`, `ranksum`, and `lhsdesign`.
+- Parallel Computing Toolbox is optional and is only needed when parallel experiment or metric calculation is enabled.
+- Some problem suites have additional dependencies. For example, policy-search problems require a compatible Python environment and the packages listed in their local `requirements.txt`; see the README in the corresponding problem directory.
+
+
 ## Copyright
 
 > Copyright (c) Yanchi Li. You are free to use the MToP for research purposes. All publications which use this platform should acknowledge the use of MToP and cite as "Y. Li, W. Gong, T. Zhang, F. Ming, S. Li, Q. Gu, and Y.-S. Ong, MToP: A MATLAB Benchmarking Platform for Evolutionary Multitasking, ACM Trans. Evol. Learn. Optim., 2026"

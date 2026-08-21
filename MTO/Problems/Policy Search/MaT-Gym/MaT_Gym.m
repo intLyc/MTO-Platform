@@ -71,8 +71,10 @@ methods
     end
 
     function setTasks(Prob)
-        if count(py.sys.path, 'Problems/Policy Search/MaT-Gym') == 0
-            py.sys.path().append('Problems/Policy Search/MaT-Gym');
+        current_dir = fileparts(mfilename('fullpath'));
+        sys_path = py.sys.path;
+        if sys_path.count(current_dir) == 0
+            sys_path.append(current_dir);
         end
         try
             py.importlib.reload(py.importlib.import_module('gym_runner'));
