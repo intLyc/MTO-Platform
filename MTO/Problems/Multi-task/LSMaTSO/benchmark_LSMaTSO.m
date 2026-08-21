@@ -45,8 +45,10 @@ end
 
 current_dir = fileparts(mfilename('fullpath'));
 file_dir = fullfile(current_dir, strcat('Data/LSMaTSO_Data', num2str(index)));
-load(file_dir, 'LSMaTSO_Data');
+data = load(file_dir, 'LSMaTSO_Data');
+LSMaTSO_Data = data.LSMaTSO_Data;
 
+Tasks = repmat(struct('Dim', 0, 'Lb', [], 'Ub', [], 'Fnc', []), 1, task_num);
 for t = 1:task_num
     func_id = choice_functions(mod(t - 1, length(choice_functions)) + 1);
     switch func_id
@@ -229,17 +231,17 @@ end
 %% Seperable. D=300
 
 function [Obj, Con] = Elliptic_S(x, scale, shift)
-x = repmat(scale, size(x, 1), 1) .* (x - repmat(shift, size(x, 1), 1));
+x = scale .* (x - shift);
 [Obj, Con] = Elliptic(x, 1, 0, 0);
 end
 
 function [Obj, Con] = Rastrigin_S(x, scale, shift)
-x = repmat(scale, size(x, 1), 1) .* (x - repmat(shift, size(x, 1), 1));
+x = scale .* (x - shift);
 [Obj, Con] = Rastrigin(x, 1, 0, 0);
 end
 
 function [Obj, Con] = Ackley_S(x, scale, shift)
-x = repmat(scale, size(x, 1), 1) .* (x - repmat(shift, size(x, 1), 1));
+x = scale .* (x - shift);
 [Obj, Con] = Ackley(x, 1, 0, 0);
 end
 
@@ -247,35 +249,35 @@ end
 
 function [Obj, Con] = Elliptic_G(x, scale, rotation, shift, group)
 m = 50; a = 1e+6;
-x = repmat(scale, size(x, 1), 1) .* (x - repmat(shift, size(x, 1), 1));
+x = scale .* (x - shift);
 Obj = a * Elliptic(x(:, group(1:m)), rotation, 0, 0) + Elliptic(x(:, group(m + 1:end)), 1, 0, 0);
 Con = zeros(size(x, 1), 1);
 end
 
 function [Obj, Con] = Rastrigin_G(x, scale, rotation, shift, group)
 m = 50; a = 1e+6;
-x = repmat(scale, size(x, 1), 1) .* (x - repmat(shift, size(x, 1), 1));
+x = scale .* (x - shift);
 Obj = a * Rastrigin(x(:, group(1:m)), rotation, 0, 0) + Rastrigin(x(:, group(m + 1:end)), 1, 0, 0);
 Con = zeros(size(x, 1), 1);
 end
 
 function [Obj, Con] = Ackley_G(x, scale, rotation, shift, group)
 m = 50; a = 1e+6;
-x = repmat(scale, size(x, 1), 1) .* (x - repmat(shift, size(x, 1), 1));
+x = scale .* (x - shift);
 Obj = a * Ackley(x(:, group(1:m)), rotation, 0, 0) + Ackley(x(:, group(m + 1:end)), 1, 0, 0);
 Con = zeros(size(x, 1), 1);
 end
 
 function [Obj, Con] = Schwefel2_G(x, scale, rotation, shift, group)
 m = 50; a = 1e+6;
-x = repmat(scale, size(x, 1), 1) .* (x - repmat(shift, size(x, 1), 1));
+x = scale .* (x - shift);
 Obj = a * Schwefel2(x(:, group(1:m)), rotation, 0, 0) + Schwefel2(x(:, group(m + 1:end)), 1, 0, 0);
 Con = zeros(size(x, 1), 1);
 end
 
 function [Obj, Con] = Rosenbrock_G(x, scale, rotation, shift, group)
 m = 50; a = 1e+6;
-x = repmat(scale, size(x, 1), 1) .* (x - repmat(shift, size(x, 1), 1));
+x = scale .* (x - shift);
 Obj = a * Rosenbrock(x(:, group(1:m)), rotation, 0, 0) + Rosenbrock(x(:, group(m + 1:end)), 1, 0, 0);
 Con = zeros(size(x, 1), 1);
 end
@@ -285,7 +287,7 @@ end
 function [Obj, Con] = Elliptic_G2(x, scale, rotation, shift, group)
 D = size(x, 2);
 m = 50; G = D / m / 2;
-x = repmat(scale, size(x, 1), 1) .* (x - repmat(shift, size(x, 1), 1));
+x = scale .* (x - shift);
 Obj = 0;
 for k = 1:G
     index = ((k - 1) * m + 1):(k * m);
@@ -298,7 +300,7 @@ end
 function [Obj, Con] = Rastrigin_G2(x, scale, rotation, shift, group)
 D = size(x, 2);
 m = 50; G = D / m / 2;
-x = repmat(scale, size(x, 1), 1) .* (x - repmat(shift, size(x, 1), 1));
+x = scale .* (x - shift);
 Obj = 0;
 for k = 1:G
     index = ((k - 1) * m + 1):(k * m);
@@ -311,7 +313,7 @@ end
 function [Obj, Con] = Ackley_G2(x, scale, rotation, shift, group)
 D = size(x, 2);
 m = 50; G = D / m / 2;
-x = repmat(scale, size(x, 1), 1) .* (x - repmat(shift, size(x, 1), 1));
+x = scale .* (x - shift);
 Obj = 0;
 for k = 1:G
     index = ((k - 1) * m + 1):(k * m);
@@ -324,7 +326,7 @@ end
 function [Obj, Con] = Schwefel2_G2(x, scale, rotation, shift, group)
 D = size(x, 2);
 m = 50; G = D / m / 2;
-x = repmat(scale, size(x, 1), 1) .* (x - repmat(shift, size(x, 1), 1));
+x = scale .* (x - shift);
 Obj = 0;
 for k = 1:G
     index = ((k - 1) * m + 1):(k * m);
@@ -337,7 +339,7 @@ end
 function [Obj, Con] = Rosenbrock_G2(x, scale, rotation, shift, group)
 D = size(x, 2);
 m = 50; G = D / m / 2;
-x = repmat(scale, size(x, 1), 1) .* (x - repmat(shift, size(x, 1), 1));
+x = scale .* (x - shift);
 Obj = 0;
 for k = 1:G
     index = ((k - 1) * m + 1):(k * m);
@@ -352,7 +354,7 @@ end
 function [Obj, Con] = Elliptic_G3(x, scale, rotation, shift, group)
 D = size(x, 2);
 m = 50; G = D / m;
-x = repmat(scale, size(x, 1), 1) .* (x - repmat(shift, size(x, 1), 1));
+x = scale .* (x - shift);
 Obj = 0;
 for k = 1:G
     index = ((k - 1) * m + 1):(k * m);
@@ -364,7 +366,7 @@ end
 function [Obj, Con] = Rastrigin_G3(x, scale, rotation, shift, group)
 D = size(x, 2);
 m = 50; G = D / m;
-x = repmat(scale, size(x, 1), 1) .* (x - repmat(shift, size(x, 1), 1));
+x = scale .* (x - shift);
 Obj = 0;
 for k = 1:G
     index = ((k - 1) * m + 1):(k * m);
@@ -376,7 +378,7 @@ end
 function [Obj, Con] = Ackley_G3(x, scale, rotation, shift, group)
 D = size(x, 2);
 m = 50; G = D / m;
-x = repmat(scale, size(x, 1), 1) .* (x - repmat(shift, size(x, 1), 1));
+x = scale .* (x - shift);
 Obj = 0;
 for k = 1:G
     index = ((k - 1) * m + 1):(k * m);
@@ -388,7 +390,7 @@ end
 function [Obj, Con] = Schwefel2_G3(x, scale, rotation, shift, group)
 D = size(x, 2);
 m = 50; G = D / m;
-x = repmat(scale, size(x, 1), 1) .* (x - repmat(shift, size(x, 1), 1));
+x = scale .* (x - shift);
 Obj = 0;
 for k = 1:G
     index = ((k - 1) * m + 1):(k * m);
@@ -400,7 +402,7 @@ end
 function [Obj, Con] = Rosenbrock_G3(x, scale, rotation, shift, group)
 D = size(x, 2);
 m = 50; G = D / m;
-x = repmat(scale, size(x, 1), 1) .* (x - repmat(shift, size(x, 1), 1));
+x = scale .* (x - shift);
 Obj = 0;
 for k = 1:G
     index = ((k - 1) * m + 1):(k * m);
@@ -412,11 +414,11 @@ end
 %% Nonseperable. D=300
 
 function [Obj, Con] = Schwefel2_N(x, scale, shift)
-x = repmat(scale, size(x, 1), 1) .* (x - repmat(shift, size(x, 1), 1));
+x = scale .* (x - shift);
 [Obj, Con] = Schwefel2(x, 1, 0, 0);
 end
 
 function [Obj, Con] = Rosenbrock_N(x, scale, shift)
-x = repmat(scale, size(x, 1), 1) .* (x - repmat(shift, size(x, 1), 1));
+x = scale .* (x - shift);
 [Obj, Con] = Rosenbrock(x, 1, 0, 0);
 end

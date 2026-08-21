@@ -2,6 +2,7 @@ function Tasks = benchmark_STOP(index, N)
 
 current_dir = fileparts(mfilename('fullpath'));
 file_dir = fullfile(current_dir, 'Tasks/');
+Tasks = repmat(struct('Dim', 0, 'Lb', [], 'Ub', [], 'Fnc', []), 1, N);
 
 switch (index)
     case 11

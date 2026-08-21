@@ -57,21 +57,29 @@ methods
     end
 
     function setTasks(Prob)
-        load SCP_Adata2
+        currentDir = fileparts(mfilename('fullpath'));
+        data = load(fullfile(currentDir, 'SCP_Adata2.mat'), 'A');
+        A = data.A;
         Prob.T = Prob.TaskNum;
+        Prob.M = 2 * ones(1, Prob.T);
+        Prob.D = zeros(1, Prob.T);
+        Prob.Fnc = cell(1, Prob.T);
+        Prob.Lb = cell(1, Prob.T);
+        Prob.Ub = cell(1, Prob.T);
         for t = 1:Prob.T
-            Prob.M(t) = 2;
-            Prob.D(t) = (Prob.Nmin + Prob.Gap * (t - 1)) * 3;
-            Prob.Fnc{t} = @(x)MOSCP_func(x, A, Prob.D(t));
-            Prob.Lb{t} = -ones(1, Prob.D(t));
-            Prob.Ub{t} = ones(1, Prob.D(t));
-            index = 3:3:Prob.D(t);
+            taskDim = (Prob.Nmin + Prob.Gap * (t - 1)) * 3;
+            Prob.D(t) = taskDim;
+            Prob.Fnc{t} = @(x)MOSCP_func(x, A, taskDim);
+            Prob.Lb{t} = -ones(1, taskDim);
+            Prob.Ub{t} = ones(1, taskDim);
+            index = 3:3:taskDim;
             Prob.Lb{t}(index) = 0.1;
             Prob.Ub{t}(index) = 0.25;
         end
     end
 
     function optimum = getOptimum(Prob)
+        optimum = cell(1, Prob.T);
         for t = 1:Prob.T
             optimum{t} = [80, 40];
         end
@@ -80,22 +88,12 @@ end
 end
 
 function [Objs, Cons] = MOSCP_func(var, A, dim)
-rsample = 2 / (size(A, 1) - 1); % range of sample
-Objs = [];
-for i = 1:size(var, 1)
-    x = var(i, :);
-    b = 10; c0 = 1;
-    x = x(1:dim); % decision variables
-    k = dim / 3; % number of sensors
-    x = reshape(x, 3, k)';
-    d = pdist2(A, x(:, 1:2)); % distance between sensors and points
-    iscoverage = (d + rsample <= repmat(x(:, 3)', size(A, 1), 1));
-    maxisconverage = max(iscoverage, [], 2);
-    convarage_ratio = sum(maxisconverage) / (size(A, 1));
-    f1 = 100 * (1 - convarage_ratio); % inverted coverage percentage
-    f2 = c0 * k + sum(b * x(:, 3).^2); % cost of sensors
-    Obj = [f1, f2];
-    Objs(i, :) = Obj;
-end
+distanceOffset = 2 / (size(A, 1) - 1);
+radiusWeight = 10;
+sensorCost = dim / 3;
+[coverageRatio, radiusCost] = evaluateSensorCoverage(var, A, dim, distanceOffset, radiusWeight);
+f1 = 100 * (1 - coverageRatio);
+f2 = sensorCost + radiusCost;
+Objs = [f1, f2];
 Cons = zeros(size(var, 1), 1);
 end

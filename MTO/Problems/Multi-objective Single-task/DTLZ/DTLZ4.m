@@ -60,7 +60,7 @@ methods
     function optimum = getOptimum(Prob)
         N = 10000; M = Prob.M(1);
         optimum{1} = UniformPoint(N, M);
-        optimum{1} = optimum{1} ./ repmat(sqrt(sum(optimum{1}.^2, 2)), 1, M);
+        optimum{1} = optimum{1} ./ sqrt(sum(optimum{1}.^2, 2));
     end
 end
 end
@@ -76,6 +76,6 @@ function [PopObj, PopCVs] = dtlz4(PopDec, M)
 %--------------------------------------------------------------------------
 D = size(PopDec, 2);
 g = sum((PopDec(:, M:end) - 0.5).^2, 2);
-PopObj = repmat(1 + g, 1, M) .* fliplr(cumprod([ones(size(g, 1), 1), cos(PopDec(:, 1:M - 1) * pi / 2)], 2)) .* [ones(size(g, 1), 1), sin(PopDec(:, M - 1:-1:1) * pi / 2)];
+PopObj = (1 + g) .* fliplr(cumprod([ones(size(g, 1), 1), cos(PopDec(:, 1:M - 1) * pi / 2)], 2)) .* [ones(size(g, 1), 1), sin(PopDec(:, M - 1:-1:1) * pi / 2)];
 PopCVs = zeros(size(PopDec, 1), 1);
 end

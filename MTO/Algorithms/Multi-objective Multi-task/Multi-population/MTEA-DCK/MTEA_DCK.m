@@ -44,6 +44,11 @@ methods
     function run(Algo, Prob)
         % Initialization
         population = Initialization(Algo, Prob, Individual_DCK);
+        Fitness = cell(1, Prob.T);
+        loser = cell(1, Prob.T);
+        winner = cell(1, Prob.T);
+        UniUpperB = cell(1, Prob.T);
+        UniLowerB = cell(1, Prob.T);
         for t = 1:Prob.T
             [population{t}, Fitness{t}] = Selection_SPEA2(population{t}, Prob.N);
             for i = 1:Prob.N
@@ -90,10 +95,9 @@ methods
         task_pool = 1:length(population);
         task_pool(task_pool == t) = [];
 
+        offspring = population{t}(winner{t});
         flag = zeros(1, length(loser{t}));
         for i = 1:length(winner{t})
-            offspring(i) = population{t}(winner{t}(i));
-
             % Parameter disturbance
             offspring(i).F = cauchyrnd(population{t}(winner{t}(i)).F, 0.1);
             while (offspring(i).F <= 0)
@@ -190,10 +194,9 @@ methods
         task_pool(task_pool == t) = [];
         TRC = Algo.TRC0 * ((1 - factor)^2); % Transfer rate of convergent KT
 
+        offspring = population{t}(loser{t});
         flag = zeros(1, length(loser{t}));
         for i = 1:length(loser{t})
-            offspring(i) = population{t}(loser{t}(i));
-
             % Parameter learning
             offspring(i).F = population{t}(winner{t}(i)).F;
             offspring(i).CR = population{t}(winner{t}(i)).CR;

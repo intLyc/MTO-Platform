@@ -59,21 +59,29 @@ methods
     end
 
     function setTasks(Prob)
-        load SCP_Adata2
+        currentDir = fileparts(mfilename('fullpath'));
+        data = load(fullfile(currentDir, 'SCP_Adata2.mat'), 'A');
+        A = data.A;
         Prob.T = Prob.Number;
+        Prob.M = 2 * ones(1, Prob.T);
+        Prob.D = zeros(1, Prob.T);
+        Prob.Fnc = cell(1, Prob.T);
+        Prob.Lb = cell(1, Prob.T);
+        Prob.Ub = cell(1, Prob.T);
         for t = 1:Prob.T
-            Prob.M(t) = 2;
-            Prob.D(t) = (Prob.Nmin + Prob.Gap * (t - 1)) * 3;
-            Prob.Fnc{t} = @(x)MOSCP_func(x, A, Prob.D(t));
-            Prob.Lb{t} = -ones(1, Prob.D(t));
-            Prob.Ub{t} = ones(1, Prob.D(t));
-            index = 3:3:Prob.D(t);
+            taskDim = (Prob.Nmin + Prob.Gap * (t - 1)) * 3;
+            Prob.D(t) = taskDim;
+            Prob.Fnc{t} = @(x)MOSCP_func(x, A, taskDim);
+            Prob.Lb{t} = -ones(1, taskDim);
+            Prob.Ub{t} = ones(1, taskDim);
+            index = 3:3:taskDim;
             Prob.Lb{t}(index) = 0.1;
             Prob.Ub{t}(index) = 0.25;
         end
     end
 
     function optimum = getOptimum(Prob)
+        optimum = cell(1, Prob.T);
         for t = 1:Prob.T
             optimum{t} = [80, 40];
         end
@@ -82,40 +90,12 @@ end
 end
 
 function [Objs, Cons] = MOSCP_func(var, A, dim)
-%% Separate Evaluation
-rsample = 2 / (size(A, 1) - 1);
-Objs = [];
-for i = 1:size(var, 1)
-    x = var(i, :);
-    b = 10; c0 = 1;
-    x = x(1:dim);
-    k = dim / 3;
-    x = reshape(x, 3, k)';
-    d = pdist2(A, x(:, 1:2));
-    iscoverage = (d + rsample <= repmat(x(:, 3)', size(A, 1), 1));
-    maxisconverage = max(iscoverage, [], 2);
-    convarage_ratio = sum(maxisconverage) / (size(A, 1));
-    f1 = 100 * (1 - convarage_ratio);
-    f2 = c0 * k + sum(b * x(:, 3).^2) + f1 / 10;
-    Obj = [f1, f2];
-    Objs(i, :) = Obj;
-end
-
-% %% Vectorized Evaluation
-% rsample = 1 / (size(A, 1) - 1);
-% b = 10; c0 = 1;
-% x = var(:, 1:dim);
-% k = dim / 3;
-% x = reshape(x, size(x, 1), 3, k); % extract sensors
-% x2d = reshape(permute(x, [3, 1, 2]), size(x, 1) * k, 3);
-% d = pdist2(A, x2d(:, 1:2));
-% point_num = size(A, 1);
-% iscoverage = (d + rsample <= repmat(x2d(:, 3)', point_num, 1));
-% iscoverage = reshape(iscoverage, point_num, k, size(var, 1));
-% convarage_ratio = sum(any(iscoverage, 2), 1) / (point_num);
-% f1 = 1 - squeeze(convarage_ratio);
-% f2 = c0 * k + sum(b * x(:, 3, :).^2, 3);
-% Objs = [f1, f2];
-
+distanceOffset = 2 / (size(A, 1) - 1);
+radiusWeight = 10;
+sensorCost = dim / 3;
+[coverageRatio, radiusCost] = evaluateSensorCoverage(var, A, dim, distanceOffset, radiusWeight);
+f1 = 100 * (1 - coverageRatio);
+f2 = sensorCost + radiusCost + f1 / 10;
+Objs = [f1, f2];
 Cons = zeros(size(var, 1), 1);
 end

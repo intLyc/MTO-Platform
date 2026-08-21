@@ -64,15 +64,22 @@ methods
     end
 
     function setTasks(Prob)
-        load SCP_Adata
+        currentDir = fileparts(mfilename('fullpath'));
+        data = load(fullfile(currentDir, 'SCP_Adata.mat'), 'A');
+        A = data.A;
         Prob.T = Prob.Nmax - Prob.Nmin + 1;
+        Prob.M = ones(1, Prob.T);
+        Prob.D = zeros(1, Prob.T);
+        Prob.Fnc = cell(1, Prob.T);
+        Prob.Lb = cell(1, Prob.T);
+        Prob.Ub = cell(1, Prob.T);
         for t = 1:Prob.T
-            Prob.M(t) = 1;
-            Prob.D(t) = (Prob.Nmin + (t - 1)) * 3;
-            Prob.Fnc{t} = @(x)SCP_func(x, A, Prob.D(t));
-            Prob.Lb{t} = -ones(1, Prob.D(t));
-            Prob.Ub{t} = ones(1, Prob.D(t));
-            index = 3:3:Prob.D(t);
+            taskDim = (Prob.Nmin + (t - 1)) * 3;
+            Prob.D(t) = taskDim;
+            Prob.Fnc{t} = @(x)SCP_func(x, A, taskDim);
+            Prob.Lb{t} = -ones(1, taskDim);
+            Prob.Ub{t} = ones(1, taskDim);
+            index = 3:3:taskDim;
             Prob.Lb{t}(index) = 0.1;
             Prob.Ub{t}(index) = 0.25;
         end
@@ -81,19 +88,10 @@ end
 end
 
 function [Objs, Cons] = SCP_func(var, A, dim)
-Objs = [];
-for i = 1:size(var, 1)
-    x = var(i, :);
-    a = 1000; b = 10; c0 = 1;
-    x = x(1:dim);
-    k = dim / 3;
-    x = reshape(x, 3, k)';
-    d = pdist2(A, x(:, 1:2));
-    isconverage = (d <= repmat(x(:, 3)', size(A, 1), 1));
-    maxisconverage = max(isconverage, [], 2);
-    convarage_ratio = sum(maxisconverage) / (size(A, 1));
-    f = a * (1 - convarage_ratio) + c0 * k + sum(b * x(:, 3).^2);
-    Objs(i, :) = f;
-end
+coverageWeight = 1000;
+radiusWeight = 10;
+sensorCost = dim / 3;
+[coverageRatio, radiusCost] = evaluateSensorCoverage(var, A, dim, 0, radiusWeight);
+Objs = coverageWeight * (1 - coverageRatio) + sensorCost + radiusCost;
 Cons = zeros(size(var, 1), 1);
 end

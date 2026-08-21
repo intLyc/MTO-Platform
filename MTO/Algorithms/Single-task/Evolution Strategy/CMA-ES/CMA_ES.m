@@ -39,6 +39,29 @@ methods
     end
 
     function run(Algo, Prob)
+        n = cell(1, Prob.T);
+        lambda = cell(1, Prob.T);
+        mu = cell(1, Prob.T);
+        weights = cell(1, Prob.T);
+        mueff = cell(1, Prob.T);
+        cs = cell(1, Prob.T);
+        damps = cell(1, Prob.T);
+        cc = cell(1, Prob.T);
+        c1 = cell(1, Prob.T);
+        cmu = cell(1, Prob.T);
+        mDec = cell(1, Prob.T);
+        ps = cell(1, Prob.T);
+        pc = cell(1, Prob.T);
+        B = cell(1, Prob.T);
+        D = cell(1, Prob.T);
+        C = cell(1, Prob.T);
+        invsqrtC = cell(1, Prob.T);
+        sigma = cell(1, Prob.T);
+        eigenFE = cell(1, Prob.T);
+        chiN = cell(1, Prob.T);
+        sample = cell(1, Prob.T);
+        rank = cell(1, Prob.T);
+
         for t = 1:Prob.T
             n{t} = Prob.D(t); % dimension
             if Algo.useN
@@ -69,10 +92,7 @@ methods
             sigma{t} = Algo.sigma0 * initESSigmaScale(Prob, t);
             eigenFE{t} = 0;
             chiN{t} = sqrt(n{t}) * (1 - 1 / (4 * n{t}) + 1 / (21 * n{t}^2));
-            for i = 1:lambda{t}
-                sample{t}(i) = Individual();
-            end
-            rank{t} = [];
+            sample{t}(1, lambda{t}) = Individual();
         end
 
         taskFE = zeros(1, Prob.T);
@@ -99,7 +119,7 @@ methods
                 hsig = norm(ps{t}) / sqrt(1 - (1 - cs{t})^(2 * taskFE(t) / lambda{t})) / chiN{t} < 1.4 + 2 / (n{t} + 1);
                 pc{t} = (1 - cc{t}) * pc{t} + hsig * sqrt(cc{t} * (2 - cc{t}) * mueff{t}) * (mDec{t} - oldDec)' / sigma{t};
                 % Update covariance matrix
-                artmp = (sample{t}(rank{t}(1:mu{t})).Decs - repmat(oldDec, mu{t}, 1))' / sigma{t};
+                artmp = (sample{t}(rank{t}(1:mu{t})).Decs - oldDec)' / sigma{t};
                 delta = (1 - hsig) * cc{t} * (2 - cc{t});
                 C{t} = (1 - c1{t} - cmu{t}) * C{t} + c1{t} * (pc{t} * pc{t}' + delta * C{t}) + cmu{t} * artmp * diag(weights{t}) * artmp';
                 % Update step size

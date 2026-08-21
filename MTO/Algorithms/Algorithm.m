@@ -190,12 +190,11 @@ methods
         PopObjs = Objs(1:lenPop, :);
         PopCons = Cons(1:lenPop, :);
         PopCVs = sum(max(0, PopCons), 2);
-        objCell = num2cell(PopObjs, 2);
-        conCell = num2cell(PopCons, 2);
-        cvCell = num2cell(PopCVs, 2);
-        [Pop.Obj] = objCell{:};
-        [Pop.Con] = conCell{:};
-        [Pop.CV] = cvCell{:};
+        for i = 1:lenPop
+            Pop(i).Obj = PopObjs(i, :);
+            Pop(i).Con = PopCons(i, :);
+            Pop(i).CV = PopCVs(i);
+        end
 
         % Update Global Best (Single-objective)
         Flag = false;

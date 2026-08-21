@@ -63,16 +63,10 @@ methods
             Prob.T = Prob.defaultT;
         end
         Tasks = benchmark_STOP(5, T);
-        Prob.D = [];
-        Prob.Fnc = {};
-        Prob.Lb = {};
-        Prob.Ub = {};
-        for t = 1:Prob.T
-            Prob.D(t) = Tasks(t).Dim;
-            Prob.Fnc{t} = Tasks(t).Fnc;
-            Prob.Lb{t} = Tasks(t).Lb;
-            Prob.Ub{t} = Tasks(t).Ub;
-        end
+        Prob.D = [Tasks.Dim];
+        Prob.Fnc = {Tasks.Fnc};
+        Prob.Lb = {Tasks.Lb};
+        Prob.Ub = {Tasks.Ub};
     end
 end
 end

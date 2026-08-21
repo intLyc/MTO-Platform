@@ -111,7 +111,7 @@ methods
     function Choose = LastSelection(Algo, PopObj1, PopObj2, K, Z, Zmin)
         % Select part of the solutions in the last front
 
-        PopObj = [PopObj1; PopObj2] - repmat(Zmin, size(PopObj1, 1) + size(PopObj2, 1), 1);
+        PopObj = [PopObj1; PopObj2] - Zmin;
         [N, M] = size(PopObj);
         N1 = size(PopObj1, 1);
         N2 = size(PopObj2, 1);
@@ -122,7 +122,7 @@ methods
         Extreme = zeros(1, M);
         w = zeros(M) +1e-6 + eye(M);
         for i = 1:M
-            [~, Extreme(i)] = min(max(PopObj ./ repmat(w(i, :), N, 1), [], 2));
+            [~, Extreme(i)] = min(max(PopObj ./ w(i, :), [], 2));
         end
         % Calculate the intercepts of the hyperplane constructed by the extreme
         % points and the axes
@@ -132,12 +132,12 @@ methods
             a = max(PopObj, [], 1)';
         end
         % Normalization
-        PopObj = PopObj ./ repmat(a', N, 1);
+        PopObj = PopObj ./ a';
 
         %% Associate each solution with one reference point
         % Calculate the distance of each solution to each reference vector
         Cosine = 1 - pdist2(PopObj, Z, 'cosine');
-        Distance = repmat(sqrt(sum(PopObj.^2, 2)), 1, NZ) .* sqrt(1 - Cosine.^2);
+        Distance = sqrt(sum(PopObj.^2, 2)) .* sqrt(1 - Cosine.^2);
         % Associate each solution with its nearest reference point
         [d, pi] = min(Distance', [], 1);
 

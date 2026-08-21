@@ -50,7 +50,7 @@ methods
             % Generation
             offspring = Algo.Generation(population);
             % Evaluation
-            offspring_temp = Individual_MF.empty();
+            offspringByTask = cell(1, Prob.T);
             for t = 1:Prob.T
                 offspring_t = offspring([offspring.MFFactor] == t);
                 offspring_t = Algo.Evaluation(offspring_t, Prob, t);
@@ -60,20 +60,23 @@ methods
                     offspring_t(i).MFObj(t) = offspring_t(i).Obj;
                     offspring_t(i).MFCV(t) = offspring_t(i).CV;
                 end
-                offspring_temp = [offspring_temp, offspring_t];
+                offspringByTask{t} = offspring_t;
             end
-            offspring = offspring_temp;
+            offspring = [offspringByTask{:}];
             % Selection
             population = Selection_MF(population, offspring, Prob);
         end
     end
 
     function offspring = Generation(Algo, population)
-        indorder = randperm(length(population));
+        populationSize = length(population);
+        offspringCount = 2 * ceil(populationSize / 2);
+        offspring(1, offspringCount) = population(1);
+        indorder = randperm(populationSize);
         count = 1;
-        for i = 1:ceil(length(population) / 2)
+        for i = 1:ceil(populationSize / 2)
             p1 = indorder(i);
-            p2 = indorder(i + fix(length(population) / 2));
+            p2 = indorder(i + fix(populationSize / 2));
             offspring(count) = population(p1);
             offspring(count + 1) = population(p2);
 

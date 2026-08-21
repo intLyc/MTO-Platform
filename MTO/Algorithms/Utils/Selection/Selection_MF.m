@@ -16,13 +16,17 @@ Factors = [pool.MFFactor];
 Objs = pool.Objs;
 CVs = pool.CVs;
 
-NextIdx = [];
+NextIdx = zeros(1, min(numel(pool), Prob.N * Prob.T));
+nextCount = 0;
 for t = 1:Prob.T
     idx = find(Factors == t);
     [~, rank] = sortrows([CVs(idx), Objs(idx, :)]);
     count = min(length(rank), Prob.N);
-    NextIdx = [NextIdx, idx(rank(1:count))];
+    selected = idx(rank(1:count));
+    NextIdx(nextCount + (1:count)) = selected;
+    nextCount = nextCount + count;
 end
+NextIdx = NextIdx(1:nextCount);
 population = pool(NextIdx);
 
 %% Original Multifactorial Selection

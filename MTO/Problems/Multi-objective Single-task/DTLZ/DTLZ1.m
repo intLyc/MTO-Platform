@@ -75,6 +75,6 @@ function [PopObj, PopCVs] = dtlz1(PopDec, M)
 %--------------------------------------------------------------------------
 D = size(PopDec, 2);
 g = 100 * (D - M + 1 + sum((PopDec(:, M:end) - 0.5).^2 - cos(20 .* pi .* (PopDec(:, M:end) - 0.5)), 2));
-PopObj = 0.5 * repmat(1 + g, 1, M) .* fliplr(cumprod([ones(size(PopDec, 1), 1), PopDec(:, 1:M - 1)], 2)) .* [ones(size(PopDec, 1), 1), 1 - PopDec(:, M - 1:-1:1)];
+PopObj = 0.5 * (1 + g) .* fliplr(cumprod([ones(size(PopDec, 1), 1), PopDec(:, 1:M - 1)], 2)) .* [ones(size(PopDec, 1), 1), 1 - PopDec(:, M - 1:-1:1)];
 PopCVs = zeros(size(PopDec, 1), 1);
 end

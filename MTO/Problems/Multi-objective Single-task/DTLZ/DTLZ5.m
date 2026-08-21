@@ -60,9 +60,9 @@ methods
     function optimum = getOptimum(Prob)
         N = 10000; M = Prob.M(1);
         optimum{1} = [0:1 / (N - 1):1; 1:-1 / (N - 1):0]';
-        optimum{1} = optimum{1} ./ repmat(sqrt(sum(optimum{1}.^2, 2)), 1, size(optimum{1}, 2));
+        optimum{1} = optimum{1} ./ sqrt(sum(optimum{1}.^2, 2));
         optimum{1} = [optimum{1}(:, ones(1, M - 2)), optimum{1}];
-        optimum{1} = optimum{1} ./ sqrt(2).^repmat([M - 2, M - 2:-1:0], size(optimum{1}, 1), 1);
+        optimum{1} = optimum{1} ./ sqrt(2).^[M - 2, M - 2:-1:0];
     end
 end
 end
@@ -78,8 +78,7 @@ function [PopObj, PopCVs] = dtlz5(PopDec, M)
 %--------------------------------------------------------------------------
 D = size(PopDec, 2);
 g = sum((PopDec(:, M:end) - 0.5).^2, 2);
-Temp = repmat(g, 1, M - 2);
-PopDec(:, 2:M - 1) = (1 + 2 * Temp .* PopDec(:, 2:M - 1)) ./ (2 + 2 * Temp);
-PopObj = repmat(1 + g, 1, M) .* fliplr(cumprod([ones(size(g, 1), 1), cos(PopDec(:, 1:M - 1) * pi / 2)], 2)) .* [ones(size(g, 1), 1), sin(PopDec(:, M - 1:-1:1) * pi / 2)];
+PopDec(:, 2:M - 1) = (1 + 2 * g .* PopDec(:, 2:M - 1)) ./ (2 + 2 * g);
+PopObj = (1 + g) .* fliplr(cumprod([ones(size(g, 1), 1), cos(PopDec(:, 1:M - 1) * pi / 2)], 2)) .* [ones(size(g, 1), 1), sin(PopDec(:, M - 1:-1:1) * pi / 2)];
 PopCVs = zeros(size(PopDec, 1), 1);
 end
