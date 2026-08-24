@@ -90,12 +90,30 @@ methods
 
                 [sample{t}, improved] = Algo.Evaluation(sample{t}, Prob, t);
 
-                % Reuse MToP's lexicographic constraint handling and boundary
-                % penalty. The finite ordinal fitness prevents Inf/NaN objective
-                % values from destabilizing the learned JAX update.
+                % Preserve the objective magnitudes used by LES's z-score
+                % feature whenever possible, while applying the same boundary
+                % penalty as RankWithBoundaryHandling.
                 rank = RankWithBoundaryHandling(sample{t}, Prob);
-                fitness = zeros(N{t}, 1);
-                fitness(rank) = (0:N{t} - 1)';
+                fitness = sample{t}.Objs;
+                if Prob.Bounded
+                    objScale = max(abs(fitness));
+                    if objScale < 1
+                        objScale = 1;
+                    end
+                    for i = 1:N{t}
+                        fitness(i) = fitness(i) + ...
+                            BoundaryViolation(sample{t}(i).Dec) * objScale;
+                    end
+                end
+
+                % A single scalar cannot generally preserve MToP's
+                % lexicographic (CV, objective) order. Use finite ordinal
+                % values for constrained or failed evaluations; centered-rank
+                % information is retained and Inf/NaN cannot reach JAX.
+                if any(sample{t}.CVs > 0) || any(~isfinite(fitness))
+                    fitness = zeros(N{t}, 1);
+                    fitness(rank) = (0:N{t} - 1)';
+                end
                 fitnessPy = py.numpy.array(fitness, dtype = py.numpy.float32);
 
                 meanDec{t} = reshape(double(currentRunner.tell( ...

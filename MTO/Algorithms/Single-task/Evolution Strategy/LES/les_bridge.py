@@ -104,26 +104,57 @@ class LESRunner:
         self._last_population = population
         return np.asarray(jax.device_get(population), dtype=np.float64)
 
-    def tell(self, ranked_fitness: Any, best_improved: bool) -> np.ndarray:
-        """Update LES using finite MToP rank-fitness (lower is better)."""
+    def tell(self, shaped_fitness: Any, best_improved: bool) -> np.ndarray:
+        """Update LES using finite MToP fitness values (lower is better)."""
         if self._last_population is None:
             raise RuntimeError("tell() was called before ask()")
 
-        fitness = np.asarray(ranked_fitness, dtype=np.float32).reshape(-1)
+        fitness = np.asarray(shaped_fitness, dtype=np.float64).reshape(-1)
         if fitness.shape != (self.population_size,):
             raise ValueError(
-                "ranked_fitness has shape "
+                "shaped_fitness has shape "
                 f"{fitness.shape}; expected ({self.population_size},)"
             )
         if not np.all(np.isfinite(fitness)):
-            raise ValueError("ranked_fitness must contain only finite values")
+            raise ValueError("shaped_fitness must contain only finite values")
+
+        # LES internally computes a float32 z-score. Directly standardizing
+        # objectives with a large offset and small within-generation variance
+        # can suffer catastrophic cancellation (observed on 1000-D Griewank).
+        # A positive affine transform preserves both ranks and z-scores while
+        # keeping the internal variance calculation numerically well scaled.
+        fitness_min = float(np.min(fitness))
+        fitness_max = float(np.max(fitness))
+        with np.errstate(over="ignore", invalid="ignore"):
+            fitness_span = fitness_max - fitness_min
+        if np.isfinite(fitness_span) and fitness_span > 0.0:
+            fitness = (fitness - fitness_min) / fitness_span
+        elif fitness_max > fitness_min:
+            # The span can overflow even when every value is finite. Preserve
+            # strict ordering as a safe fallback in this extreme case.
+            order = np.argsort(fitness, kind="stable")
+            ordinal = np.empty(self.population_size, dtype=np.float64)
+            ordinal[order] = np.arange(self.population_size, dtype=np.float64)
+            fitness = ordinal / max(1, self.population_size - 1)
+        else:
+            fitness = np.zeros(self.population_size, dtype=np.float64)
+        fitness = fitness.astype(np.float32)
 
         # MToP performs the authoritative boundary/constraint comparison. LES's
-        # third fitness feature asks whether a candidate beats the historical
-        # best. Rank zero is the only improving candidate when the MToP archive
-        # changed; otherwise no rank may improve the zero sentinel.
+        # first fitness feature asks whether a candidate beats the historical
+        # best. A sentinel just above the current minimum marks the minimum
+        # member(s) as improving when the MToP archive changed; otherwise no
+        # member is marked. This works for raw, negative, and ordinal fitness.
         if self._has_told:
-            best_sentinel = 0.5 if bool(best_improved) else 0.0
+            current_min = float(np.min(fitness))
+            next_value = float(
+                np.nextafter(np.float32(current_min), np.float32(np.inf))
+            )
+            best_sentinel = (
+                next_value
+                if bool(best_improved) and np.isfinite(next_value)
+                else current_min
+            )
             self._state = self._state.replace(
                 best_fitness_shaped=jnp.asarray(best_sentinel, dtype=jnp.float32)
             )
