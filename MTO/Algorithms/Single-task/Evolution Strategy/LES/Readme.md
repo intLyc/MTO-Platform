@@ -17,12 +17,12 @@ z-score fitness features, so this preserves its inputs while preventing
 float32 cancellation when a high-dimensional problem has a large objective
 offset but very small within-generation variance.
 
-The checkpoint bundled with evosax is an independently meta-trained
-reimplementation. It is not the original checkpoint used for the ICLR 2023
-paper and may produce different numerical results.
+The bridge explicitly loads `2023_03_les_v1.pkl` from the installed evosax
+package. evosax 0.2.0 also bundles `2023_10_les_v2.pkl` and otherwise selects
+that later checkpoint by default.
 
 The bridge also contains a narrowly scoped compatibility fallback for loading
-the evosax 0.2.0 checkpoint on recent JAX releases. It discards only the legacy
+the v1 checkpoint on recent JAX releases. It discards only the legacy
 pickled `named_shape` metadata and restores the original JAX class immediately
 after loading.
 

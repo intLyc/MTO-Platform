@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from importlib.resources import as_file, files
 from typing import Any
 
 try:
@@ -15,16 +16,36 @@ except ImportError as exc:  # Give MATLAB a useful setup error.
     ) from exc
 
 
-def _build_learned_es(population_size: int, solution: Any) -> LearnedES:
-    """Construct LearnedES, including compatibility for its legacy checkpoint.
+_CHECKPOINT_NAME = "2023_03_les_v1.pkl"
 
-    The checkpoint bundled with evosax 0.2.0 pickled JAX abstract values that
-    contain the since-removed ``named_shape`` field. Newer JAX releases reject
-    that field while unpickling. The fallback ignores only that obsolete field
-    during construction and restores JAX immediately afterwards.
+
+def _build_learned_es(population_size: int, solution: Any) -> LearnedES:
+    """Construct LearnedES with evosax's early v1 checkpoint.
+
+    evosax 0.2.0 also bundles a later v2 checkpoint and selects it by default.
+    MToP explicitly selects v1 here. The checkpoint pickled JAX abstract values
+    that contain the since-removed ``named_shape`` field. Newer JAX releases
+    reject that field while unpickling. The fallback ignores only that obsolete
+    field during construction and restores JAX immediately afterwards.
     """
+    checkpoint = files("evosax.algorithms").joinpath("ckpt", "les", _CHECKPOINT_NAME)
+    if not checkpoint.is_file():
+        raise FileNotFoundError(
+            f"evosax does not contain the required LES checkpoint {_CHECKPOINT_NAME!r}; "
+            "install the version pinned in requirements.txt"
+        )
+
+    def construct() -> LearnedES:
+        # as_file also supports package resources from a zipped installation.
+        with as_file(checkpoint) as checkpoint_path:
+            return LearnedES(
+                population_size=population_size,
+                solution=solution,
+                params_path=str(checkpoint_path),
+            )
+
     try:
-        return LearnedES(population_size=population_size, solution=solution)
+        return construct()
     except TypeError as exc:
         if "named_shape" not in str(exc):
             raise
@@ -39,7 +60,7 @@ def _build_learned_es(population_size: int, solution: Any) -> LearnedES:
 
     core.ShapedArray.update = compatible_update
     try:
-        return LearnedES(population_size=population_size, solution=solution)
+        return construct()
     finally:
         core.ShapedArray.update = original_update
 
