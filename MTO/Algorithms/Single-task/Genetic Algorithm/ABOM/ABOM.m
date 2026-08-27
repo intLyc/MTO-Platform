@@ -61,6 +61,8 @@ methods
         % remains authoritative for objective values and constraint handling.
         population = Initialization(Algo, Prob, Individual, N);
         runner = cell(1, Prob.T);
+        lowerBound = cell(1, Prob.T);
+        taskRange = cell(1, Prob.T);
         for t = 1:Prob.T
             % The official ABOM starts from a fitness-sorted parent population.
             [~, order] = sortrows([population{t}.CVs, population{t}.Objs], [1, 2]);
@@ -68,10 +70,25 @@ methods
             parentDec = population{t}.Decs;
             parentDec = parentDec(:, 1:Prob.D(t));
 
+            % ABOM operates in the task's native search space. MToP stores
+            % decisions in [0,1]^D and maps them only during evaluation.
+            lowerBound{t} = Prob.Lb{t}(1:Prob.D(t));
+            upperBound = Prob.Ub{t}(1:Prob.D(t));
+            taskRange{t} = upperBound - lowerBound{t};
+            if any(~isfinite(lowerBound{t})) || any(~isfinite(upperBound)) || ...
+                    any(taskRange{t} <= 0)
+                error('ABOM:InvalidBounds', ...
+                    'ABOM requires finite bounds with Ub > Lb in every dimension.');
+            end
+            parentNative = parentDec .* taskRange{t} + lowerBound{t};
+
             seed = randi([0, double(intmax('int32'))]);
-            parentPy = py.numpy.array(parentDec, dtype = py.numpy.float64);
+            parentPy = py.numpy.array(parentNative, dtype = py.numpy.float64);
+            lowerPy = py.numpy.array(lowerBound{t}, dtype = py.numpy.float64);
+            upperPy = py.numpy.array(upperBound, dtype = py.numpy.float64);
             runner{t} = bridge.ABOMRunner( ...
-                int32(N), int32(Prob.D(t)), parentPy, int64(seed), ...
+                int32(N), int32(Prob.D(t)), parentPy, lowerPy, upperPy, ...
+                int64(seed), ...
                 Algo.learningRate, Algo.weightDecay, ...
                 Algo.dropoutC, Algo.dropoutM);
         end
@@ -81,17 +98,19 @@ methods
                 currentRunner = runner{t};
 
                 % Python owns only the differentiable evolutionary operators.
-                offspringActive = double(currentRunner.ask());
+                offspringNative = double(currentRunner.ask());
                 expectedSize = [N, Prob.D(t)];
-                if ~isequal(size(offspringActive), expectedSize)
+                if ~isequal(size(offspringNative), expectedSize)
                     error('ABOM:PythonShape', ...
                         'Python returned a %s population; expected %s.', ...
-                        mat2str(size(offspringActive)), mat2str(expectedSize));
+                        mat2str(size(offspringNative)), mat2str(expectedSize));
                 end
-                if any(~isfinite(offspringActive(:)))
+                if any(~isfinite(offspringNative(:)))
                     error('ABOM:InvalidOffspring', ...
                     'The Python ABOM update returned non-finite decisions.');
                 end
+                offspringActive = (offspringNative - lowerBound{t}) ./ taskRange{t};
+                offspringActive = min(max(offspringActive, 0), 1);
 
                 % Preserve inactive coordinates used by heterogeneous MToP
                 % tasks; ABOM evolves only the first Prob.D(t) coordinates.
@@ -110,7 +129,8 @@ methods
                 population{t} = Selection_Elit(population{t}, offspring);
                 selectedDec = population{t}.Decs;
                 selectedDec = selectedDec(:, 1:Prob.D(t));
-                selectedPy = py.numpy.array(selectedDec, dtype = py.numpy.float64);
+                selectedNative = selectedDec .* taskRange{t} + lowerBound{t};
+                selectedPy = py.numpy.array(selectedNative, dtype = py.numpy.float64);
 
                 loss = double(currentRunner.tell(selectedPy));
                 if ~isscalar(loss) || ~isfinite(loss)

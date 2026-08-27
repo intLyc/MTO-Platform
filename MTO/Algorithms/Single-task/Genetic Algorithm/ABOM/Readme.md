@@ -31,9 +31,10 @@ Official source used as the implementation reference (commit
   problem dimension.
 - As in the released code, a new AdamW optimizer is constructed for each
   online update and Smooth-L1 loss is summed over the offspring population.
-- Decisions are represented in MToP's normalized `[0,1]^D` space and clipped
-  before evaluation. MToP's selected population is returned to Python as the
-  next parent population and as the online learning target.
+- MToP's normalized `[0,1]^D` decisions are mapped to each task's native
+  `[Lb,Ub]^D` space before entering ABOM. The Python runner generates, clips,
+  and learns from populations in native coordinates; offspring are mapped back
+  to `[0,1]^D` only for MToP evaluation and survivor selection.
 
 ## Python setup
 

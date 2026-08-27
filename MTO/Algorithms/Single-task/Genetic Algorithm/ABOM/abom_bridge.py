@@ -27,6 +27,8 @@ class ABOMRunner:
         population_size: int,
         num_dims: int,
         initial_population: Any,
+        lower_bounds: Any,
+        upper_bounds: Any,
         seed: int,
         learning_rate: float = 1e-3,
         weight_decay: float = 1e-5,
@@ -53,7 +55,14 @@ class ABOMRunner:
         if not 0.0 <= self.dropout_m < 1.0:
             raise ValueError("dropout_m must be in [0, 1)")
 
+        self._lower_bounds = self._validate_bounds(lower_bounds, "lower_bounds")
+        self._upper_bounds = self._validate_bounds(upper_bounds, "upper_bounds")
+        if np.any(self._upper_bounds <= self._lower_bounds):
+            raise ValueError("upper_bounds must be greater than lower_bounds")
+
         parents = self._validate_population(initial_population, "initial_population")
+        if np.any(parents < self._lower_bounds) or np.any(parents > self._upper_bounds):
+            raise ValueError("initial_population must lie within the task bounds")
         self._parents = parents.copy()
         self._generation = 0
         self._raw_output: torch.Tensor | None = None
@@ -64,6 +73,12 @@ class ABOMRunner:
         hidden_dim = 1 << (self.num_dims.bit_length() - 1)
         self._generator = torch.Generator(device="cpu")
         self._generator.manual_seed(int(seed))
+        self._lower_tensor = torch.from_numpy(self._lower_bounds).reshape(
+            1, 1, self.num_dims
+        )
+        self._upper_tensor = torch.from_numpy(self._upper_bounds).reshape(
+            1, 1, self.num_dims
+        )
 
         # nn.Dropout uses PyTorch's process-global CPU RNG. Preserve a private
         # state per task so sequential MToP tasks remain independently seeded.
@@ -96,6 +111,16 @@ class ABOMRunner:
             raise ValueError(f"{name} must contain only finite values")
         return population
 
+    def _validate_bounds(self, values: Any, name: str) -> np.ndarray:
+        bounds = np.asarray(values, dtype=np.float64).reshape(-1)
+        if bounds.shape != (self.num_dims,):
+            raise ValueError(
+                f"{name} has shape {bounds.shape}; expected ({self.num_dims},)"
+            )
+        if not np.all(np.isfinite(bounds)):
+            raise ValueError(f"{name} must contain only finite values")
+        return bounds
+
     def _with_dropout_rng(self, operation: Callable[[], _T]) -> _T:
         previous_state = torch.random.get_rng_state()
         try:
@@ -120,7 +145,10 @@ class ABOMRunner:
         self._raw_output = self._with_dropout_rng(
             lambda: self._model(parents, fitness_rank)
         )
-        offspring = torch.clamp(self._raw_output.detach(), 0.0, 1.0)
+        offspring = torch.maximum(
+            torch.minimum(self._raw_output.detach(), self._upper_tensor),
+            self._lower_tensor,
+        )
         offspring_np = offspring.squeeze(0).cpu().numpy()
         if not np.all(np.isfinite(offspring_np)):
             self._raw_output = None
@@ -133,6 +161,8 @@ class ABOMRunner:
             raise RuntimeError("tell() was called before ask()")
 
         selected = self._validate_population(selected_population, "selected_population")
+        if np.any(selected < self._lower_bounds) or np.any(selected > self._upper_bounds):
+            raise ValueError("selected_population must lie within the task bounds")
         target_best = torch.from_numpy(selected[0]).reshape(1, 1, self.num_dims)
         target_best = target_best.repeat(1, self.population_size, 1)
 
