@@ -31,17 +31,9 @@ Official source used as the implementation reference (commit
   problem dimension.
 - As in the released code, a new AdamW optimizer is constructed for each
   online update and Smooth-L1 loss is summed over the offspring population.
-- The released code defaults to a population of 16, whereas the ICLR paper
-  reports 20. `sourceN=20` follows the paper; `useN=1` is the MToP default and
-  uses `Prob.N` (50 in the GemNES synthetic experiments).
 - Decisions are represented in MToP's normalized `[0,1]^D` space and clipped
   before evaluation. MToP's selected population is returned to Python as the
   next parent population and as the online learning target.
-
-The implementation is intended for the continuous synthetic benchmarks used
-in the GemNES comparison. ABOM's dimension-wise attention is not suitable for
-the 3,361--11,569-dimensional Brax policy parameterizations without changing
-the published architecture.
 
 ## Python setup
 
@@ -57,12 +49,3 @@ Then configure MATLAB before starting MToP:
 ```matlab
 pyenv('Version', '/path/to/python');
 ```
-
-If LES and ABOM are used in the same MATLAB session, install both algorithms'
-requirements into one Python environment. MATLAB may need to be restarted when
-changing the configured interpreter.
-
-The `mtop-brax` environment links multiple numerical runtimes. The bridge
-therefore imports NumPy before PyTorch; keep this import order in any custom
-runner code. ABOM and LES dependencies have been verified in either algorithm
-loading order in that environment.
