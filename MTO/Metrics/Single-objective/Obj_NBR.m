@@ -11,52 +11,16 @@ function result = Obj_NBR(MTOData, varargin)
 % Evolutionary Multitasking, ACM Trans. Evol. Learn. Optim., 2026"
 %--------------------------------------------------------------------------
 
-result.Metric = 'Max';
-result.IsRelative = false; % absolute metric
-result.RowName = {};
-result.ColumnName = {};
-% Data for Table
-result.TableData = [];
-% Data for Converge Plot
-% result.ConvergeData.X = [];
-% result.ConvergeData.Y = [];
-
-for prob = 1:length(MTOData.Problems)
-    if MTOData.Problems(prob).M ~= 1
-        return;
-    end
-end
-result.RowName = {MTOData.Problems.Name};
-result.ColumnName = {MTOData.Algorithms.Name};
-
-% Calculate Objective
+result = CreateMetricResult(MTOData, 'Max', true, false);
+objective = ReadFinalMetricData(MTOData, 'Obj');
+if isempty(objective), return; end
+means = mean(objective, 3, 'omitnan');
 row = 1;
-for prob = 1:length(MTOData.Problems)
-    for task = 1:MTOData.Problems(prob).T
-        for algo = 1:length(MTOData.Algorithms)
-            Obj = zeros(1, MTOData.Reps);
-            CV = zeros(1, MTOData.Reps);
-            for rep = 1:MTOData.Reps
-                Obj(rep) = MTOData.Results(prob, algo, rep).Obj(task, end);
-                CV(rep) = MTOData.Results(prob, algo, rep).CV(task, end);
-            end
-            Obj(CV > 0) = NaN;
-            obj_matrix(row, algo) = nanmean(Obj);
-        end
-        row = row + 1;
-    end
-end
-
-% Calculate Number of Best Result
-row = 1;
-for prob = 1:length(MTOData.Problems)
-    number_temp = zeros(1, length(MTOData.Algorithms));
-    for task = 1:MTOData.Problems(prob).T
-        min_obj = min(obj_matrix(row, :));
-        algo = find(obj_matrix(row, :) == min_obj);
-        number_temp(algo) = number_temp(algo) + 1;
-        row = row + 1;
-    end
-    result.TableData(prob, :, 1) = number_temp;
+for p = 1:numel(MTOData.Problems)
+    tasks = row:row + MTOData.Problems(p).T - 1;
+    values = means(tasks, :);
+    % Count every tied best algorithm; tasks with no feasible result contribute zero.
+    result.TableData(p, :) = sum(values == min(values, [], 2), 1);
+    row = row + MTOData.Problems(p).T;
 end
 end

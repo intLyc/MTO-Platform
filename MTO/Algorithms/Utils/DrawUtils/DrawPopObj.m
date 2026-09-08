@@ -16,14 +16,16 @@ classdef DrawPopObj < handle
 
 properties (SetAccess = private)
     fig
-    tiled
+    tiled 
     hplot
 end
 
 methods
     function obj = DrawPopObj(Algo, Prob)
-        obj.fig = figure('Position', [600, 100, 500, 500]);
-        obj.tiled = tiledlayout('flow');
+        % Use consistent subplot layouts and window sizes to avoid stretching crowded plots.
+        [rows, cols] = PlotGridSize(Prob.T);
+        obj.fig = figure('Position', PlotFigurePosition(rows, cols, [300, 300]));
+        obj.tiled = tiledlayout(obj.fig, rows, cols);
         obj.tiled.TileSpacing = 'compact';
         obj.tiled.Padding = 'compact';
         title(obj.tiled, [Algo.Name, ' on ', Prob.Name]);
@@ -86,6 +88,12 @@ methods
                 ylabel(obj.tiled.Children(end - t + 1), '$f$', 'interpreter', 'latex');
             end
             title(obj.tiled.Children(end - t + 1), ['Task ', num2str(t)]);
+            % Keep plot box proportions fixed when resizing the window.
+            if M <= 3
+                pbaspect(obj.tiled.Children(end - t + 1), [1, 1, 1]);
+            else
+                pbaspect(obj.tiled.Children(end - t + 1), [4, 3, 1]);
+            end
             drawnow;
         end
     end

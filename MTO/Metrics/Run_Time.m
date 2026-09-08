@@ -11,16 +11,6 @@ function result = Run_Time(MTOData, varargin)
 % Evolutionary Multitasking, ACM Trans. Evol. Learn. Optim., 2026"
 %--------------------------------------------------------------------------
 
-result.Metric = 'Min';
-result.IsRelative = false; % absolute metric
-result.RowName = {MTOData.Problems.Name};
-result.ColumnName = {MTOData.Algorithms.Name};
-% Data for Table
-result.TableData = [];
-
-for prob = 1:length(MTOData.Problems)
-    for algo = 1:length(MTOData.Algorithms)
-        result.TableData(prob, algo, :) = MTOData.RunTimes(prob, algo, :);
-    end
-end
+result = CreateMetricResult(MTOData, 'Min', false, false);
+result.TableData = MTOData.RunTimes;
 end

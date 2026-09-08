@@ -11,7 +11,7 @@ function result = Obj_Neg(MTOData, varargin)
 % Evolutionary Multitasking, ACM Trans. Evol. Learn. Optim., 2026"
 %--------------------------------------------------------------------------
 
-result = Obj(MTOData, varargin);
+result = Obj(MTOData, varargin{:});
 result.Metric = 'Max';
 result.IsRelative = false; % absolute metric
 result.TableData = -result.TableData;

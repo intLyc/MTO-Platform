@@ -22,41 +22,5 @@ function result = Obj_CMT(MTOData, varargin)
 % Evolutionary Multitasking, ACM Trans. Evol. Learn. Optim., 2026"
 %--------------------------------------------------------------------------
 
-result.Metric = 'Min';
-result.IsRelative = false; % absolute metric
-result.RowName = {};
-result.ColumnName = {};
-% Data for Table
-result.TableData = [];
-% Data for Converge Plot
-result.ConvergeData.X = [];
-result.ConvergeData.Y = [];
-
-for prob = 1:length(MTOData.Problems)
-    if MTOData.Problems(prob).M ~= 1
-        return;
-    end
-end
-result.RowName = {MTOData.Problems.Name};
-result.ColumnName = {MTOData.Algorithms.Name};
-
-% Calculate Minimal Objective
-for prob = 1:length(MTOData.Problems)
-    for algo = 1:length(MTOData.Algorithms)
-        gen = size(MTOData.Results(prob, algo, 1).Obj, 2);
-        MinObj = zeros(MTOData.Reps, gen);
-        for rep = 1:MTOData.Reps
-            Obj_temp = []; CV_temp = [];
-            Obj_temp(1:MTOData.Problems(prob).T, 1:gen) = MTOData.Results(prob, algo, rep).Obj(1:MTOData.Problems(prob).T, 1:gen);
-            CV_temp(1:MTOData.Problems(prob).T, 1:gen) = MTOData.Results(prob, algo, rep).CV(1:MTOData.Problems(prob).T, 1:gen);
-            Obj_temp(CV_temp > 0) = NaN;
-            MinObj(rep, 1:gen) = min(Obj_temp, [], 1);
-        end
-        result.TableData(prob, algo, 1:MTOData.Reps) = MinObj(1:MTOData.Reps, end);
-        for rep = 1:MTOData.Reps
-            result.ConvergeData.Y(prob, algo, rep, 1:gen) = MinObj(rep, 1:gen);
-            result.ConvergeData.X(prob, algo, rep, 1:gen) = [1:gen] ./ gen .* MTOData.Problems(prob).maxFE;
-        end
-    end
-end
+result = ComputeObjectiveMetric(MTOData, 'Obj', 'min');
 end

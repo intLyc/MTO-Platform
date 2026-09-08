@@ -22,8 +22,10 @@ end
 
 methods
     function obj = DrawPopDec(Algo, Prob)
-        obj.fig = figure('Position', [100, 100, 500, 500]);
-        obj.tiled = tiledlayout('flow');
+        % Use consistent subplot layouts and window sizes to avoid stretching crowded plots.
+        [rows, cols] = PlotGridSize(Prob.T);
+        obj.fig = figure('Position', PlotFigurePosition(rows, cols, [320, 260]));
+        obj.tiled = tiledlayout(obj.fig, rows, cols);
         obj.tiled.TileSpacing = 'compact';
         obj.tiled.Padding = 'compact';
         title(obj.tiled, [Algo.Name, ' on ', Prob.Name]);
@@ -45,6 +47,8 @@ methods
             ylim(obj.tiled.Children(end - t + 1), [0, 1]);
             title(obj.tiled.Children(end - t + 1), ['Task ', num2str(t)]);
             grid(obj.tiled.Children(end - t + 1), 'on');
+            % Keep plot box proportions fixed when resizing the window.
+            pbaspect(obj.tiled.Children(end - t + 1), [4, 3, 1]);
             drawnow;
         end
     end

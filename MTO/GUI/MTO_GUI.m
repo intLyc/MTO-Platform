@@ -2,7 +2,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
     % Properties that correspond to app components
     properties (Access = public)
-        MToPv110UIFigure             matlab.ui.Figure
+        MToPv111UIFigure             matlab.ui.Figure
         MTOPlatformGridLayout        matlab.ui.container.GridLayout
         MTOPlatformTabGroup          matlab.ui.container.TabGroup
         TestModuleTab                matlab.ui.container.Tab
@@ -167,11 +167,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         ProbLoad % cell of problems loaded from folder
         MetricLoad % cell of metrics loaded from folder
 
-        % convergence axes set
-        DefaultLineWidth = 1.5
-        DefaultMarkerList = {'o', '*', 'x', '^', '+', 'p', 'v', 's', 'd', '<', '>', 'h'}
-        DefaultMarkerSize = 7
-        DefaultMarkerNum = 10
+        % Plot appearance is configured in GUI/PlotFunctions/PlotStyle.m.
 
         % Test Module
         TData % data
@@ -193,8 +189,6 @@ classdef MTO_GUI < matlab.apps.AppBase
         ETableTest % table data view test
         ETableReps % table reps
 
-        % Data Process Module
-        DDataFlag % legal data node index
     end
 
     methods (Access = public)
@@ -216,32 +210,32 @@ classdef MTO_GUI < matlab.apps.AppBase
         end
 
         function read_list = readList(app, folder_name, label_str)
-            % read file name list with labels
-
+            % Read labels from each file itself, independently of MATLAB path precedence.
             read_list = {};
-            folders = split(genpath(fullfile(fileparts(mfilename('fullpath')), folder_name)),pathsep);
-            for i = 1:length(folders)
-                files = what(folders{i});
-                files = files.m;
-                for j = 1:length(files)
-                    try
-                        fid = fopen(files{j});
-                        fgetl(fid);
-                        str = regexprep(fgetl(fid),'^\s*%\s*','','once');
-                        fclose(fid);
-                        label_find = regexp(str,'(?<=<).*?(?=>)','match');
-                        label_all = {};
-                        for k = 1:length(label_find)
-                            label_all = [label_all, split(label_find{k}, '/')'];
-                        end
-                        if sum(ismember(label_str, label_all)) == length(label_str)
-                            read_list = [read_list, files{j}(1:end-2)];
-                        end
-                    catch ME
-                        continue;
+            root = fullfile(fileparts(mfilename('fullpath')), folder_name);
+            folders = split(genpath(root), pathsep);
+            for i = 1:numel(folders)
+                if isempty(folders{i}), continue; end
+                files = dir(fullfile(folders{i}, '*.m'));
+                for j = 1:numel(files)
+                    fid = fopen(fullfile(files(j).folder, files(j).name), 'r');
+                    if fid < 0, continue; end
+                    cleanup = onCleanup(@() fclose(fid));
+                    fgetl(fid);
+                    header = fgetl(fid);
+                    clear cleanup;
+                    if ~ischar(header), continue; end
+                    groups = regexp(header, '(?<=<).*?(?=>)', 'match');
+                    labels = {};
+                    for k = 1:numel(groups)
+                        labels = [labels, strsplit(groups{k}, '/')];
+                    end
+                    if all(ismember(label_str, labels))
+                        read_list{end+1} = files(j).name(1:end-2);
                     end
                 end
             end
+            read_list = unique(read_list, 'stable');
         end
 
         function labels = getDataLabels(app, MTOData)
@@ -265,14 +259,28 @@ classdef MTO_GUI < matlab.apps.AppBase
         function TloadAlgoProb(app)
             % load the algorithms and problems in Test module
 
+            % Labels filter available choices; explicit selections update the parameter trees.
+            oldAlgo = app.TAlgorithmDropDown.Value;
+            oldProb = app.TProblemDropDown.Value;
+            if ~isempty(app.TAlgorithmTree.Children)
+                oldAlgo = class(app.TAlgorithmTree.Children(1).NodeData);
+            end
+            if ~isempty(app.TProblemTree.Children)
+                oldProb = class(app.TProblemTree.Children(1).NodeData);
+            end
             label_str = {app.TTaskTypeDropDown.Value, app.TObjectiveTypeDropDown.Value, app.TSpecialTypeDropDown.Value};
             app.readAlgoProb(label_str);
+            algorithms = app.AlgoLoad;
+            problems = app.ProbLoad;
+            % Filter the lists strictly; loaded objects remain in their parameter trees.
             app.TAlgorithmDropDown.Items = {};
             app.TProblemDropDown.Items = {};
-            app.TAlgorithmDropDown.Items = strrep(app.AlgoLoad, '_', '-');
-            app.TAlgorithmDropDown.ItemsData = app.AlgoLoad;
-            app.TProblemDropDown.Items = strrep(app.ProbLoad, '_', '-');
-            app.TProblemDropDown.ItemsData = app.ProbLoad;
+            app.TAlgorithmDropDown.Items = strrep(algorithms, '_', '-');
+            app.TAlgorithmDropDown.ItemsData = algorithms;
+            app.TProblemDropDown.Items = strrep(problems, '_', '-');
+            app.TProblemDropDown.ItemsData = problems;
+            if ismember(oldAlgo, algorithms), app.TAlgorithmDropDown.Value = oldAlgo; end
+            if ismember(oldProb, problems), app.TProblemDropDown.Value = oldProb; end
         end
 
         function EloadAlgoProb(app)
@@ -364,6 +372,36 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EStopButton.Enable = ~value;
         end
 
+        function report = showError(app, exception, title)
+            % Keep stack traces and nested causes visible and copyable in the Command Window.
+            report = getReport(exception, 'extended', 'hyperlinks', 'off');
+            if ~isempty(exception.identifier)
+                report = sprintf('Identifier: %s\n\n%s', exception.identifier, report);
+            end
+            fprintf(2, '\n%s\n%s\n', title, report);
+            uialert(app.MToPv111UIFigure, report, title, 'Icon', 'error', 'Interpreter', 'none');
+        end
+
+        % Restore controls after completion, errors, or user cancellation.
+        function finishRun(app, module)
+            if ~isvalid(app) || ~isgraphics(app.MToPv111UIFigure), return; end
+            if strcmp(module, 'Test')
+                app.TPauseButton.Text = 'Pause';
+                app.TStopFlag = false;
+                app.TstartEnable(true);
+                nodes = app.TAlgorithmTree.Children;
+            else
+                app.EPauseButton.Text = 'Pause';
+                app.EStopFlag = false;
+                app.EstartEnable(true);
+                nodes = app.EAlgorithmsTree.Children;
+            end
+            for i = 1:numel(nodes)
+                % Detach run callbacks before algorithms are reused outside this GUI session.
+                nodes(i).NodeData.Check_Status_Fn = @emptyFn;
+            end
+        end
+
         function TcheckPauseStopStatus(app)
             if app.TStopFlag
                 error('User Stop');
@@ -380,7 +418,6 @@ classdef MTO_GUI < matlab.apps.AppBase
             % If stopped, it will throw an error to break execution. The error will not be thrown.
 
             if app.EStopFlag
-                app.EstartEnable(true);
                 error('User Stop');
             end
 
@@ -389,325 +426,150 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
         end
 
-        function TupdateAlgorithm(app)
-            % update algorithm tree in Test module
+        function data = EcreateExperimentData(app)
+            % Capture experiment metadata once, before running any algorithm.
+            data.Reps = app.ERepsEditField.Value;
+            data.Problems = [];
+            fields = {'Name', 'T', 'M', 'D', 'N', 'Fnc', 'Lb', 'Ub', 'maxFE'};
+            nodes = app.EProblemsTree.Children;
+            for prob = 1:numel(nodes)
+                object = nodes(prob).NodeData;
+                for i = 1:numel(fields)
+                    data.Problems(prob).(fields{i}) = object.(fields{i});
+                end
+                if max(object.M) > 1
+                    data.Problems(prob).Optimum = object.getOptimum();
+                end
+            end
+            data.Algorithms = [];
+            nodes = app.EAlgorithmsTree.Children;
+            for algo = 1:numel(nodes)
+                object = nodes(algo).NodeData;
+                data.Algorithms(algo).Name = object.Name;
+                data.Algorithms(algo).Para = object.getParameter();
+            end
+            data.Results = [];
+            data.RunTimes = [];
+        end
 
-            if isempty(app.TAlgorithmDropDown.Value)
+        function [results, runTimes] = ErunRepetitions(app, prob, algo, seeds)
+            % Run one algorithm/problem pair and retain repetition order in the results.
+            algorithm = app.EAlgorithmsTree.Children(algo).NodeData;
+            problem = app.EProblemsTree.Children(prob).NodeData;
+            algorithm.Result_Num = app.EResultsNumEditField.Value;
+            algorithm.Save_Dec = app.ESaveDecCheckBox.Value;
+            algorithm.Check_Status_Fn = @emptyFn;
+            reps = numel(seeds);
+            results = cell(1, reps);
+            runTimes = zeros(1, reps);
+
+            if app.EParallelCheckBox.Value
+                futures = parallel.FevalFuture.empty;
+                try
+                    for rep = 1:reps
+                        futures(rep) = parfeval(@parRun, 1, algorithm, problem, seeds(rep));
+                    end
+                    completed = 0;
+                    while completed < reps
+                        drawnow('limitrate');
+                        app.EcheckPauseStopStatus();
+                        [rep, result] = fetchNext(futures, 0.01);
+                        if isempty(rep), continue; end
+                        results{rep} = ConvertExperimentResult(result, max(problem.M) > 1);
+                        runTimes(rep) = seconds(futures(rep).FinishDateTime - futures(rep).StartDateTime);
+                        completed = completed + 1;
+                        app.ETableReps(prob, algo) = completed;
+                        app.EupdateTableReps();
+                    end
+                catch ME
+                    % Also cancel jobs if submission or result conversion fails.
+                    cancel(futures);
+                    rethrow(ME);
+                end
+            else
+                for rep = 1:reps
+                    app.EcheckPauseStopStatus();
+                    startTime = tic;
+                    if seeds(rep) ~= -1
+                        rng(seeds(rep));
+                    end
+                    problem.setTasks();
+                    algorithm.reset();
+                    algorithm.Check_Status_Fn = @app.EcheckPauseStopStatus;
+                    algorithm.run(problem);
+                    algorithm.Check_Status_Fn = @emptyFn;
+                    result = algorithm.getResult(problem);
+                    results{rep} = ConvertExperimentResult(result, max(problem.M) > 1);
+                    runTimes(rep) = toc(startTime);
+                    app.ETableReps(prob, algo) = rep;
+                    app.EupdateTableReps();
+                end
+            end
+            results = [results{:}];
+        end
+
+        function TupdateAlgorithm(app)
+            name = app.TAlgorithmDropDown.Value;
+            if isempty(name), return; end
+            nodes = app.TAlgorithmTree.Children;
+            if ~isempty(nodes) && strcmp(class(nodes(1).NodeData), name)
                 return;
             end
-
-            app.TAlgorithmTree.Children.delete;
-
-            algo_name = app.TAlgorithmDropDown.Value;
-            eval(['algo_obj = ', algo_name, '(''', strrep(algo_name, '_', '-'), ''');']);
-            algo_node = uitreenode(app.TAlgorithmTree);
-            algo_node.Text = algo_obj.Name;
-            algo_node.NodeData = algo_obj;
-
-            % child parameter node
-            parameter = algo_obj.getParameter();
-            for p = 1:2:length(parameter)
-                para_name_node = uitreenode(algo_node);
-                para_name_node.Text = ['[ ', parameter{p}, ' ]'];
-                para_name_node.NodeData = para_name_node.Text;
-                para_value_node = uitreenode(algo_node);
-                para_value_node.Text = parameter{p+1};
-            end
-
-            expand(algo_node);
+            % Construct and read parameters before replacing the currently loaded object.
+            object = feval(name, strrep(name, '_', '-'));
+            parameters = object.getParameter();
+            delete(nodes);
+            node = uitreenode(app.TAlgorithmTree, 'Text', object.Name, 'NodeData', object);
+            RefreshParameterTree(node, parameters);
+            expand(node);
         end
 
         function TupdateProblem(app)
-            % update problem tree in Test module
-
-            if isempty(app.TProblemDropDown.Value)
+            name = app.TProblemDropDown.Value;
+            if isempty(name), return; end
+            nodes = app.TProblemTree.Children;
+            if ~isempty(nodes) && strcmp(class(nodes(1).NodeData), name)
                 return;
             end
-
-            app.TProblemTree.Children.delete;
-
-            prob_name = app.TProblemDropDown.Value;
-            eval(['prob_obj = ', prob_name, '(''', strrep(prob_name, '_', '-'), ''');']);
-            prob_node = uitreenode(app.TProblemTree);
-            prob_node.Text = prob_obj.Name;
-            prob_node.NodeData = prob_obj;
-
-            % child parameter node
-            parameter = prob_obj.getParameter();
-            for p = 1:2:length(parameter)
-                para_name_node = uitreenode(prob_node);
-                para_name_node.Text = ['[ ', parameter{p}, ' ]'];
-                para_name_node.NodeData = para_name_node.Text;
-                para_value_node = uitreenode(prob_node);
-                para_value_node.Text = parameter{p+1};
-            end
-
-            expand(prob_node);
+            % Construct and read parameters before replacing the currently loaded object.
+            object = feval(name, strrep(name, '_', '-'));
+            parameters = object.getParameter();
+            delete(nodes);
+            node = uitreenode(app.TProblemTree, 'Text', object.Name, 'NodeData', object);
+            RefreshParameterTree(node, parameters);
+            expand(node);
         end
 
         function TupdateUIAxes(app)
-            % update UI Axes in Test module
+            PlotTest(app);
+        end
 
-            cla(app.TUIAxes, 'reset');
-            type = app.TShowTypeDropDown.Value;
-            switch type
-                case 'Tasks Figure (1D Unified)' % Tasks Figure (1D unified)
-                    app.TupdateTasksFigure();
-                case 'Tasks Figure (2D Unified)' % Tasks Figure (2D unified)
-                    app.TupdateTasksFigure2D();
-                case 'Tasks Figure (2D Real)' % Tasks Figure (2D unified)
-                    app.TupdateTasksFigure2D();
-                case 'Tasks Figure (1D Real)' % Tasks Figure (1D real)
-                    app.TupdateTasksFigure();
-                case 'Feasible Region (2D)' % Feasible Region (2D)
-                    app.TupdateFeasibleRegion();
-                case 'Convergence'
-                    app.TupdateConvergence();
-                case 'Pareto Front'
-                    app.TupdateParetoFront();
-            end
+        function [vars, objectives, feasible] = TpreviewSlice(app, prob, task, coordinates)
+            [vars, objectives, feasible] = PreviewTaskSlice(prob, task, coordinates);
+        end
+
+        function values = TpreviewObjective(app, objectives, feasible, unified)
+            values = PreviewObjectiveValues(objectives, feasible, unified);
         end
 
         function TupdateTasksFigure(app)
-            % update selected problem tasks figure in Test module
-            try
-                sample_number = app.TSampleNumberEditField.Value;
-                x = 0:1/sample_number:1;
-
-                legend_cell = {};
-                plot_handle = {};
-                color = colororder;
-                for no = 1:app.TProblemTree.Children(1).NodeData.T
-                    minrange = app.TProblemTree.Children(1).NodeData.Lb{no}(1);
-                    maxrange = app.TProblemTree.Children(1).NodeData.Ub{no}(1);
-                    vars = (maxrange - minrange) .* x' + minrange;
-                    [f, con] = app.TProblemTree.Children(1).NodeData.Fnc{no}(vars);
-                    f(sum(con, 2)>0, :) = NaN;
-
-                    if strcmp(app.TShowTypeDropDown.Value, 'Tasks Figure (1D Unified)') % unified
-                        fmin = min(f);
-                        fmax = max(f);
-                        f = (f - fmin) / (fmax - fmin);
-                    end
-
-                    p1 = plot(app.TUIAxes, x, f);
-                    p1.Color = color(mod(no-1, size(color, 1))+1, :);
-                    p1.LineWidth = 1;
-                    hold(app.TUIAxes, 'on');
-
-                    if ~isnan(f)
-                        xmin = x(f == min(f));
-                        fmin = min(f) * ones(size(xmin));
-                        p2 = plot(app.TUIAxes, xmin, fmin, '^');
-                        p2.MarkerSize = 8;
-                        p2.MarkerFaceColor = color(mod(no-1, size(color, 1))+1, :);
-                        p2.MarkerEdgeColor = color(mod(no-1, size(color, 1))+1, :);
-                        hold(app.TUIAxes, 'on');
-                    end
-
-                    legend_cell = [legend_cell, ['Task', num2str(no)]];
-                    plot_handle = [plot_handle, p1];
-                end
-                xlim(app.TUIAxes, [0, 1]);
-                xlabel(app.TUIAxes, 'Variable Value');
-                ylabel(app.TUIAxes, 'Objective Value');
-                legend(app.TUIAxes, plot_handle, legend_cell, 'Location', 'best');
-            catch ME
-                return;
-            end
+            PlotTestTasks1D(app);
         end
 
         function TupdateTasksFigure2D(app)
-            % update selected problem tasks figure in Test module
-            try
-                sample_number = app.TSampleNumberEditField.Value;
-                x = 0:1/sample_number:1;
-
-                legend_cell = {};
-                plot_handle = {};
-
-                color = colororder;
-                for no = 1:app.TProblemTree.Children(1).NodeData.T
-                    minrange = app.TProblemTree.Children(1).NodeData.Lb{no}(1:2);
-                    maxrange = app.TProblemTree.Children(1).NodeData.Ub{no}(1:2);
-
-                    [vars1, vars2] = meshgrid(x);
-                    vars = [vars1(:), vars2(:)];
-                    vars = (maxrange - minrange) .* vars + minrange;
-                    [ff, con] = app.TProblemTree.Children(1).NodeData.Fnc{no}(vars);
-
-                    ff(sum(con, 2) > 0) = NaN;
-                    if strcmp(app.TShowTypeDropDown.Value, 'Tasks Figure (2D Unified)') % unified
-                        fmin = min(ff);
-                        fmax = max(ff);
-                        ff = (ff - fmin) / (fmax - fmin);
-                    end
-                    ff = reshape(ff, size(vars1));
-
-                    p1 = mesh(app.TUIAxes, vars1, vars2, ff);
-                    p1.FaceAlpha = 0.15;
-                    p1.FaceColor = color(mod(no-1, size(color, 1))+1, :);
-                    p1.EdgeColor = color(mod(no-1, size(color, 1))+1, :);
-                    p1.LineStyle = '-';
-                    hold(app.TUIAxes, 'on');
-
-                    legend_cell = [legend_cell, ['T', num2str(no)]];
-                    plot_handle = [plot_handle, p1];
-                end
-                xlim(app.TUIAxes, [0, 1]);
-                ylim(app.TUIAxes, [0, 1]);
-                legend(app.TUIAxes, plot_handle, legend_cell, 'Location', 'best');
-                xlabel(app.TUIAxes, 'X');
-                ylabel(app.TUIAxes, 'Y');
-                zlabel(app.TUIAxes, 'Obj');
-            catch ME
-                return;
-            end
+            PlotTestTasks2D(app);
         end
 
         function TupdateFeasibleRegion(app)
-            % update selected problem tasks feasible region
-
-            try
-                if ~strcmp(app.TSpecialTypeDropDown.Value, 'Constrained')
-                    return;
-                end
-
-                sample_number = app.TSampleNumberEditField.Value;
-                x = 0:1/sample_number:1;
-
-                legend_cell = {};
-                plot_handle = {};
-
-                color = colororder;
-                for no = 1:app.TProblemTree.Children(1).NodeData.T
-                    minrange = app.TProblemTree.Children(1).NodeData.Lb{no}(1:2);
-                    maxrange = app.TProblemTree.Children(1).NodeData.Ub{no}(1:2);
-
-                    [vars1, vars2] = meshgrid(x);
-                    vars1 = vars1(:);
-                    vars2 = vars2(:);
-                    vars = [vars1, vars2];
-                    vars = (maxrange - minrange) .* vars + minrange;
-                    [~, con] = app.TProblemTree.Children(1).NodeData.Fnc{no}(vars);
-
-                    vars1(sum(con, 2) > 0) = [];
-                    vars2(sum(con, 2) > 0) = [];
-
-                    p1 = scatter(app.TUIAxes, vars1, vars2, 6, 'filled');
-                    p1.MarkerFaceAlpha = 0.6;
-                    p1.MarkerEdgeAlpha = 0.6;
-                    p1.MarkerEdgeColor = color(mod(no-1, size(color, 1))+1, :);
-                    hold(app.TUIAxes, 'on');
-
-                    legend_cell = [legend_cell, ['T', num2str(no)]];
-                    plot_handle = [plot_handle, p1];
-                end
-                xlim(app.TUIAxes, [0, 1]);
-                ylim(app.TUIAxes, [0, 1]);
-                legend(app.TUIAxes, plot_handle, legend_cell, 'Location', 'best');
-            catch ME
-                return;
-            end
+            PlotTestFeasibleRegion(app);
         end
 
         function TupdateConvergence(app)
-            % update figure axes
-
-            if isempty(app.TData)
-                return;
-            end
-
-            cla(app.TUIAxes, 'reset');
-
-            if max(app.TData.Problems(1).M) == 1
-                result = Obj(app.TData);
-            else
-                result = IGD(app.TData);
-            end
-
-            xlim_min = inf;
-            xlim_max = 0;
-            tasks_name = {};
-            converge_x = result.ConvergeData.X;
-            converge_y = result.ConvergeData.Y;
-            for j = 1:size(converge_x, 1)
-                if j > length(app.DefaultMarkerList)
-                    marker = '';
-                else
-                    marker = app.DefaultMarkerList{j};
-                end
-
-                y = squeeze(converge_y(j, 1, 1, :))';
-                x = squeeze(converge_x(j, 1, 1, :))';
-                p = plot(app.TUIAxes, x, y, ['-', marker]);
-                p.LineWidth = app.DefaultLineWidth;
-                indices = round(length(y)/app.DefaultMarkerNum);
-                p.MarkerIndices = indices:indices:length(y)-round(indices/2);
-                p.MarkerSize = app.DefaultMarkerSize;
-                xlim_max = max(xlim_max, x(end));
-                xlim_min = min(xlim_min, x(1));
-                hold(app.TUIAxes, 'on');
-                tasks_name = [tasks_name, ['T', num2str(j)]];
-            end
-
-            xlim(app.TUIAxes, [xlim_min, xlim_max]);
-            if max(app.TData.Problems(1).M) == 1
-                ylabel(app.TUIAxes, 'Obj');
-            else
-                ylabel(app.TUIAxes, 'IGD');
-            end
-            xlabel(app.TUIAxes, 'Evaluation');
-            legend(app.TUIAxes, tasks_name, 'Location', 'best');
-            grid(app.TUIAxes, 'on');
+            PlotTestConvergence(app);
         end
 
         function TupdateParetoFront(app)
-            % update figure axes
-
-            if isempty(app.TData)
-                return;
-            end
-
-            cla(app.TUIAxes, 'reset');
-
-            if max(app.TData.Problems(1).M) ~= 2 || min(app.TData.Problems(1).M) ~= 2
-                return;
-            end
-
-            result = IGD(app.TData);
-
-            tasks_name = {};
-            color_list = colororder;
-            for j = 1:size(result.ParetoData.Obj, 1)
-                if ~isempty(result.ParetoData.Optimum)
-                    % draw optimum
-                    x = squeeze(result.ParetoData.Optimum{j}(:, 1));
-                    y = squeeze(result.ParetoData.Optimum{j}(:, 2));
-                    s = scatter(app.TUIAxes, x, y);
-                    s.MarkerEdgeColor = color_list(j,:);
-                    s.MarkerFaceAlpha = 0.65;
-                    s.MarkerFaceColor = color_list(j,:);
-                    s.SizeData = 3;
-                    hold(app.TUIAxes, 'on');
-
-                    % draw population
-                    x = squeeze(result.ParetoData.Obj{j, 1, 1}(:, 1));
-                    y = squeeze(result.ParetoData.Obj{j, 1, 1}(:, 2));
-                    s = scatter(app.TUIAxes, x, y);
-                    s.MarkerEdgeColor = color_list(j,:);
-                    s.MarkerFaceAlpha = 0.65;
-                    s.MarkerFaceColor = color_list(j,:);
-                    s.SizeData = 40;
-                    hold(app.TUIAxes, 'on');
-                end
-                tasks_name = [tasks_name, ['T', num2str(j), ' Pareto Front'], ['T', num2str(j), ' Population']];
-            end
-
-            xlabel(app.TUIAxes, '$f_1$', 'interpreter', 'latex');
-            ylabel(app.TUIAxes, '$f_2$', 'interpreter', 'latex');
-            legend(app.TUIAxes, tasks_name, 'Location', 'best');
-            grid(app.TUIAxes, 'on');
+            PlotTestParetoFront(app);
         end
 
         function Toutput(app, output_str)
@@ -734,6 +596,9 @@ classdef MTO_GUI < matlab.apps.AppBase
         function EresetTable(app, row_name, column_name)
             % reset table in Experiment module
 
+            % Table styles persist when Data is replaced, so clear them explicitly.
+            app.EUITable.removeStyle();
+            app.EHighlightMatrix = [];
             app.EUITable.Data = {};
             app.EUITable.RowName = row_name;
             app.EUITable.ColumnName = column_name;
@@ -744,8 +609,8 @@ classdef MTO_GUI < matlab.apps.AppBase
         end
 
         function EreloadTableData(app)
-            % reload table data in Experiment module
-
+            % Reload table data only after results have been loaded or produced.
+            if isempty(app.EData), return; end
             app.EresetFormat();
             switch app.EDataTypeDropDown.Value
                 case 'Reps'
@@ -763,7 +628,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                         end
                     end
                     if is_calculate
-                        eval(['result = ', app.EDataTypeDropDown.Value, '(app.EData, ', num2str(app.EParallelCheckBox.Value) ,');']);
+                        result = feval(app.EDataTypeDropDown.Value, app.EData, app.EParallelCheckBox.Value);
                         metric.Name = app.EDataTypeDropDown.Value;
                         metric.Result = result;
                         if ~isfield(app.EData, 'Metrics')
@@ -1027,6 +892,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % highlight best value
             app.EUITable.removeStyle();
+            app.EHighlightMatrix = zeros(size(app.EUITable.DisplayData));
             high_color = uistyle('BackgroundColor', [0.67,0.95,0.67]);
             font_bold = uistyle('FontWeight', 'bold');
             low_color = uistyle('BackgroundColor', [1.00,0.60,0.60]);
@@ -1036,8 +902,6 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
             best_matrix = [];
             worst_matrix = [];
-
-            app.EHighlightMatrix = zeros(size(app.EUITable.DisplayData));
 
             for row_i = 1:size(app.ETableData, 1)
                 if strcmp(app.EHighlightTypeDropDown.Value, 'None')
@@ -1117,326 +981,98 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EDataFormatEditField.Value = format_str;
         end
 
-        function result = DcheckSplitData(app)
-            % check and reproduce split data
-
-            data_selected = app.DDataTree.SelectedNodes;
-            app.DDataFlag = [];
-            data_num = 0;
-            for i = 1:length(data_selected)
-                if isa(data_selected(i).Parent, 'matlab.ui.container.Tree')
-                    data_num = data_num + 1;
-                    app.DDataFlag(i) = 1;
-                else
-                    app.DDataFlag(i) = 0;
-                end
+        function nodes = DselectedData(app, minimum)
+            % Use tree order and ignore metadata children in mixed selections.
+            nodes = app.DDataTree.Children;
+            nodes = nodes(ismember(nodes, app.DDataTree.SelectedNodes));
+            if numel(nodes) < minimum
+                uialert(app.MToPv111UIFigure, ...
+                    sprintf('Select at least %d data node(s).', minimum), ...
+                    'Data selection', 'Icon', 'warning');
+                nodes = nodes([]);
             end
-            if data_num < 1
-                msg = 'Select at least 1 data node to split';
-                uiconfirm(app.MToPv110UIFigure, msg, 'error', 'Icon','warning');
-                result = false;
+        end
+
+        function DprocessData(app, operation, argument)
+            nodes = app.DselectedData(1 + strcmp(operation, 'merge'));
+            if isempty(nodes), return; end
+            labels = {'Problems', 'Algorithms', 'Reps'};
+            if strcmp(operation, 'merge')
+                try
+                    inputs = arrayfun(@(node) node.NodeData, nodes, 'UniformOutput', false);
+                    data = ProcessMTOData(inputs, operation, argument);
+                    app.DputDataNode(['data (Merge ', labels{argument}, ')'], data);
+                catch ME
+                    app.showError(ME, 'Data merge failed');
+                end
                 return;
             end
-
-            result = true;
-        end
-
-        function result = DcheckMergeData(app)
-            % check merge data num, pop size, iter num, eva num
-            % select legal node
-
-            data_selected = app.DDataTree.SelectedNodes;
-            app.DDataFlag = [];
-            data_num = 0;
-            for i = 1:length(data_selected)
-                if isa(data_selected(i).Parent, 'matlab.ui.container.Tree')
-                    data_num = data_num + 1;
-                    app.DDataFlag(i) = 1;
-                else
-                    app.DDataFlag(i) = 0;
-                end
-            end
-            if data_num < 2
-                msg = 'Select at least 2 data node to merge';
-                uiconfirm(app.MToPv110UIFigure, msg, 'error', 'Icon','warning');
-                result = false;
-                return;
-            end
-            result = true;
-        end
-
-        function result = DcheckMergeReps(app)
-            % check merge reps
-
-            data_num = sum(app.DDataFlag);
-            data_selected = app.DDataTree.SelectedNodes;
-            data_selected = data_selected(app.DDataFlag == 1);
-            reps = data_selected(1).NodeData.Reps;
-            for i = 2:data_num
-                if data_selected(i).NodeData.Reps ~= reps
-                    msg = 'The data''s reps not equal';
-                    uiconfirm(app.MToPv110UIFigure, msg, 'error', 'Icon','warning');
-                    result = false;
-                    return;
-                end
-            end
-            result = true;
-        end
-
-        function result = DcheckMergeAlgorithms(app)
-            % check merge algorithms
-
-            data_num = sum(app.DDataFlag);
-            data_selected = app.DDataTree.SelectedNodes;
-            data_selected = data_selected(app.DDataFlag == 1);
-            algorithms = data_selected(1).NodeData.Algorithms;
-            for i = 2:data_num
-                % check algo length
-                if length(algorithms) ~= length(data_selected(i).NodeData.Algorithms)
-                    msg = 'The data''s algorithms not equal';
-                    uiconfirm(app.MToPv110UIFigure, msg, 'error', 'Icon','warning');
-                    result = false;
-                    return;
-                end
-                for algo = 1:length(algorithms)
-                    % check algo name
-                    if ~strcmp(data_selected(i).NodeData.Algorithms(algo).Name, algorithms(algo).Name)
-                        msg = 'The data''s algorithms not equal';
-                        uiconfirm(app.MToPv110UIFigure, msg, 'error', 'Icon','warning');
-                        result = false;
-                        return;
-                    end
-                    % check algo para length
-                    if length(algorithms(algo).Para) ~= length(data_selected(i).NodeData.Algorithms(algo).Para)
-                        msg = 'The data''s algorithms not equal';
-                        uiconfirm(app.MToPv110UIFigure, msg, 'error', 'Icon','warning');
-                        result = false;
-                        return;
-                    end
-                    for pa = 1:length(algorithms(algo).Para)
-                        % check algo para name
-                        if ~strcmp(data_selected(i).NodeData.Algorithms(algo).Para{pa}, algorithms(algo).Para{pa})
-                            msg = 'The data''s algorithms not equal';
-                            uiconfirm(app.MToPv110UIFigure, msg, 'error', 'Icon','warning');
-                            result = false;
-                            return;
+            for i = 1:numel(nodes)
+                try
+                    output = ProcessMTOData(nodes(i).NodeData, operation, argument);
+                    if strcmp(operation, 'split')
+                        if numel(output) == 1
+                            uialert(app.MToPv111UIFigure, ...
+                                ['Only one ', lower(labels{argument}), ' entry in ', nodes(i).Text, '.'], ...
+                                'Data split', 'Icon', 'warning');
+                            continue;
                         end
+                        for j = 1:numel(output)
+                            switch argument
+                                case 1, suffix = ['Problem: ', output{j}.Problems.Name];
+                                case 2, suffix = ['Algorithm: ', output{j}.Algorithms.Name];
+                                case 3, suffix = ['Rep: ', num2str(j)];
+                            end
+                            app.DputDataNode([nodes(i).Text, ' (Split ', suffix, ')'], output{j});
+                        end
+                    else
+                        if strcmp(operation, 'reduce'), suffix = 'Reduced';
+                        else, suffix = 'Precision'; end
+                        app.DputDataNode([nodes(i).Text, ' (', suffix, ')'], output);
                     end
+                catch ME
+                    app.showError(ME, ['Data processing failed: ', nodes(i).Text]);
                 end
             end
-            result = true;
         end
 
-        function result = DcheckMergeProblems(app)
-            % check merge problems
-
-            data_num = sum(app.DDataFlag);
-            data_selected = app.DDataTree.SelectedNodes;
-            data_selected = data_selected(app.DDataFlag == 1);
-            problems = data_selected(1).NodeData.Problems;
-            for i = 2:data_num
-                % check prob length
-                if length(problems) ~= length(data_selected(i).NodeData.Problems)
-                    msg = 'The data''s problems not equal';
-                    uiconfirm(app.MToPv110UIFigure, msg, 'error', 'Icon','warning');
-                    result = false;
-                    return;
+        function DmoveData(app, direction)
+            nodes = app.DselectedData(1);
+            if direction > 0, nodes = flipud(nodes); end
+            for i = 1:numel(nodes)
+                siblings = app.DDataTree.Children;
+                index = find(siblings == nodes(i)) + direction;
+                if index < 1 || index > numel(siblings) || ismember(siblings(index), nodes)
+                    continue;
                 end
-                for prob = 1:length(problems)
-                    % check prob name
-                    if ~strcmp(data_selected(i).NodeData.Problems(prob).Name, problems(prob).Name) || ...
-                            data_selected(i).NodeData.Problems(prob).T ~= problems(prob).T || ...
-                            sum(data_selected(i).NodeData.Problems(prob).M ~= problems(prob).M) || ...
-                            sum(data_selected(i).NodeData.Problems(prob).D ~= problems(prob).D) || ...
-                            data_selected(i).NodeData.Problems(prob).N ~= problems(prob).N || ...
-                            data_selected(i).NodeData.Problems(prob).maxFE ~= problems(prob).maxFE
-                        msg = 'The data''s problems not equal';
-                        uiconfirm(app.MToPv110UIFigure, msg, 'error', 'Icon','warning');
-                        result = false;
-                        return;
-                    end
-                end
+                if direction < 0, location = 'before'; else, location = 'after'; end
+                move(nodes(i), siblings(index), location);
             end
-            result = true;
+            app.DDataTree.SelectedNodes = nodes;
         end
 
-        function result = DcheckPrecisionData(app)
-            % check and reproduce precision data
-
-            data_selected = app.DDataTree.SelectedNodes;
-            app.DDataFlag = [];
-            data_num = 0;
-            for i = 1:length(data_selected)
-                if isa(data_selected(i).Parent, 'matlab.ui.container.Tree')
-                    data_num = data_num + 1;
-                    app.DDataFlag(i) = 1;
-                else
-                    app.DDataFlag(i) = 0;
+        function DputDataNode(app, name, data)
+            node = uitreenode(app.DDataTree, 'Text', name, 'NodeData', data);
+            text = ['Reps: ', num2str(data.Reps)];
+            uitreenode(node, 'Text', text, 'NodeData', text);
+            fields = {'Algorithms', 'Problems'};
+            for i = 1:numel(fields)
+                text = [fields{i}, ':'];
+                group = uitreenode(node, 'Text', text, 'NodeData', text);
+                items = data.(fields{i});
+                for j = 1:numel(items)
+                    uitreenode(group, 'Text', items(j).Name, 'NodeData', items(j).Name);
                 end
             end
-            if data_num < 1
-                msg = 'Select at least 1 data node to precise';
-                uiconfirm(app.MToPv110UIFigure, msg, 'error', 'Icon','warning');
-                result = false;
-                return;
-            end
-
-            result = true;
-        end
-
-        function DputDataNode(app, name, MTOData)
-            % add data to tree in Data process module
-
-            data_node = uitreenode(app.DDataTree);
-            data_node.Text = name;
-            data_node.NodeData = MTOData;
-            % data_node.ContextMenu = app.DDataContextMenu;
-
-            % child node
-            reps_node = uitreenode(data_node);
-            reps_node.Text = ['Reps: ', num2str(data_node.NodeData.Reps)];
-            reps_node.NodeData = reps_node.Text;
-            % reps_node.ContextMenu = app.DDataContextMenu;
-
-            algo_node = uitreenode(data_node);
-            algo_node.Text = 'Algorithms:';
-            algo_node.NodeData = algo_node.Text;
-            % algo_node.ContextMenu = app.DDataContextMenu;
-            for algo = 1:length(data_node.NodeData.Algorithms)
-                algo_child_node = uitreenode(algo_node);
-                algo_child_node.Text = data_node.NodeData.Algorithms(algo).Name;
-                algo_child_node.NodeData = algo_child_node.Text;
-                % algo_child_node.ContextMenu = app.DDataContextMenu;
-            end
-
-            prob_node = uitreenode(data_node);
-            prob_node.Text = 'Problems:';
-            % prob_node.ContextMenu = app.DDataContextMenu;
-            for prob = 1:length(data_node.NodeData.Problems)
-                prob_child_node = uitreenode(prob_node);
-                prob_child_node.Text = data_node.NodeData.Problems(prob).Name;
-                prob_child_node.NodeData = prob_child_node.Text;
-                % prob_child_node.ContextMenu = app.DDataContextMenu;
-            end
+            drawnow;
         end
 
         function DsaveData(app, MTOData)
-            % save data to folder in Data process module
-
-            % check selected file name
-            app.MToPv110UIFigure.Visible = 'off';
-            [file_name, dir_name] = uiputfile('MTOData.mat');
-            app.MToPv110UIFigure.Visible = 'on';
-            figure(app.MToPv110UIFigure);
-            drawnow;
-            figure(app.MToPv110UIFigure);
-            if file_name == 0
-                return;
-            end
-
-            % save data
-            save([dir_name, file_name], 'MTOData');
+            [file, folder] = uiputfile('MTOData.mat');
+            if isequal(file, 0), return; end
+            save(fullfile(folder, file), 'MTOData');
         end
 
-        function NewResults = DReduceResults(app, Results, N, M)
-            % DReduceResults - Downsample simulation results to a fixed number of points
-            % Logic follows the equidistant sampling strategy from gen2eva.
-            % Parameters:
-            %   Results : 3D struct array (Prob x Algo x Rep)
-            %   N       : Target number of generations/points
-            %   M       : Number of objectives (determines Obj storage format)
-        
-            [nProb, nAlgo, nRep] = size(Results);
-            NewResults = Results; 
-            
-            for i = 1:nProb
-                for j = 1:nAlgo
-                    for k = 1:nRep
-                        % Check current generation count from CV (Task x Gen x Pop)
-                        currGen = size(Results(i,j,k).CV, 2);
-                        
-                        if currGen <= N
-                            NewResults(i,j,k) = Results(i,j,k);
-                            continue;
-                        end
-                        
-                        % Process Constraint Violation (CV): 3D Tensor (Task x Gen x Pop)
-                        NewResults(i,j,k).CV = app.DReduceResultNum(Results(i,j,k).CV, 2, 3, N);
-                        
-                        if M == 1
-                            % Process Objective: 3D Tensor (Task x Gen x Obj)
-                            NewResults(i,j,k).Obj = app.DReduceResultNum(Results(i,j,k).Obj, 2, 3, N);
-                        else
-                            % Process Objective: Cell array where Obj{t} is 2D (Gen x Obj)
-                            for t = 1:length(Results(i,j,k).Obj)
-                                % For 2D matrix (Gen x Obj), Gen is at Dimension 1
-                                NewResults(i,j,k).Obj{t} = app.DReduceResultNum(Results(i,j,k).Obj{t}, 1, 2, N);
-                            end
-                        end
-                    end
-                end
-            end
-        end
-
-        function NewResult = DReduceResultNum(app, Result, D, Dim, N)
-            % DReduceResultNum - Core sampling logic based on index gaps
-            % Parameters:
-            %   Result : The input data tensor
-            %   D      : Dimension index representing Generations
-            %   Dim    : Total number of dimensions in Result
-            %   N      : Target sampling points
-        
-            origLen = size(Result, D);
-            Gap = origLen / N;
-            
-            % Preallocate output container
-            newSize = size(Result);
-            newSize(D) = N;
-            NewResult = zeros(newSize);
-            
-            % Dual-pointer sampling logic (consistent with gen2eva)
-            idx = 1;
-            i = 1;
-            while i <= origLen
-                % Check if current index i meets the gap threshold for the next sample
-                if i >= (idx * Gap)
-                    NewResult = app.assignSubscript(NewResult, Result, idx, i, D, Dim);
-                    idx = idx + 1;
-                else
-                    i = i + 1;
-                end
-                
-                if idx > N, break; end
-            end
-            
-            % Boundary Alignment: Ensure the first and last points are preserved
-            NewResult = app.assignSubscript(NewResult, Result, 1, 1, D, Dim);
-            NewResult = app.assignSubscript(NewResult, Result, N, origLen, D, Dim);
-            
-            % Tail Filling: Fill remaining slots if floating point precision causes gaps
-            if idx <= N
-                for x = idx:N
-                    NewResult = app.assignSubscript(NewResult, Result, x, origLen, D, Dim);
-                end
-            end
-        end
-        
-        function Target = assignSubscript(app, Target, Source, targetIdx, sourceIdx, D, Dim)
-            % assignSubscript - Helper to perform dynamic slicing on N-D Tensors
-            switch Dim
-                case 2
-                    if D == 1, Target(targetIdx, :) = Source(sourceIdx, :);
-                    else, Target(:, targetIdx) = Source(:, sourceIdx); end
-                case 3
-                    if D == 1, Target(targetIdx, :, :) = Source(sourceIdx, :, :);
-                    elseif D == 2, Target(:, targetIdx, :) = Source(:, sourceIdx, :);
-                    else, Target(:, :, targetIdx) = Source(:, :, sourceIdx); end
-                case 4
-                    if D == 1, Target(targetIdx, :, :, :) = Source(sourceIdx, :, :, :);
-                    elseif D == 2, Target(:, targetIdx, :, :) = Source(:, sourceIdx, :, :);
-                    elseif D == 4, Target(:, :, :, targetIdx) = Source(:, :, :, sourceIdx); end
-            end
-        end
     end
 
 
@@ -1445,6 +1081,12 @@ classdef MTO_GUI < matlab.apps.AppBase
 
         % Code that executes after component creation
         function startupFcn(app)
+            addpath(fullfile(fileparts(mfilename('fullpath')), 'PlotFunctions'));
+            app.TSampleNumberEditField.Limits = [1, Inf];
+            app.TSampleNumberEditField.RoundFractionalValues = 'on';
+            % Item clicks also load the first filtered choice when Value has not changed.
+            app.TAlgorithmDropDown.ClickedFcn = @(~, event) app.TAlgorithmDropDownValueChanged(event);
+            app.TProblemDropDown.ClickedFcn = @(~, event) app.TProblemDropDownValueChanged(event);
             % App startup function
 
             app.TloadAlgoProb();
@@ -1473,91 +1115,80 @@ classdef MTO_GUI < matlab.apps.AppBase
 
         % Value changed function: TAlgorithmDropDown
         function TAlgorithmDropDownValueChanged(app, event)
-            app.TupdateAlgorithm();
-            app.TData = [];
-            app.TupdateUIAxes();
+            if isa(event, 'matlab.ui.eventdata.ClickedData')
+                index = event.InteractionInformation.Item;
+                if isempty(index), return; end
+                app.TAlgorithmDropDown.Value = app.TAlgorithmDropDown.ItemsData{index};
+            end
+            nodes = app.TAlgorithmTree.Children;
+            if isempty(app.TAlgorithmDropDown.Value) || ...
+                    (~isempty(nodes) && strcmp(class(nodes(1).NodeData), app.TAlgorithmDropDown.Value))
+                return;
+            end
+            try
+                app.TupdateAlgorithm();
+                app.TData = [];
+                app.TupdateUIAxes();
+            catch ME
+                app.showError(ME, 'Algorithm selection failed');
+            end
         end
 
         % Drop down opening function: TAlgorithmDropDown
         function TAlgorithmDropDownOpening(app, event)
-            app.TupdateAlgorithm();
-            app.TData = [];
-            app.TupdateUIAxes();
+            % Opening the list does not change the selection or its parameters.
         end
 
         % Node text changed function: TAlgorithmTree
         function TAlgorithmTreeNodeTextChanged(app, event)
-            % update algorithm obj parameter
-
-            node = event.Node;
-            if isa(node.Parent, 'matlab.ui.container.Tree')
-                % this is algorithm name node
-                node.NodeData.Name = node.Text;
-            else
-                % this is parameter node
-                parameter = {};
-                % the first node text is parameter name, can't change
-                for x = 1:2:length(node.Parent.Children)
-                    node.Parent.Children(x).Text = node.Parent.Children(x).NodeData;
+            try
+                if EditParameterTree(event.Node)
+                    app.TData = [];
+                    app.TupdateUIAxes();
                 end
-                % the second node text is parameter value
-                for x = 2:2:length(node.Parent.Children)
-                    parameter = [parameter, node.Parent.Children(x).Text];
-                end
-                node.Parent.NodeData.setParameter(parameter);
-                % update child parameter node
-                parameter = node.Parent.NodeData.getParameter();
-                for x = 2:2:length(node.Parent.Children)
-                    node.Parent.Children(x).Text = parameter{x};
-                end
+            catch ME
+                app.TData = [];
+                app.showError(ME, 'Parameter edit failed');
             end
-            app.TData = [];
-            app.TupdateUIAxes();
         end
 
         % Value changed function: TProblemDropDown
         function TProblemDropDownValueChanged(app, event)
-            app.TupdateProblem();
-            app.TData = [];
-            app.TupdateUIAxes();
+            if isa(event, 'matlab.ui.eventdata.ClickedData')
+                index = event.InteractionInformation.Item;
+                if isempty(index), return; end
+                app.TProblemDropDown.Value = app.TProblemDropDown.ItemsData{index};
+            end
+            nodes = app.TProblemTree.Children;
+            if isempty(app.TProblemDropDown.Value) || ...
+                    (~isempty(nodes) && strcmp(class(nodes(1).NodeData), app.TProblemDropDown.Value))
+                return;
+            end
+            try
+                app.TupdateProblem();
+                app.TData = [];
+                app.TupdateUIAxes();
+            catch ME
+                app.showError(ME, 'Problem selection failed');
+            end
         end
 
         % Drop down opening function: TProblemDropDown
         function TProblemDropDownOpening(app, event)
-            app.TupdateProblem();
-            app.TData = [];
-            app.TupdateUIAxes();
+            % Opening the list does not change the selection or its parameters.
         end
 
         % Node text changed function: TProblemTree
         function TProblemTreeNodeTextChanged(app, event)
-            % update problem obj parameter
-
-            node = event.Node;
-            if isa(node.Parent, 'matlab.ui.container.Tree')
-                % this is problem node
-                node.NodeData.Name = node.Text;
-            else
-                % this is parameter node
-                parameter = {};
-                % the first node text is parameter name, can't change
-                for x = 1:2:length(node.Parent.Children)
-                    node.Parent.Children(x).Text = node.Parent.Children(x).NodeData;
+            try
+                if EditParameterTree(event.Node)
+                    app.TData = [];
+                    app.TupdateUIAxes();
                 end
-                % the second node text is parameter value
-                for x = 2:2:length(node.Parent.Children)
-                    parameter = [parameter, node.Parent.Children(x).Text];
-                end
-                node.Parent.NodeData.setParameter(parameter);
-                % update child parameter node
-                parameter = node.Parent.NodeData.getParameter();
-                for x = 2:2:length(node.Parent.Children)
-                    node.Parent.Children(x).Text = parameter{x};
-                end
+            catch ME
+                app.TData = [];
+                app.showError(ME, 'Parameter edit failed');
             end
-
-            app.TData = [];
-            app.TupdateUIAxes();
         end
 
         % Value changed function: TShowTypeDropDown
@@ -1574,82 +1205,101 @@ classdef MTO_GUI < matlab.apps.AppBase
         function TStartButtonPushed(app, event)
             % start this test
 
+            if isempty(app.TAlgorithmTree.Children) || isempty(app.TProblemTree.Children)
+                uialert(app.MToPv111UIFigure, 'Please select an algorithm and a problem.', ...
+                    'Cannot start', 'Icon', 'warning');
+                return;
+            end
+
             % off the start button
             app.TstartEnable(false);
+            % Restore controls even if preparation or execution returns early or fails.
+            cleanup = onCleanup(@() app.finishRun('Test')); %#ok<NASGU>
             app.TStopFlag = false;
             drawnow;
 
-            % set data
-            app.TData = [];
-            app.TData.Reps = 1;
-            app.TData.Problems = [];
-            app.TData.Problems(1).Name = app.TProblemTree.Children(1).NodeData.Name;
-            app.TData.Problems(1).T = app.TProblemTree.Children(1).NodeData.T;
-            app.TData.Problems(1).M = app.TProblemTree.Children(1).NodeData.M;
-            if max(app.TData.Problems(1).M) > 1
-                app.TData.Problems(1).Optimum = app.TProblemTree.Children(1).NodeData.getOptimum();
-            end
-            app.TData.Problems(1).D = app.TProblemTree.Children(1).NodeData.D;
-            app.TData.Problems(1).N = app.TProblemTree.Children(1).NodeData.N;
-            app.TData.Problems(1).Fnc = app.TProblemTree.Children(1).NodeData.Fnc;
-            app.TData.Problems(1).Lb = app.TProblemTree.Children(1).NodeData.Lb;
-            app.TData.Problems(1).Ub = app.TProblemTree.Children(1).NodeData.Ub;
-            app.TData.Problems(1).maxFE = app.TProblemTree.Children(1).NodeData.maxFE;
-            app.TData.Algorithms = [];
-            app.TData.Algorithms(1).Name = app.TAlgorithmTree.Children(1).NodeData.Name;
-            app.TData.Algorithms(1).Para = app.TAlgorithmTree.Children(1).NodeData.getParameter();
-            app.TData.Results = [];
-            app.TData.RunTimes = [];
-
             try
-            % run
-            app.TAlgorithmTree.Children(1).NodeData.Result_Num = 50;
-            app.TAlgorithmTree.Children(1).NodeData.Save_Dec = 0;
-            app.TAlgorithmTree.Children(1).NodeData.reset();
-            app.TAlgorithmTree.Children(1).NodeData.Check_Status_Fn = @app.TcheckPauseStopStatus;
-            app.TAlgorithmTree.Children(1).NodeData.Draw_Dec = app.TDrawDecCheckBox.Value;
-            app.TAlgorithmTree.Children(1).NodeData.Draw_Obj = app.TDrawObjCheckBox.Value;
-            app.TAlgorithmTree.Children(1).NodeData.drawInit(app.TProblemTree.Children(1).NodeData);
-            app.TAlgorithmTree.Children(1).NodeData.run(app.TProblemTree.Children(1).NodeData);
-            tmp = app.TAlgorithmTree.Children(1).NodeData.getResult(app.TProblemTree.Children(1).NodeData);
-            for t = 1:size(tmp, 1)
-                for g = 1:size(tmp,2)
-                    if max(app.TData.Problems(1).M) > 1
-                        app.TData.Results(1,1,1).Obj{t}(g, :, :) = tmp(t, g).Obj(:, :);
-                    else
-                        app.TData.Results(1,1,1).Obj(t, g, :, :) = tmp(t, g).Obj(:, :);
+                % set data
+                app.TData = [];
+                app.TData.Reps = 1;
+                app.TData.Problems = [];
+                app.TData.Problems(1).Name = app.TProblemTree.Children(1).NodeData.Name;
+                app.TData.Problems(1).T = app.TProblemTree.Children(1).NodeData.T;
+                app.TData.Problems(1).M = app.TProblemTree.Children(1).NodeData.M;
+                if max(app.TData.Problems(1).M) > 1
+                    app.TData.Problems(1).Optimum = app.TProblemTree.Children(1).NodeData.getOptimum();
+                end
+                app.TData.Problems(1).D = app.TProblemTree.Children(1).NodeData.D;
+                app.TData.Problems(1).N = app.TProblemTree.Children(1).NodeData.N;
+                app.TData.Problems(1).Fnc = app.TProblemTree.Children(1).NodeData.Fnc;
+                app.TData.Problems(1).Lb = app.TProblemTree.Children(1).NodeData.Lb;
+                app.TData.Problems(1).Ub = app.TProblemTree.Children(1).NodeData.Ub;
+                app.TData.Problems(1).maxFE = app.TProblemTree.Children(1).NodeData.maxFE;
+                app.TData.Algorithms = [];
+                app.TData.Algorithms(1).Name = app.TAlgorithmTree.Children(1).NodeData.Name;
+                app.TData.Algorithms(1).Para = app.TAlgorithmTree.Children(1).NodeData.getParameter();
+                app.TData.Results = [];
+                app.TData.RunTimes = [];
+
+                % run
+                app.TAlgorithmTree.Children(1).NodeData.Result_Num = 50;
+                app.TAlgorithmTree.Children(1).NodeData.Save_Dec = 0;
+                app.TAlgorithmTree.Children(1).NodeData.reset();
+                app.TAlgorithmTree.Children(1).NodeData.Check_Status_Fn = @app.TcheckPauseStopStatus;
+                app.TAlgorithmTree.Children(1).NodeData.Draw_Dec = app.TDrawDecCheckBox.Value;
+                app.TAlgorithmTree.Children(1).NodeData.Draw_Obj = app.TDrawObjCheckBox.Value;
+                app.TAlgorithmTree.Children(1).NodeData.drawInit(app.TProblemTree.Children(1).NodeData);
+                app.TAlgorithmTree.Children(1).NodeData.run(app.TProblemTree.Children(1).NodeData);
+                tmp = app.TAlgorithmTree.Children(1).NodeData.getResult(app.TProblemTree.Children(1).NodeData);
+                for t = 1:size(tmp, 1)
+                    for g = 1:size(tmp,2)
+                        if max(app.TData.Problems(1).M) > 1
+                            app.TData.Results(1,1,1).Obj{t}(g, :, :) = tmp(t, g).Obj(:, :);
+                        else
+                            app.TData.Results(1,1,1).Obj(t, g, :, :) = tmp(t, g).Obj(:, :);
+                        end
+                        app.TData.Results(1,1,1).CV(t, g, :) = tmp(t, g).CV;
                     end
-                    app.TData.Results(1,1,1).CV(t, g, :) = tmp(t, g).CV;
                 end
-            end
-            best_data = app.TAlgorithmTree.Children(1).NodeData.Best;
-
-            app.TupdateUIAxes();
-
-            % Output Best Data To Right Text
-            app.Toutput(['Algo: ', app.TData.Algorithms(1).Name]);
-            app.Toutput(['Prob: ', app.TData.Problems(1).Name]);
-            if max(app.TData.Problems(1).M) == 1
-                for t = 1:length(best_data)
-                    app.Toutput(['T', num2str(t), ' Obj: ', num2str(best_data{t}.Obj, '%.2e'), ...
-                        ' CV: ', num2str(best_data{t}.CV, '%.2e')]);
-                end
-            else
-                result = IGD(app.TData);
-                for t = 1:size(result.TableData, 1)
-                    app.Toutput(['T', num2str(t), ' IGD: ', num2str(result.TableData(t, 1, 1), '%.2e')]);
-                end
-            end
-            app.Toutput('-------------------------------------------');
-            scroll(app.TOutputTextArea,"bottom");
-
-            app.TstartEnable(true);
             catch ME
                 if strcmp(ME.message, 'User Stop')
                     return;
                 else
-                    rethrow(ME);
+                    app.TData = [];
+                    report = app.showError(ME, 'Test run failed');
+                    app.Toutput(cellstr(splitlines(string(report))));
+                    scroll(app.TOutputTextArea, 'bottom');
+                    return;
                 end
+            end
+
+            % Completed results remain available if plotting or metric calculation fails.
+            try
+                best_data = app.TAlgorithmTree.Children(1).NodeData.Best;
+
+                app.TupdateUIAxes();
+
+                % Output Best Data To Right Text
+                app.Toutput(['Algo: ', app.TData.Algorithms(1).Name]);
+                app.Toutput(['Prob: ', app.TData.Problems(1).Name]);
+                if max(app.TData.Problems(1).M) == 1
+                    for t = 1:length(best_data)
+                        app.Toutput(['T', num2str(t), ' Obj: ', num2str(best_data{t}.Obj, '%.2e'), ...
+                            ' CV: ', num2str(best_data{t}.CV, '%.2e')]);
+                    end
+                else
+                    result = IGD(app.TData);
+                    for t = 1:size(result.TableData, 1)
+                        app.Toutput(['T', num2str(t), ' IGD: ', num2str(result.TableData(t, 1, 1), '%.2e')]);
+                    end
+                end
+                app.Toutput('-------------------------------------------');
+                scroll(app.TOutputTextArea,"bottom");
+
+            catch ME
+                report = app.showError(ME, 'Test postprocessing failed');
+                app.Toutput(cellstr(splitlines(string(report))));
+                scroll(app.TOutputTextArea, 'bottom');
             end
         end
 
@@ -1670,15 +1320,12 @@ classdef MTO_GUI < matlab.apps.AppBase
         function TStopButtonPushed(app, event)
             app.TStopFlag = true;
             app.TData = [];
-            app.TstartEnable(true);
+            app.TStopButton.Enable = 'off';
         end
 
         % Button pushed function: TExportButton
         function TExportButtonPushed(app, event)
-            f = figure();
-            axes2 = copyobj(app.TUIAxes, f);
-            set(axes2,'units','default','position','default');
-            set(axes2,'OuterPosition',[0,0,1,1]);
+            ExportTestPlot(app);
         end
 
         % Value changed function: ETaskTypeDropDown
@@ -1705,6 +1352,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % add selected algorithms to selected algorithms tree
 
             algo_selected = app.EAlgorithmsListBox.Value;
+            if isempty(algo_selected), return; end
             for i= 1:length(algo_selected)
                 algo_name = algo_selected{i};
                 algo_dispname = strrep(algo_name, '_', '-');
@@ -1718,15 +1366,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                 algo_node.Text = algo_obj.Name;
                 algo_node.NodeData = algo_obj;
 
-                % child parameter node
-                parameter = algo_obj.getParameter();
-                for p = 1:2:length(parameter)
-                    para_name_node = uitreenode(algo_node);
-                    para_name_node.Text = ['[ ', parameter{p}, ' ]'];
-                    para_name_node.NodeData = para_name_node.Text;
-                    para_value_node = uitreenode(algo_node);
-                    para_value_node.Text = parameter{p+1};
-                end
+                RefreshParameterTree(algo_node);
             end
 
             % collapse other node and expand this node
@@ -1751,6 +1391,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % add selected problems to selected problems tree
 
             prob_selected = app.EProblemsListBox.Value;
+            if isempty(prob_selected), return; end
             for i= 1:length(prob_selected)
                 prob_name = prob_selected{i};
                 prob_dispname = strrep(prob_name, '_', '-');
@@ -1764,15 +1405,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                 prob_node.Text = prob_obj.Name;
                 prob_node.NodeData = prob_obj;
 
-                % child parameter node
-                parameter = prob_obj.getParameter();
-                for p = 1:2:length(parameter)
-                    para_name_node = uitreenode(prob_node);
-                    para_name_node.Text = ['[ ', parameter{p}, ' ]'];
-                    para_name_node.NodeData = para_name_node.Text;
-                    para_value_node = uitreenode(prob_node);
-                    para_value_node.Text = parameter{p+1};
-                end
+                RefreshParameterTree(prob_node);
             end
 
             % collapse other node and expand this node
@@ -1785,202 +1418,69 @@ classdef MTO_GUI < matlab.apps.AppBase
 
         % Button pushed function: EStartButton
         function EStartButtonPushed(app, event)
-            % start this experiment
-
-            % check selected
-            algo_num = length(app.EAlgorithmsTree.Children);
-            prob_num = length(app.EProblemsTree.Children);
-            if algo_num == 0
-                msg = 'Please select the Algorithm first';
-                uiconfirm(app.MToPv110UIFigure, msg, 'error', 'Icon','warning');
-                app.EstartEnable(true);
-                return;
-            end
-            if prob_num == 0
-                msg = 'Please select the Problem first';
-                uiconfirm(app.MToPv110UIFigure, msg, 'error', 'Icon','warning');
-                app.EstartEnable(true);
+            if isempty(app.EAlgorithmsTree.Children) || isempty(app.EProblemsTree.Children)
+                uialert(app.MToPv111UIFigure, ...
+                    'Please select at least one algorithm and one problem.', ...
+                    'Experiment', 'Icon', 'warning');
                 return;
             end
 
-            % off the start button
             app.EstartEnable(false);
-            app.EStopFlag = false;
-            app.EDataTypeDropDown.Value = 'Reps';
-
-            % initialize data
-            app.EData = [];
-            MTOData.Reps = app.ERepsEditField.Value;
-            MTOData.Problems = [];
-            for prob = 1:prob_num
-                MTOData.Problems(prob).Name = app.EProblemsTree.Children(prob).NodeData.Name;
-                MTOData.Problems(prob).T = app.EProblemsTree.Children(prob).NodeData.T;
-                MTOData.Problems(prob).M = app.EProblemsTree.Children(prob).NodeData.M;
-                if max(MTOData.Problems(prob).M) > 1
-                    MTOData.Problems(prob).Optimum = app.EProblemsTree.Children(prob).NodeData.getOptimum();
-                end
-                MTOData.Problems(prob).D = app.EProblemsTree.Children(prob).NodeData.D;
-                MTOData.Problems(prob).N = app.EProblemsTree.Children(prob).NodeData.N;
-                MTOData.Problems(prob).Fnc = app.EProblemsTree.Children(prob).NodeData.Fnc;
-                MTOData.Problems(prob).Lb = app.EProblemsTree.Children(prob).NodeData.Lb;
-                MTOData.Problems(prob).Ub = app.EProblemsTree.Children(prob).NodeData.Ub;
-                MTOData.Problems(prob).maxFE = app.EProblemsTree.Children(prob).NodeData.maxFE;
-            end
-            problems_temp = MTOData.Problems;
-            MTOData.Algorithms = [];
-            for algo = 1:algo_num
-                MTOData.Algorithms(algo).Name = app.EAlgorithmsTree.Children(algo).NodeData.Name;
-                MTOData.Algorithms(algo).Para = app.EAlgorithmsTree.Children(algo).NodeData.getParameter();
-            end
-            algorithms_temp = MTOData.Algorithms;
-            MTOData.Results = [];
-            MTOData.RunTimes = [];
-
-            % reset table and convergence
-            app.EloadMetric('Nothing');
-            app.ETableReps = zeros(prob_num, algo_num);
-            app.EupdateTableReps();
-            app.EresetTable({MTOData.Problems.Name}, {MTOData.Algorithms.Name});
-            app.EresetTableAlgorithmDropDown({MTOData.Algorithms.Name});
-            % cla(app.EConvergenceTrendUIAxes, 'reset');
-
-            if app.ERngSeedCheckBox.Value
-                % using same rng(seed) in same independent runs
-                % generate different seed for runs
-                seeds = (0:MTOData.Reps-1) + app.ERngSeedEditField.Value;
-            end
-
-            % main experiment loop
-            tStart = tic;
-            Results = [];
-            % Run
+            cleanup = onCleanup(@() app.finishRun('Experiment')); %#ok<NASGU>
             try
-            for prob = 1:prob_num
-                for algo = 1:algo_num
-                    % check pause and stop
-                    algo_obj = app.EAlgorithmsTree.Children(algo).NodeData;
-                    algo_obj.Result_Num = app.EResultsNumEditField.Value;
-                    algo_obj.Save_Dec = app.ESaveDecCheckBox.Value;
-                    algo_obj.Check_Status_Fn = @emptyFn;
-                    prob_obj = app.EProblemsTree.Children(prob).NodeData;
-                    app.EcheckPauseStopStatus();
-                    if app.EParallelCheckBox.Value
-                        future(1:MTOData.Reps) = parallel.FevalFuture;
-                        for rep = 1:MTOData.Reps
-                            if app.ERngSeedCheckBox.Value
-                                se = seeds(rep);
-                            else
-                                se = -1;
-                            end
-                            future(rep) = parfeval(@parRun,1,algo_obj,prob_obj, se);
-                        end
-                        tmp_cell = cell(1,MTOData.Reps);
-                        while ~all([future.Read])
-                            drawnow('limitrate');
-                            if strcmp(app.EPauseButton.Text, 'Resume')
-                                waitfor(app.EPauseButton,'Text', 'Pause');
-                            end
-                            if app.EStopFlag
-                                app.EstartEnable(true);
-                                cancel(future);
-                                error('User Stop');
-                            end
-                            [r,result] = fetchNext(future,0.01);
-                            if ~isempty(r)
-                                tmp_cell{r} = result;
-                            end
-                        end
-                        for rep=1:MTOData.Reps
-                            tmp = tmp_cell{rep};
-                            for t = 1:size(tmp, 1)
-                                for g = 1:size(tmp,2)
-                                    if max(prob_obj.M) > 1
-                                        Results(prob, algo, rep).Obj{t}(g, :, :) = tmp(t, g).Obj;
-                                        if isfield(tmp, 'Dec')
-                                            Results(prob, algo, rep).Dec(t, g, :, :) = tmp(t, g).Dec;
-                                        end
-                                    else
-                                        Results(prob, algo, rep).Obj(t, g, :) = tmp(t, g).Obj;
-                                        if isfield(tmp, 'Dec')
-                                            Results(prob, algo, rep).Dec(t, g, :) = tmp(t, g).Dec;
-                                        end
-                                    end
-                                    Results(prob, algo, rep).CV(t, g, :) = tmp(t, g).CV;
-                                end
-                            end
-                            MTOData.RunTimes(prob, algo, rep) = seconds(future(rep).FinishDateTime - future(rep).StartDateTime);
-                        end
-                    else
-                        t_temp = [];
-                        for rep = 1:MTOData.Reps
-                            tstart = tic;
-                            if app.ERngSeedCheckBox.Value
-                                rng(seeds(rep));
-                            end
-                            prob_obj.setTasks();
-                            algo_obj.reset();
-                            algo_obj.Check_Status_Fn = @app.EcheckPauseStopStatus;
-                            algo_obj.run(prob_obj);
-                            algo_obj.Check_Status_Fn = @emptyFn;
-                            tmp = algo_obj.getResult(prob_obj);
-                            for t = 1:size(tmp, 1)
-                                for g = 1:size(tmp,2)
-                                    if max(prob_obj.M) > 1
-                                        Results(prob, algo, rep).Obj{t}(g, :, :) = tmp(t, g).Obj;
-                                        if isfield(tmp, 'Dec')
-                                            Results(prob, algo, rep).Dec(t, g, :, :) = tmp(t, g).Dec;
-                                        end
-                                    else
-                                        Results(prob, algo, rep).Obj(t, g, :) = tmp(t, g).Obj;
-                                        if isfield(tmp, 'Dec')
-                                            Results(prob, algo, rep).Dec(t, g, :) = tmp(t, g).Dec;
-                                        end
-                                    end
-                                    Results(prob, algo, rep).CV(t, g, :) = tmp(t, g).CV;
-                                end
-                            end
-                            t_temp(rep) = toc(tstart);
+                app.EStopFlag = false;
+                MTOData = app.EcreateExperimentData();
+                problems = MTOData.Problems;
+                algorithms = MTOData.Algorithms;
+                prob_num = numel(problems);
+                algo_num = numel(algorithms);
 
-                            app.ETableReps(prob, algo) = rep;
-                            app.EupdateTableReps();
-                        end
-                        MTOData.RunTimes(prob, algo, :) = t_temp;
-                    end
-                    app.ETableReps(prob, algo) = MTOData.Reps;
-                    app.EupdateTableReps();
-                    app.EcheckPauseStopStatus();
+                app.EData = [];
+                app.EloadMetric('Nothing');
+                app.EDataTypeDropDown.Value = 'Reps';
+                app.ETableReps = zeros(prob_num, algo_num);
+                app.EresetTable({problems.Name}, {algorithms.Name});
+                app.EupdateTableReps();
+                app.EresetTableAlgorithmDropDown({algorithms.Name});
 
-                    if prob == 1
-                        % save temporary data
-                        MTOData.Results = MakeGenEqual(Results);
-                        MTOData.Algorithms = algorithms_temp(1:algo);
-                        MTOData.Problems = problems_temp(1:prob);
-                        save('MTOData_Temp', 'MTOData');
-                        app.EData = MTOData;
+                % Each repetition uses the same seed across all algorithms and problems.
+                seeds = -ones(1, MTOData.Reps);
+                if app.ERngSeedCheckBox.Value
+                    seeds = app.ERngSeedEditField.Value + (0:MTOData.Reps-1);
+                end
+
+                startTime = tic;
+                Results = struct([]);
+                for prob = 1:prob_num
+                    for algo = 1:algo_num
+                        app.EcheckPauseStopStatus();
+                        [results, runTimes] = app.ErunRepetitions(prob, algo, seeds);
+                        if isempty(Results)
+                            Results = reshape(results, 1, 1, []);
+                        else
+                            Results(prob, algo, :) = reshape(results, 1, 1, []);
+                        end
+                        MTOData.RunTimes(prob, algo, :) = runTimes;
+                        app.EcheckPauseStopStatus();
+
+                        % Save only complete rectangles: the first row or a full problem row.
+                        if prob == 1 || algo == algo_num
+                            MTOData.Results = MakeGenEqual(Results);
+                            MTOData.Problems = problems(1:prob);
+                            MTOData.Algorithms = algorithms(1:algo);
+                            save('MTOData_Temp', 'MTOData');
+                            app.EData = MTOData;
+                        end
                     end
                 end
 
-                % save temporary data
-                MTOData.Results = MakeGenEqual(Results);
-                MTOData.Problems = problems_temp(1:prob);
-                save('MTOData_Temp', 'MTOData');
-                app.EData = MTOData;
-            end
-            % save('MTOData_Temp', 'MTOData');
-
-            app.EloadMetric(app.getDataLabels(MTOData));
-
-            tEnd = toc(tStart);
-            msg = ['All Use Time: ', char(duration([0, 0, tEnd]))];
-            uiconfirm(app.MToPv110UIFigure, msg, 'success', 'Icon', 'success');
-
-            app.EstartEnable(true);
-            app.EreloadTableData();
+                app.EloadMetric(app.getDataLabels(MTOData));
+                msg = ['All Use Time: ', char(duration([0, 0, toc(startTime)]))];
+                uiconfirm(app.MToPv111UIFigure, msg, 'success', 'Icon', 'success');
+                app.EreloadTableData();
             catch ME
-                if strcmp(ME.message, 'User Stop')
-                    return;
-                else
-                    rethrow(ME);
+                if ~strcmp(ME.message, 'User Stop')
+                    app.showError(ME, 'Experiment run failed');
                 end
             end
         end
@@ -1991,7 +1491,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             if strcmp(app.EPauseButton.Text, 'Pause')
                 msg = 'Are you sure to pause the experiment?';
-                selection = uiconfirm(app.MToPv110UIFigure, msg, 'Confirm Pause', ...
+                selection = uiconfirm(app.MToPv111UIFigure, msg, 'Confirm Pause', ...
                                      'Options', {'Confirm', 'Cancel'}, ...
                                      'DefaultOption', 'Cancel', ...
                                      'Icon', 'warning'); % 'warning' might be more appropriate than 'success'
@@ -2010,13 +1510,13 @@ classdef MTO_GUI < matlab.apps.AppBase
             % stop this experiment
 
             msg = 'Are you sure to stop the experiment?';
-            selection = uiconfirm(app.MToPv110UIFigure, msg, 'Confirm Stop', ...
+            selection = uiconfirm(app.MToPv111UIFigure, msg, 'Confirm Stop', ...
                                  'Options', {'Confirm', 'Cancel'}, ...
                                  'DefaultOption', 'Cancel', ...
                                  'Icon', 'warning'); % 'warning' might be more appropriate than 'success'
             
             if strcmp(selection, 'Confirm')
-                app.EstartEnable(true);
+                app.EStopButton.Enable = 'off';
                 app.EStopFlag = true;
             end
         end
@@ -2028,7 +1528,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             algo_selected = app.EAlgorithmsTree.SelectedNodes;
             if isempty(algo_selected)
                 msg = 'Select Algorithm node in tree first';
-                uiconfirm(app.MToPv110UIFigure, msg, 'error', 'Icon','warning');
+                uiconfirm(app.MToPv111UIFigure, msg, 'error', 'Icon','warning');
             end
 
             for i = 1:length(algo_selected)
@@ -2040,29 +1540,10 @@ classdef MTO_GUI < matlab.apps.AppBase
 
         % Node text changed function: EAlgorithmsTree
         function EAlgorithmsTreeNodeTextChanged(app, event)
-            % update algorithm obj parameter
-
-            node = event.Node;
-            if isa(node.Parent, 'matlab.ui.container.Tree')
-                % this is algorithm name node
-                node.NodeData.Name = node.Text;
-            else
-                % this is parameter node
-                parameter = {};
-                % the first node text is parameter name, can't change
-                for x = 1:2:length(node.Parent.Children)
-                    node.Parent.Children(x).Text = node.Parent.Children(x).NodeData;
-                end
-                % the second node text is parameter value
-                for x = 2:2:length(node.Parent.Children)
-                    parameter = [parameter, node.Parent.Children(x).Text];
-                end
-                node.Parent.NodeData.setParameter(parameter);
-                % update child parameter node
-                parameter = node.Parent.NodeData.getParameter();
-                for x = 2:2:length(node.Parent.Children)
-                    node.Parent.Children(x).Text = parameter{x};
-                end
+            try
+                EditParameterTree(event.Node);
+            catch ME
+                app.showError(ME, 'Parameter edit failed');
             end
         end
 
@@ -2089,7 +1570,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Get selected problem nodes
             selected_nodes = app.EProblemsTree.SelectedNodes;
             if isempty(selected_nodes)
-                uialert(app.MToPv110UIFigure, ...
+                uialert(app.MToPv111UIFigure, ...
                     'No nodes selected. Please select at least one problem node.', ...
                     'Warning', 'Icon', 'warning');
                 return;
@@ -2104,62 +1585,53 @@ classdef MTO_GUI < matlab.apps.AppBase
             end
         
             if isempty(prob_nodes)
-                uialert(app.MToPv110UIFigure, ...
+                uialert(app.MToPv111UIFigure, ...
                     'No top-level problem nodes selected. Please select proper problem nodes.', ...
                     'Warning', 'Icon', 'warning');
                 return;
             end
         
-            % ====== Create dialog with SetPublicPara component ======
+            problems = arrayfun(@(node) node.NodeData, prob_nodes, 'UniformOutput', false);
+            info = GetPublicParameterInfo(problems);
             screen_size = get(0, 'ScreenSize');
-            dlg_width = 152;
-            dlg_height = 145;
+            dlg_width = 245;
+            dlg_height = 175;
             dlg = uifigure('Name', sprintf('Batch Edit %d Problem(s)', length(prob_nodes)), ...
                            'Position', [(screen_size(3)-dlg_width)/2, ...
                                         (screen_size(4)-dlg_height)/2, ...
                                          dlg_width, dlg_height], ...
                            'Color', [1 1 1]);
             dlg.WindowStyle = 'modal';
+            dlg.Resize = 'on';
+            layout = uigridlayout(dlg, [1, 1]);
+            layout.Padding = [0, 0, 0, 0];
+            paraUI = SetPublicPara(layout, 'CurrentValues', info.Values, 'EditableFields', info.Editable);
+            paraUI.Layout.Row = 1;
+            paraUI.Layout.Column = 1;
         
-            % Add the reusable component
-            paraUI = SetPublicPara(dlg);
-            paraUI.Position = [0 0 dlg_width dlg_height];
-        
-            % ====== Define callback for Apply event ======
             addlistener(paraUI, 'ParametersApplied', @(src,evt)applyBatchEdit(paraUI.PublicParameters));
         
-            % ====== Nested function ======
             function applyBatchEdit(params)
-                % params = [N, maxFE, TaskNum, Dim]
-                param_names = {'N:', 'maxFE:', 'Task Num', 'Dim'};
-        
-                for n = 1:length(prob_nodes)
-                    current_params = prob_nodes(n).NodeData.getParameter();
-                    updated_params = current_params;
-        
-                    % Update each target parameter
-                    for p = 1:length(param_names)
-                        for i = 1:2:length(current_params)
-                            param_name = current_params{i};
-                            if contains(param_name, param_names{p}, 'IgnoreCase', true)
-                                updated_params{i + 1} = num2str(params(p));
-                                break;
-                            end
+                % Only explicitly changed, shared parameters are applied.
+                changed = find(info.Editable & isfinite(params));
+                if isempty(changed), close(dlg); return; end
+                try
+                    for n = 1:length(prob_nodes)
+                        current_params = prob_nodes(n).NodeData.getParameter();
+                        for p = changed
+                            current_params{info.Indices(n, p)} = num2str(params(p), 16);
                         end
+                        prob_nodes(n).NodeData.setParameter(current_params(2:2:end));
+                        % Display the values accepted by each problem's setter.
+                        RefreshParameterTree(prob_nodes(n));
+                        expand(prob_nodes(n));
                     end
-                    parameter = updated_params(2:2:end);
-        
-                    % Apply update to problem data
-                    prob_nodes(n).NodeData.setParameter(parameter);
-
-                    parameter = prob_nodes(n).NodeData.getParameter();
-                    for x = 2:2:length(prob_nodes(n).Children)
-                        prob_nodes(n).Children(x).Text = parameter{x};
-                    end
+                    close(dlg);
+                catch ME
+                    report = getReport(ME, 'extended', 'hyperlinks', 'off');
+                    fprintf(2, '\nBatch edit failed\n%s\n', report);
+                    uialert(dlg, report, 'Batch edit failed', 'Icon', 'error', 'Interpreter', 'none');
                 end
-        
-                % Close dialog and show success alert
-                close(dlg);
             end
         end
 
@@ -2170,7 +1642,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             prob_selected = app.EProblemsTree.SelectedNodes;
             if isempty(prob_selected)
                 msg = 'Select Problem node in tree first';
-                uiconfirm(app.MToPv110UIFigure, msg, 'error', 'Icon','warning');
+                uiconfirm(app.MToPv111UIFigure, msg, 'error', 'Icon','warning');
             end
 
             for i = 1:length(prob_selected)
@@ -2182,29 +1654,10 @@ classdef MTO_GUI < matlab.apps.AppBase
 
         % Node text changed function: EProblemsTree
         function EProblemsTreeNodeTextChanged(app, event)
-            % update problem obj parameter
-
-            node = event.Node;
-            if isa(node.Parent, 'matlab.ui.container.Tree')
-                % this is problem node
-                node.NodeData.Name = node.Text;
-            else
-                % this is parameter node
-                parameter = {};
-                % the first node text is parameter name, can't change
-                for x = 1:2:length(node.Parent.Children)
-                    node.Parent.Children(x).Text = node.Parent.Children(x).NodeData;
-                end
-                % the second node text is parameter value
-                for x = 2:2:length(node.Parent.Children)
-                    parameter = [parameter, node.Parent.Children(x).Text];
-                end
-                node.Parent.NodeData.setParameter(parameter);
-                % update child parameter node
-                parameter = node.Parent.NodeData.getParameter();
-                for x = 2:2:length(node.Parent.Children)
-                    node.Parent.Children(x).Text = parameter{x};
-                end
+            try
+                EditParameterTree(event.Node);
+            catch ME
+                app.showError(ME, 'Parameter edit failed');
             end
         end
 
@@ -2215,15 +1668,15 @@ classdef MTO_GUI < matlab.apps.AppBase
             % check data
             if isempty(app.EData)
                 msg = 'Please run experiment first';
-                uiconfirm(app.MToPv110UIFigure, msg, 'error', 'Icon','warning');
+                uiconfirm(app.MToPv111UIFigure, msg, 'error', 'Icon','warning');
                 return;
             end
 
             % check selected file name
-            app.MToPv110UIFigure.Visible = 'off';
+            app.MToPv111UIFigure.Visible = 'off';
             [file_name, dir_name] = uiputfile('MTOData.mat');
-            app.MToPv110UIFigure.Visible = 'on';
-            figure(app.MToPv110UIFigure);
+            app.MToPv111UIFigure.Visible = 'on';
+            figure(app.MToPv111UIFigure);
             drawnow;
             
             if file_name == 0
@@ -2273,10 +1726,10 @@ classdef MTO_GUI < matlab.apps.AppBase
             % load data from file
 
             % select mat file
-            app.MToPv110UIFigure.Visible = 'off';
+            app.MToPv111UIFigure.Visible = 'off';
             [file_name, pathname] = uigetfile('*.mat', 'Select Data', './');
-            app.MToPv110UIFigure.Visible = 'on';
-            figure(app.MToPv110UIFigure);
+            app.MToPv111UIFigure.Visible = 'on';
+            figure(app.MToPv111UIFigure);
             drawnow;
 
             % check selected ile_name
@@ -2296,7 +1749,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Button pushed function: ESaveTableButton
         function ESaveTableButtonPushed(app, event)
             msg = 'Select Export Type';
-            selection = uiconfirm(app.MToPv110UIFigure, msg, 'Export', ...
+            selection = uiconfirm(app.MToPv111UIFigure, msg, 'Export', ...
                                  'Options', {'Current Table (tex, xlsx, csv)', 'IOHanalyzer Data (csv)', 'Best Dec/PopDecs (mat)', 'Cancel'}, ...
                                  'DefaultOption', 'Cancel', 'Icon', 'question');
 
@@ -2305,10 +1758,10 @@ classdef MTO_GUI < matlab.apps.AppBase
     
                 % check selected file name
                 filter = {'*.tex'; '*.xlsx';'*.csv';};
-                app.MToPv110UIFigure.Visible = 'off';
+                app.MToPv111UIFigure.Visible = 'off';
                 [file_name, dir_name] = uiputfile(filter);
-                app.MToPv110UIFigure.Visible = 'on';
-                figure(app.MToPv110UIFigure);
+                app.MToPv111UIFigure.Visible = 'on';
+                figure(app.MToPv111UIFigure);
                 drawnow;
                 
                 if file_name == 0
@@ -2345,10 +1798,10 @@ classdef MTO_GUI < matlab.apps.AppBase
 
                  % check selected file name
                 filter = {'*.csv';};
-                app.MToPv110UIFigure.Visible = 'off';
+                app.MToPv111UIFigure.Visible = 'off';
                 [file_name, dir_name] = uiputfile(filter);
-                app.MToPv110UIFigure.Visible = 'on';
-                figure(app.MToPv110UIFigure);
+                app.MToPv111UIFigure.Visible = 'on';
+                figure(app.MToPv111UIFigure);
                 drawnow;
                 
                 if file_name == 0
@@ -2356,7 +1809,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                 end
                 if ~isfield(app.EData, 'Metrics') || isempty(app.EData.Metrics)
                     msg = 'No metric data in current results!';
-                    uiconfirm(app.MToPv110UIFigure, msg, 'warning', 'Icon', 'warning');
+                    uiconfirm(app.MToPv111UIFigure, msg, 'warning', 'Icon', 'warning');
                     return;
                 end
                 metric_idx = find(ismember({app.EData.Metrics.Name}, app.EDataTypeDropDown.Value));
@@ -2367,21 +1820,21 @@ classdef MTO_GUI < matlab.apps.AppBase
 
                 if ~isfield(app.EData.Results(1), 'Dec')
                     msg = 'No decision variable data in current results!';
-                    uiconfirm(app.MToPv110UIFigure, msg, 'warning', 'Icon', 'warning');
+                    uiconfirm(app.MToPv111UIFigure, msg, 'warning', 'Icon', 'warning');
                     return;
                 end
                 if contains(app.EDataTypeDropDown.Value, 'Reps') || ...
                         contains(app.EDataTypeDropDown.Value, 'Time')
                     msg = 'Please select metric data';
-                    uiconfirm(app.MToPv110UIFigure, msg, 'warning', 'Icon', 'warning');
+                    uiconfirm(app.MToPv111UIFigure, msg, 'warning', 'Icon', 'warning');
                     return;
                 end
                 % check selected file name
                 filter = {'*.mat'; };
-                app.MToPv110UIFigure.Visible = 'off';
+                app.MToPv111UIFigure.Visible = 'off';
                 [file_name, dir_name] = uiputfile(filter);
-                app.MToPv110UIFigure.Visible = 'on';
-                figure(app.MToPv110UIFigure);
+                app.MToPv111UIFigure.Visible = 'on';
+                figure(app.MToPv111UIFigure);
                 drawnow;
 
                 if file_name == 0
@@ -2439,480 +1892,12 @@ classdef MTO_GUI < matlab.apps.AppBase
 
         % Button pushed function: EConvergeButton
         function EConvergeButtonPushed(app, event)
-            if strcmp(app.EDataTypeDropDown.Value, 'Reps') || ...
-                    isempty(app.EResultConvergeData) || ...
-                    isempty(app.ETableSelected)
-                msg = 'Select calculated metric data from table first!';
-                uiconfirm(app.MToPv110UIFigure, msg, 'warning', 'Icon', 'warning');
-                return;
-            end
-
-            prob_list = unique(app.ETableSelected(:, 1));
-
-            IsSplitDraw = app.ESplitCheckBox.Value | (length(prob_list)<=1);
-
-            if IsSplitDraw
-                weidth = 340;
-                height = 300;
-                position = [10,50,weidth,height];
-            else
-                n_probs = length(prob_list);
-                cols = ceil(sqrt(n_probs));
-                rows = ceil(n_probs / cols);
-
-                base_width_per_subplot = 260;
-                base_height_per_subplot = 230;
-                
-                fig_width = cols * base_width_per_subplot;
-                fig_height = rows * base_height_per_subplot;
-                
-                screen_size = get(0, 'ScreenSize');
-                screen_width = screen_size(3);
-                screen_height = screen_size(4);
-                
-                pos_x = max(50, (screen_width - fig_width) / 2);
-                pos_y = max(50, (screen_height - fig_height) / 2);
-                
-                fig = figure('Position', [pos_x, pos_y, fig_width, fig_height]);
-
-                t = tiledlayout(rows, cols, 'TileSpacing', 'compact', 'Padding', 'compact');
-                all_plot_handles = [];
-                all_legend_entries = {};
-            end
-
-            fontsize = 12;
-
-            % Check if we need to plot with ranges
-            plot_with_ranges = strcmp(app.EConvergeTypeDropDown.Value, 'Log Range') || strcmp(app.EConvergeTypeDropDown.Value, 'Norm Range');
-
-            for i = 1:length(prob_list)
-                if IsSplitDraw
-                    fig = figure('Position',position);
-                    if position(1)<1600
-                        position = position + [weidth,0,0,0];
-                    else
-                        position = position + [10-position(1),height+80,0,0];
-                    end
-                    ax = axes(fig);
-
-                    % Prepare legend entries
-                    legend_entries = cell(0);
-                    plot_handles = [];
-                else
-                    nexttile(t);
-                    ax = gca;
-                end
-
-                idx = find(app.ETableSelected(:, 1) == prob_list(i));
-                algo_list = app.ETableSelected(idx, 2);
-                
-                xlim_min = inf;
-                xlim_max = 0;
-
-                for j = 1:length(algo_list)
-                    if j > length(app.DefaultMarkerList)
-                        marker = '';
-                    else
-                        marker = app.DefaultMarkerList{j};
-                    end
-
-                    % Get mean values
-                    y_mean = squeeze(mean(app.EResultConvergeData.Y(prob_list(i), algo_list(j), :, :),3))';
-                    x = squeeze(mean(app.EResultConvergeData.X(prob_list(i), algo_list(j), :, :),3))';
-                    
-                    % Set scale type
-                    if strcmp(app.EConvergeTypeDropDown.Value, 'Log') || strcmp(app.EConvergeTypeDropDown.Value, 'Log Range')
-                        set(ax, 'YScale', 'log');
-                    elseif strcmp(app.EConvergeTypeDropDown.Value, 'Log Type2')
-                        y_mean = log(y_mean);
-                    end
-
-                    % Plot main line
-                    p = plot(ax, x, y_mean, ['-', marker], 'LineWidth', app.DefaultLineWidth);
-
-                    % Set marker positions
-                    indices = round(length(y_mean)/min(app.DefaultMarkerNum,length(y_mean)));
-                    if length(x) <= 3
-                        p.MarkerIndices = indices:indices:length(y_mean);
-                    elseif length(y_mean) < app.DefaultMarkerNum
-                        p.MarkerIndices = indices+1:indices:length(y_mean)-round(indices/2);
-                    else
-                        p.MarkerIndices = indices:indices:length(y_mean)-round(indices/2);
-                    end
-                    p.MarkerSize = app.DefaultMarkerSize;
-                    
-                    % Plot ranges if needed
-                    if plot_with_ranges
-                        Y_data = squeeze(app.EResultConvergeData.Y(prob_list(i), algo_list(j), :, :));
-                        
-                        mu = mean(Y_data, 1);
-                        sigma = std(Y_data, 0, 1);
-                        n = size(Y_data, 1);
-                        
-                        % 0.95 confidence interval
-                        ci95 = 1.96 * sigma / sqrt(n);
-                        y_lower = mu - ci95;
-                        y_upper = mu + ci95;
-                        
-                        y_lower = y_lower(:);
-                        y_upper = y_upper(:);
-                        x = x(:);
-                        
-                        hold(ax, 'on');
-                        fill_color = p.Color;
-                        fill_alpha = 0.2;
-                        h = fill(ax, [x; flipud(x)], [y_lower; flipud(y_upper)], fill_color, ...
-                            'FaceAlpha', fill_alpha, 'EdgeColor', 'none', 'DisplayName', '');
-                        
-                        uistack(h, 'bottom');
-                        h.Annotation.LegendInformation.IconDisplayStyle = 'off';
-                    end
-
-                    xlim_max = max(xlim_max, x(end));
-                    xlim_min = min(xlim_min, x(1));
-
-                    if IsSplitDraw
-                        % Add to legend entries - ensure it's a string
-                        algo_name = app.EUITable.ColumnName{algo_list(j)}; % Use {} to get content
-                        legend_entries{end+1} = strrep(algo_name, '_', '\_');
-                        plot_handles(end+1) = p;
-                    else
-                        if i == 1
-                            algo_name = app.EUITable.ColumnName{algo_list(j)};
-                            legend_entry = strrep(algo_name, '_', '\_');
-                            all_plot_handles(end + 1) = p;
-                            all_legend_entries{end + 1} = legend_entry;
-                        end
-                    end
-                    hold(ax, 'on');
-                end
-
-                if xlim_min ~= xlim_max
-                    xlim(ax, [xlim_min, xlim_max]);
-                end
-
-                if IsSplitDraw
-                    set(ax,'OuterPosition',[0,0,1,1]);
-                    % Set labels
-                    if strcmp(app.EConvergeTypeDropDown.Value, 'Log Type2')
-                        ylabel(ax, ['Log - ', strrep(app.EDataTypeDropDown.Value, '_', ' ')]);
-                    else
-                        ylabel(ax, strrep(app.EDataTypeDropDown.Value, '_', ' '));
-                    end
-                    xlabel(ax, 'Evaluation');
-    
-                    % Set legend
-                    legend(ax, plot_handles, legend_entries, 'Location', 'best');
-                    title(ax, strrep(app.EUITable.RowName(prob_list(i)), '_', '\_'),'FontWeight','bold')
-                    grid(ax, 'on');
-                    set(ax,'FontWeight','bold'); set(get(fig,'Children'),'FontSize',fontsize);
-                    set(ax,'LooseInset',get(ax,'TightInset')+0.02)
-                else
-                    title(ax, strrep(app.EUITable.RowName(prob_list(i)), '_', '\_'),'FontWeight','bold')
-                    grid(ax, 'on');
-                    set(ax, 'FontWeight', 'bold', 'FontSize', fontsize);
-                    set(ax, 'LooseInset', get(ax, 'TightInset') + 0.02);
-                end
-            end
-            if ~IsSplitDraw
-                xlabel(t, 'Evaluation', 'FontWeight', 'bold', 'FontSize', 16);
-                if strcmp(app.EConvergeTypeDropDown.Value, 'Log Type2')
-                    ylabel(t, ['Log - ', strrep(app.EDataTypeDropDown.Value, '_', ' ')], 'FontWeight', 'bold', 'FontSize', 16);
-                else
-                    ylabel(t, strrep(app.EDataTypeDropDown.Value, '_', ' '), 'FontWeight', 'bold', 'FontSize', 16);
-                end
-                lgd = legend(ax, all_plot_handles, all_legend_entries, 'Orientation', 'horizontal', 'FontSize', 14);
-                lgd.Layout.Tile = 'south';
-            end
+            PlotExperimentConvergence(app);
         end
 
         % Button pushed function: EParetoButton
         function EParetoButtonPushed(app, event)
-            if strcmp(app.EDataTypeDropDown.Value, 'Reps') || ...
-                    isempty(app.EResultParetoData) || ...
-                    isempty(app.ETableSelected)
-                msg = 'Select calculated multi-objective metric data from table first!';
-                uiconfirm(app.MToPv110UIFigure, msg, 'warning', 'Icon', 'warning');
-                return;
-            end
-
-            prob_list = unique(app.ETableSelected(:, 1));
-
-            IsSplitDraw = app.ESplitCheckBox.Value | (length(prob_list)<=1);
-
-            if IsSplitDraw
-                weidth = 340;
-                height = 300;
-                position = [10,50,weidth,height];
-            else
-                n_probs = length(prob_list);
-                cols = ceil(sqrt(n_probs));
-                rows = ceil(n_probs / cols);
-
-                base_width_per_subplot = 260;
-                base_height_per_subplot = 230;
-                
-                fig_width = cols * base_width_per_subplot;
-                fig_height = rows * base_height_per_subplot;
-                
-                screen_size = get(0, 'ScreenSize');
-                screen_width = screen_size(3);
-                screen_height = screen_size(4);
-                
-                pos_x = max(50, (screen_width - fig_width) / 2);
-                pos_y = max(50, (screen_height - fig_height) / 2);
-                
-                fig = figure('Position', [pos_x, pos_y, fig_width, fig_height]);
-
-                t = tiledlayout(rows, cols, 'TileSpacing', 'compact', 'Padding', 'compact');
-                all_plot_handles = [];
-                all_legend_entries = {};
-            end
-    
-            fontsize = 12;
-                
-            for i = 1:length(prob_list)
-                if IsSplitDraw
-                    fig = figure('Position',position);
-                    if position(1)<1600
-                        position = position + [weidth,0,0,0];
-                    else
-                        position = position + [10-position(1),height+80,0,0];
-                    end
-                    ax = axes(fig);
-
-                    legend_entries = cell(0);
-                    plot_handles = [];
-                else
-                    nexttile(t);
-                    ax = gca;
-                end
-
-                idx = find(app.ETableSelected(:, 1) == prob_list(i));
-                algo_list = app.ETableSelected(idx, 2);
-
-                M = size(app.EResultParetoData.Obj{prob_list(i),1,1}, 2);
-                if M == 2
-                    if ~isempty(app.EResultParetoData.Optimum) && ...
-                            size(app.EResultParetoData.Optimum{prob_list(i)}, 1) > 2
-                        % draw optimum
-                        x = squeeze(app.EResultParetoData.Optimum{prob_list(i)}(:, 1));
-                        y = squeeze(app.EResultParetoData.Optimum{prob_list(i)}(:, 2));
-
-                        [x, sortIdx] = sort(x);
-                        y = y(sortIdx);
-
-                        N = length(x);
-                        sampleSize = 100;
-                        if N > sampleSize * 3
-                            indices = round(linspace(1, N, sampleSize));
-                            sampledX = x(indices);
-                            sampledY = y(indices);
-                        else
-                            sampledX = x;
-                            sampledY = y;
-                        end
-
-                        % Calculate threshold for Pareto front plot
-                        distArray = sqrt(diff(sampledX).^2 + diff(sampledY).^2);
-                        distMean = mean(distArray);
-                        distStd  = std(distArray);
-                        autoThreshold = distMean + 2 * distStd;
-
-                        xPlot = [];
-                        yPlot = [];
-                        for idx = 1:length(sampledX)-1
-                            xPlot(end+1) = sampledX(idx);
-                            yPlot(end+1) = sampledY(idx);
-                            % if dist exceed thresholdinsert [NaN, NaN]
-                            if distArray(idx) > autoThreshold
-                                xPlot(end+1) = NaN;
-                                yPlot(end+1) = NaN;
-                            end
-                        end
-                        xPlot(end+1) = sampledX(end);
-                        yPlot(end+1) = sampledY(end);
-
-                        p = plot(ax, xPlot, yPlot);
-                        p.Color = [.2,.2,.2];
-                        p.LineWidth = 2;
-                        hold(ax, 'on');
-
-                        if IsSplitDraw
-                            legend_entries{end+1} = 'Pareto Front';
-                            plot_handles(end+1) = p;
-                        else
-                            if i == 1
-                                legend_entry = 'Pareto Front';
-                                all_plot_handles(end + 1) = p;
-                                all_legend_entries{end + 1} = legend_entry;
-                            end
-                        end
-                    end
-
-                    % draw each algorithm
-                    color_list = colororder;
-                    for j = 1:length(algo_list)
-                        metric_data = squeeze(app.EResultTableData(prob_list(i), algo_list(j), :));
-                        [~, rank] = sort(metric_data);
-                        mid_idx = rank(ceil(end / 2));
-                        x = squeeze(app.EResultParetoData.Obj{prob_list(i), algo_list(j), mid_idx}(:, 1));
-                        y = squeeze(app.EResultParetoData.Obj{prob_list(i), algo_list(j), mid_idx}(:, 2));
-                        s = scatter(ax, x, y);
-                        s.MarkerEdgeColor = color_list(j,:);
-                        s.MarkerFaceAlpha = 0.65;
-                        s.MarkerFaceColor = color_list(j,:);
-                        s.SizeData = 40;
-                        if IsSplitDraw
-                            legend_entries{end+1} = char(strrep(app.EUITable.ColumnName(algo_list(j)), '_', '\_'));
-                            plot_handles(end+1) = s;
-                        else
-                            if i == 1
-                                legend_entry = char(strrep(app.EUITable.ColumnName(algo_list(j)), '_', '\_'));
-                                all_plot_handles(end + 1) = s;
-                                all_legend_entries{end + 1} = legend_entry;
-                            end
-                        end
-                        hold(ax, 'on');
-                    end
-
-                    xlabel(ax, '$f_1$', 'interpreter', 'latex');
-                    ylabel(ax, '$f_2$', 'interpreter', 'latex');
-
-                    if IsSplitDraw
-                        legend(ax, plot_handles, legend_entries, 'Location', 'best');
-                    end
-
-                    title(ax, strrep(app.EUITable.RowName(prob_list(i)), '_', '\_'),'FontWeight','bold')
-                    grid(ax, 'on');
-                elseif M == 3
-                    if ~isempty(app.EResultParetoData.Optimum) && ...
-                            size(app.EResultParetoData.Optimum{prob_list(i)}, 1) > 2
-                        % draw optimum
-                        x = squeeze(app.EResultParetoData.Optimum{prob_list(i)}(:, 1));
-                        y = squeeze(app.EResultParetoData.Optimum{prob_list(i)}(:, 2));
-                        z = squeeze(app.EResultParetoData.Optimum{prob_list(i)}(:, 3));
-
-                        s = scatter3(ax, x, y, z);
-                        s.MarkerEdgeColor = 'none';
-                        s.MarkerFaceAlpha = 0.65;
-                        s.MarkerFaceColor = [.5,.5,.5];
-                        s.SizeData = 3;
-                        hold(ax, 'on');
-
-                        if IsSplitDraw
-                            legend_entries{end+1} = 'Pareto Front';
-                            plot_handles(end+1) = s;
-                        else
-                            if i == 1
-                                legend_entry = 'Pareto Front';
-                                all_plot_handles(end + 1) = s;
-                                all_legend_entries{end + 1} = legend_entry;
-                            end
-                        end
-                    end
-
-                    % draw each algorithm
-                    color_list = colororder;
-                    for j = 1:length(algo_list)
-                        metric_data = squeeze(app.EResultTableData(prob_list(i), algo_list(j), :));
-                        [~, rank] = sort(metric_data);
-                        mid_idx = rank(ceil(end / 2));
-                        x = squeeze(app.EResultParetoData.Obj{prob_list(i), algo_list(j), mid_idx}(:, 1));
-                        y = squeeze(app.EResultParetoData.Obj{prob_list(i), algo_list(j), mid_idx}(:, 2));
-                        z = squeeze(app.EResultParetoData.Obj{prob_list(i), algo_list(j), mid_idx}(:, 3));
-                        s = scatter3(ax, x, y, z);
-                        s.MarkerEdgeColor = color_list(j,:);
-                        s.MarkerFaceAlpha = 0.65;
-                        s.MarkerFaceColor = color_list(j,:);
-                        s.SizeData = 40;
-
-                        if IsSplitDraw
-                            legend_entries{end+1} = char(strrep(app.EUITable.ColumnName(algo_list(j)), '_', '\_'));
-                            plot_handles(end+1) = s;
-                        else
-                            if i == 1
-                                legend_entry = char(strrep(app.EUITable.ColumnName(algo_list(j)), '_', '\_'));
-                                all_plot_handles(end + 1) = s;
-                                all_legend_entries{end + 1} = legend_entry;
-                            end
-                        end
-                        hold(ax, 'on');
-                    end
-
-                    xlabel(ax, '$f_1$', 'interpreter', 'latex');
-                    ylabel(ax, '$f_2$', 'interpreter', 'latex');
-                    zlabel(ax, '$f_3$', 'interpreter', 'latex');
-
-                    if IsSplitDraw
-                        legend(ax, plot_handles, legend_entries, 'Location', 'best');
-                    end
-
-                    title(ax, strrep(app.EUITable.RowName(prob_list(i)), '_', '\_'),'FontWeight','bold')
-                    view(ax,[135 30]);
-                    grid(ax, 'on');
-                else % M > 3
-                    % draw each algorithm
-                    color_list = colororder;
-                    min_data = []; max_data = [];
-                    for j = 1:size(app.EResultTableData, 2)
-                        metric_data = squeeze(app.EResultTableData(prob_list(i), j, :));
-                        [~, rank] = sort(metric_data);
-                        mid_idx = rank(ceil(end / 2));
-
-                        data = app.EResultParetoData.Obj{prob_list(i), j, mid_idx};
-                        min_data = min([data; min_data],[],1);
-                        max_data = max([data; max_data],[],1);
-                    end
-                    for j = 1:length(algo_list)
-                        metric_data = squeeze(app.EResultTableData(prob_list(i), algo_list(j), :));
-                        [~, rank] = sort(metric_data);
-                        mid_idx = rank(ceil(end / 2));
-                        
-                        data = app.EResultParetoData.Obj{prob_list(i), algo_list(j), mid_idx};
-                        % data = (data - min_data) ./ (max_data - min_data); % Unify
-                        for k = 1:size(app.EResultParetoData.Obj{prob_list(i), algo_list(j), mid_idx}, 1)
-                            p(j) = plot(ax, data(k,:));
-                            p(j).Color = color_list(j,:);
-                            p(j).LineWidth = 1.5;
-                            hold(ax, 'on');
-                        end
-                        if IsSplitDraw
-                            legend_entries{end+1} = char(strrep(app.EUITable.ColumnName(algo_list(j)), '_', '\_'));
-                            plot_handles(end+1) = p(j);
-                        else
-                            if i == 1
-                                legend_entry = char(strrep(app.EUITable.ColumnName(algo_list(j)), '_', '\_'));
-                                all_plot_handles(end + 1) = p(j);
-                                all_legend_entries{end + 1} = legend_entry;
-                            end
-                        end
-                    end
-
-                    % ylim([0,1]); % Unify
-                    xlabel(ax, 'Dimension', 'interpreter', 'latex');
-                    ylabel(ax, '$f$', 'interpreter', 'latex');
-
-                    if IsSplitDraw
-                        legend(ax, plot_handles, legend_entries, 'Location', 'best');
-                    end
-                    
-                    title(ax, strrep(app.EUITable.RowName(prob_list(i)), '_', '\_'),'FontWeight','bold')
-                    grid(ax, 'on');
-                end
-                if IsSplitDraw
-                    set(ax,'OuterPosition',[0,0,1,1]);
-                    set(ax,'FontWeight','bold'); set(get(fig,'Children'),'FontSize',fontsize);
-                    set(ax,'LooseInset',get(ax,'TightInset')+0.02)
-                else
-                    set(ax, 'FontWeight', 'bold', 'FontSize', fontsize);
-                    set(ax,'LooseInset',get(ax,'TightInset')+0.02)
-                end
-            end
-            if ~IsSplitDraw
-                lgd = legend(ax, all_plot_handles, all_legend_entries, 'Orientation', 'horizontal', 'FontSize', 14);
-                lgd.Layout.Tile = 'south';
-            end
+            PlotExperimentParetoFront(app);
         end
 
         % Context menu opening function: DDataContextMenu
@@ -2926,751 +1911,79 @@ classdef MTO_GUI < matlab.apps.AppBase
 
         % Button pushed function: DLoadDataButton
         function DLoadDataButtonPushed(app, event)
-            % load data from mat files
-
-            % select mat file
-            file_name_list = {};
-            app.MToPv110UIFigure.Visible = 'off';
-            [file_name, pathname] = uigetfile('*.mat', 'select the data mat', './', 'MultiSelect', 'on');
-            app.MToPv110UIFigure.Visible = 'on';
-            figure(app.MToPv110UIFigure);
-            drawnow;
-            
-            file_name_list = [file_name_list, file_name];
-
-            % check selected file_name
-            if file_name_list{1} == 0
-                return;
-            end
-
-            %load data mat files
-            for i = 1:length(file_name_list)
-                load([pathname, file_name_list{i}], 'MTOData');
-                app.DputDataNode(file_name_list{i}(1:end-4), MTOData);
-                drawnow;
+            [files, folder] = uigetfile('*.mat', 'Select MTOData files', './', 'MultiSelect', 'on');
+            if isequal(files, 0), return; end
+            if ischar(files), files = {files}; end
+            for i = 1:numel(files)
+                try
+                    loaded = load(fullfile(folder, files{i}), 'MTOData');
+                    if ~isfield(loaded, 'MTOData')
+                        error('MToP:MissingData', '%s does not contain MTOData.', files{i});
+                    end
+                    ValidateMTOData(loaded.MTOData);
+                    [~, name] = fileparts(files{i});
+                    app.DputDataNode(name, loaded.MTOData);
+                catch ME
+                    app.showError(ME, ['Data load failed: ', files{i}]);
+                end
             end
         end
 
         % Button pushed function: DDeleteDataButton
         function DDeleteDataButtonPushed(app, event)
-            % delete selected data from tree
-
-            data_selected = app.DDataTree.SelectedNodes;
-            data_mark = [];
-            data_num = 0;
-            for i = 1:length(data_selected)
-                if isa(data_selected(i).Parent, 'matlab.ui.container.Tree')
-                    data_num = data_num + 1;
-                    data_mark(i) = 1;
-                else
-                    data_mark(i) = 0;
-                end
-            end
-            if data_num == 0
-                msg = 'Select data node in tree first';
-                uiconfirm(app.MToPv110UIFigure, msg, 'error', 'Icon','warning');
-            end
-
-            data_selected = data_selected(data_mark == 1);
-            for i = 1:length(data_selected)
-                data_selected(i).delete();
-                drawnow;
-            end
+            delete(app.DselectedData(1));
         end
 
         % Button pushed function: DSaveDataButton
         function DSaveDataButtonPushed(app, event)
-            % save selected data from tree
-
-            data_selected = app.DDataTree.SelectedNodes;
-            data_mark = [];
-            data_num = 0;
-            for i = 1:length(data_selected)
-                if isa(data_selected(i).Parent, 'matlab.ui.container.Tree')
-                    data_num = data_num + 1;
-                    data_mark(i) = 1;
-                else
-                    data_mark(i) = 0;
+            nodes = app.DselectedData(1);
+            for i = 1:numel(nodes)
+                try
+                    app.DsaveData(nodes(i).NodeData);
+                catch ME
+                    app.showError(ME, ['Data save failed: ', nodes(i).Text]);
                 end
-            end
-            if data_num == 0
-                msg = 'Select data node in tree first';
-                uiconfirm(app.MToPv110UIFigure, msg, 'error', 'Icon','warning');
-            end
-
-            data_selected = data_selected(data_mark == 1);
-            for i = 1:length(data_selected)
-                app.DsaveData(data_selected(i).NodeData);
             end
         end
 
         % Button pushed function: DRepsSplitButton
         function DRepsSplitButtonPushed(app, event)
-            % split reps
-
-            if ~app.DcheckSplitData()
-                return;
-            end
-
-            % split
-            data_selected = app.DDataTree.SelectedNodes;
-            data_selected = data_selected(app.DDataFlag == 1);
-
-            for i = 1:length(data_selected)
-                if data_selected(i).NodeData.Reps <= 1
-                    msg = ['The ', data_selected(i).Text, '''s reps <= 1'];
-                    uiconfirm(app.MToPv110UIFigure, msg, 'error', 'Icon','warning');
-                    continue;
-                end
-                for rep = 1:data_selected(i).NodeData.Reps
-                    MTOData.Reps = 1;
-                    MTOData.Algorithms = data_selected(i).NodeData.Algorithms;
-                    MTOData.Problems = data_selected(i).NodeData.Problems;
-                    MTOData.Results(1:length(MTOData.Problems),1:length(MTOData.Algorithms),1) = data_selected(i).NodeData.Results(:,:,rep);
-                    MTOData.RunTimes(1:length(MTOData.Problems),1:length(MTOData.Algorithms),1) = data_selected(i).NodeData.RunTimes(:,:,rep);
-                    if isfield(data_selected(i).NodeData, 'Metrics')
-                        del_metric_idx = [];
-                        MTOData.Metrics = data_selected(i).NodeData.Metrics;
-                        for m = 1:length(MTOData.Metrics)
-                            if (size(MTOData.Metrics(m).Result.TableData,3) == 1 && rep > 1) || isempty(MTOData.Metrics(m).Result.TableData)
-                                del_metric_idx = [del_metric_idx, m];
-                                continue;
-                            end
-                            MTOData.Metrics(m).Result.TableData = MTOData.Metrics(m).Result.TableData(:,:,rep);
-                            if isfield(MTOData.Metrics(m).Result, 'ConvergeData')
-                                MTOData.Metrics(m).Result.ConvergeData.X = MTOData.Metrics(m).Result.ConvergeData.X(:,:,rep,:);
-                                MTOData.Metrics(m).Result.ConvergeData.Y = MTOData.Metrics(m).Result.ConvergeData.Y(:,:,rep,:);
-                            end
-                            if isfield(MTOData.Metrics(m).Result, 'ParetoData')
-                                MTOData.Metrics(m).Result.ParetoData.Obj = MTOData.Metrics(m).Result.ParetoData.Obj(:,:,rep);
-                            end
-                        end
-                        MTOData.Metrics(del_metric_idx) = [];
-                    end
-                    app.DputDataNode([data_selected(i).Text, ' (Split Rep: ', num2str(rep), ')'], MTOData);
-                    drawnow;
-                end
-            end
+            app.DprocessData('split', 3);
         end
 
         % Button pushed function: DAlgorithmsSplitButton
         function DAlgorithmsSplitButtonPushed(app, event)
-            % split algorithms
-
-            if ~app.DcheckSplitData()
-                return;
-            end
-
-            % split
-            data_selected = app.DDataTree.SelectedNodes;
-            data_selected = data_selected(app.DDataFlag == 1);
-
-            for i = 1:length(data_selected)
-                if length(data_selected(i).NodeData.Algorithms) <= 1
-                    msg = ['The ', data_selected(i).Text, '''s algorithms <= 1'];
-                    uiconfirm(app.MToPv110UIFigure, msg, 'error', 'Icon','warning');
-                    continue;
-                end
-                for algo = 1:length(data_selected(i).NodeData.Algorithms)
-                    MTOData.Reps = data_selected(i).NodeData.Reps;
-                    MTOData.Algorithms(1) = data_selected(i).NodeData.Algorithms(algo);
-                    MTOData.Problems = data_selected(i).NodeData.Problems;
-                    MTOData.Results(1:length(MTOData.Problems),1,1:MTOData.Reps) = data_selected(i).NodeData.Results(:,algo,:);
-                    MTOData.RunTimes(1:length(MTOData.Problems),1,1:MTOData.Reps) = data_selected(i).NodeData.RunTimes(:,algo,:);
-                    if isfield(data_selected(i).NodeData, 'Metrics')
-                        del_metric_idx = [];
-                        MTOData.Metrics = data_selected(i).NodeData.Metrics;
-                        for m = 1:length(MTOData.Metrics)
-                            if isempty(MTOData.Metrics(m).Result.TableData)
-                                del_metric_idx = [del_metric_idx, m];
-                                continue;
-                            end
-                            MTOData.Metrics(m).Result.ColumnName = MTOData.Metrics(m).Result.ColumnName(algo);
-                            MTOData.Metrics(m).Result.TableData = MTOData.Metrics(m).Result.TableData(:,algo,:);
-                            if isfield(MTOData.Metrics(m).Result, 'ConvergeData')
-                                MTOData.Metrics(m).Result.ConvergeData.X = MTOData.Metrics(m).Result.ConvergeData.X(:,algo,:,:);
-                                MTOData.Metrics(m).Result.ConvergeData.Y = MTOData.Metrics(m).Result.ConvergeData.Y(:,algo,:,:);
-                            end
-                            if isfield(MTOData.Metrics(m).Result, 'ParetoData')
-                                MTOData.Metrics(m).Result.ParetoData.Obj = MTOData.Metrics(m).Result.ParetoData.Obj(:,algo,:);
-                            end
-                        end
-                        MTOData.Metrics(del_metric_idx) = [];
-                    end
-                    app.DputDataNode([data_selected(i).Text, ' (Split Algorithm: ', MTOData.Algorithms(1).Name, ')'], MTOData);
-                    drawnow;
-                end
-            end
+            app.DprocessData('split', 2);
         end
 
         % Button pushed function: DProblemsSplitButton
         function DProblemsSplitButtonPushed(app, event)
-            % split algorithms
-
-            if ~app.DcheckSplitData()
-                return;
-            end
-
-            % split
-            data_selected = app.DDataTree.SelectedNodes;
-            data_selected = data_selected(app.DDataFlag == 1);
-
-            for i = 1:length(data_selected)
-                if length(data_selected(i).NodeData.Problems) <= 1
-                    msg = ['The ', data_selected(i).Text, '''s problems <= 1'];
-                    uiconfirm(app.MToPv110UIFigure, msg, 'error', 'Icon','warning');
-                    continue;
-                end
-                task = [data_selected(i).NodeData.Problems.T];
-                for prob = 1:length(data_selected(i).NodeData.Problems)
-                    MTOData.Reps = data_selected(i).NodeData.Reps;
-                    MTOData.Algorithms = data_selected(i).NodeData.Algorithms;
-                    MTOData.Problems(1) = data_selected(i).NodeData.Problems(prob);
-                    MTOData.Results(1,1:length(MTOData.Algorithms),1:MTOData.Reps) = data_selected(i).NodeData.Results(prob,:,:);
-                    MTOData.RunTimes(1,1:length(MTOData.Algorithms),1:MTOData.Reps) = data_selected(i).NodeData.RunTimes(prob,:,:);
-                    if isfield(data_selected(i).NodeData, 'Metrics')
-                        del_metric_idx = [];
-                        MTOData.Metrics = data_selected(i).NodeData.Metrics;
-                        for m = 1:length(MTOData.Metrics)
-                            if isempty(MTOData.Metrics(m).Result.TableData)
-                                del_metric_idx = [del_metric_idx, m];
-                                continue;
-                            end
-                            if length(MTOData.Metrics(m).Result.RowName) == length(data_selected(i).NodeData.Problems)
-                                idx = prob;
-                                idx2 = prob;
-                            elseif length(MTOData.Metrics(m).Result.RowName) == sum(task)
-                                idx = sum(task(1:prob-1))+1;
-                                idx2 = idx+task(prob)-1;
-                            else
-                                return;
-                            end
-                            MTOData.Metrics(m).Result.RowName = MTOData.Metrics(m).Result.RowName(idx:idx2);
-                            MTOData.Metrics(m).Result.TableData = MTOData.Metrics(m).Result.TableData(idx:idx2,:,:);
-                            if isfield(MTOData.Metrics(m).Result, 'ConvergeData')
-                                MTOData.Metrics(m).Result.ConvergeData.X = MTOData.Metrics(m).Result.ConvergeData.X(idx:idx2,:,:,:);
-                                MTOData.Metrics(m).Result.ConvergeData.Y = MTOData.Metrics(m).Result.ConvergeData.Y(idx:idx2,:,:,:);
-                            end
-                            if isfield(MTOData.Metrics(m).Result, 'ParetoData')
-                                MTOData.Metrics(m).Result.ParetoData.Optimum = MTOData.Metrics(m).Result.ParetoData.Optimum(idx:idx2);
-                                MTOData.Metrics(m).Result.ParetoData.Obj = MTOData.Metrics(m).Result.ParetoData.Obj(idx:idx2,:,:);
-                            end
-                        end
-                        MTOData.Metrics(del_metric_idx) = [];
-                    end
-                    app.DputDataNode([data_selected(i).Text, ' (Split Problem: ', MTOData.Problems(1).Name, ')'], MTOData);
-                    drawnow;
-                end
-            end
+            app.DprocessData('split', 1);
         end
 
         % Button pushed function: DRepsMergeButton
         function DRepsMergeButtonPushed(app, event)
-            % merge reps, with same pop, evaluate, algorithms and problems
-
-            if ~app.DcheckMergeData() || ~app.DcheckMergeAlgorithms() || ~app.DcheckMergeProblems()
-                return;
-            end
-
-            % merge
-            data_selected = app.DDataTree.SelectedNodes;
-            data_selected = data_selected(app.DDataFlag == 1);
-            MTOData.Reps = 0;
-            MTOData.Algorithms = data_selected(1).NodeData.Algorithms;
-            MTOData.Problems = data_selected(1).NodeData.Problems;
-            % merge results
-            results_num = [];
-            for i = 1:length(data_selected)
-                results_num(i) = size(data_selected(i).NodeData.Results(1, 1, 1).CV, 2);
-            end
-            min_results_num = min(results_num);
-            M =  max([data_selected(i).NodeData.Problems.M]);
-
-            % check Dec field
-            removeDec = false;
-            for i = 1:length(data_selected)
-                if ~isfield(data_selected(i).NodeData.Results, 'Dec')
-                    removeDec = true;
-                end
-            end
-            if removeDec
-                for i = 1:length(data_selected)
-                    if isfield(data_selected(i).NodeData.Results, 'Dec')
-                        data_selected(i).NodeData.Results = rmfield(data_selected(i).NodeData.Results, 'Dec');
-                    end
-                end
-            end
-
-            for i = 1:length(data_selected)
-                results_temp = app.DReduceResults(data_selected(i).NodeData.Results, min_results_num, M);
-                MTOData.Results(1:length(MTOData.Problems),1:length(MTOData.Algorithms),MTOData.Reps+1:MTOData.Reps+data_selected(i).NodeData.Reps) = ...
-                    results_temp(:,:,:);
-                MTOData.RunTimes(1:length(MTOData.Problems),1:length(MTOData.Algorithms),MTOData.Reps+1:MTOData.Reps+data_selected(i).NodeData.Reps) = ...
-                    data_selected(i).NodeData.RunTimes(:,:,:);
-                MTOData.Reps = MTOData.Reps + data_selected(i).NodeData.Reps;
-            end
-            % merge metric
-            if isfield(data_selected(1).NodeData, 'Metrics') && ~isempty(data_selected(1).NodeData.Metrics)
-                all_metrics = data_selected(1).NodeData.Metrics;
-                metric_names = {all_metrics.Name};
-                
-                % remove relative metrics
-                is_relative = false(1, length(all_metrics));
-                for m = 1:length(all_metrics)
-                    if isfield(all_metrics(m).Result, 'IsRelative') && ~isempty(all_metrics(m).Result.IsRelative)
-                        is_relative(m) = all_metrics(m).Result.IsRelative;
-                    end
-                end
-                metric_name = metric_names(~is_relative);
-            else
-                metric_name = {};
-            end
-            for i = 2:length(data_selected)
-                if isfield(data_selected(i).NodeData,'Metrics')
-                    metric_name = intersect(metric_name, {data_selected(i).NodeData.Metrics.Name});
-                else
-                    metric_name = intersect(metric_name, {});
-                end
-            end
-
-            del_metric_idx = [];
-            for i = 1:length(metric_name)
-                flag = true;
-                idx = find(strcmp({data_selected(1).NodeData.Metrics.Name}, metric_name{i}));
-                MTOData.Metrics(i).Name = metric_name{i};
-                MTOData.Metrics(i).Result.Metric = data_selected(1).NodeData.Metrics(idx).Result.Metric;
-                if isfield(data_selected(1).NodeData.Metrics(idx).Result, 'IsRelative')
-                    MTOData.Metrics(i).Result.IsRelative = data_selected(1).NodeData.Metrics(idx).Result.IsRelative;
-                else
-                    MTOData.Metrics(i).Result.IsRelative = false;
-                end
-                MTOData.Metrics(i).Result.RowName = data_selected(1).NodeData.Metrics(idx).Result.RowName;
-                MTOData.Metrics(i).Result.ColumnName = data_selected(1).NodeData.Metrics(idx).Result.ColumnName;
-                reps = 0;
-                for j = 1:length(data_selected)
-                    idx = find(strcmp({data_selected(j).NodeData.Metrics.Name}, metric_name{i}));
-                    if size(data_selected(j).NodeData.Metrics(idx).Result.TableData,3) == 1 && data_selected(j).NodeData.Reps > 1
-                        del_metric_idx = [del_metric_idx, i];
-                        flag = false;
-                        break;
-                    end
-                    MTOData.Metrics(i).Result.TableData(1:length(MTOData.Metrics(i).Result.RowName),...
-                        1:length(MTOData.Metrics(i).Result.ColumnName),...
-                        reps+1:reps+data_selected(j).NodeData.Reps) = ...
-                        data_selected(j).NodeData.Metrics(idx).Result.TableData;
-                    reps = reps + data_selected(j).NodeData.Reps;
-                end
-                if ~flag
-                    continue;
-                end
-                idx = find(strcmp({data_selected(1).NodeData.Metrics.Name}, metric_name{i}));
-                if isfield(data_selected(1).NodeData.Metrics(idx).Result, 'ConvergeData')
-                    reps = 0;
-                    for j = 1:length(data_selected)
-                        idx = find(strcmp({data_selected(j).NodeData.Metrics.Name}, metric_name{i}));
-                        temp_x = app.DReduceResultNum(data_selected(j).NodeData.Metrics(idx).Result.ConvergeData.X,4,4,min_results_num);
-                        temp_y = app.DReduceResultNum(data_selected(j).NodeData.Metrics(idx).Result.ConvergeData.Y,4,4,min_results_num);
-                        MTOData.Metrics(i).Result.ConvergeData.X(1:length(MTOData.Metrics(i).Result.RowName),...
-                            1:length(MTOData.Metrics(i).Result.ColumnName),...
-                            reps+1:reps+data_selected(j).NodeData.Reps,1:size(temp_x,4)) = ...
-                            temp_x(:,:,:,:);
-                        MTOData.Metrics(i).Result.ConvergeData.Y(1:length(MTOData.Metrics(i).Result.RowName),...
-                            1:length(MTOData.Metrics(i).Result.ColumnName),...
-                            reps+1:reps+data_selected(j).NodeData.Reps,1:size(temp_y,4)) = ...
-                            temp_y(:,:,:,:);
-                        reps = reps + data_selected(j).NodeData.Reps;
-                    end
-                end
-                idx = find(strcmp({data_selected(1).NodeData.Metrics.Name}, metric_name{i}));
-                if isfield(data_selected(1).NodeData.Metrics(idx).Result, 'ParetoData')
-                    idx = find(strcmp({data_selected(1).NodeData.Metrics.Name}, metric_name{i}));
-                    MTOData.Metrics(i).Result.ParetoData.Optimum = data_selected(1).NodeData.Metrics(idx).Result.ParetoData.Optimum;
-                    reps = 0;
-                    for j = 1:length(data_selected)
-                        idx = find(strcmp({data_selected(j).NodeData.Metrics.Name}, metric_name{i}));
-                        MTOData.Metrics(i).Result.ParetoData.Obj(1:length(MTOData.Metrics(i).Result.RowName),...
-                            1:length(MTOData.Metrics(i).Result.ColumnName),...
-                            reps+1:reps+data_selected(j).NodeData.Reps) = ...
-                            data_selected(j).NodeData.Metrics(idx).Result.ParetoData.Obj;
-                        reps = reps + data_selected(j).NodeData.Reps;
-                    end
-                end
-            end
-            if isfield(MTOData,'Metrics')
-                MTOData.Metrics(del_metric_idx) = [];
-            end
-
-            app.DputDataNode('data (Merge Reps)', MTOData);
-            drawnow;
+            app.DprocessData('merge', 3);
         end
 
         % Button pushed function: DAlgorithmsMergeButton
         function DAlgorithmsMergeButtonPushed(app, event)
-            % merge algorithms, with same pop, evaluate, reps and problems
-
-            if ~app.DcheckMergeData() || ~app.DcheckMergeReps() || ~app.DcheckMergeProblems()
-                return;
-            end
-
-            % merge
-            data_selected = app.DDataTree.SelectedNodes;
-            data_selected = data_selected(app.DDataFlag == 1);
-            MTOData.Reps = data_selected(1).NodeData.Reps;
-            MTOData.Problems = data_selected(1).NodeData.Problems;
-            idx = 0;
-            % merge results
-            results_num = [];
-            for i = 1:length(data_selected)
-                results_num(i) = size(data_selected(i).NodeData.Results(1, 1, 1).CV, 2);
-            end
-            min_results_num = min(results_num);
-            M =  max([data_selected(i).NodeData.Problems.M]);
-
-            % check Dec field
-            removeDec = false;
-            for i = 1:length(data_selected)
-                if ~isfield(data_selected(i).NodeData.Results, 'Dec')
-                    removeDec = true;
-                end
-            end
-            if removeDec
-                for i = 1:length(data_selected)
-                    if isfield(data_selected(i).NodeData.Results, 'Dec')
-                        data_selected(i).NodeData.Results = rmfield(data_selected(i).NodeData.Results, 'Dec');
-                    end
-                end
-            end
-
-            for i = 1:length(data_selected)
-                results_temp = app.DReduceResults(data_selected(i).NodeData.Results, min_results_num, M);
-                MTOData.Algorithms(idx+1:idx+length(data_selected(i).NodeData.Algorithms)) = ...
-                    data_selected(i).NodeData.Algorithms;
-                MTOData.Results(1:length(MTOData.Problems),idx+1:idx+length(data_selected(i).NodeData.Algorithms),1:MTOData.Reps) = ...
-                    results_temp(:,:,:);
-                MTOData.RunTimes(1:length(MTOData.Problems),idx+1:idx+length(data_selected(i).NodeData.Algorithms),1:MTOData.Reps) = ...
-                    data_selected(i).NodeData.RunTimes(:,:,:);
-                idx = idx + length(data_selected(i).NodeData.Algorithms);
-            end
-            % merge metric
-            % merge metric
-            if isfield(data_selected(1).NodeData, 'Metrics') && ~isempty(data_selected(1).NodeData.Metrics)
-                all_metrics = data_selected(1).NodeData.Metrics;
-                metric_names = {all_metrics.Name};
-                
-                % remove relative metrics
-                is_relative = false(1, length(all_metrics));
-                for m = 1:length(all_metrics)
-                    if isfield(all_metrics(m).Result, 'IsRelative') && ~isempty(all_metrics(m).Result.IsRelative)
-                        is_relative(m) = all_metrics(m).Result.IsRelative;
-                    end
-                end
-                metric_name = metric_names(~is_relative);
-            else
-                metric_name = {};
-            end
-            for i = 2:length(data_selected)
-                if isfield(data_selected(i).NodeData,'Metrics')
-                    metric_name = intersect(metric_name, {data_selected(i).NodeData.Metrics.Name});
-                else
-                    metric_name = intersect(metric_name, {});
-                end
-            end
-            
-            del_metric_idx = [];
-            for i = 1:length(metric_name)
-                flag = true;
-                idx = find(strcmp({data_selected(1).NodeData.Metrics.Name}, metric_name{i}));
-                MTOData.Metrics(i).Name = metric_name{i};
-                MTOData.Metrics(i).Result.Metric = data_selected(1).NodeData.Metrics(idx).Result.Metric;
-                if isfield(data_selected(1).NodeData.Metrics(idx).Result, 'IsRelative')
-                    MTOData.Metrics(i).Result.IsRelative = data_selected(1).NodeData.Metrics(idx).Result.IsRelative;
-                else
-                    MTOData.Metrics(i).Result.IsRelative = false;
-                end
-                MTOData.Metrics(i).Result.RowName = data_selected(1).NodeData.Metrics(idx).Result.RowName;
-                algo = 0;
-                for j = 1:length(data_selected)
-                    idx = find(strcmp({data_selected(j).NodeData.Metrics.Name}, metric_name{i}));
-                    if size(data_selected(j).NodeData.Metrics(idx).Result.TableData,3) == 1 && data_selected(j).NodeData.Reps > 1
-                        del_metric_idx = [del_metric_idx, i];
-                        flag = false;
-                        break;
-                    end
-                    idx = find(strcmp({data_selected(j).NodeData.Metrics.Name}, metric_name{i}));
-                    MTOData.Metrics(i).Result.ColumnName(algo+1:algo+length(data_selected(j).NodeData.Metrics(idx).Result.ColumnName)) = ...
-                        data_selected(j).NodeData.Metrics(idx).Result.ColumnName;
-                    MTOData.Metrics(i).Result.TableData(1:length(MTOData.Metrics(i).Result.RowName),...
-                        algo+1:algo+length(data_selected(j).NodeData.Metrics(idx).Result.ColumnName),...
-                        1:MTOData.Reps) = ...
-                        data_selected(j).NodeData.Metrics(idx).Result.TableData;
-                    algo = algo + length(data_selected(j).NodeData.Metrics(idx).Result.ColumnName);
-                end
-                if ~flag
-                    continue;
-                end
-                idx = find(strcmp({data_selected(1).NodeData.Metrics.Name}, metric_name{i}));
-                if isfield(data_selected(1).NodeData.Metrics(idx).Result, 'ConvergeData')
-                    algo = 0;
-                    for j = 1:length(data_selected)
-                        idx = find(strcmp({data_selected(j).NodeData.Metrics.Name}, metric_name{i}));
-                        temp_x = app.DReduceResultNum(data_selected(j).NodeData.Metrics(idx).Result.ConvergeData.X,4,4,min_results_num);
-                        temp_y = app.DReduceResultNum(data_selected(j).NodeData.Metrics(idx).Result.ConvergeData.Y,4,4,min_results_num);
-                        MTOData.Metrics(i).Result.ConvergeData.X(1:length(MTOData.Metrics(i).Result.RowName),...
-                            algo+1:algo+length(data_selected(j).NodeData.Metrics(idx).Result.ColumnName),...
-                            1:MTOData.Reps,1:size(temp_x,4)) = ...
-                            temp_x(:,:,:,:);
-                        MTOData.Metrics(i).Result.ConvergeData.Y(1:length(MTOData.Metrics(i).Result.RowName),...
-                            algo+1:algo+length(data_selected(j).NodeData.Metrics(idx).Result.ColumnName),...
-                            1:MTOData.Reps,1:size(temp_y,4)) = ...
-                            temp_y(:,:,:,:);
-                        algo = algo + length(data_selected(j).NodeData.Metrics(idx).Result.ColumnName);
-                    end
-                end
-                idx = find(strcmp({data_selected(1).NodeData.Metrics.Name}, metric_name{i}));
-                if isfield(data_selected(1).NodeData.Metrics(idx).Result, 'ParetoData')
-                    idx = find(strcmp({data_selected(1).NodeData.Metrics.Name}, metric_name{i}));
-                    MTOData.Metrics(i).Result.ParetoData.Optimum = data_selected(1).NodeData.Metrics(idx).Result.ParetoData.Optimum;
-                    algo = 0;
-                    for j = 1:length(data_selected)
-                        idx = find(strcmp({data_selected(j).NodeData.Metrics.Name}, metric_name{i}));
-                        MTOData.Metrics(i).Result.ParetoData.Obj(1:length(MTOData.Metrics(i).Result.RowName),...
-                            algo+1:algo+length(data_selected(j).NodeData.Metrics(idx).Result.ColumnName),...
-                            1:MTOData.Reps) = ...
-                            data_selected(j).NodeData.Metrics(idx).Result.ParetoData.Obj;
-                        algo = algo + length(data_selected(j).NodeData.Metrics(idx).Result.ColumnName);
-                    end
-                end
-            end
-            if isfield(MTOData,'Metrics')
-                MTOData.Metrics(del_metric_idx) = [];
-            end
-
-            app.DputDataNode('data (Merge Algorithms)', MTOData);
-            drawnow;
+            app.DprocessData('merge', 2);
         end
 
         % Button pushed function: DProblemsMergeButton
         function DProblemsMergeButtonPushed(app, event)
-            % merge problems, with same pop, evaluate, reps and algorithms
-
-            if ~app.DcheckMergeData() || ~app.DcheckMergeReps() || ~app.DcheckMergeAlgorithms()
-                return;
-            end
-
-            % merge
-            data_selected = app.DDataTree.SelectedNodes;
-            data_selected = data_selected(app.DDataFlag == 1);
-            MTOData.Reps = data_selected(1).NodeData.Reps;
-            MTOData.Algorithms = data_selected(1).NodeData.Algorithms;
-            idx = 0;
-            % merge results
-            results_num = [];
-            for i = 1:length(data_selected)
-                results_num(i) = size(data_selected(i).NodeData.Results(1, 1, 1).CV, 2);
-            end
-            min_results_num = min(results_num);
-            M =  max([data_selected(i).NodeData.Problems.M]);
-
-            % check Dec field
-            removeDec = false;
-            for i = 1:length(data_selected)
-                if ~isfield(data_selected(i).NodeData.Results, 'Dec')
-                    removeDec = true;
-                end
-            end
-            if removeDec
-                for i = 1:length(data_selected)
-                    if isfield(data_selected(i).NodeData.Results, 'Dec')
-                        data_selected(i).NodeData.Results = rmfield(data_selected(i).NodeData.Results, 'Dec');
-                    end
-                end
-            end
-
-            for i = 1:length(data_selected)
-                results_temp = app.DReduceResults(data_selected(i).NodeData.Results, min_results_num, M);
-                MTOData.Problems(idx+1:idx+length(data_selected(i).NodeData.Problems)) = ...
-                    data_selected(i).NodeData.Problems;
-                MTOData.Results(idx+1:idx+length(data_selected(i).NodeData.Problems),1:length(MTOData.Algorithms),1:MTOData.Reps) = ...
-                    results_temp(:,:,:);
-                MTOData.RunTimes(idx+1:idx+length(data_selected(i).NodeData.Problems),1:length(MTOData.Algorithms),1:MTOData.Reps) = ...
-                    data_selected(i).NodeData.RunTimes(:,:,:);
-                idx = idx + length(data_selected(i).NodeData.Problems);
-            end
-            % merge metric
-            if isfield(data_selected(1).NodeData,'Metrics')
-                metric_name = {data_selected(1).NodeData.Metrics.Name};
-            else
-                metric_name = {};
-            end
-            for i = 2:length(data_selected)
-                if isfield(data_selected(i).NodeData,'Metrics')
-                    metric_name = intersect(metric_name, {data_selected(i).NodeData.Metrics.Name});
-                else
-                    metric_name = intersect(metric_name, {});
-                end
-            end
-            del_metric_idx = [];
-            for i = 1:length(metric_name)
-                flag = true;
-                idx = find(strcmp({data_selected(1).NodeData.Metrics.Name}, metric_name{i}));
-                MTOData.Metrics(i).Name = metric_name{i};
-                MTOData.Metrics(i).Result.Metric = data_selected(1).NodeData.Metrics(idx).Result.Metric;
-                if isfield(data_selected(1).NodeData.Metrics(idx).Result, 'IsRelative')
-                    MTOData.Metrics(i).Result.IsRelative = data_selected(1).NodeData.Metrics(idx).Result.IsRelative;
-                else
-                    MTOData.Metrics(i).Result.IsRelative = false;
-                end
-                MTOData.Metrics(i).Result.ColumnName = data_selected(1).NodeData.Metrics(idx).Result.ColumnName;
-                prob = 0;
-                for j = 1:length(data_selected)
-                    idx = find(strcmp({data_selected(j).NodeData.Metrics.Name}, metric_name{i}));
-                    if size(data_selected(j).NodeData.Metrics(idx).Result.TableData,3) == 1 && data_selected(j).NodeData.Reps > 1
-                        del_metric_idx = [del_metric_idx, i];
-                        flag = false;
-                        break;
-                    end
-                    MTOData.Metrics(i).Result.RowName(prob+1:prob+length(data_selected(j).NodeData.Metrics(idx).Result.RowName)) = ...
-                        data_selected(j).NodeData.Metrics(idx).Result.RowName;
-                    MTOData.Metrics(i).Result.TableData(prob+1:prob+length(data_selected(j).NodeData.Metrics(idx).Result.RowName),...
-                        1:length(MTOData.Metrics(i).Result.ColumnName),...
-                        1:MTOData.Reps) = ...
-                        data_selected(j).NodeData.Metrics(idx).Result.TableData;
-                    prob = prob + length(data_selected(j).NodeData.Metrics(idx).Result.RowName);
-                end
-                if ~flag
-                    continue
-                end
-                idx = find(strcmp({data_selected(1).NodeData.Metrics.Name}, metric_name{i}));
-                if isfield(data_selected(1).NodeData.Metrics(idx).Result, 'ConvergeData')
-                    prob = 0;
-                    for j = 1:length(data_selected)
-                        idx = find(strcmp({data_selected(j).NodeData.Metrics.Name}, metric_name{i}));
-                        temp_x = app.DReduceResultNum(data_selected(j).NodeData.Metrics(idx).Result.ConvergeData.X,4,4,min_results_num);
-                        temp_y = app.DReduceResultNum(data_selected(j).NodeData.Metrics(idx).Result.ConvergeData.Y,4,4,min_results_num);
-                        MTOData.Metrics(i).Result.ConvergeData.X(prob+1:prob+length(data_selected(j).NodeData.Metrics(idx).Result.RowName),...
-                            1:length(MTOData.Metrics(i).Result.ColumnName),...
-                            1:MTOData.Reps,1:size(temp_x,4)) = ...
-                            temp_x(:,:,:,:);
-                        MTOData.Metrics(i).Result.ConvergeData.Y(prob+1:prob+length(data_selected(j).NodeData.Metrics(idx).Result.RowName),...
-                            1:length(MTOData.Metrics(i).Result.ColumnName),...
-                            1:MTOData.Reps,1:size(temp_y,4)) = ...
-                            temp_y(:,:,:,:);
-                        prob = prob + length(data_selected(j).NodeData.Metrics(idx).Result.RowName);
-                    end
-                end
-                idx = find(strcmp({data_selected(1).NodeData.Metrics.Name}, metric_name{i}));
-                if isfield(data_selected(1).NodeData.Metrics(idx).Result, 'ParetoData')
-                    prob = 0;
-                    for j = 1:length(data_selected)
-                        idx = find(strcmp({data_selected(j).NodeData.Metrics.Name}, metric_name{i}));
-                        MTOData.Metrics(i).Result.ParetoData.Optimum(prob+1:prob+length(data_selected(j).NodeData.Metrics(idx).Result.RowName)) = ...
-                            data_selected(j).NodeData.Metrics(idx).Result.ParetoData.Optimum;
-                        MTOData.Metrics(i).Result.ParetoData.Obj(prob+1:prob+length(data_selected(j).NodeData.Metrics(idx).Result.RowName),...
-                            1:length(MTOData.Metrics(i).Result.ColumnName),...
-                            1:MTOData.Reps) = ...
-                            data_selected(j).NodeData.Metrics(idx).Result.ParetoData.Obj;
-                        prob = prob + length(data_selected(j).NodeData.Metrics(idx).Result.RowName);
-                    end
-                end
-            end
-            if isfield(MTOData,'Metrics')
-                MTOData.Metrics(del_metric_idx) = [];
-            end
-
-            app.DputDataNode('data (Merge Problems)', MTOData);
-            drawnow;
+            app.DprocessData('merge', 1);
         end
 
         % Button pushed function: DPreisionButton
         function DPreisionButtonPushed(app, event)
-            if ~app.DcheckPrecisionData()
-                return;
-            end
-            
-            data_selected = app.DDataTree.SelectedNodes;
-            data_selected = data_selected(app.DDataFlag == 1);
-
-            mu = app.DPreisionEditField.Value;
-            factor = 10^(-mu); % e.g., mu = -4 => factor = 1e4
-
-            for d = 1:length(data_selected)
-                MTOData = data_selected(d).NodeData;
-
-                for i = 1:size(MTOData.Results, 1)
-                    for j = 1:size(MTOData.Results, 2)
-                        for k = 1:size(MTOData.Results, 3)
-                            if isa(MTOData.Results(i, j, k).Obj, "cell")
-                                for c = 1:length(MTOData.Results(i, j, k).Obj)
-                                    MTOData.Results(i, j, k).Obj{c} = round(MTOData.Results(i, j, k).Obj{c} * factor) / factor;
-                                end
-                            else
-                                MTOData.Results(i, j, k).Obj = round(MTOData.Results(i, j, k).Obj * factor) / factor;
-                            end
-                            MTOData.Results(i, j, k).CV = round(MTOData.Results(i, j, k).CV * factor) / factor;
-                        end
-                    end
-                end
-
-                if isfield(MTOData, 'Metrics')
-                    for m = 1:length(MTOData.Metrics)
-                        MTOData.Metrics(m).Result.TableData = round(MTOData.Metrics(m).Result.TableData * factor) / factor;
-                        if isfield(MTOData.Metrics(m).Result, 'ConvergeData')
-                            MTOData.Metrics(m).Result.ConvergeData.Y = round(MTOData.Metrics(m).Result.ConvergeData.Y * factor) / factor;
-                        end
-                    end
-                end
-
-                app.DputDataNode([data_selected(d).Text, ' (Preision)'], MTOData);
-                drawnow;
-            end
+            app.DprocessData('precision', app.DPreisionEditField.Value);
         end
 
         % Button pushed function: DDataLengthButton
         function DDataLengthButtonPushed(app, event)
-            if ~app.DcheckPrecisionData()
-                return;
-            end
-            
-            data_selected = app.DDataTree.SelectedNodes;
-            data_selected = data_selected(app.DDataFlag == 1);
-
-            data_length = app.DDataLengthEditField.Value;
-
-            for d = 1:length(data_selected)
-                % Create a copy of NodeData to modify
-                MTOData = data_selected(d).NodeData;
-                
-                % 1. Process Results (CV and Obj)
-                % M is used to determine if Obj is a 3D Tensor or a Cell array
-                M = max([data_selected(d).NodeData.Problems.M]);
-                MTOData.Results = app.DReduceResults(data_selected(d).NodeData.Results, data_length, M);
-                
-                % 2. Process Metrics (TableData and ConvergeData)
-                if isfield(MTOData, 'Metrics')
-                    for i = 1:length(MTOData.Metrics)
-                        % Only reduce metrics that contain ConvergeData (X and Y)
-                        if isfield(MTOData.Metrics(i).Result, 'ConvergeData')
-                            % In ConvergeData, the generation/length dimension is typically D=4
-                            % for a 4D tensor structure (Prob x Algo x Rep x Gen)
-                            
-                            % Reduce X-axis data (Evaluation counts or Generations)
-                            MTOData.Metrics(i).Result.ConvergeData.X = app.DReduceResultNum(...
-                                MTOData.Metrics(i).Result.ConvergeData.X, 4, 4, data_length);
-                            
-                            % Reduce Y-axis data (Metric values)
-                            MTOData.Metrics(i).Result.ConvergeData.Y = app.DReduceResultNum(...
-                                MTOData.Metrics(i).Result.ConvergeData.Y, 4, 4, data_length);
-                        end
-                        
-                        % Note: ParetoData and TableData usually do not depend on the 
-                        % generation length (they store final results), so they are kept as is.
-                    end
-                end
-                
-                % Save the reduced data as a new node in the UI tree
-                app.DputDataNode([data_selected(d).Text, ' (Reduced)'], MTOData);
-                drawnow;
-            end
+            app.DprocessData('reduce', app.DDataLengthEditField.Value);
         end
 
         % Node text changed function: DDataTree
@@ -3689,75 +2002,12 @@ classdef MTO_GUI < matlab.apps.AppBase
 
         % Button pushed function: DUpButton
         function DUpButtonPushed(app, event)
-            data_selected = app.DDataTree.SelectedNodes;
-            data_mark = [];
-            data_num = 0;
-            for i = 1:length(data_selected)
-                if isa(data_selected(i).Parent, 'matlab.ui.container.Tree')
-                    data_num = data_num + 1;
-                    data_mark(i) = 1;
-                else
-                    data_mark(i) = 0;
-                end
-            end
-            data_selected = sort(app.DDataTree.SelectedNodes, 'descend');
-            data_selected = data_selected(data_mark == 1);
-            selected = [];
-
-            % move up
-            for i = 1:length(data_selected)
-                parent = data_selected(i).Parent;
-                for j = 1:length(parent.Children)
-                    if parent.Children(j) == data_selected(i) && j > 1
-                        move(parent.Children(j), parent.Children(j-1),'before');
-                        selected = [selected, parent.Children(j-1)];
-                        break;
-                    elseif parent.Children(j) == data_selected(i) && j == 1
-                        selected = [selected, parent.Children(j)];
-                    end
-                end
-            end
-
-            % change selected node
-            app.DDataTree.SelectedNodes = selected;
-            drawnow;
+            app.DmoveData(-1);
         end
 
         % Button pushed function: DDownButton
         function DDownButtonPushed(app, event)
-            data_selected = app.DDataTree.SelectedNodes;
-
-            data_mark = [];
-            data_num = 0;
-            for i = 1:length(data_selected)
-                if isa(data_selected(i).Parent, 'matlab.ui.container.Tree')
-                    data_num = data_num + 1;
-                    data_mark(i) = 1;
-                else
-                    data_mark(i) = 0;
-                end
-            end
-            data_selected = app.DDataTree.SelectedNodes;
-            data_selected = sort(data_selected(data_mark == 1), 'descend');
-            selected = [];
-
-            % move down
-            for i = length(data_selected):-1:1
-                parent = data_selected(i).Parent;
-                for j = 1:length(parent.Children)
-                    if parent.Children(j) == data_selected(i) && j < length(parent.Children)
-                        move(parent.Children(j), parent.Children(j+1));
-                        selected = [selected, parent.Children(j+1)];
-                        break;
-                    elseif parent.Children(j) == data_selected(i) && j == length(parent.Children)
-                        selected = [selected, parent.Children(j)];
-                    end
-                end
-            end
-
-            % change selected node
-            app.DDataTree.SelectedNodes = selected;
-            drawnow;
+            app.DmoveData(1);
         end
 
         % Button down function: TestModuleTab
@@ -3788,14 +2038,14 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Create UIFigure and components
         function createComponents(app)
 
-            % Create MToPv110UIFigure and hide until all components are created
-            app.MToPv110UIFigure = uifigure('Visible', 'off');
-            app.MToPv110UIFigure.Color = [1 1 1];
-            app.MToPv110UIFigure.Position = [100 100 1045 744];
-            app.MToPv110UIFigure.Name = 'MToP v1.10';
+            % Create MToPv111UIFigure and hide until all components are created
+            app.MToPv111UIFigure = uifigure('Visible', 'off');
+            app.MToPv111UIFigure.Color = [1 1 1];
+            app.MToPv111UIFigure.Position = [100 100 1045 744];
+            app.MToPv111UIFigure.Name = 'MToP v1.11';
 
             % Create MTOPlatformGridLayout
-            app.MTOPlatformGridLayout = uigridlayout(app.MToPv110UIFigure);
+            app.MTOPlatformGridLayout = uigridlayout(app.MToPv111UIFigure);
             app.MTOPlatformGridLayout.ColumnWidth = {'1x'};
             app.MTOPlatformGridLayout.RowHeight = {'1x'};
             app.MTOPlatformGridLayout.ColumnSpacing = 5;
@@ -3894,8 +2144,8 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create TTaskTypeDropDown
             app.TTaskTypeDropDown = uidropdown(app.TP1GridLayout);
-            app.TTaskTypeDropDown.Items = {'Multi', 'Many', 'Single'};
-            app.TTaskTypeDropDown.ItemsData = {'Multi-task', 'Many-task', 'Single-task'};
+            app.TTaskTypeDropDown.Items = {'Multi', 'Many', 'Stream', 'Single'};
+            app.TTaskTypeDropDown.ItemsData = {'Multi-task', 'Many-task', 'Stream-task', 'Single-task'};
             app.TTaskTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @TTaskTypeDropDownValueChanged, true);
             app.TTaskTypeDropDown.FontWeight = 'bold';
             app.TTaskTypeDropDown.BackgroundColor = [1 1 1];
@@ -4205,8 +2455,8 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create ETaskTypeDropDown
             app.ETaskTypeDropDown = uidropdown(app.EP1GridLayout);
-            app.ETaskTypeDropDown.Items = {'Multi', 'Many', 'Single'};
-            app.ETaskTypeDropDown.ItemsData = {'Multi-task', 'Many-task', 'Single-task'};
+            app.ETaskTypeDropDown.Items = {'Multi', 'Many', 'Stream', 'Single'};
+            app.ETaskTypeDropDown.ItemsData = {'Multi-task', 'Many-task', 'Stream-task', 'Single-task'};
             app.ETaskTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @ETaskTypeDropDownValueChanged, true);
             app.ETaskTypeDropDown.FontWeight = 'bold';
             app.ETaskTypeDropDown.BackgroundColor = [1 1 1];
@@ -5071,7 +3321,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.DDataTree.Layout.Column = 1;
 
             % Create DDataContextMenu
-            app.DDataContextMenu = uicontextmenu(app.MToPv110UIFigure);
+            app.DDataContextMenu = uicontextmenu(app.MToPv111UIFigure);
             app.DDataContextMenu.ContextMenuOpeningFcn = createCallbackFcn(app, @DDataContextMenuOpening, true);
 
             % Create DDataSelectAllMenu
@@ -5083,7 +3333,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.DDataTree.ContextMenu = app.DDataContextMenu;
 
             % Create SelectedAlgoContextMenu
-            app.SelectedAlgoContextMenu = uicontextmenu(app.MToPv110UIFigure);
+            app.SelectedAlgoContextMenu = uicontextmenu(app.MToPv111UIFigure);
 
             % Create SelectedAlgoSelectAllMenu
             app.SelectedAlgoSelectAllMenu = uimenu(app.SelectedAlgoContextMenu);
@@ -5095,7 +3345,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EAlgorithmsTree.ContextMenu = app.SelectedAlgoContextMenu;
 
             % Create SelectedProbContextMenu
-            app.SelectedProbContextMenu = uicontextmenu(app.MToPv110UIFigure);
+            app.SelectedProbContextMenu = uicontextmenu(app.MToPv111UIFigure);
 
             % Create SelectedProbSelectAllMenu
             app.SelectedProbSelectAllMenu = uimenu(app.SelectedProbContextMenu);
@@ -5113,7 +3363,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EProblemsTree.ContextMenu = app.SelectedProbContextMenu;
 
             % Create AlgorithmsContextMenu
-            app.AlgorithmsContextMenu = uicontextmenu(app.MToPv110UIFigure);
+            app.AlgorithmsContextMenu = uicontextmenu(app.MToPv111UIFigure);
 
             % Create AlgorithmsSelectAllMenu
             app.AlgorithmsSelectAllMenu = uimenu(app.AlgorithmsContextMenu);
@@ -5131,7 +3381,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EAlgorithmsListBox.ContextMenu = app.AlgorithmsContextMenu;
 
             % Create ProblemsContextMenu
-            app.ProblemsContextMenu = uicontextmenu(app.MToPv110UIFigure);
+            app.ProblemsContextMenu = uicontextmenu(app.MToPv111UIFigure);
 
             % Create ProblemsSelectAllMenu
             app.ProblemsSelectAllMenu = uimenu(app.ProblemsContextMenu);
@@ -5149,7 +3399,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EProblemsListBox.ContextMenu = app.ProblemsContextMenu;
 
             % Show the figure after all components are created
-            app.MToPv110UIFigure.Visible = 'on';
+            app.MToPv111UIFigure.Visible = 'on';
         end
     end
 
@@ -5163,7 +3413,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             createComponents(app)
 
             % Register the app with App Designer
-            registerApp(app, app.MToPv110UIFigure)
+            registerApp(app, app.MToPv111UIFigure)
 
             % Execute the startup function
             runStartupFcn(app, @startupFcn)
@@ -5177,7 +3427,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         function delete(app)
 
             % Delete UIFigure when app is deleted
-            delete(app.MToPv110UIFigure)
+            delete(app.MToPv111UIFigure)
         end
     end
 end
