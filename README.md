@@ -1,7 +1,7 @@
 # Multitask Optimization Platform (MToP)
 
 [![](https://img.shields.io/badge/Download-Latest-green)](https://github.com/intLyc/MTO-Platform/archive/refs/heads/master.zip)
-[![](https://img.shields.io/badge/Release-v1.10-orange)](#mto-platform)
+[![](https://img.shields.io/badge/Release-v1.11-orange)](#mto-platform)
 [![](https://img.shields.io/badge/Matlab-%3E%3DR2022b-blue)](#mto-platform)
 
 [![GitHub Repo stars](https://img.shields.io/github/stars/intLyc/MTO-Platform?style=social)](#mto-platform)
@@ -72,6 +72,40 @@ In order to enhance reproducibility and avoid unnecessary repeated experiments, 
 
 <img src="./Doc/ReadmeFigure/MToP-QQ-Group.jpg" width="150px">
 
+## Release Highlights of MToP v1.11
+
+**New Algorithms:** 🆕
+
+- MMTO-ETA (Multi-objective Multi-task TAI 2026)
+- LES (Single-objective Single-task ICLR 2023)
+- ABOM (Single-objective Single-task ICLR 2026)
+- KR-AMTEA (Single-objective Stream-task TSMC 2026)
+- AEMEA, AMTEA-AD, AMTEA-SaO, AMaTDE, and AAEMTO (Single-objective Stream-task variants)
+
+**New Problems:** 📊
+
+- AMTSO-Case1 and AMTSO-Case2, each containing nine asynchronous multitasking problem cases
+- AMaTSO10 for asynchronous many-task optimization
+- APKACP-10 and APKACP-20 for asynchronous planar robotic arm control, with reproducible instances generated from seeds
+
+**New Features & Enhancements:** ✨
+
+- Introduce the **Stream-task** category with FE-based task arrivals, per-task evaluation budgets, and a reusable `StreamAlgorithm` base class
+- Extract GUI plotting functions into `GUI/PlotFunctions` and centralize markers, fonts, colors, and line settings in `PlotStyle.m`
+- Improve batch parameter editing with current and mixed values, disabled fields for unavailable parameters, and a resizable dialog
+- Refactor result recording around FE checkpoints and improve result consistency between GUI and command-line experiments
+
+**Optimizations and Bug Fixes:** ⚡
+
+- Consolidate boundary handling, metric computation, and problem initialization to simplify maintenance
+- Improve data merging, splitting, precision adjustment, and downsampling while preserving source datasets and keeping `Obj`, `CV`, and `Dec` aligned
+- Preserve compatible absolute metric caches, discard relative caches after data processing, and correct relative metric flags for NBR, UV, and MTS
+- Align stream-task convergence histories with each task's own evaluation progress and refresh only changing task populations
+- Improve subplot layouts, task previews, and Pareto plotting, including single-individual populations and more tasks or algorithms than available colors
+- Improve GUI error details and control recovery, and clear stale table highlights when restarting experiments
+- Fix numerical stability issues involving covariance matrices, zero-length transfer vectors, and LES fitness normalization
+
+
 ## Release Highlights of MToP v1.10
 
 **New Algorithms:** 🆕
@@ -97,6 +131,8 @@ In order to enhance reproducibility and avoid unnecessary repeated experiments, 
 - Optimize and simplify evaluation logic, fitness ranking, and context menus
 - Handle missing `IsRelative` fields dynamically in metrics results to improve data merging stability
 
+
+<details><summary><strong>Older Release Highlights (Click to Expand)</strong></summary>
 
 ## Release Highlights of MToP v1.9
 
@@ -125,8 +161,6 @@ In order to enhance reproducibility and avoid unnecessary repeated experiments, 
 - Improve Experiment module buttons display and ordering
 - Update CMA-ES related algorithms to follow official implementation
 - Algorithm reloading now triggers automatically when clicking Add button
-
-<details><summary><strong>Older Release Highlights (Click to Expand)</strong></summary>
 
 ## Release Highlights of MToP v1.8
 
