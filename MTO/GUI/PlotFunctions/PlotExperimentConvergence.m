@@ -33,8 +33,10 @@ else
 end
 
 
-% Check if we need to plot with ranges
-plot_with_ranges = strcmp(app.EConvergeTypeDropDown.Value, 'Log Range') || strcmp(app.EConvergeTypeDropDown.Value, 'Norm Range');
+mode = app.EConvergeTypeDropDown.Value;
+log_axis = any(strcmp(mode, {'Log', 'Log Range'}));
+log_values = strcmp(mode, 'Log Type2');
+plot_with_ranges = any(strcmp(mode, {'Log Range', 'Norm Range'}));
 
 for i = 1:length(prob_list)
     if IsSplitDraw
@@ -67,16 +69,18 @@ for i = 1:length(prob_list)
             marker = style.MarkerList{j};
         end
 
-        % Get mean values
-        y_mean = squeeze(mean(app.EResultConvergeData.Y(prob_list(i), algo_list(j), :, :),3))';
-        x = squeeze(mean(app.EResultConvergeData.X(prob_list(i), algo_list(j), :, :),3))';
+        % Keep repetitions and checkpoints distinct, including singleton dimensions.
+        history = app.EResultConvergeData.Y(prob_list(i), algo_list(j), :, :);
+        Y_data = reshape(history, size(history, 3), size(history, 4));
+        y_mean = mean(Y_data, 1);
+        x = reshape(mean(app.EResultConvergeData.X(prob_list(i), algo_list(j), :, :), 3), 1, []);
+        if isempty(x) || isempty(y_mean), continue; end
 
-        % Set scale type
-        if strcmp(app.EConvergeTypeDropDown.Value, 'Log') || strcmp(app.EConvergeTypeDropDown.Value, 'Log Range')
-            set(ax, 'YScale', 'log');
-        elseif strcmp(app.EConvergeTypeDropDown.Value, 'Log Type2')
-            y_mean = log(y_mean);
+        % Log uses original values on a log axis; Type2 plots ln(mean) on a linear axis.
+        if log_axis || log_values
+            y_mean(y_mean <= 0) = NaN;
         end
+        if log_values, y_mean = log(y_mean); end
 
         % Plot main line
         p = plot(ax, x, y_mean, 'LineStyle', '-', 'Marker', marker, 'LineWidth', style.LineWidth, ...
@@ -93,18 +97,22 @@ for i = 1:length(prob_list)
         end
         p.MarkerSize = style.MarkerSize;
 
-        % Plot ranges if needed
-        if plot_with_ranges
-            Y_data = squeeze(app.EResultConvergeData.Y(prob_list(i), algo_list(j), :, :));
-
+        % A confidence interval requires at least two independent runs.
+        if plot_with_ranges && size(Y_data, 1) > 1
             mu = mean(Y_data, 1);
             sigma = std(Y_data, 0, 1);
             n = size(Y_data, 1);
 
-            % 0.95 confidence interval
+            % Approximate pointwise 95% confidence interval for the arithmetic mean.
             ci95 = 1.96 * sigma / sqrt(n);
             y_lower = mu - ci95;
             y_upper = mu + ci95;
+            if log_axis
+                % A band crossing zero cannot be represented on a logarithmic axis.
+                invalid = y_lower <= 0 | y_upper <= 0;
+                y_lower(invalid) = NaN;
+                y_upper(invalid) = NaN;
+            end
 
             y_lower = y_lower(:);
             y_upper = y_upper(:);
@@ -139,7 +147,9 @@ for i = 1:length(prob_list)
         hold(ax, 'on');
     end
 
-    if xlim_min ~= xlim_max
+    % Apply the scale after plotting; the first plot can reset axes properties.
+    if log_axis, ax.YScale = 'log'; end
+    if isfinite(xlim_min) && isfinite(xlim_max) && xlim_min < xlim_max
         xlim(ax, [xlim_min, xlim_max]);
     end
 
