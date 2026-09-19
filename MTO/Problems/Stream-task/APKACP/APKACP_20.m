@@ -1,5 +1,5 @@
 classdef APKACP_20 < Problem
-% <Stream-task> <Single-objective> <None>
+% <Many-task> <Single-objective> <None> <Stream>
 %------------------------------- Reference --------------------------------
 % @Article{Han2026KR_AMTEA,
 %   title      = {Multitense Knowledge Transfer for Asynchronous Multitasking Optimization},

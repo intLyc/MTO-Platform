@@ -1,5 +1,5 @@
 classdef AMaTDE < StreamAlgorithm
-% <Stream-task> <Single-objective> <None>
+% <Multi-task/Many-task> <Single-objective> <None/Constrained> <Stream>
 % Author AMTO baseline adapted to StreamAlgorithm; all evaluations count.
 
 %------------------------------- Reference --------------------------------

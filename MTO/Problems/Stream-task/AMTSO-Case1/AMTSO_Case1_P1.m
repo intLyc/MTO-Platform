@@ -1,5 +1,5 @@
 classdef AMTSO_Case1_P1 < Problem
-% <Stream-task> <Single-objective> <None>
+% <Multi-task> <Single-objective> <None> <Stream>
 
 %------------------------------- Reference --------------------------------
 % @Article{Han2026KR_AMTEA,

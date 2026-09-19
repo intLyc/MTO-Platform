@@ -25,12 +25,14 @@ classdef MTO_GUI < matlab.apps.AppBase
         TUIAxes                      matlab.ui.control.UIAxes
         TPanel1                      matlab.ui.container.Panel
         TP1GridLayout                matlab.ui.container.GridLayout
+        TNoneButton                  matlab.ui.control.StateButton
+        TCompetitiveButton           matlab.ui.control.StateButton
+        TStreamButton                matlab.ui.control.StateButton
+        TConstrainedButton           matlab.ui.control.StateButton
         TDrawObjCheckBox             matlab.ui.control.CheckBox
         TDrawDecCheckBox             matlab.ui.control.CheckBox
         ObjectiveLabel               matlab.ui.control.Label
         TObjectiveTypeDropDown       matlab.ui.control.DropDown
-        TSpecialTypeDropDown         matlab.ui.control.DropDown
-        SpecialLabel_2               matlab.ui.control.Label
         TaskLabel                    matlab.ui.control.Label
         TTaskTypeDropDown            matlab.ui.control.DropDown
         ProblemDropDownLabel         matlab.ui.control.Label
@@ -84,6 +86,8 @@ classdef MTO_GUI < matlab.apps.AppBase
         EAlgorithmsTree              matlab.ui.container.Tree
         EPanel1                      matlab.ui.container.Panel
         EP1GridLayout                matlab.ui.container.GridLayout
+        ENoneButton                  matlab.ui.control.StateButton
+        EStreamButton                matlab.ui.control.StateButton
         ECompetitiveButton           matlab.ui.control.StateButton
         EConstrainedButton           matlab.ui.control.StateButton
         ESaveDecCheckBox             matlab.ui.control.CheckBox
@@ -192,14 +196,10 @@ classdef MTO_GUI < matlab.apps.AppBase
     end
 
     methods (Access = public)
-        function readAlgoProb(app, label_str)
-            % load the algorithms and problems list
-
-            app.AlgoLoad = app.readList('../Algorithms', label_str);
-            app.ProbLoad = app.readList('../Problems', label_str);
-
-            app.AlgoLoad = sort_nat(app.AlgoLoad);
-            app.ProbLoad = sort_nat(app.ProbLoad);
+        function readAlgoProb(app, label_str, excluded)
+            if nargin < 3, excluded = {}; end
+            app.AlgoLoad = sort_nat(app.readList('../Algorithms', label_str, excluded));
+            app.ProbLoad = sort_nat(app.readList('../Problems', label_str, excluded));
         end
 
         function readMetric(app, label_str)
@@ -209,8 +209,8 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.MetricLoad = sort_nat(app.MetricLoad);
         end
 
-        function read_list = readList(app, folder_name, label_str)
-            % Read labels from each file itself, independently of MATLAB path precedence.
+        function read_list = readList(app, folder_name, label_str, excluded)
+            if nargin < 4, excluded = {}; end
             read_list = {};
             root = fullfile(fileparts(mfilename('fullpath')), folder_name);
             folders = split(genpath(root), pathsep);
@@ -221,16 +221,8 @@ classdef MTO_GUI < matlab.apps.AppBase
                     fid = fopen(fullfile(files(j).folder, files(j).name), 'r');
                     if fid < 0, continue; end
                     cleanup = onCleanup(@() fclose(fid));
-                    fgetl(fid);
-                    header = fgetl(fid);
-                    clear cleanup;
-                    if ~ischar(header), continue; end
-                    groups = regexp(header, '(?<=<).*?(?=>)', 'match');
-                    labels = {};
-                    for k = 1:numel(groups)
-                        labels = [labels, strsplit(groups{k}, '/')];
-                    end
-                    if all(ismember(label_str, labels))
+                    fgetl(fid); header = fgetl(fid); clear cleanup;
+                    if MatchCatalogLabels(header, label_str, excluded)
                         read_list{end+1} = files(j).name(1:end-2);
                     end
                 end
@@ -268,8 +260,10 @@ classdef MTO_GUI < matlab.apps.AppBase
             if ~isempty(app.TProblemTree.Children)
                 oldProb = class(app.TProblemTree.Children(1).NodeData);
             end
-            label_str = {app.TTaskTypeDropDown.Value, app.TObjectiveTypeDropDown.Value, app.TSpecialTypeDropDown.Value};
-            app.readAlgoProb(label_str);
+            [required, excluded] = CatalogFilter(app.TTaskTypeDropDown.Value, ...
+                app.TObjectiveTypeDropDown.Value, app.TConstrainedButton.Value, ...
+                app.TCompetitiveButton.Value, app.TStreamButton.Value);
+            app.readAlgoProb(required, excluded);
             algorithms = app.AlgoLoad;
             problems = app.ProbLoad;
             % Filter the lists strictly; loaded objects remain in their parameter trees.
@@ -286,19 +280,10 @@ classdef MTO_GUI < matlab.apps.AppBase
         function EloadAlgoProb(app)
             % load the algorithms and problems in Experiment module
 
-            special_label = {};
-            if app.EConstrainedButton.Value
-                special_label{end+1} = 'Constrained';
-            end
-            if app.ECompetitiveButton.Value
-                special_label{end+1} = 'Competitive';
-            end
-            if isempty(special_label)
-                special_label = {'None'};
-            end
-            label_str = {app.ETaskTypeDropDown.Value, app.EObjectiveTypeDropDown.Value, special_label{:}};
-            
-            app.readAlgoProb(label_str);
+            [required, excluded] = CatalogFilter(app.ETaskTypeDropDown.Value, ...
+                app.EObjectiveTypeDropDown.Value, app.EConstrainedButton.Value, ...
+                app.ECompetitiveButton.Value, app.EStreamButton.Value);
+            app.readAlgoProb(required, excluded);
             app.EAlgorithmsListBox.Items(:) = [];
             app.EProblemsListBox.Items(:) = [];
             app.EAlgorithmsListBox.Items = strrep(app.AlgoLoad, '_', '-');
@@ -326,7 +311,9 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TStopButton.Enable = ~value;
             app.TTaskTypeDropDown.Enable = value;
             app.TObjectiveTypeDropDown.Enable = value;
-            app.TSpecialTypeDropDown.Enable = value;
+            app.TConstrainedButton.Enable = value;
+            app.TCompetitiveButton.Enable = value;
+            app.TStreamButton.Enable = value;
             app.TAlgorithmDropDown.Enable = value;
             app.TAlgorithmTree.Enable = value;
             app.TProblemDropDown.Enable = value;
@@ -354,6 +341,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EObjectiveTypeDropDownLabel.Enable = value;
             app.ECompetitiveButton.Enable = value;
             app.EConstrainedButton.Enable = value;
+            app.EStreamButton.Enable = value;
             app.EAlgorithmsAddButton.Enable = value;
             app.EAlgorithmListLabel.Enable = value;
             app.EProblemsAddButton.Enable = value;
@@ -410,6 +398,9 @@ classdef MTO_GUI < matlab.apps.AppBase
             if strcmp(app.TPauseButton.Text, 'Resume')
                 waitfor(app.TPauseButton,'Text', 'Pause');
             end
+            if app.TStopFlag
+                error('User Stop');
+            end
         end
 
         function EcheckPauseStopStatus(app)
@@ -423,6 +414,9 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             if strcmp(app.EPauseButton.Text, 'Resume')
                 waitfor(app.EPauseButton,'Text', 'Pause');
+            end
+            if app.EStopFlag
+                error('User Stop');
             end
         end
 
@@ -740,6 +734,14 @@ classdef MTO_GUI < matlab.apps.AppBase
                 return;
             end
 
+            if size(table_data, 2) < 2
+                app.ETableTest = {};
+                app.EUITable.Data = app.ETableView;
+                app.EUITable.RowName = app.EUITable.RowName(1:size(app.ETableData, 1));
+                app.EupdateTableHighlight();
+                return;
+            end
+
             test_type = app.ETestTypeDropDown.Value;
             algo_selected = app.EAlgorithmDropDown.Value;
             app.ETableTest = {};
@@ -823,10 +825,11 @@ classdef MTO_GUI < matlab.apps.AppBase
                         return;
                     end
                     data = app.ETableData;
-                    data(isnan(data)) = 1e15;
                     if ~app.EMetricMin
                         data = -data;
                     end
+                    % Rank missing values last for both minimization and maximization.
+                    data(isnan(data)) = Inf;
                     [~, ~, stats] = friedman(data, 1, 'off');
                 elseif contains(test_type, '(all reps)')
                     if size(app.EResultTableData, 1) * size(app.EResultTableData, 3) < 2
@@ -837,10 +840,11 @@ classdef MTO_GUI < matlab.apps.AppBase
                         return;
                     end
                     data = app.EResultTableData;
-                    data(isnan(data)) = 1e15;
                     if ~app.EMetricMin
                         data = -data;
                     end
+                    % Rank missing values last for both minimization and maximization.
+                    data(isnan(data)) = Inf;
                     s = size(data);
                     permuted_data = permute(data, [1 3 2]);
                     data = reshape(permuted_data, [], s(2));
@@ -1081,7 +1085,7 @@ classdef MTO_GUI < matlab.apps.AppBase
 
         % Code that executes after component creation
         function startupFcn(app)
-            addpath(fullfile(fileparts(mfilename('fullpath')), 'PlotFunctions'));
+            addpath(genpath(fileparts(fileparts(mfilename('fullpath')))));
             app.TSampleNumberEditField.Limits = [1, Inf];
             app.TSampleNumberEditField.RoundFractionalValues = 'on';
             % Item clicks also load the first filtered choice when Value has not changed.
@@ -1105,11 +1109,6 @@ classdef MTO_GUI < matlab.apps.AppBase
 
         % Value changed function: TObjectiveTypeDropDown
         function TObjectiveTypeDropDownValueChanged(app, event)
-            app.TloadAlgoProb();
-        end
-
-        % Value changed function: TSpecialTypeDropDown
-        function TSpecialTypeDropDownValueChanged(app, event)
             app.TloadAlgoProb();
         end
 
@@ -1308,7 +1307,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % pause or resume
 
             if strcmp(app.TPauseButton.Text, 'Pause')
-                app.TStopButton.Enable = 'off';
+                app.TStopButton.Enable = 'on';
                 app.TPauseButton.Text = 'Resume';
             else
                 app.TStopButton.Enable = 'on';
@@ -1319,6 +1318,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         % Button pushed function: TStopButton
         function TStopButtonPushed(app, event)
             app.TStopFlag = true;
+                app.TPauseButton.Text = 'Pause';
             app.TData = [];
             app.TStopButton.Enable = 'off';
         end
@@ -1496,7 +1496,7 @@ classdef MTO_GUI < matlab.apps.AppBase
                                      'DefaultOption', 'Cancel', ...
                                      'Icon', 'warning'); % 'warning' might be more appropriate than 'success'
                 if strcmp(selection, 'Confirm')
-                    app.EStopButton.Enable = 'off';
+                    app.EStopButton.Enable = 'on';
                     app.EPauseButton.Text = 'Resume';
                 end
             else
@@ -1518,6 +1518,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             if strcmp(selection, 'Confirm')
                 app.EStopButton.Enable = 'off';
                 app.EStopFlag = true;
+                app.EPauseButton.Text = 'Pause';
             end
         end
 
@@ -1723,27 +1724,24 @@ classdef MTO_GUI < matlab.apps.AppBase
 
         % Button pushed function: ELoadDataButton
         function ELoadDataButtonPushed(app, event)
-            % load data from file
-
-            % select mat file
-            app.MToPv111UIFigure.Visible = 'off';
             [file_name, pathname] = uigetfile('*.mat', 'Select Data', './');
-            app.MToPv111UIFigure.Visible = 'on';
-            figure(app.MToPv111UIFigure);
-            drawnow;
-
-            % check selected ile_name
-            if file_name == 0
-                return;
+            if isequal(file_name, 0), return; end
+            try
+                loaded = load(fullfile(pathname, file_name), 'MTOData');
+                if ~isfield(loaded, 'MTOData')
+                    error('MToP:MissingData', 'The file does not contain MTOData.');
+                end
+                ValidateMTOData(loaded.MTOData);
+                labels = app.getDataLabels(loaded.MTOData);
+                names = {loaded.MTOData.Algorithms.Name};
+                app.EData = loaded.MTOData;
+                app.EloadMetric(labels);
+                app.ETableReps = app.EData.Reps * ones(numel(app.EData.Problems), numel(app.EData.Algorithms));
+                app.EresetTableAlgorithmDropDown(names);
+                app.EreloadTableData();
+            catch ME
+                app.showError(ME, 'Data load failed');
             end
-
-            % load data to app's parameter
-            load([pathname, file_name], 'MTOData');
-            app.EData = MTOData;
-            app.EloadMetric(app.getDataLabels(MTOData));
-            app.ETableReps = app.EData.Reps * ones([length(app.EData.Problems), length(app.EData.Algorithms)]);
-            app.EresetTableAlgorithmDropDown({app.EData.Algorithms.Name});
-            app.EreloadTableData();
         end
 
         % Button pushed function: ESaveTableButton
@@ -2025,10 +2023,30 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EloadAlgoProb();
         end
 
+        % Value changed function: EStreamButton
+        function EStreamButtonValueChanged(app, event)
+            app.EloadAlgoProb();
+        end
+
         % Menu selected function: AlgorithmRefreshMenu, ProblemRefreshMenu
         function RefreshMenuSelected(app, event)
             rehash('path');
             app.EloadAlgoProb();
+        end
+
+        % Value changed function: TConstrainedButton
+        function TConstrainedButtonValueChanged(app, event)
+            app.TloadAlgoProb();
+        end
+
+        % Value changed function: TCompetitiveButton
+        function TCompetitiveButtonValueChanged(app, event)
+            app.TloadAlgoProb();
+        end
+
+        % Value changed function: TStreamButton
+        function TStreamButtonValueChanged(app, event)
+            app.TloadAlgoProb();
         end
     end
 
@@ -2080,7 +2098,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create TP1GridLayout
             app.TP1GridLayout = uigridlayout(app.TPanel1);
             app.TP1GridLayout.ColumnWidth = {'fit', '1x'};
-            app.TP1GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x'};
+            app.TP1GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x'};
             app.TP1GridLayout.ColumnSpacing = 5;
             app.TP1GridLayout.RowSpacing = 7;
             app.TP1GridLayout.Padding = [0 0 0 0];
@@ -2089,7 +2107,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create AlgorithmDropDownLabel
             app.AlgorithmDropDownLabel = uilabel(app.TP1GridLayout);
             app.AlgorithmDropDownLabel.FontWeight = 'bold';
-            app.AlgorithmDropDownLabel.Layout.Row = 5;
+            app.AlgorithmDropDownLabel.Layout.Row = 6;
             app.AlgorithmDropDownLabel.Layout.Column = 1;
             app.AlgorithmDropDownLabel.Text = 'Algorithm';
 
@@ -2101,7 +2119,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TAlgorithmDropDown.Tooltip = {'Select algorithm'};
             app.TAlgorithmDropDown.FontWeight = 'bold';
             app.TAlgorithmDropDown.BackgroundColor = [1 1 1];
-            app.TAlgorithmDropDown.Layout.Row = 5;
+            app.TAlgorithmDropDown.Layout.Row = 6;
             app.TAlgorithmDropDown.Layout.Column = 2;
             app.TAlgorithmDropDown.Value = {};
 
@@ -2111,7 +2129,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TAlgorithmTree.NodeTextChangedFcn = createCallbackFcn(app, @TAlgorithmTreeNodeTextChanged, true);
             app.TAlgorithmTree.Editable = 'on';
             app.TAlgorithmTree.Tooltip = {'Click triangle to expand the algorithm, double-click to change the algorithm name or parameter value'};
-            app.TAlgorithmTree.Layout.Row = 6;
+            app.TAlgorithmTree.Layout.Row = 7;
             app.TAlgorithmTree.Layout.Column = [1 2];
 
             % Create TProblemTree
@@ -2120,7 +2138,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TProblemTree.NodeTextChangedFcn = createCallbackFcn(app, @TProblemTreeNodeTextChanged, true);
             app.TProblemTree.Editable = 'on';
             app.TProblemTree.Tooltip = {'Click triangle to expand the problem, double-click to change the problem name or parameter value'};
-            app.TProblemTree.Layout.Row = 8;
+            app.TProblemTree.Layout.Row = 9;
             app.TProblemTree.Layout.Column = [1 2];
 
             % Create TProblemDropDown
@@ -2131,21 +2149,21 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TProblemDropDown.Tooltip = {'Select problem'};
             app.TProblemDropDown.FontWeight = 'bold';
             app.TProblemDropDown.BackgroundColor = [1 1 1];
-            app.TProblemDropDown.Layout.Row = 7;
+            app.TProblemDropDown.Layout.Row = 8;
             app.TProblemDropDown.Layout.Column = 2;
             app.TProblemDropDown.Value = {};
 
             % Create ProblemDropDownLabel
             app.ProblemDropDownLabel = uilabel(app.TP1GridLayout);
             app.ProblemDropDownLabel.FontWeight = 'bold';
-            app.ProblemDropDownLabel.Layout.Row = 7;
+            app.ProblemDropDownLabel.Layout.Row = 8;
             app.ProblemDropDownLabel.Layout.Column = 1;
             app.ProblemDropDownLabel.Text = 'Problem';
 
             % Create TTaskTypeDropDown
             app.TTaskTypeDropDown = uidropdown(app.TP1GridLayout);
-            app.TTaskTypeDropDown.Items = {'Multi', 'Many', 'Stream', 'Single'};
-            app.TTaskTypeDropDown.ItemsData = {'Multi-task', 'Many-task', 'Stream-task', 'Single-task'};
+            app.TTaskTypeDropDown.Items = {'Multi', 'Many', 'Single'};
+            app.TTaskTypeDropDown.ItemsData = {'Multi-task', 'Many-task', 'Single-task'};
             app.TTaskTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @TTaskTypeDropDownValueChanged, true);
             app.TTaskTypeDropDown.FontWeight = 'bold';
             app.TTaskTypeDropDown.BackgroundColor = [1 1 1];
@@ -2160,24 +2178,6 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TaskLabel.Layout.Row = 2;
             app.TaskLabel.Layout.Column = 1;
             app.TaskLabel.Text = 'Task';
-
-            % Create SpecialLabel_2
-            app.SpecialLabel_2 = uilabel(app.TP1GridLayout);
-            app.SpecialLabel_2.FontWeight = 'bold';
-            app.SpecialLabel_2.Tooltip = {''};
-            app.SpecialLabel_2.Layout.Row = 4;
-            app.SpecialLabel_2.Layout.Column = 1;
-            app.SpecialLabel_2.Text = 'Special';
-
-            % Create TSpecialTypeDropDown
-            app.TSpecialTypeDropDown = uidropdown(app.TP1GridLayout);
-            app.TSpecialTypeDropDown.Items = {'None', 'Competitive', 'Constrained'};
-            app.TSpecialTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @TSpecialTypeDropDownValueChanged, true);
-            app.TSpecialTypeDropDown.FontWeight = 'bold';
-            app.TSpecialTypeDropDown.BackgroundColor = [1 1 1];
-            app.TSpecialTypeDropDown.Layout.Row = 4;
-            app.TSpecialTypeDropDown.Layout.Column = 2;
-            app.TSpecialTypeDropDown.Value = 'None';
 
             % Create TObjectiveTypeDropDown
             app.TObjectiveTypeDropDown = uidropdown(app.TP1GridLayout);
@@ -2215,6 +2215,46 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TDrawObjCheckBox.Layout.Row = 1;
             app.TDrawObjCheckBox.Layout.Column = 2;
             app.TDrawObjCheckBox.Value = true;
+
+            % Create TConstrainedButton
+            app.TConstrainedButton = uibutton(app.TP1GridLayout, 'state');
+            app.TConstrainedButton.ValueChangedFcn = createCallbackFcn(app, @TConstrainedButtonValueChanged, true);
+            app.TConstrainedButton.Text = 'Constrained';
+            app.TConstrainedButton.BackgroundColor = [1 1 1];
+            app.TConstrainedButton.FontSize = 10;
+            app.TConstrainedButton.FontWeight = 'bold';
+            app.TConstrainedButton.Layout.Row = 4;
+            app.TConstrainedButton.Layout.Column = 1;
+
+            % Create TStreamButton
+            app.TStreamButton = uibutton(app.TP1GridLayout, 'state');
+            app.TStreamButton.ValueChangedFcn = createCallbackFcn(app, @TStreamButtonValueChanged, true);
+            app.TStreamButton.Text = 'Stream';
+            app.TStreamButton.BackgroundColor = [1 1 1];
+            app.TStreamButton.FontSize = 10;
+            app.TStreamButton.FontWeight = 'bold';
+            app.TStreamButton.Layout.Row = 5;
+            app.TStreamButton.Layout.Column = 1;
+
+            % Create TCompetitiveButton
+            app.TCompetitiveButton = uibutton(app.TP1GridLayout, 'state');
+            app.TCompetitiveButton.ValueChangedFcn = createCallbackFcn(app, @TCompetitiveButtonValueChanged, true);
+            app.TCompetitiveButton.Text = 'Competitive';
+            app.TCompetitiveButton.BackgroundColor = [1 1 1];
+            app.TCompetitiveButton.FontSize = 10;
+            app.TCompetitiveButton.FontWeight = 'bold';
+            app.TCompetitiveButton.Layout.Row = 4;
+            app.TCompetitiveButton.Layout.Column = 2;
+
+            % Create TNoneButton
+            app.TNoneButton = uibutton(app.TP1GridLayout, 'state');
+            app.TNoneButton.Enable = 'off';
+            app.TNoneButton.Text = '';
+            app.TNoneButton.BackgroundColor = [1 1 1];
+            app.TNoneButton.FontSize = 10;
+            app.TNoneButton.FontWeight = 'bold';
+            app.TNoneButton.Layout.Row = 5;
+            app.TNoneButton.Layout.Column = 2;
 
             % Create TPanel2
             app.TPanel2 = uipanel(app.TestGridLayout);
@@ -2385,7 +2425,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create EP1GridLayout
             app.EP1GridLayout = uigridlayout(app.EPanel1);
             app.EP1GridLayout.ColumnWidth = {'2x', '1x', '1x'};
-            app.EP1GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x'};
+            app.EP1GridLayout.RowHeight = {'fit', 'fit', 'fit', 'fit', 'fit', 'fit', 'fit', '1x', 'fit', '1x'};
             app.EP1GridLayout.ColumnSpacing = 5;
             app.EP1GridLayout.RowSpacing = 7;
             app.EP1GridLayout.Padding = [0 0 0 0];
@@ -2398,7 +2438,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EProblemsAddButton.BackgroundColor = [1 1 1];
             app.EProblemsAddButton.FontWeight = 'bold';
             app.EProblemsAddButton.Tooltip = {'Add Selected Problems'};
-            app.EProblemsAddButton.Layout.Row = 8;
+            app.EProblemsAddButton.Layout.Row = 9;
             app.EProblemsAddButton.Layout.Column = 3;
             app.EProblemsAddButton.Text = 'Add';
 
@@ -2409,7 +2449,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EAlgorithmsAddButton.BackgroundColor = [1 1 1];
             app.EAlgorithmsAddButton.FontWeight = 'bold';
             app.EAlgorithmsAddButton.Tooltip = {'Add Selected Algorithms'};
-            app.EAlgorithmsAddButton.Layout.Row = 6;
+            app.EAlgorithmsAddButton.Layout.Row = 7;
             app.EAlgorithmsAddButton.Layout.Column = 3;
             app.EAlgorithmsAddButton.Text = 'Add';
 
@@ -2418,14 +2458,14 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EAlgorithmsListBox.Items = {};
             app.EAlgorithmsListBox.Multiselect = 'on';
             app.EAlgorithmsListBox.Tooltip = {'Hold <Control> to select multiple, Hold <Shift> to select a range'};
-            app.EAlgorithmsListBox.Layout.Row = 7;
+            app.EAlgorithmsListBox.Layout.Row = 8;
             app.EAlgorithmsListBox.Layout.Column = [1 3];
             app.EAlgorithmsListBox.Value = {};
 
             % Create EAlgorithmListLabel
             app.EAlgorithmListLabel = uilabel(app.EP1GridLayout);
             app.EAlgorithmListLabel.FontWeight = 'bold';
-            app.EAlgorithmListLabel.Layout.Row = 6;
+            app.EAlgorithmListLabel.Layout.Row = 7;
             app.EAlgorithmListLabel.Layout.Column = [1 2];
             app.EAlgorithmListLabel.Text = 'Algorithm List';
 
@@ -2434,14 +2474,14 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EProblemsListBox.Items = {};
             app.EProblemsListBox.Multiselect = 'on';
             app.EProblemsListBox.Tooltip = {'Hold Control to select multiple, Hold Shift to select a range'};
-            app.EProblemsListBox.Layout.Row = 9;
+            app.EProblemsListBox.Layout.Row = 10;
             app.EProblemsListBox.Layout.Column = [1 3];
             app.EProblemsListBox.Value = {};
 
             % Create EProblemListLabel
             app.EProblemListLabel = uilabel(app.EP1GridLayout);
             app.EProblemListLabel.FontWeight = 'bold';
-            app.EProblemListLabel.Layout.Row = 8;
+            app.EProblemListLabel.Layout.Row = 9;
             app.EProblemListLabel.Layout.Column = [1 2];
             app.EProblemListLabel.Text = 'Problem List';
 
@@ -2455,8 +2495,8 @@ classdef MTO_GUI < matlab.apps.AppBase
 
             % Create ETaskTypeDropDown
             app.ETaskTypeDropDown = uidropdown(app.EP1GridLayout);
-            app.ETaskTypeDropDown.Items = {'Multi', 'Many', 'Stream', 'Single'};
-            app.ETaskTypeDropDown.ItemsData = {'Multi-task', 'Many-task', 'Stream-task', 'Single-task'};
+            app.ETaskTypeDropDown.Items = {'Multi', 'Many', 'Single'};
+            app.ETaskTypeDropDown.ItemsData = {'Multi-task', 'Many-task', 'Single-task'};
             app.ETaskTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @ETaskTypeDropDownValueChanged, true);
             app.ETaskTypeDropDown.FontWeight = 'bold';
             app.ETaskTypeDropDown.BackgroundColor = [1 1 1];
@@ -2590,6 +2630,26 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.ECompetitiveButton.FontWeight = 'bold';
             app.ECompetitiveButton.Layout.Row = 5;
             app.ECompetitiveButton.Layout.Column = [2 3];
+
+            % Create EStreamButton
+            app.EStreamButton = uibutton(app.EP1GridLayout, 'state');
+            app.EStreamButton.ValueChangedFcn = createCallbackFcn(app, @EStreamButtonValueChanged, true);
+            app.EStreamButton.Text = 'Stream';
+            app.EStreamButton.BackgroundColor = [1 1 1];
+            app.EStreamButton.FontSize = 10;
+            app.EStreamButton.FontWeight = 'bold';
+            app.EStreamButton.Layout.Row = 6;
+            app.EStreamButton.Layout.Column = 1;
+
+            % Create ENoneButton
+            app.ENoneButton = uibutton(app.EP1GridLayout, 'state');
+            app.ENoneButton.Enable = 'off';
+            app.ENoneButton.Text = '';
+            app.ENoneButton.BackgroundColor = [1 1 1];
+            app.ENoneButton.FontSize = 10;
+            app.ENoneButton.FontWeight = 'bold';
+            app.ENoneButton.Layout.Row = 6;
+            app.ENoneButton.Layout.Column = [2 3];
 
             % Create EPanel2
             app.EPanel2 = uipanel(app.ExperimentsGridLayout);
