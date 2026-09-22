@@ -11,5 +11,8 @@ function result = IGD_AV(MTOData, varargin)
 % Evolutionary Multitasking, ACM Trans. Evol. Learn. Optim., 2026"
 %--------------------------------------------------------------------------
 
-result = AggregateTaskMetric(MTOData, 'IGD', 'mean', varargin{:});
+base = ReadMetricResult(MTOData, 'IGD', varargin{:});
+result = CreateMetricResult(MTOData, base.Metric, base.IsRelative, false);
+% Average task scores and retain the sampled FE coordinates of the base metric.
+result = AggregateTaskMetric(MTOData, base, result, @(values) mean(values, 1), true);
 end

@@ -11,5 +11,12 @@ function result = Spread_CMT(MTOData, varargin)
 % Evolutionary Multitasking, ACM Trans. Evol. Learn. Optim., 2026"
 %--------------------------------------------------------------------------
 
-result = ComputeParetoMetric(MTOData, 'Spread', true, varargin{:});
+result = CreateMetricResult(MTOData, 'Min', true, false);
+result = ComputeParetoMetric(MTOData, result, true, @prepare, varargin{:});
+end
+
+function evaluate = prepare(data, problem, tasks, ~)
+% Spread is relative to the pooled final feasible nondominated front.
+reference = CollectFinalMetricFront(data, problem, tasks);
+evaluate = @(front) getSpread(front, reference);
 end

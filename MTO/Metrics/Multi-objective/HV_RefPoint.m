@@ -11,5 +11,11 @@ function result = HV_RefPoint(MTOData, varargin)
 % Evolutionary Multitasking, ACM Trans. Evol. Learn. Optim., 2026"
 %--------------------------------------------------------------------------
 
-result = ComputeParetoMetric(MTOData, 'HV_RefPoint', false, varargin{:});
+result = CreateMetricResult(MTOData, 'Max', false, true);
+result = ComputeParetoMetric(MTOData, result, false, @prepare, varargin{:});
+end
+
+function evaluate = prepare(~, ~, ~, reference)
+% Use the coordinatewise maximum of the problem optimum as reference point.
+evaluate = @(front) getHV(front, max(reference, [], 1));
 end

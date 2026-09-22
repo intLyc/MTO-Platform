@@ -11,5 +11,11 @@ function result = Obj_AV(MTOData, varargin)
 % Evolutionary Multitasking, ACM Trans. Evol. Learn. Optim., 2026"
 %--------------------------------------------------------------------------
 
-result = ComputeObjectiveMetric(MTOData, 'Obj', 'mean');
+result = CreateMetricResult(MTOData, 'Min', false, false);
+result = ComputeObjectiveMetric(MTOData, result, false, @evaluate, @(values) mean(values, 2));
+end
+
+function history = evaluate(record)
+history = record.Obj;
+history(record.CV > 0) = NaN;
 end

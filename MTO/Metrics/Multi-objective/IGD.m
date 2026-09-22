@@ -11,5 +11,12 @@ function result = IGD(MTOData, varargin)
 % Evolutionary Multitasking, ACM Trans. Evol. Learn. Optim., 2026"
 %--------------------------------------------------------------------------
 
-result = ComputeParetoMetric(MTOData, 'IGD', false, varargin{:});
+result = CreateMetricResult(MTOData, 'Min', false, true);
+result = ComputeParetoMetric(MTOData, result, false, @prepare, varargin{:});
+end
+
+function evaluate = prepare(~, ~, ~, reference)
+% Use the task optimum (pooled nondominated optima for CMT).
+% IGD: mean nearest Euclidean distance from reference points to the front.
+evaluate = @(front) getIGD(front, reference);
 end

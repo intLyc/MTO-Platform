@@ -1,7 +1,8 @@
-function result = ComputeObjectiveMetric(data, field, aggregation)
-% Read single-objective histories once and optionally aggregate across tasks.
-perTask = strcmp(aggregation, 'task');
-result = CreateMetricResult(data, 'Min', false, perTask);
+function result = ComputeObjectiveMetric(data, result, perTask, readHistory, aggregate)
+% Traverse single-objective records; the metric supplies all value calculations.
+% readHistory(record) returns task-by-checkpoint values. For problem-level
+% metrics, aggregate(values) reduces repetitions-by-tasks-by-checkpoints to
+% repetitions-by-one-by-checkpoints. The aggregate callback is unused per task.
 result.ConvergeData.X = [];
 result.ConvergeData.Y = [];
 if any([data.Problems.M] ~= 1), return; end
@@ -12,9 +13,7 @@ for p = 1:numel(data.Problems)
         count = size(data.Results(p, a, 1).CV, 2);
         values = zeros(data.Reps, problem.T, count);
         for r = 1:data.Reps
-            record = data.Results(p, a, r);
-            history = record.(field);
-            if strcmp(field, 'Obj'), history(record.CV > 0) = NaN; end
+            history = readHistory(data.Results(p, a, r));
             values(r, :, :) = reshape(history, 1, problem.T, count);
         end
         if perTask
@@ -23,10 +22,7 @@ for p = 1:numel(data.Problems)
                 result = StoreMetricHistory(result, row + t - 1, a, history, problem.maxFE / problem.T);
             end
         else
-            switch aggregation
-                case 'mean', history = mean(values, 2);
-                case 'min', history = min(values, [], 2);
-            end
+            history = aggregate(values);
             result = StoreMetricHistory(result, p, a, reshape(history, data.Reps, count), problem.maxFE);
         end
     end

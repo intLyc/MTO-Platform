@@ -12,7 +12,7 @@ function result = Obj_NBR(MTOData, varargin)
 %--------------------------------------------------------------------------
 
 result = CreateMetricResult(MTOData, 'Max', true, false);
-objective = ReadFinalMetricData(MTOData, 'Obj');
+objective = ReadFinalMetricData(MTOData, @finalObjective);
 if isempty(objective), return; end
 means = mean(objective, 3, 'omitnan');
 row = 1;
@@ -23,4 +23,9 @@ for p = 1:numel(MTOData.Problems)
     result.TableData(p, :) = sum(values == min(values, [], 2), 1);
     row = row + MTOData.Problems(p).T;
 end
+end
+
+function values = finalObjective(record)
+values = record.Obj(:, end);
+values(record.CV(:, end) > 0) = NaN;
 end

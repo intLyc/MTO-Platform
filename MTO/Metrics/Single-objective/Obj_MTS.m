@@ -20,5 +20,25 @@ function result = Obj_MTS(MTOData, varargin)
 % Evolutionary Multitasking, ACM Trans. Evol. Learn. Optim., 2026"
 %--------------------------------------------------------------------------
 
-result = AggregateTaskMetric(MTOData, 'Obj', 'mts', varargin{:});
+base = ReadMetricResult(MTOData, 'Obj', varargin{:});
+result = CreateMetricResult(MTOData, base.Metric, true, false);
+result = AggregateTaskMetric(MTOData, base, result, @multiTaskScore, false);
+end
+
+function average = multiTaskScore(values)
+% Standardize each task/checkpoint over all algorithms and repetitions,
+% then average the standardized scores across tasks.
+for t = 1:size(values, 1)
+    for g = 1:size(values, 4)
+        sample = values(t, :, :, g);
+        center = mean(sample, 'all', 'omitnan');
+        scale = std(sample, 0, 'all');
+        if scale == 0
+            values(t, :, :, g) = 0;
+        else
+            values(t, :, :, g) = (sample - center) ./ scale;
+        end
+    end
+end
+average = mean(values, 1);
 end

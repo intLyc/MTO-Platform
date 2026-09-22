@@ -12,7 +12,7 @@ function result = FR(MTOData, varargin)
 %--------------------------------------------------------------------------
 
 result = CreateMetricResult(MTOData, 'Max', false, true);
-violations = ReadFinalMetricData(MTOData, 'CV');
+violations = ReadFinalMetricData(MTOData, @(record) record.CV(:, end));
 if isempty(violations), return; end
 % Feasible rate is a summary over repetitions, not a per-repetition value.
 result.TableData = mean(violations <= 0, 3);
