@@ -357,6 +357,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TPauseButton.Enable = ~value;
             app.TStopButton.Enable = ~value;
             app.TTaskTypeDropDown.Enable = value;
+            app.TYearDropDown.Enable = value;
             app.TObjectiveTypeDropDown.Enable = value;
             app.TConstrainedButton.Enable = value;
             app.TCompetitiveButton.Enable = value;
@@ -383,6 +384,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.ERngSeedCheckBox.Enable = value;
             app.ERngSeedEditField.Enable = value;
             app.ETaskTypeDropDown.Enable = value;
+            app.EYearDropDown.Enable = value;
             app.ETaskTypeDropDownLabel.Enable = value;
             app.EObjectiveTypeDropDown.Enable = value;
             app.EObjectiveTypeDropDownLabel.Enable = value;
