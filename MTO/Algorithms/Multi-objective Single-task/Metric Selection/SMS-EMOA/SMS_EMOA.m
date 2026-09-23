@@ -1,5 +1,5 @@
 classdef SMS_EMOA < Algorithm
-% <Single-task> <Multi-objective> <None>
+% <Single-task> <Multi-objective> <None> <Year: 2007>
 
 %------------------------------- Reference --------------------------------
 % @Article{Beume2007SMS-EMOA,

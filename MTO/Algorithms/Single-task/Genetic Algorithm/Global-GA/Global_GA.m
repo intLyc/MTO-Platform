@@ -1,5 +1,5 @@
 classdef Global_GA < Algorithm
-% <Single-task> <Single-objective> <None/Constrained>
+% <Single-task> <Single-objective> <None/Constrained> <Year: 2024>
 
 %------------------------------- Reference --------------------------------
 % @Article{Bull2024Global-GA,
@@ -7,8 +7,10 @@ classdef Global_GA < Algorithm
 %   author   = {Bull, Larry and Liu, Haixia},
 %   journal  = {IEEE Transactions on Evolutionary Computation},
 %   year     = {2024},
-%   pages    = {1-1},
+%   pages    = {558-561},
 %   doi      = {10.1109/TEVC.2024.3355776},
+%   volume  = {28},
+%   number  = {2},
 % }
 %--------------------------------------------------------------------------
 

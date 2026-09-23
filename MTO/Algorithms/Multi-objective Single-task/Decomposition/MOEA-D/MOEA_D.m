@@ -1,5 +1,5 @@
 classdef MOEA_D < Algorithm
-% <Single-task> <Multi-objective> <None/Constrained>
+% <Single-task> <Multi-objective> <None/Constrained> <Year: 2007>
 
 %------------------------------- Reference --------------------------------
 % @article{Zhang2007MOEAD,

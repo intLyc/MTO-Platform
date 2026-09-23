@@ -1,5 +1,5 @@
 classdef xNES < Algorithm
-% <Single-task> <Single-objective> <None/Constrained>
+% <Single-task> <Single-objective> <None/Constrained> <Year: 2010>
 
 %------------------------------- Reference --------------------------------
 % @InProceedings{Glasmachers2010xNES,

@@ -1,5 +1,5 @@
 classdef sep_CMA_ES < Algorithm
-% <Single-task> <Single-objective> <None/Constrained>
+% <Single-task> <Single-objective> <None/Constrained> <Year: 2008>
 
 %------------------------------- Reference --------------------------------
 % @InProceedings{Ros2008sep-CMA-ES,

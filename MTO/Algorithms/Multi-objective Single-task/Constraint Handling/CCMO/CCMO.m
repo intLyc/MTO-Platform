@@ -1,5 +1,5 @@
 classdef CCMO < Algorithm
-% <Single-task> <Multi-objective> <Constrained>
+% <Single-task> <Multi-objective> <Constrained> <Year: 2021>
 
 %------------------------------- Reference --------------------------------
 % @Article{Tian2021CCMO,

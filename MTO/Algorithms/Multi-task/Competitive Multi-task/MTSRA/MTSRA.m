@@ -1,5 +1,5 @@
 classdef MTSRA < Algorithm
-% <Multi-task> <Single-objective> <Competitive>
+% <Multi-task> <Single-objective> <Competitive> <Year: 2023>
 
 %------------------------------- Reference --------------------------------
 % @Article{Li2023MTSRA,

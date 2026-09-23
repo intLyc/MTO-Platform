@@ -1,13 +1,16 @@
 classdef CCEF_ECHT < Algorithm
-% <Single-task> <Single-objective> <Constrained>
+% <Single-task> <Single-objective> <Constrained> <Year: 2024>
 
 %------------------------------- Reference --------------------------------
-% @Article{Li2023CCEF-ECHT,
+% @Article{Li2024CCEF-ECHT,
 %   title    = {A Competitive and Cooperative Evolutionary Framework for Ensemble of Constraint Handling Techniques},
 %   author   = {Li, Yanchi and Gong, Wenyin and Hu, Zhenzhen and Li, Shuijia},
 %   journal  = {IEEE Transactions on Systems, Man, and Cybernetics: Systems},
-%   year     = {2023},
+%   year     = {2024},
 %   doi      = {10.1109/TSMC.2023.3343778},
+%   volume  = {54},
+%   number  = {4},
+%   pages   = {2440-2451},
 % }
 %--------------------------------------------------------------------------
 

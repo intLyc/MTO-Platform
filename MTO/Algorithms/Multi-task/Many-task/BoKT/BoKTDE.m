@@ -1,16 +1,18 @@
 classdef BoKTDE < Algorithm
-% <Many-task> <Single-objective> <None>
+% <Many-task> <Single-objective> <None> <Year: 2023>
 
 % Provided by Jiang, Yi
 
 %------------------------------- Reference --------------------------------
-% @Article{Jiang2022BoKT,
+% @Article{Jiang2023BoKT,
 %   author   = {Jiang, Yi and Zhan, Zhi-Hui and Tan, Kay Chen and Zhang, Jun},
 %   journal  = {IEEE Transactions on Evolutionary Computation},
 %   title    = {A Bi-Objective Knowledge Transfer Framework for Evolutionary Many-Task Optimization},
-%   year     = {2022},
-%   pages    = {1-1},
+%   year     = {2023},
+%   pages    = {1514-1528},
 %   doi      = {10.1109/TEVC.2022.3210783},
+%   volume  = {27},
+%   number  = {5},
 % }
 %--------------------------------------------------------------------------
 

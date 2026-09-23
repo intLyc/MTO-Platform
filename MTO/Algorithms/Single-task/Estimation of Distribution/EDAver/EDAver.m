@@ -1,5 +1,5 @@
 classdef EDAver < Algorithm
-% <Single-task> <Single-objective> <None/Constrained>
+% <Single-task> <Single-objective> <None/Constrained> <Year: 2016>
 
 %------------------------------- Reference --------------------------------
 % @InProceedings{Ren2016EDAver,

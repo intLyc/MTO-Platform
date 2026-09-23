@@ -1,5 +1,5 @@
 classdef jSO < Algorithm
-% <Single-task> <Single-objective> <None/Constrained>
+% <Single-task> <Single-objective> <None/Constrained> <Year: 2017>
 
 %------------------------------- Reference --------------------------------
 % @InProceedings{Brest2017jSO,

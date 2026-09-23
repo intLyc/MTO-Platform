@@ -1,5 +1,5 @@
 classdef MPA < Algorithm
-% <Single-task> <Single-objective> <None/Constrained>
+% <Single-task> <Single-objective> <None/Constrained> <Year: 2020>
 
 %------------------------------- Reference --------------------------------
 % @Article{Faramarzi2020MPA,

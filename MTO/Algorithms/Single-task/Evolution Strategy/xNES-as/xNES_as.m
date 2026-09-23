@@ -1,5 +1,5 @@
 classdef xNES_as < Algorithm
-% <Single-task> <Single-objective> <None/Constrained>
+% <Single-task> <Single-objective> <None/Constrained> <Year: 2012>
 
 %------------------------------- Reference --------------------------------
 % @InProceedings{Schaul2012xNES-as,

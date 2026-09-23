@@ -1,5 +1,5 @@
 classdef MO_SBO < Algorithm
-% <Many-task> <Multi-objective> <None/Constrained>
+% <Many-task> <Multi-objective> <None/Constrained> <Year: 2019>
 
 %------------------------------- Reference --------------------------------
 % @Article{Liaw2019SBO,

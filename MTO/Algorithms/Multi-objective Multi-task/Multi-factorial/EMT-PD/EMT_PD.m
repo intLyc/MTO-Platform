@@ -1,14 +1,16 @@
 classdef EMT_PD < Algorithm
-% <Multi-task> <Multi-objective> <None/Constrained>
+% <Multi-task> <Multi-objective> <None/Constrained> <Year: 2022>
 
 %------------------------------- Reference --------------------------------
-% @Article{Liang2021EMT-PD,
+% @Article{Liang2022EMT-PD,
 %   title    = {Multiobjective Evolutionary Multitasking With Two-Stage Adaptive Knowledge Transfer Based on Population Distribution},
 %   author   = {Liang, Zhengping and Liang, Weiqi and Wang, Zhiqiang and Ma, Xiaoliang and Liu, Ling and Zhu, Zexuan},
 %   journal  = {IEEE Transactions on Systems, Man, and Cybernetics: Systems},
-%   year     = {2021},
-%   pages    = {1-13},
+%   year     = {2022},
+%   pages    = {4457-4469},
 %   doi      = {10.1109/TSMC.2021.3096220},
+%   volume  = {52},
+%   number  = {7},
 % }
 %--------------------------------------------------------------------------
 

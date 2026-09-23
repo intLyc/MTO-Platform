@@ -1,5 +1,5 @@
 classdef TNG_SNES_EP < Algorithm
-% <Many-task> <Single-objective> <None/Constrained>
+% <Many-task> <Single-objective> <None/Constrained> <Year: 2025>
 
 %------------------------------- Reference --------------------------------
 % @Article{Li2024TNG-NES,

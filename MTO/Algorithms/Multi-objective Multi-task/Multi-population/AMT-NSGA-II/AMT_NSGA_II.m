@@ -1,5 +1,5 @@
 classdef AMT_NSGA_II < Algorithm
-% <Multi-task> <Multi-objective> <None/Constrained>
+% <Multi-task> <Multi-objective> <None/Constrained> <Year: 2019>
 
 %------------------------------- Reference --------------------------------
 % @Article{Da2019AMTEA,

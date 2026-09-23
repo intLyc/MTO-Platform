@@ -1,14 +1,16 @@
 classdef BLKT_DE < Algorithm
-% <Multi-task> <Single-objective> <None/Constrained>
+% <Multi-task> <Single-objective> <None/Constrained> <Year: 2024>
 
 %------------------------------- Reference --------------------------------
-% @Article{Jiang2023BLKT-DE,
+% @Article{Jiang2024BLKT-DE,
 %   title    = {Block-Level Knowledge Transfer for Evolutionary Multitask Optimization},
 %   author   = {Jiang, Yi and Zhan, Zhi-Hui and Tan, Kay Chen and Zhang, Jun},
 %   journal  = {IEEE Transactions on Cybernetics},
-%   year     = {2023},
-%   pages    = {1-14},
+%   year     = {2024},
+%   pages    = {558-571},
 %   doi      = {10.1109/TCYB.2023.3273625},
+%   volume  = {54},
+%   number  = {1},
 % }
 %--------------------------------------------------------------------------
 

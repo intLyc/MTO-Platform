@@ -1,5 +1,5 @@
 classdef PSO < Algorithm
-% <Single-task> <Single-objective> <None/Constrained>
+% <Single-task> <Single-objective> <None/Constrained> <Year: 1995>
 
 %------------------------------- Reference --------------------------------
 % @InProceedings{Kennedy1995PSO,

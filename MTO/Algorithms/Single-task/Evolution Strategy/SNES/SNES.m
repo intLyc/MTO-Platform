@@ -1,5 +1,5 @@
 classdef SNES < Algorithm
-% <Single-task> <Single-objective> <None/Constrained>
+% <Single-task> <Single-objective> <None/Constrained> <Year: 2011>
 
 %------------------------------- Reference --------------------------------
 % @InProceedings{Schaul2011SNES,

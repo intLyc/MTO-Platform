@@ -1,5 +1,5 @@
 classdef TLTLA < Algorithm
-% <Multi-task> <Single-objective> <None/Constrained>
+% <Multi-task> <Single-objective> <None/Constrained> <Year: 2020>
 
 %------------------------------- Reference --------------------------------
 % @Article{Ma2020TLTLA,

@@ -1,5 +1,5 @@
 classdef MO_CMA_ES < Algorithm
-% <Single-task> <Multi-objective> <None>
+% <Single-task> <Multi-objective> <None> <Year: 2007>
 
 %------------------------------- Reference --------------------------------
 % @Article{Igel2007MO-CMA-ES,

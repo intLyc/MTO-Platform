@@ -1,5 +1,5 @@
 classdef AMFEA < StreamAlgorithm
-% <Multi-task> <Single-objective> <None/Constrained> <Stream>
+% <Multi-task> <Single-objective> <None/Constrained> <Stream> <Year: 2016>
 % Asynchronous MFEA: implicit transfer is restricted to currently active tasks.
 
 %------------------------------- Reference --------------------------------

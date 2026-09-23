@@ -1,5 +1,5 @@
 classdef EMT_MSKT < Algorithm
-% <Multi-task> <Multi-objective> <None/Constrained>
+% <Multi-task> <Multi-objective> <None/Constrained> <Year: 2026>
 
 %------------------------------- Reference --------------------------------
 % @Article{Zhang2026EMT-MSKT,

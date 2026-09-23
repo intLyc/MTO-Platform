@@ -1,14 +1,16 @@
 classdef MTEA_AD < Algorithm
-% <Multi-task/Many-task> <Single-objective> <None/Constrained>
+% <Multi-task/Many-task> <Single-objective> <None/Constrained> <Year: 2022>
 
 %------------------------------- Reference --------------------------------
-% @Article{Wang2021MTEA-AD,
+% @Article{Wang2022MTEA-AD,
 %   title      = {Solving Multi-task Optimization Problems with Adaptive Knowledge Transfer via Anomaly Detection},
 %   author     = {Wang, Chao and Liu, Jing and Wu, Kai and Wu, Zhaoyang},
 %   journal    = {IEEE Transactions on Evolutionary Computation},
-%   year       = {2021},
-%   pages      = {1-1},
+%   year       = {2022},
+%   pages      = {304-318},
 %   doi        = {10.1109/TEVC.2021.3068157},
+%   volume  = {26},
+%   number  = {2},
 % }
 %--------------------------------------------------------------------------
 

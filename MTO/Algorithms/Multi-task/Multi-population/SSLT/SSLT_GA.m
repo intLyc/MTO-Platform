@@ -1,5 +1,5 @@
 classdef SSLT_GA < Algorithm
-% <Multi-task/Many-task> <Single-objective> <None/Constrained>
+% <Multi-task/Many-task> <Single-objective> <None/Constrained> <Year: 2025>
 
 %------------------------------- Reference --------------------------------
 % @Article{Yuan2025Scenario,

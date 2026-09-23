@@ -1,5 +1,5 @@
 classdef AMTES_KG < AsyncCMAStream
-% <Multi-task/Many-task> <Single-objective> <None/Constrained> <Stream>
+% <Multi-task/Many-task> <Single-objective> <None/Constrained> <Stream> <Year: 2024>
 % Asynchronous adaptation of MTES-KG (Li et al., TEVC 2024).
 % Latest completed local updates replace synchronous source generations.
 properties

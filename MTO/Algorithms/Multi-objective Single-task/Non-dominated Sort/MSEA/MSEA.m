@@ -1,5 +1,5 @@
 classdef MSEA < Algorithm
-% <Single-task> <Multi-objective> <None>
+% <Single-task> <Multi-objective> <None> <Year: 2021>
 
 %------------------------------- Reference --------------------------------
 % @Article{Tian2021MSEA,

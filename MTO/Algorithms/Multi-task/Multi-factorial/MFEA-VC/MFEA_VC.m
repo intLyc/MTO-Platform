@@ -1,5 +1,5 @@
 classdef MFEA_VC < Algorithm
-% <Multi-task> <Single-objective> <None/Constrained>
+% <Multi-task> <Single-objective> <None/Constrained> <Year: 2024>
 
 %------------------------------- Reference --------------------------------
 % @Article{Wang2024MFEA-VC,

@@ -1,5 +1,5 @@
 classdef MFEA_GHS < Algorithm
-% <Multi-task> <Single-objective> <None/Constrained>
+% <Multi-task> <Single-objective> <None/Constrained> <Year: 2019>
 
 %------------------------------- Reference --------------------------------
 % @Article{Liang2019MFEA-GHS,
@@ -8,6 +8,8 @@ classdef MFEA_GHS < Algorithm
 %   journal  = {Expert Systems with Applications},
 %   year     = {2019},
 %   volume   = {138},
+%   pages   = {112798},
+%   doi     = {10.1016/j.eswa.2019.07.015},
 % }
 %--------------------------------------------------------------------------
 

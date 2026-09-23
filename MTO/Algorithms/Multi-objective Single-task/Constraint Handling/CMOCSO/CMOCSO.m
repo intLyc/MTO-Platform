@@ -1,13 +1,16 @@
 classdef CMOCSO < Algorithm
-% <Single-task> <Multi-objective> <Constrained>
+% <Single-task> <Multi-objective> <Constrained> <Year: 2023>
 
 %------------------------------- Reference --------------------------------
-% @Article{Ming2022CMOCSO,
+% @Article{Ming2023CMOCSO,
 %   title   = {A Competitive and Cooperative Swarm Optimizer for Constrained Multi-objective Optimization Problems},
 %   author  = {Ming, Fei and Gong, Wenyin and Li, Dongcheng and Wang, Ling and Gao, Liang},
 %   journal = {IEEE Transactions on Evolutionary Computation},
-%   year    = {2022},
-%   pages   = {1-1},
+%   year    = {2023},
+%   pages   = {1313-1326},
+%   volume  = {27},
+%   number  = {5},
+%   doi     = {10.1109/TEVC.2022.3199775},
 % }
 %--------------------------------------------------------------------------
 

@@ -1,5 +1,5 @@
 classdef AEMEA < StreamAlgorithm
-% <Multi-task> <Single-objective> <None/Constrained> <Stream>
+% <Multi-task> <Single-objective> <None/Constrained> <Stream> <Year: 2019>
 % Author AMTO baseline adapted to StreamAlgorithm; all evaluations count.
 
 %------------------------------- Reference --------------------------------

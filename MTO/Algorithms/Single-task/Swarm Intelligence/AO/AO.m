@@ -1,5 +1,5 @@
 classdef AO < Algorithm
-% <Single-task> <Single-objective> <None/Constrained>
+% <Single-task> <Single-objective> <None/Constrained> <Year: 2021>
 
 %------------------------------- Reference --------------------------------
 % @Article{Abualigah2021AO,

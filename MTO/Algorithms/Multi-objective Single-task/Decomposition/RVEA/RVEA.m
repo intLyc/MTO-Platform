@@ -1,5 +1,5 @@
 classdef RVEA < Algorithm
-% <Single-task> <Multi-objective> <None/Constrained>
+% <Single-task> <Multi-objective> <None/Constrained> <Year: 2016>
 
 %------------------------------- Reference --------------------------------
 % @Article{Cheng2016RVEA,

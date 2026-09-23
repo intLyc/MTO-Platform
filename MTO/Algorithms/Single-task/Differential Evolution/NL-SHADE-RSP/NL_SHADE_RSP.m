@@ -1,5 +1,5 @@
 classdef NL_SHADE_RSP < Algorithm
-% <Single-task> <Single-objective> <None>
+% <Single-task> <Single-objective> <None> <Year: 2021>
 
 %------------------------------- Reference --------------------------------
 % @InProceedings{Stanovov2021NL-SHADE-RSP,

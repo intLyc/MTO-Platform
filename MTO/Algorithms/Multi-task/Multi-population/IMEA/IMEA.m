@@ -1,5 +1,5 @@
 classdef IMEA < Algorithm
-% <Multi-task> <Single-objective> <None/Constrained>
+% <Multi-task> <Single-objective> <None/Constrained> <Year: 2018>
 
 %------------------------------- Reference --------------------------------
 % @InProceedings{Hashimoto2018IMEA,

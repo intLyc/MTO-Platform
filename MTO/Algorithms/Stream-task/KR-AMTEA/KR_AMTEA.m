@@ -1,5 +1,5 @@
 classdef KR_AMTEA < StreamAlgorithm
-% <Multi-task/Many-task> <Single-objective> <None> <Stream>
+% <Multi-task/Many-task> <Single-objective> <None> <Stream> <Year: 2026>
 
 %------------------------------- Reference --------------------------------
 % @Article{Han2026KR_AMTEA,

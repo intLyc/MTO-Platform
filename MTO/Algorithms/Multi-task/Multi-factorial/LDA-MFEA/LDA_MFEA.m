@@ -1,5 +1,5 @@
 classdef LDA_MFEA < Algorithm
-% <Multi-task> <Single-objective> <None>
+% <Multi-task> <Single-objective> <None> <Year: 2017>
 
 %------------------------------- Reference --------------------------------
 % @inproceedings{Bali2017LDA-MFEA,

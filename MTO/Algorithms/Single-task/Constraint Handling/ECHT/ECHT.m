@@ -1,5 +1,5 @@
 classdef ECHT < Algorithm
-% <Single-task> <Single-objective> <Constrained>
+% <Single-task> <Single-objective> <Constrained> <Year: 2010>
 
 %------------------------------- Reference --------------------------------
 % @Article{Mallipeddi2010ECHT,

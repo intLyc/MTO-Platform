@@ -1,5 +1,5 @@
 classdef DeCODE < Algorithm
-% <Single-task> <Single-objective> <Constrained>
+% <Single-task> <Single-objective> <Constrained> <Year: 2021>
 
 %------------------------------- Reference --------------------------------
 % @Article{Wang2021DeCODE,

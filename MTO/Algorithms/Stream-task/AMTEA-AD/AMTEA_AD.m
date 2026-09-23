@@ -1,15 +1,17 @@
 classdef AMTEA_AD < StreamAlgorithm
-% <Multi-task/Many-task> <Single-objective> <None/Constrained> <Stream>
+% <Multi-task/Many-task> <Single-objective> <None/Constrained> <Stream> <Year: 2022>
 % Author AMTO baseline adapted to StreamAlgorithm; all evaluations count.
 
 %------------------------------- Reference --------------------------------
-% @Article{Wang2021MTEA-AD,
+% @Article{Wang2022MTEA-AD,
 %   title      = {Solving Multi-task Optimization Problems with Adaptive Knowledge Transfer via Anomaly Detection},
 %   author     = {Wang, Chao and Liu, Jing and Wu, Kai and Wu, Zhaoyang},
 %   journal    = {IEEE Transactions on Evolutionary Computation},
-%   year       = {2021},
-%   pages      = {1-1},
+%   year       = {2022},
+%   pages      = {304-318},
 %   doi        = {10.1109/TEVC.2021.3068157},
+%   volume  = {26},
+%   number  = {2},
 % }
 %--------------------------------------------------------------------------
 

@@ -1,5 +1,5 @@
 classdef VMCH < Algorithm
-% <Single-task> <Single-objective> <Constrained>
+% <Single-task> <Single-objective> <Constrained> <Year: 2022>
 
 %------------------------------- Reference --------------------------------
 % @Article{Wu2022VMCH,

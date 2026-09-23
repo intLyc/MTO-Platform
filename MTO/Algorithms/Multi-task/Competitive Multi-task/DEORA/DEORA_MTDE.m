@@ -1,5 +1,5 @@
 classdef DEORA_MTDE < Algorithm
-% <Multi-task> <Single-objective> <Competitive>
+% <Multi-task> <Single-objective> <Competitive> <Year: 2022>
 
 %------------------------------- Reference --------------------------------
 % @Article{Li2022CompetitiveMTO,
@@ -7,8 +7,10 @@ classdef DEORA_MTDE < Algorithm
 %   author     = {Li, Genghui and Zhang, Qingfu and Wang, Zhenkun},
 %   journal    = {IEEE Transactions on Evolutionary Computation},
 %   year       = {2022},
-%   pages      = {1-1},
+%   pages      = {278-289},
 %   doi        = {10.1109/TEVC.2022.3141819},
+%   volume  = {26},
+%   number  = {2},
 % }
 %--------------------------------------------------------------------------
 

@@ -1,5 +1,5 @@
 classdef CEDE_DRL < Algorithm
-% <Single-task> <Single-objective> <Constrained>
+% <Single-task> <Single-objective> <Constrained> <Year: 2023>
 
 %------------------------------- Reference --------------------------------
 % @Article{Hu2023CEDE-DRL,

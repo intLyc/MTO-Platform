@@ -1,5 +1,5 @@
 classdef SPEA2_DE < Algorithm
-% <Single-task> <Multi-objective> <None/Constrained>
+% <Single-task> <Multi-objective> <None/Constrained> <Year: 2001>
 
 %------------------------------- Reference --------------------------------
 % @InProceedings{Zitzler2001SPEA2,

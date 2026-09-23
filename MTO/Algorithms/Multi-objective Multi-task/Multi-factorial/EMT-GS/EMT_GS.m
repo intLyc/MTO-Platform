@@ -1,14 +1,16 @@
 classdef EMT_GS < Algorithm
-% <Multi-task> <Multi-objective> <None/Constrained>
+% <Multi-task> <Multi-objective> <None/Constrained> <Year: 2023>
 
 %------------------------------- Reference --------------------------------
-% @Article{Liang2022EMT-GS,
-%   title    = {Evolutionary Multitasking for Multi-objective Optimization Based on Generative Strategies},
+% @Article{Liang2023EMT-GS,
+%   title    = {Evolutionary Multitasking for Optimization Based on Generative Strategies},
 %   author   = {Liang, Zhengping and Zhu, Yingmiao and Wang, Xiyu and Li, Zhi and Zhu, Zexuan},
 %   journal  = {IEEE Transactions on Evolutionary Computation},
-%   year     = {2022},
-%   pages    = {1-1},
+%   year     = {2023},
+%   pages    = {1042-1056},
 %   doi      = {10.1109/TEVC.2022.3189029},
+%   volume  = {27},
+%   number  = {4},
 % }
 %--------------------------------------------------------------------------
 

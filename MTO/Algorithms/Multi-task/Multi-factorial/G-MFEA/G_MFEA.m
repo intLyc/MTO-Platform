@@ -1,5 +1,5 @@
 classdef G_MFEA < Algorithm
-% <Multi-task> <Single-objective> <None>
+% <Multi-task> <Single-objective> <None> <Year: 2019>
 
 %------------------------------- Reference --------------------------------
 % @Article{Ding2019G-MFEA,

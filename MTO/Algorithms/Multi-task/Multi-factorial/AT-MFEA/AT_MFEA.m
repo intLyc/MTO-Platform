@@ -1,14 +1,16 @@
 classdef AT_MFEA < Algorithm
-% <Multi-task> <Single-objective> <None/Constrained>
+% <Multi-task> <Single-objective> <None/Constrained> <Year: 2022>
 
 %------------------------------- Reference --------------------------------
-% @article{Xue2020AT-MFEA,
+% @article{Xue2022AT-MFEA,
 %   title      = {Affine Transformation-Enhanced Multifactorial Optimization for Heterogeneous Problems},
 %   author     = {Xue, Xiaoming and Zhang, Kai and Tan, Kay Chen and Feng, Liang and Wang, Jian and Chen, Guodong and Zhao, Xinggang and Zhang, Liming and Yao, Jun},
 %   doi        = {10.1109/TCYB.2020.3036393},
 %   journal    = {IEEE Transactions on Cybernetics},
-%   pages      = {1-15},
-%   year       = {2020}
+%   pages      = {6217-6231},
+%   year       = {2022},
+%   volume  = {52},
+%   number  = {7},
 % }
 %--------------------------------------------------------------------------
 

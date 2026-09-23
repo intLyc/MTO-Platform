@@ -1,5 +1,5 @@
 classdef AAEMTO < StreamAlgorithm
-% <Multi-task/Many-task> <Single-objective> <None> <Stream>
+% <Multi-task/Many-task> <Single-objective> <None> <Stream> <Year: 2022>
 
 %------------------------------- Reference --------------------------------
 % @Article{Xu2022AEMTO,

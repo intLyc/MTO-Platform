@@ -1,5 +1,5 @@
 classdef EMaTO_MKT < Algorithm
-% <Many-task> <Single-objective> <None>
+% <Many-task> <Single-objective> <None> <Year: 2022>
 
 %------------------------------- Reference --------------------------------
 % @Article{Liang2022EMaTO-MKT,

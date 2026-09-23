@@ -1,8 +1,17 @@
 classdef LMOCSO < Algorithm
-% <Single-task> <Multi-objective> <None/Constrained>
+% <Single-task> <Multi-objective> <None/Constrained> <Year: 2020>
 
 %------------------------------- Reference --------------------------------
-
+% @Article{Tian2020LMOCSO,
+%   author  = {Tian, Ye and Zheng, Xiutao and Zhang, Xingyi and Jin, Yaochu},
+%   journal = {IEEE Transactions on Cybernetics},
+%   title   = {Efficient Large-Scale Multiobjective Optimization Based on a Competitive Swarm Optimizer},
+%   year    = {2020},
+%   number  = {8},
+%   pages   = {3696--3708},
+%   volume  = {50},
+%   doi     = {10.1109/TCYB.2019.2906383},
+% }
 %--------------------------------------------------------------------------
 
 %------------------------------- Copyright --------------------------------

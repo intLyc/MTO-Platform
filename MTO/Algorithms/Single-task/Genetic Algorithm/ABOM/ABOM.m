@@ -1,5 +1,5 @@
 classdef ABOM < Algorithm
-% <Single-task> <Single-objective> <None/Constrained>
+% <Single-task> <Single-objective> <None/Constrained> <Year: 2026>
 
 %------------------------------- Reference --------------------------------
 % @InProceedings{Wang2026ABOM,

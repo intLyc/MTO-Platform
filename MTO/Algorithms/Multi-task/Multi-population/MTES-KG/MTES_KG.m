@@ -1,8 +1,8 @@
 classdef MTES_KG < Algorithm
-% <Multi-task/Many-task> <Single-objective> <None/Constrained>
+% <Multi-task/Many-task> <Single-objective> <None/Constrained> <Year: 2024>
 
 %------------------------------- Reference --------------------------------
-% @Article{Li2023MTES-KG,
+% @Article{Li2024MTES-KG,
 %   title      = {Multitask Evolution Strategy With Knowledge-Guided External Sampling},
 %   author     = {Li, Yanchi and Gong, Wenyin and Li, Shuijia},
 %   journal    = {IEEE Transactions on Evolutionary Computation},

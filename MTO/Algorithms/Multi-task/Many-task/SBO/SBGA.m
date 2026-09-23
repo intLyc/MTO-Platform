@@ -1,5 +1,5 @@
 classdef SBGA < Algorithm
-% <Many-task> <Single-objective> <None/Constrained>
+% <Many-task> <Single-objective> <None/Constrained> <Year: 2019>
 
 %------------------------------- Reference --------------------------------
 % @Article{Liaw2019SBO,

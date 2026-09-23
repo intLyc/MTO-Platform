@@ -1,5 +1,5 @@
 classdef KR_MTEA < Algorithm
-% <Multi-task/Many-task> <Single-objective/Multi-objective> <None>
+% <Multi-task/Many-task> <Single-objective/Multi-objective> <None> <Year: 2023>
 
 %------------------------------- Reference --------------------------------
 % @Article{Cui2023Adaptive,

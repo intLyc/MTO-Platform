@@ -1,5 +1,5 @@
 classdef AR_MOEA < Algorithm
-% <Single-task> <Multi-objective> <None/Constrained>
+% <Single-task> <Multi-objective> <None/Constrained> <Year: 2018>
 
 %------------------------------- Reference --------------------------------
 % @Article{Tian2018AR-MOEA,

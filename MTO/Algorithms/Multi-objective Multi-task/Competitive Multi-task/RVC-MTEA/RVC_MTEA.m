@@ -1,5 +1,5 @@
 classdef RVC_MTEA < Algorithm
-% <Multi-task> <Multi-objective> <Competitive/Constrained>
+% <Multi-task> <Multi-objective> <Competitive/Constrained> <Year: 2025>
 
 %------------------------------- Reference --------------------------------
 % @Article{Li2025CMO-MTO,

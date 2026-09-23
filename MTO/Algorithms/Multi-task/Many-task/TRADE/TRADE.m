@@ -1,5 +1,5 @@
 classdef TRADE < Algorithm
-% <Many-task> <Single-objective> <None>
+% <Many-task> <Single-objective> <None> <Year: 2023>
 
 %------------------------------- Reference --------------------------------
 % @Article{Wu2023TRADE,
@@ -7,8 +7,10 @@ classdef TRADE < Algorithm
 %   author  = {Wu, Sheng-Hao and Zhan, Zhi-Hui and Tan, Kay Chen and Zhang, Jun},
 %   journal = {IEEE Transactions on Cybernetics},
 %   year    = {2023},
-%   pages   = {1-14},
+%   pages   = {7295-7308},
 %   doi     = {10.1109/TCYB.2023.3234969},
+%   volume  = {53},
+%   number  = {11},
 % }
 %--------------------------------------------------------------------------
 

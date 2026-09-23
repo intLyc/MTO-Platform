@@ -1,5 +1,5 @@
 classdef MMTO_TGT < Algorithm
-% <Multi-task/Many-task> <Multi-objective> <None/Constrained>
+% <Multi-task/Many-task> <Multi-objective> <None/Constrained> <Year: 2026>
 
 %------------------------------- Reference --------------------------------
 % @Article{Zhang2026MMTO-TGT,

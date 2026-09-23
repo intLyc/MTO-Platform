@@ -1,16 +1,18 @@
 classdef AMTEA_SaO < StreamAlgorithm
-% <Multi-task/Many-task> <Single-objective> <None/Constrained> <Stream>
+% <Multi-task/Many-task> <Single-objective> <None/Constrained> <Stream> <Year: 2023>
 % Author AMTO baseline adapted to StreamAlgorithm; all evaluations count.
 
 %------------------------------- Reference --------------------------------
-% @Article{Li2022MTEA-SaO,
+% @Article{Li2023MTEA-SaO,
 %   title      = {Multitasking Optimization via an Adaptive Solver Multitasking Evolutionary Framework},
 %   author     = {Yanchi Li and Wenyin Gong and Shuijia Li},
 %   journal    = {Information Sciences},
-%   year       = {2022},
+%   year       = {2023},
 %   issn       = {0020-0255},
-%   doi        = {https://doi.org/10.1016/j.ins.2022.10.099},
+%   doi        = {10.1016/j.ins.2022.10.099},
 %   url        = {https://www.sciencedirect.com/science/article/pii/S0020025522012191},
+%   volume  = {630},
+%   pages   = {688-712},
 % }
 %--------------------------------------------------------------------------
 

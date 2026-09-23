@@ -1,5 +1,5 @@
 classdef IPOP_CMA_ES < Algorithm
-% <Single-task> <Single-objective> <None>
+% <Single-task> <Single-objective> <None> <Year: 2005>
 
 %------------------------------- Reference --------------------------------
 % @InProceedings{Auger2005IPOP-CMA-ES,

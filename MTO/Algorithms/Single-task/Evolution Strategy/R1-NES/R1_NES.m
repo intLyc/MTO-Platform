@@ -1,5 +1,5 @@
 classdef R1_NES < Algorithm
-% <Single-task> <Single-objective> <None/Constrained>
+% <Single-task> <Single-objective> <None/Constrained> <Year: 2013>
 
 %------------------------------- Reference --------------------------------
 % @InProceedings{Sun2013R1-NES,

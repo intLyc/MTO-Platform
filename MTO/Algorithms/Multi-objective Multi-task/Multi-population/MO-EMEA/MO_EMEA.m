@@ -1,5 +1,5 @@
 classdef MO_EMEA < Algorithm
-% <Multi-task> <Multi-objective> <None/Constrained>
+% <Multi-task> <Multi-objective> <None/Constrained> <Year: 2019>
 
 %------------------------------- Reference --------------------------------
 % @Article{Feng2019EMEA,

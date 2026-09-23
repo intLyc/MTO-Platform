@@ -1,13 +1,16 @@
 classdef MFEA_DGD < Algorithm
-% <Multi-task> <Single-objective> <None>
+% <Multi-task> <Single-objective> <None> <Year: 2024>
 
 %------------------------------- Reference --------------------------------
-% @Article{Liu2023MFEA-DGD,
+% @Article{Liu2024MFEA-DGD,
 %   author   = {Liu, Zhaobo and Li, Guo and Zhang, Haili and Liang, Zhengping and Zhu, Zexuan},
 %   journal  = {IEEE Transactions on Cybernetics},
 %   title    = {Multifactorial Evolutionary Algorithm Based on Diffusion Gradient Descent},
-%   year     = {2023},
-%   pages    = {1-13},
+%   year     = {2024},
+%   pages    = {4267-4279},
+%   volume  = {54},
+%   number  = {7},
+%   doi     = {10.1109/TCYB.2023.3270904},
 % }
 %--------------------------------------------------------------------------
 

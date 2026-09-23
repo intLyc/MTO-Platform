@@ -1,5 +1,5 @@
 classdef MTEA_HKTS < Algorithm
-% <Multi-task/Many-task> <Single-objective> <None>
+% <Multi-task/Many-task> <Single-objective> <None> <Year: 2024>
 
 %------------------------------- Reference --------------------------------
 % @Article{Zhao2024MTEA-HKTS,

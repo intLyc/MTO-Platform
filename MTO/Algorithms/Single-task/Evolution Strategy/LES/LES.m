@@ -1,5 +1,5 @@
 classdef LES < Algorithm
-% <Single-task> <Single-objective> <None/Constrained>
+% <Single-task> <Single-objective> <None/Constrained> <Year: 2023>
 
 %------------------------------- Reference --------------------------------
 % @InProceedings{Lange2023LES,

@@ -1,5 +1,5 @@
 classdef DTSKT < Algorithm
-% <Many-task> <Single-objective> <None/Constrained>
+% <Many-task> <Single-objective> <None/Constrained> <Year: 2025>
 
 %------------------------------- Reference --------------------------------
 % @Article{Zhang2025DTSKT,

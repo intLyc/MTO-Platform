@@ -1,14 +1,16 @@
 classdef KLDE < Algorithm
-% <Single-task> <Single-objective> <None/Constrained>
+% <Single-task> <Single-objective> <None/Constrained> <Year: 2025>
 
 %------------------------------- Reference --------------------------------
-% @Article{Jiang2023KLEC,
+% @Article{Jiang2025KLEC,
 %   title      = {Knowledge Learning for Evolutionary Computation},
 %   author     = {Jiang, Yi and Zhan, Zhi-Hui and Tan, Kay Chen and Zhang, Jun},
 %   journal   = {IEEE Transactions on Evolutionary Computation},
-%   year       = {2023},
-%   pages      = {1-1},
+%   year       = {2025},
+%   pages      = {16-30},
 %   doi        = {10.1109/TEVC.2023.3278132},
+%   volume  = {29},
+%   number  = {1},
 % }
 %--------------------------------------------------------------------------
 

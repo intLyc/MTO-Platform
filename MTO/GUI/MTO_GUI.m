@@ -25,7 +25,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         TUIAxes                      matlab.ui.control.UIAxes
         TPanel1                      matlab.ui.container.Panel
         TP1GridLayout                matlab.ui.container.GridLayout
-        TNoneButton                  matlab.ui.control.StateButton
+        TYearDropDown                matlab.ui.control.DropDown
         TCompetitiveButton           matlab.ui.control.StateButton
         TStreamButton                matlab.ui.control.StateButton
         TConstrainedButton           matlab.ui.control.StateButton
@@ -86,7 +86,7 @@ classdef MTO_GUI < matlab.apps.AppBase
         EAlgorithmsTree              matlab.ui.container.Tree
         EPanel1                      matlab.ui.container.Panel
         EP1GridLayout                matlab.ui.container.GridLayout
-        ENoneButton                  matlab.ui.control.StateButton
+        EYearDropDown                matlab.ui.control.DropDown
         EStreamButton                matlab.ui.control.StateButton
         ECompetitiveButton           matlab.ui.control.StateButton
         EConstrainedButton           matlab.ui.control.StateButton
@@ -196,9 +196,10 @@ classdef MTO_GUI < matlab.apps.AppBase
     end
 
     methods (Access = public)
-        function readAlgoProb(app, label_str, excluded)
+        function algo_years = readAlgoProb(app, label_str, excluded)
             if nargin < 3, excluded = {}; end
-            app.AlgoLoad = sort_nat(app.readList('../Algorithms', label_str, excluded));
+            [algorithms, algo_years] = app.readList('../Algorithms', label_str, excluded);
+            app.AlgoLoad = sort_nat(algorithms);
             app.ProbLoad = sort_nat(app.readList('../Problems', label_str, excluded));
         end
 
@@ -209,9 +210,10 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.MetricLoad = sort_nat(app.MetricLoad);
         end
 
-        function read_list = readList(app, folder_name, label_str, excluded)
+        function [read_list, year_map] = readList(app, folder_name, label_str, excluded)
             if nargin < 4, excluded = {}; end
             read_list = {};
+            year_map = containers.Map('KeyType', 'char', 'ValueType', 'char');
             root = fullfile(fileparts(mfilename('fullpath')), folder_name);
             folders = split(genpath(root), pathsep);
             for i = 1:numel(folders)
@@ -223,7 +225,13 @@ classdef MTO_GUI < matlab.apps.AppBase
                     cleanup = onCleanup(@() fclose(fid));
                     fgetl(fid); header = fgetl(fid); clear cleanup;
                     if MatchCatalogLabels(header, label_str, excluded)
-                        read_list{end+1} = files(j).name(1:end-2);
+                        name = files(j).name(1:end-2);
+                        read_list{end+1} = name;
+                        if nargout > 1
+                            token = regexp(header, '<Year:\s*((?:19|20)\d{2})>', 'tokens', 'once');
+                            if isempty(token), year_map(name) = '';
+                            else, year_map(name) = token{1}; end
+                        end
                     end
                 end
             end
@@ -263,8 +271,27 @@ classdef MTO_GUI < matlab.apps.AppBase
             [required, excluded] = CatalogFilter(app.TTaskTypeDropDown.Value, ...
                 app.TObjectiveTypeDropDown.Value, app.TConstrainedButton.Value, ...
                 app.TCompetitiveButton.Value, app.TStreamButton.Value);
-            app.readAlgoProb(required, excluded);
-            algorithms = app.AlgoLoad;
+            algo_years = app.readAlgoProb(required, excluded);
+            years = cellfun(@(name) algo_years(name), app.AlgoLoad, 'UniformOutput', false);
+            known = years(~cellfun(@isempty, years));
+            sorted_years = sort(unique(str2double(known)), 'descend');
+            year_items = [{'All Year'}, arrayfun(@num2str, sorted_years, 'UniformOutput', false)];
+            if any(cellfun(@isempty, years)), year_items{end+1} = 'Unknown Year'; end
+            old_year = app.TYearDropDown.Value;
+            app.TYearDropDown.Items = year_items;
+            if ismember(old_year, year_items)
+                app.TYearDropDown.Value = old_year;
+            else
+                app.TYearDropDown.Value = 'All Year';
+            end
+            selected_year = app.TYearDropDown.Value;
+            if strcmp(selected_year, 'All Year')
+                algorithms = app.AlgoLoad;
+            elseif strcmp(selected_year, 'Unknown Year')
+                algorithms = app.AlgoLoad(cellfun(@isempty, years));
+            else
+                algorithms = app.AlgoLoad(strcmp(years, selected_year));
+            end
             problems = app.ProbLoad;
             % Filter the lists strictly; loaded objects remain in their parameter trees.
             app.TAlgorithmDropDown.Items = {};
@@ -283,11 +310,31 @@ classdef MTO_GUI < matlab.apps.AppBase
             [required, excluded] = CatalogFilter(app.ETaskTypeDropDown.Value, ...
                 app.EObjectiveTypeDropDown.Value, app.EConstrainedButton.Value, ...
                 app.ECompetitiveButton.Value, app.EStreamButton.Value);
-            app.readAlgoProb(required, excluded);
+            algo_years = app.readAlgoProb(required, excluded);
+            years = cellfun(@(name) algo_years(name), app.AlgoLoad, 'UniformOutput', false);
+            known = years(~cellfun(@isempty, years));
+            sorted_years = sort(unique(str2double(known)), 'descend');
+            year_items = [{'All Year'}, arrayfun(@num2str, sorted_years, 'UniformOutput', false)];
+            if any(cellfun(@isempty, years)), year_items{end+1} = 'Unknown Year'; end
+            old_year = app.EYearDropDown.Value;
+            app.EYearDropDown.Items = year_items;
+            if ismember(old_year, year_items)
+                app.EYearDropDown.Value = old_year;
+            else
+                app.EYearDropDown.Value = 'All Year';
+            end
+            selected_year = app.EYearDropDown.Value;
+            if strcmp(selected_year, 'All Year')
+                algorithms = app.AlgoLoad;
+            elseif strcmp(selected_year, 'Unknown Year')
+                algorithms = app.AlgoLoad(cellfun(@isempty, years));
+            else
+                algorithms = app.AlgoLoad(strcmp(years, selected_year));
+            end
             app.EAlgorithmsListBox.Items(:) = [];
             app.EProblemsListBox.Items(:) = [];
-            app.EAlgorithmsListBox.Items = strrep(app.AlgoLoad, '_', '-');
-            app.EAlgorithmsListBox.ItemsData = app.AlgoLoad;
+            app.EAlgorithmsListBox.Items = strrep(algorithms, '_', '-');
+            app.EAlgorithmsListBox.ItemsData = algorithms;
             app.EProblemsListBox.Items = strrep(app.ProbLoad, '_', '-');
             app.EProblemsListBox.ItemsData = app.ProbLoad;
         end
@@ -1883,6 +1930,18 @@ classdef MTO_GUI < matlab.apps.AppBase
         function TStreamButtonValueChanged(app, event)
             app.TloadAlgoProb();
         end
+
+        % Value changed function: EYearDropDown
+        function EYearDropDownValueChanged(app, event)
+            app.EloadAlgoProb();
+            
+        end
+
+        % Value changed function: TYearDropDown
+        function TYearDropDownValueChanged(app, event)
+            app.TloadAlgoProb();
+            
+        end
     end
 
     % Component initialization
@@ -1952,6 +2011,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TAlgorithmDropDown.DropDownOpeningFcn = createCallbackFcn(app, @TAlgorithmDropDownOpening, true);
             app.TAlgorithmDropDown.ValueChangedFcn = createCallbackFcn(app, @TAlgorithmDropDownValueChanged, true);
             app.TAlgorithmDropDown.Tooltip = {'Select algorithm'};
+            app.TAlgorithmDropDown.FontSize = 10;
             app.TAlgorithmDropDown.FontWeight = 'bold';
             app.TAlgorithmDropDown.BackgroundColor = [1 1 1];
             app.TAlgorithmDropDown.Layout.Row = 6;
@@ -1982,6 +2042,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TProblemDropDown.DropDownOpeningFcn = createCallbackFcn(app, @TProblemDropDownOpening, true);
             app.TProblemDropDown.ValueChangedFcn = createCallbackFcn(app, @TProblemDropDownValueChanged, true);
             app.TProblemDropDown.Tooltip = {'Select problem'};
+            app.TProblemDropDown.FontSize = 10;
             app.TProblemDropDown.FontWeight = 'bold';
             app.TProblemDropDown.BackgroundColor = [1 1 1];
             app.TProblemDropDown.Layout.Row = 8;
@@ -2000,6 +2061,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TTaskTypeDropDown.Items = {'Multi', 'Many', 'Single'};
             app.TTaskTypeDropDown.ItemsData = {'Multi-task', 'Many-task', 'Single-task'};
             app.TTaskTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @TTaskTypeDropDownValueChanged, true);
+            app.TTaskTypeDropDown.FontSize = 10;
             app.TTaskTypeDropDown.FontWeight = 'bold';
             app.TTaskTypeDropDown.BackgroundColor = [1 1 1];
             app.TTaskTypeDropDown.Layout.Row = 2;
@@ -2019,6 +2081,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TObjectiveTypeDropDown.Items = {'Single', 'Multi'};
             app.TObjectiveTypeDropDown.ItemsData = {'Single-objective', 'Multi-objective'};
             app.TObjectiveTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @TObjectiveTypeDropDownValueChanged, true);
+            app.TObjectiveTypeDropDown.FontSize = 10;
             app.TObjectiveTypeDropDown.FontWeight = 'bold';
             app.TObjectiveTypeDropDown.BackgroundColor = [1 1 1];
             app.TObjectiveTypeDropDown.Layout.Row = 3;
@@ -2081,15 +2144,16 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TCompetitiveButton.Layout.Row = 4;
             app.TCompetitiveButton.Layout.Column = 2;
 
-            % Create TNoneButton
-            app.TNoneButton = uibutton(app.TP1GridLayout, 'state');
-            app.TNoneButton.Enable = 'off';
-            app.TNoneButton.Text = '';
-            app.TNoneButton.BackgroundColor = [1 1 1];
-            app.TNoneButton.FontSize = 10;
-            app.TNoneButton.FontWeight = 'bold';
-            app.TNoneButton.Layout.Row = 5;
-            app.TNoneButton.Layout.Column = 2;
+            % Create TYearDropDown
+            app.TYearDropDown = uidropdown(app.TP1GridLayout);
+            app.TYearDropDown.Items = {'All Year'};
+            app.TYearDropDown.ValueChangedFcn = createCallbackFcn(app, @TYearDropDownValueChanged, true);
+            app.TYearDropDown.FontSize = 10;
+            app.TYearDropDown.FontWeight = 'bold';
+            app.TYearDropDown.BackgroundColor = [1 1 1];
+            app.TYearDropDown.Layout.Row = 5;
+            app.TYearDropDown.Layout.Column = 2;
+            app.TYearDropDown.Value = 'All Year';
 
             % Create TPanel2
             app.TPanel2 = uipanel(app.TestGridLayout);
@@ -2129,6 +2193,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TShowTypeDropDown.Items = {'Tasks Figure (1D Unified)', 'Tasks Figure (1D Real)', 'Tasks Figure (2D Unified)', 'Tasks Figure (2D Real)', 'Feasible Region (2D)', 'Convergence', 'Pareto Front'};
             app.TShowTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @TShowTypeDropDownValueChanged, true);
             app.TShowTypeDropDown.Tooltip = {'Figure Type'};
+            app.TShowTypeDropDown.FontSize = 10;
             app.TShowTypeDropDown.FontWeight = 'bold';
             app.TShowTypeDropDown.BackgroundColor = [1 1 1];
             app.TShowTypeDropDown.Layout.Row = 1;
@@ -2140,6 +2205,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.TExportButton.ButtonPushedFcn = createCallbackFcn(app, @TExportButtonPushed, true);
             app.TExportButton.BusyAction = 'cancel';
             app.TExportButton.BackgroundColor = [1 1 1];
+            app.TExportButton.FontSize = 10;
             app.TExportButton.FontWeight = 'bold';
             app.TExportButton.Tooltip = {''};
             app.TExportButton.Layout.Row = 1;
@@ -2333,6 +2399,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.ETaskTypeDropDown.Items = {'Multi', 'Many', 'Single'};
             app.ETaskTypeDropDown.ItemsData = {'Multi-task', 'Many-task', 'Single-task'};
             app.ETaskTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @ETaskTypeDropDownValueChanged, true);
+            app.ETaskTypeDropDown.FontSize = 10;
             app.ETaskTypeDropDown.FontWeight = 'bold';
             app.ETaskTypeDropDown.BackgroundColor = [1 1 1];
             app.ETaskTypeDropDown.Layout.Row = 3;
@@ -2352,6 +2419,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EObjectiveTypeDropDown.Items = {'Single', 'Multi', 'Many'};
             app.EObjectiveTypeDropDown.ItemsData = {'Single-objective', 'Multi-objective', 'Many-objective'};
             app.EObjectiveTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EObjectiveTypeDropDownValueChanged, true);
+            app.EObjectiveTypeDropDown.FontSize = 10;
             app.EObjectiveTypeDropDown.FontWeight = 'bold';
             app.EObjectiveTypeDropDown.BackgroundColor = [1 1 1];
             app.EObjectiveTypeDropDown.Layout.Row = 4;
@@ -2476,15 +2544,16 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EStreamButton.Layout.Row = 6;
             app.EStreamButton.Layout.Column = 1;
 
-            % Create ENoneButton
-            app.ENoneButton = uibutton(app.EP1GridLayout, 'state');
-            app.ENoneButton.Enable = 'off';
-            app.ENoneButton.Text = '';
-            app.ENoneButton.BackgroundColor = [1 1 1];
-            app.ENoneButton.FontSize = 10;
-            app.ENoneButton.FontWeight = 'bold';
-            app.ENoneButton.Layout.Row = 6;
-            app.ENoneButton.Layout.Column = [2 3];
+            % Create EYearDropDown
+            app.EYearDropDown = uidropdown(app.EP1GridLayout);
+            app.EYearDropDown.Items = {'All Year'};
+            app.EYearDropDown.ValueChangedFcn = createCallbackFcn(app, @EYearDropDownValueChanged, true);
+            app.EYearDropDown.FontSize = 10;
+            app.EYearDropDown.FontWeight = 'bold';
+            app.EYearDropDown.BackgroundColor = [1 1 1];
+            app.EYearDropDown.Layout.Row = 6;
+            app.EYearDropDown.Layout.Column = [2 3];
+            app.EYearDropDown.Value = 'All Year';
 
             % Create EPanel2
             app.EPanel2 = uipanel(app.ExperimentsGridLayout);
@@ -2714,6 +2783,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EShowTypeDropDown.Items = {'Mean', 'Mean&Std', 'Std', 'Median', 'Best', 'Worst'};
             app.EShowTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EShowTypeDropDownValueChanged, true);
             app.EShowTypeDropDown.Tooltip = {'Result Type'};
+            app.EShowTypeDropDown.FontSize = 10;
             app.EShowTypeDropDown.FontWeight = 'bold';
             app.EShowTypeDropDown.BackgroundColor = [1 1 1];
             app.EShowTypeDropDown.Layout.Row = 1;
@@ -2724,6 +2794,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EDataFormatEditField = uieditfield(app.GridLayout6_2, 'text');
             app.EDataFormatEditField.ValueChangedFcn = createCallbackFcn(app, @EDataFormatEditFieldValueChanged, true);
             app.EDataFormatEditField.HorizontalAlignment = 'center';
+            app.EDataFormatEditField.FontSize = 10;
             app.EDataFormatEditField.FontWeight = 'bold';
             app.EDataFormatEditField.Tooltip = {'Data Format Str'};
             app.EDataFormatEditField.Layout.Row = 1;
@@ -2735,6 +2806,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EDataTypeDropDown.Items = {'Reps'};
             app.EDataTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EDataTypeDropDownValueChanged, true);
             app.EDataTypeDropDown.Tooltip = {'Performance Metric'};
+            app.EDataTypeDropDown.FontSize = 10;
             app.EDataTypeDropDown.FontWeight = 'bold';
             app.EDataTypeDropDown.BackgroundColor = [1 1 1];
             app.EDataTypeDropDown.Layout.Row = 1;
@@ -2763,6 +2835,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EAlgorithmDropDown.Items = {'Algorithm'};
             app.EAlgorithmDropDown.ValueChangedFcn = createCallbackFcn(app, @EAlgorithmDropDownValueChanged, true);
             app.EAlgorithmDropDown.Tooltip = {'Main Algorithm in Statistical Analysis'};
+            app.EAlgorithmDropDown.FontSize = 10;
             app.EAlgorithmDropDown.FontWeight = 'bold';
             app.EAlgorithmDropDown.BackgroundColor = [1 1 1];
             app.EAlgorithmDropDown.Layout.Row = 1;
@@ -2774,6 +2847,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.ETestTypeDropDown.Items = {'None', 'Wilcoxon Rank-sum', 'Wilcoxon Signed-rank', 'Friedman (mean)', 'Friedman (all reps)'};
             app.ETestTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @ETestTypeDropDownValueChanged, true);
             app.ETestTypeDropDown.Tooltip = {'Statistical Analysis'};
+            app.ETestTypeDropDown.FontSize = 10;
             app.ETestTypeDropDown.FontWeight = 'bold';
             app.ETestTypeDropDown.BackgroundColor = [1 1 1];
             app.ETestTypeDropDown.Layout.Row = 1;
@@ -2803,6 +2877,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EHighlightTypeDropDown.Items = {'None', 'Best', 'Best&Worst'};
             app.EHighlightTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @EHighlightTypeDropDownValueChanged, true);
             app.EHighlightTypeDropDown.Tooltip = {'Highlight Type'};
+            app.EHighlightTypeDropDown.FontSize = 10;
             app.EHighlightTypeDropDown.FontWeight = 'bold';
             app.EHighlightTypeDropDown.BackgroundColor = [1 1 1];
             app.EHighlightTypeDropDown.Layout.Row = 1;
@@ -2831,6 +2906,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EConvergeTypeDropDown = uidropdown(app.GridLayout6_3);
             app.EConvergeTypeDropDown.Items = {'Log', 'Log Type2', 'Log Range', 'Normal', 'Norm Range'};
             app.EConvergeTypeDropDown.Tooltip = {'Y-axis Show Type of Convergence Plot'};
+            app.EConvergeTypeDropDown.FontSize = 10;
             app.EConvergeTypeDropDown.FontWeight = 'bold';
             app.EConvergeTypeDropDown.BackgroundColor = [1 1 1];
             app.EConvergeTypeDropDown.Layout.Row = 1;
@@ -2841,6 +2917,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EConvergeButton = uibutton(app.GridLayout6_3, 'push');
             app.EConvergeButton.ButtonPushedFcn = createCallbackFcn(app, @EConvergeButtonPushed, true);
             app.EConvergeButton.BackgroundColor = [1 1 1];
+            app.EConvergeButton.FontSize = 10;
             app.EConvergeButton.FontWeight = 'bold';
             app.EConvergeButton.Tooltip = {'Select data area in Table to draw Metric Convergence plot'};
             app.EConvergeButton.Layout.Row = 1;
@@ -2851,6 +2928,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             app.EParetoButton = uibutton(app.GridLayout6_3, 'push');
             app.EParetoButton.ButtonPushedFcn = createCallbackFcn(app, @EParetoButtonPushed, true);
             app.EParetoButton.BackgroundColor = [1 1 1];
+            app.EParetoButton.FontSize = 10;
             app.EParetoButton.FontWeight = 'bold';
             app.EParetoButton.Tooltip = {'Select data area in Table to draw Median Population Pareto Front'};
             app.EParetoButton.Layout.Row = 1;
@@ -2860,6 +2938,7 @@ classdef MTO_GUI < matlab.apps.AppBase
             % Create ESplitCheckBox
             app.ESplitCheckBox = uicheckbox(app.GridLayout6_3);
             app.ESplitCheckBox.Text = 'Split';
+            app.ESplitCheckBox.FontSize = 10;
             app.ESplitCheckBox.FontWeight = 'bold';
             app.ESplitCheckBox.Layout.Row = 1;
             app.ESplitCheckBox.Layout.Column = 4;

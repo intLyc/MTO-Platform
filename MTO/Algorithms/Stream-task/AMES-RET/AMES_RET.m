@@ -1,5 +1,5 @@
 classdef AMES_RET < AsyncCMAStream
-% <Multi-task/Many-task> <Single-objective> <None/Constrained> <Stream>
+% <Multi-task/Many-task> <Single-objective> <None/Constrained> <Stream> <Year: 2026>
 % Asynchronous adaptation of MES-RET (Li et al., ICML 2026).
 % Event-published rewards; alternating round-robin/reward service, fixed task caps.
 properties

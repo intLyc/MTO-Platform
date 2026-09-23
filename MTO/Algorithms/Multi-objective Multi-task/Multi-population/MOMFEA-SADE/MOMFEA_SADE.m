@@ -1,14 +1,16 @@
 classdef MOMFEA_SADE < Algorithm
-% <Multi-task> <Multi-objective> <None/Constrained>
+% <Multi-task> <Multi-objective> <None/Constrained> <Year: 2022>
 
 %------------------------------- Reference --------------------------------
-% @Article{Liang2020MOMFEA-SADE,
+% @Article{Liang2022MOMFEA-SADE,
 %   title    = {Evolutionary Multitasking for Multiobjective Optimization With Subspace Alignment and Adaptive Differential Evolution},
 %   author   = {Liang, Zhengping and Dong, Hao and Liu, Cheng and Liang, Weiqi and Zhu, Zexuan},
 %   journal  = {IEEE Transactions on Cybernetics},
-%   year     = {2020},
-%   pages    = {1-14},
+%   year     = {2022},
+%   pages    = {2096-2109},
 %   doi      = {10.1109/TCYB.2020.2980888},
+%   volume  = {52},
+%   number  = {4},
 % }
 %--------------------------------------------------------------------------
 

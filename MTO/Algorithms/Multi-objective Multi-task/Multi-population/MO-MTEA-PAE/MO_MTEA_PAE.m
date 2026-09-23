@@ -1,5 +1,5 @@
 classdef MO_MTEA_PAE < Algorithm
-% <Multi-task> <Multi-objective> <None/Constrained>
+% <Multi-task> <Multi-objective> <None/Constrained> <Year: 2025>
 
 %------------------------------- Reference --------------------------------
 % @Article{Gu2025MTEA-PAE,

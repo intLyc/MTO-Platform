@@ -1,5 +1,5 @@
 classdef CMO_LKT < Algorithm
-% <Multi-task> <Single-objective> <Constrained>
+% <Multi-task> <Single-objective> <Constrained> <Year: 2025>
 
 %------------------------------- Reference --------------------------------
 % @Article{Ban2025CMO-LKT,

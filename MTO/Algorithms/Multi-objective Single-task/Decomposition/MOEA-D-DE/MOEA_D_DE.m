@@ -1,5 +1,5 @@
 classdef MOEA_D_DE < Algorithm
-% <Single-task> <Multi-objective> <None/Constrained>
+% <Single-task> <Multi-objective> <None/Constrained> <Year: 2009>
 
 %------------------------------- Reference --------------------------------
 % @Article{Li2009MOEA-D-DE&NSGA-II-DE,
