@@ -4,10 +4,13 @@ classdef MES_RET < Algorithm
 %------------------------------- Reference --------------------------------
 % @InProceedings{Li2026MES-RET,
 %   author    = {Li, Yanchi and Liu, Jiao and Gong, Wenyin and Gu, Qiong and Zhao, Yue and Ong, Yew-Soon},
-%   booktitle = {Forty-third International Conference on Machine Learning},
+%   booktitle = {Proceedings of the 43rd International Conference on Machine Learning},
 %   title     = {Breaking Multi-Task Curse: Reward-Weighted Evolution for Black-Box Many-Task Optimization},
 %   year      = {2026},
-%   url       = {https://openreview.net/forum?id=lkGnJhXUNu},
+%   volume    = {306},
+%   pages     = {68403--68429},
+%   series    = {Proceedings of Machine Learning Research},
+%   publisher = {PMLR},
 % }
 %--------------------------------------------------------------------------
 
