@@ -3,7 +3,7 @@ classdef (Abstract) AsyncCMAStream < StreamAlgorithm
 % Each task publishes one latest record, only after a complete local update.
 properties
     sigma0 = 0.3
-    SourceScope = 'latest' % latest includes completed tasks; active excludes them
+    SourceScope = 'active' % latest includes completed tasks; active excludes them
     DecisionLog = struct([])
 end
 methods
