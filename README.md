@@ -80,7 +80,7 @@ In order to enhance reproducibility and avoid unnecessary repeated experiments, 
 - LES (Single-objective Single-task ICLR 2023)
 - ABOM (Single-objective Single-task ICLR 2026)
 - KR-AMTEA (Single-objective Stream-task TSMC 2026)
-- AEMEA, AMTEA-AD, AMTEA-SaO, AMaTDE, and AAEMTO (Single-objective Stream-task variants)
+- AEMEA, AMTEA-AD, AMTEA-SaO, AMaTDE, AAEMTO, AMES-RET, ATNG-SNES, AMTES-KG, ABoKTDE, and AMFEA (Single-objective Stream-task variants)
 
 **New Problems:** 📊
 
