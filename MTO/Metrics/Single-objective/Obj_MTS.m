@@ -31,6 +31,15 @@ function average = multiTaskScore(values)
 for t = 1:size(values, 1)
     for g = 1:size(values, 4)
         sample = values(t, :, :, g);
+        % Identical nonzero objectives can acquire a spurious nonzero SD.
+        if isfinite(sample(1)) && all(sample == sample(1), 'all')
+            values(t, :, :, g) = 0;
+            continue;
+        end
+        % Center after a common shift to reduce cancellation at convergence.
+        if isfinite(sample(1))
+            sample = sample - sample(1);
+        end
         center = mean(sample, 'all', 'omitnan');
         scale = std(sample, 0, 'all');
         if scale == 0
