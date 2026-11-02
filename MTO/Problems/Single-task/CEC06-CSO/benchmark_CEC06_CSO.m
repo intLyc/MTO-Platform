@@ -1,14 +1,13 @@
 function Task = benchmark_CEC06_CSO(index)
 
 %------------------------------- Reference --------------------------------
-% @Article{Liang2006CEC06-CSO,
-%   title    = {Problem Definitions and Evaluation Criteria for the Cec 2006 Special Session on Constrained Real-parameter Optimization},
-%   author   = {Liang, Jing J and Runarsson, Thomas Philip and Mezura-Montes, Efren and Clerc, Maurice and Suganthan, Ponnuthurai Nagaratnam and Coello, CA Coello and Deb, Kalyanmoy},
-%   journal  = {Journal of Applied Mechanics},
-%   year     = {2006},
-%   number   = {8},
-%   pages    = {8--31},
-%   volume   = {41},
+% @TechReport{Liang2006CEC06-CSO,
+%   title       = {Problem Definitions and Evaluation Criteria for the {CEC} 2006 Special Session on Constrained Real-Parameter Optimization},
+%   author      = {Liang, J. J. and Runarsson, Thomas Philip and Mezura-Montes, Efren and Clerc, Maurice and Suganthan, Ponnuthurai Nagaratnam and Coello Coello, Carlos A. and Deb, Kalyanmoy},
+%   institution = {Nanyang Technological University},
+%   year        = {2006},
+%   type        = {Technical Report},
+%   url         = {https://sites.google.com/view/suganthan-p-n/cec-benchmark/cec06-special-session},
 % }
 %--------------------------------------------------------------------------
 

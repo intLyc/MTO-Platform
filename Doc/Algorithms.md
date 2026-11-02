@@ -26,7 +26,7 @@
 <tr>
 <td>2026</td>
 <td><a href="../MTO/Algorithms/Multi-task/Many-task/MES-RET/MES_RET.m"><code>MES_RET</code></a> (ICML)</td>
-<td>Many-task</td>
+<td>Multipopulation</td>
 <td>Multitask / many-task · unconstrained / constrained</td>
 <td>Reward-weighted evolution for many-task optimization.</td>
 <td><a href="https://openreview.net/forum?id=lkGnJhXUNu" title="Breaking Multi-Task Curse: Reward-Weighted Evolution for Black-Box Many-Task Optimization">Link</a></td>
@@ -54,7 +54,7 @@
 <tr>
 <td>2026</td>
 <td><a href="../MTO/Algorithms/Multi-task/Many-task/MES-RET/sep_MES_RET.m"><code>sep_MES_RET</code></a> (ICML)</td>
-<td>Many-task</td>
+<td>Multipopulation</td>
 <td>Multitask / many-task · unconstrained / constrained</td>
 <td>Reward-weighted evolution for many-task optimization.</td>
 <td><a href="https://openreview.net/forum?id=lkGnJhXUNu" title="Breaking Multi-Task Curse: Reward-Weighted Evolution for Black-Box Many-Task Optimization">Link</a></td>
@@ -82,7 +82,7 @@
 <tr>
 <td>2025</td>
 <td><a href="../MTO/Algorithms/Multi-task/Constrained%20Multi-task/CMO-LKT/CMO_LKT.m"><code>CMO_LKT</code></a> (TSMC-S)</td>
-<td>Constrained multitask</td>
+<td>Multipopulation</td>
 <td>Multitask · constrained</td>
 <td>Local knowledge transfer for constrained multitasking.</td>
 <td><a href="https://doi.org/10.1109/TSMC.2024.3520322" title="A Local Knowledge Transfer-Based Evolutionary Algorithm for Constrained Multitask Optimization">Link</a></td>
@@ -216,7 +216,7 @@
 <tr>
 <td>2024</td>
 <td><a href="../MTO/Algorithms/Multi-task/Constrained%20Multi-task/CEDA/CEDA_MF.m"><code>CEDA_MF</code></a> (SWEVO)</td>
-<td>Constrained multitask</td>
+<td>Multifactorial</td>
 <td>Multitask · constrained</td>
 <td>Coevolution and domain adaptation for constrained tasks.</td>
 <td><a href="https://doi.org/10.1016/j.swevo.2024.101570" title="Constrained Multitasking Optimization Via Co-Evolution and Domain Adaptation">Link</a></td>
@@ -243,7 +243,7 @@
 <tr>
 <td>2024</td>
 <td><a href="../MTO/Algorithms/Multi-task/Constrained%20Multi-task/CEDA/CEDA_MP.m"><code>CEDA_MP</code></a> (SWEVO)</td>
-<td>Constrained multitask</td>
+<td>Multipopulation</td>
 <td>Multitask · constrained</td>
 <td>Coevolution and domain adaptation for constrained tasks.</td>
 <td><a href="https://doi.org/10.1016/j.swevo.2024.101570" title="Constrained Multitasking Optimization Via Co-Evolution and Domain Adaptation">Link</a></td>
@@ -457,7 +457,7 @@
 <tr>
 <td>2023</td>
 <td><a href="../MTO/Algorithms/Multi-task/Many-task/KR-MTEA/KR_MTEA.m"><code>KR_MTEA</code></a> (INS)</td>
-<td>Many-task</td>
+<td>Multipopulation</td>
 <td>Multitask / many-task · unconstrained</td>
 <td>Adaptive knowledge reuse. Supports single- and multiobjective problems.</td>
 <td><a href="https://doi.org/10.1016/j.ins.2023.119568" title="Adaptive Multi-task Evolutionary Algorithm Based on Knowledge Reuse">Link</a></td>
@@ -512,7 +512,7 @@
 <tr>
 <td>2023</td>
 <td><a href="../MTO/Algorithms/Multi-task/Competitive%20Multi-task/MTSRA/MTSRA.m"><code>MTSRA</code></a> (ESWA)</td>
-<td>Competitive multitask</td>
+<td>Multipopulation</td>
 <td>Multitask · competitive</td>
 <td>Improved adaptive DE with competitive task selection.</td>
 <td><a href="https://doi.org/10.1016/j.eswa.2023.119550" title="Evolutionary Competitive Multitasking Optimization Via Improved Adaptive Differential Evolution">Link</a></td>
@@ -565,7 +565,7 @@
 <tr>
 <td>2022</td>
 <td><a href="../MTO/Algorithms/Multi-task/Competitive%20Multi-task/DEORA/DEORA.m"><code>DEORA</code></a> (TEVC)</td>
-<td>Competitive multitask</td>
+<td>Multipopulation</td>
 <td>Multitask · competitive</td>
 <td>Competitive task selection and resource allocation.</td>
 <td><a href="https://doi.org/10.1109/TEVC.2022.3141819" title="Evolutionary Competitive Multitasking Optimization">Link</a></td>
@@ -592,7 +592,7 @@
 <tr>
 <td>2022</td>
 <td><a href="../MTO/Algorithms/Multi-task/Competitive%20Multi-task/DEORA/DEORA_MTDE.m"><code>DEORA_MTDE</code></a> (TEVC)</td>
-<td>Competitive multitask</td>
+<td>Multipopulation</td>
 <td>Multitask · competitive</td>
 <td>Competitive task selection and resource allocation.</td>
 <td><a href="https://doi.org/10.1109/TEVC.2022.3141819" title="Evolutionary Competitive Multitasking Optimization">Link</a></td>
@@ -1114,7 +1114,7 @@
 <tr>
 <td>2026</td>
 <td><a href="../MTO/Algorithms/Multi-task/Many-task/MES-RET/MES_RET.m"><code>MES_RET</code></a> (ICML)</td>
-<td>Many-task</td>
+<td>Multipopulation</td>
 <td>Multitask / many-task · unconstrained / constrained</td>
 <td>Reward-weighted evolution for many-task optimization.</td>
 <td><a href="https://openreview.net/forum?id=lkGnJhXUNu" title="Breaking Multi-Task Curse: Reward-Weighted Evolution for Black-Box Many-Task Optimization">Link</a></td>
@@ -1142,7 +1142,7 @@
 <tr>
 <td>2026</td>
 <td><a href="../MTO/Algorithms/Multi-task/Many-task/MES-RET/sep_MES_RET.m"><code>sep_MES_RET</code></a> (ICML)</td>
-<td>Many-task</td>
+<td>Multipopulation</td>
 <td>Multitask / many-task · unconstrained / constrained</td>
 <td>Reward-weighted evolution for many-task optimization.</td>
 <td><a href="https://openreview.net/forum?id=lkGnJhXUNu" title="Breaking Multi-Task Curse: Reward-Weighted Evolution for Black-Box Many-Task Optimization">Link</a></td>
@@ -1170,7 +1170,7 @@
 <tr>
 <td>2025</td>
 <td><a href="../MTO/Algorithms/Multi-task/Many-task/DTSKT/DTSKT.m"><code>DTSKT</code></a> (TSMC-S)</td>
-<td>Many-task</td>
+<td>Multipopulation</td>
 <td>many-task · unconstrained / constrained</td>
 <td>Distribution-direction-assisted two-stage transfer.</td>
 <td><a href="https://doi.org/10.1109/TSMC.2025.3598800" title="Distribution Direction-Assisted Two-Stage Knowledge Transfer for Many-Task Optimization">Link</a></td>
@@ -1251,7 +1251,7 @@
 <tr>
 <td>2025</td>
 <td><a href="../MTO/Algorithms/Multi-task/Many-task/TNG-NES/TNG_SNES.m"><code>TNG_SNES</code></a> (TEVC)</td>
-<td>Many-task</td>
+<td>Multipopulation</td>
 <td>many-task · unconstrained / constrained</td>
 <td>Transfer of task-averaged natural gradients.</td>
 <td><a href="https://doi.org/10.1109/TEVC.2024.3459862" title="Transfer Task-averaged Natural Gradient for Efficient Many-task Optimization">Link</a></td>
@@ -1278,7 +1278,7 @@
 <tr>
 <td>2025</td>
 <td><a href="../MTO/Algorithms/Multi-task/Many-task/TNG-NES/TNG_SNES_EP.m"><code>TNG_SNES_EP</code></a> (TEVC)</td>
-<td>Many-task</td>
+<td>Multipopulation</td>
 <td>many-task · unconstrained / constrained</td>
 <td>Transfer of task-averaged natural gradients.</td>
 <td><a href="https://doi.org/10.1109/TEVC.2024.3459862" title="Transfer Task-averaged Natural Gradient for Efficient Many-task Optimization">Link</a></td>
@@ -1305,7 +1305,7 @@
 <tr>
 <td>2025</td>
 <td><a href="../MTO/Algorithms/Multi-task/Many-task/TNG-NES/TNG_xNES.m"><code>TNG_xNES</code></a> (TEVC)</td>
-<td>Many-task</td>
+<td>Multipopulation</td>
 <td>many-task · unconstrained / constrained</td>
 <td>Transfer of task-averaged natural gradients.</td>
 <td><a href="https://doi.org/10.1109/TEVC.2024.3459862" title="Transfer Task-averaged Natural Gradient for Efficient Many-task Optimization">Link</a></td>
@@ -1413,7 +1413,7 @@
 <tr>
 <td>2023</td>
 <td><a href="../MTO/Algorithms/Multi-task/Many-task/BoKT/BoKTDE.m"><code>BoKTDE</code></a> (TEVC)</td>
-<td>Many-task</td>
+<td>Multipopulation</td>
 <td>many-task · unconstrained</td>
 <td>Bi-objective knowledge-transfer framework.</td>
 <td><a href="https://doi.org/10.1109/TEVC.2022.3210783" title="A Bi-Objective Knowledge Transfer Framework for Evolutionary Many-Task Optimization">Link</a></td>
@@ -1440,7 +1440,7 @@
 <tr>
 <td>2023</td>
 <td><a href="../MTO/Algorithms/Multi-task/Many-task/BoKT/BoKTGA.m"><code>BoKTGA</code></a> (TEVC)</td>
-<td>Many-task</td>
+<td>Multipopulation</td>
 <td>many-task · unconstrained</td>
 <td>Bi-objective knowledge-transfer framework.</td>
 <td><a href="https://doi.org/10.1109/TEVC.2022.3210783" title="A Bi-Objective Knowledge Transfer Framework for Evolutionary Many-Task Optimization">Link</a></td>
@@ -1467,7 +1467,7 @@
 <tr>
 <td>2023</td>
 <td><a href="../MTO/Algorithms/Multi-task/Many-task/KR-MTEA/KR_MTEA.m"><code>KR_MTEA</code></a> (INS)</td>
-<td>Many-task</td>
+<td>Multipopulation</td>
 <td>Multitask / many-task · unconstrained</td>
 <td>Adaptive knowledge reuse. Supports single- and multiobjective problems.</td>
 <td><a href="https://doi.org/10.1016/j.ins.2023.119568" title="Adaptive Multi-task Evolutionary Algorithm Based on Knowledge Reuse">Link</a></td>
@@ -1494,7 +1494,7 @@
 <tr>
 <td>2023</td>
 <td><a href="../MTO/Algorithms/Multi-task/Many-task/TRADE/TRADE.m"><code>TRADE</code></a> (TCYB)</td>
-<td>Many-task</td>
+<td>Multipopulation</td>
 <td>many-task · unconstrained</td>
 <td>Transfer of adaptive DE parameters.</td>
 <td><a href="https://doi.org/10.1109/TCYB.2023.3234969" title="Transferable Adaptive Differential Evolution for Many-Task Optimization">Link</a></td>
@@ -1521,7 +1521,7 @@
 <tr>
 <td>2022</td>
 <td><a href="../MTO/Algorithms/Multi-task/Many-task/EMaTO-MKT/EMaTO_MKT.m"><code>EMaTO_MKT</code></a> (TEVC)</td>
-<td>Many-task</td>
+<td>Multipopulation</td>
 <td>many-task · unconstrained</td>
 <td>Multi-source transfer using local distributions.</td>
 <td><a href="https://doi.org/10.1109/TEVC.2021.3101697" title="Evolutionary Many-Task Optimization Based on Multi-Source Knowledge Transfer">Link</a></td>
@@ -1575,7 +1575,7 @@
 <tr>
 <td>2020</td>
 <td><a href="../MTO/Algorithms/Multi-task/Many-task/MaTDE/MaTDE.m"><code>MaTDE</code></a> (TETCI)</td>
-<td>Many-task</td>
+<td>Multipopulation</td>
 <td>many-task · unconstrained / constrained</td>
 <td>Adaptive archive-based many-task transfer.</td>
 <td><a href="https://doi.org/10.1109/TETCI.2019.2916051" title="An Adaptive Archive-Based Evolutionary Framework for Many-Task Optimization">Link</a></td>
@@ -1602,7 +1602,7 @@
 <tr>
 <td>2019</td>
 <td><a href="../MTO/Algorithms/Multi-task/Many-task/SBO/SBCMAES.m"><code>SBCMAES</code></a> (AAAI)</td>
-<td>Many-task</td>
+<td>Multipopulation</td>
 <td>many-task · unconstrained / constrained</td>
 <td>Symbiosis-inspired many-task optimization.</td>
 <td><a href="https://doi.org/10.1609/aaai.v33i01.33014295" title="Evolutionary Manytasking Optimization Based on Symbiosis in Biocoenosis">Link</a></td>
@@ -1630,7 +1630,7 @@
 <tr>
 <td>2019</td>
 <td><a href="../MTO/Algorithms/Multi-task/Many-task/SBO/SBGA.m"><code>SBGA</code></a> (AAAI)</td>
-<td>Many-task</td>
+<td>Multipopulation</td>
 <td>many-task · unconstrained / constrained</td>
 <td>Symbiosis-inspired many-task optimization.</td>
 <td><a href="https://doi.org/10.1609/aaai.v33i01.33014295" title="Evolutionary Manytasking Optimization Based on Symbiosis in Biocoenosis">Link</a></td>
@@ -1658,7 +1658,7 @@
 <tr>
 <td>2019</td>
 <td><a href="../MTO/Algorithms/Multi-task/Many-task/SBO/sep_SBCMAES.m"><code>sep_SBCMAES</code></a> (AAAI)</td>
-<td>Many-task</td>
+<td>Multipopulation</td>
 <td>many-task · unconstrained / constrained</td>
 <td>Symbiosis-inspired many-task optimization.</td>
 <td><a href="https://doi.org/10.1609/aaai.v33i01.33014295" title="Evolutionary Manytasking Optimization Based on Symbiosis in Biocoenosis">Link</a></td>
@@ -3370,8 +3370,8 @@
 <tr>
 <td>2025</td>
 <td><a href="../MTO/Algorithms/Multi-objective%20Multi-task/Competitive%20Multi-task/RVC-MTEA/RVC_MTEA.m"><code>RVC_MTEA</code></a> (TEVC)</td>
-<td>Competitive multitask</td>
-<td>Multitask · unconstrained</td>
+<td>Multipopulation</td>
+<td>Multitask · constrained / competitive</td>
 <td>Reference-vector contribution for competitive tasks.</td>
 <td><a href="https://doi.org/10.1109/TEVC.2024.3524508" title="Evolutionary Competitive Multiobjective Multitasking: One-Pass Optimization of Heterogeneous Pareto Solutions">Link</a></td>
 <td>
@@ -3455,7 +3455,7 @@
 <tr>
 <td>2023</td>
 <td><a href="../MTO/Algorithms/Multi-task/Many-task/KR-MTEA/KR_MTEA.m"><code>KR_MTEA</code></a> (INS)</td>
-<td>Many-task</td>
+<td>Multipopulation</td>
 <td>Multitask / many-task · unconstrained</td>
 <td>Adaptive knowledge reuse. Supports single- and multiobjective problems.</td>
 <td><a href="https://doi.org/10.1016/j.ins.2023.119568" title="Adaptive Multi-task Evolutionary Algorithm Based on Knowledge Reuse">Link</a></td>
@@ -3841,7 +3841,7 @@
 <tr>
 <td>2023</td>
 <td><a href="../MTO/Algorithms/Multi-task/Many-task/KR-MTEA/KR_MTEA.m"><code>KR_MTEA</code></a> (INS)</td>
-<td>Many-task</td>
+<td>Multipopulation</td>
 <td>Multitask / many-task · unconstrained</td>
 <td>Adaptive knowledge reuse. Supports single- and multiobjective problems.</td>
 <td><a href="https://doi.org/10.1016/j.ins.2023.119568" title="Adaptive Multi-task Evolutionary Algorithm Based on Knowledge Reuse">Link</a></td>
@@ -3868,7 +3868,7 @@
 <tr>
 <td>2022</td>
 <td><a href="../MTO/Algorithms/Multi-objective%20Multi-task/Many-task/MO-EMaTO-MKT/MO_EMaTO_MKT.m"><code>MO_EMaTO_MKT</code></a> (TEVC)</td>
-<td>Many-task</td>
+<td>Multipopulation</td>
 <td>many-task · unconstrained</td>
 <td>Evolutionary Many-Task Optimization Based on Multi-Source Knowledge Transfer.</td>
 <td><a href="https://doi.org/10.1109/TEVC.2021.3101697" title="Evolutionary Many-Task Optimization Based on Multi-Source Knowledge Transfer">Link</a></td>
@@ -3895,7 +3895,7 @@
 <tr>
 <td>2020</td>
 <td><a href="../MTO/Algorithms/Multi-objective%20Multi-task/Many-task/MO-MaTDE/MO_MaTDE.m"><code>MO_MaTDE</code></a> (TETCI)</td>
-<td>Many-task</td>
+<td>Multipopulation</td>
 <td>many-task · unconstrained / constrained</td>
 <td>An Adaptive Archive-Based Evolutionary Framework for Many-Task Optimization.</td>
 <td><a href="https://doi.org/10.1109/TETCI.2019.2916051" title="An Adaptive Archive-Based Evolutionary Framework for Many-Task Optimization">Link</a></td>
@@ -3922,7 +3922,7 @@
 <tr>
 <td>2019</td>
 <td><a href="../MTO/Algorithms/Multi-objective%20Multi-task/Many-task/MO-SBO/MO_SBO.m"><code>MO_SBO</code></a> (AAAI)</td>
-<td>Many-task</td>
+<td>Multipopulation</td>
 <td>many-task · unconstrained / constrained</td>
 <td>Evolutionary Manytasking Optimization Based on Symbiosis in Biocoenosis.</td>
 <td><a href="https://doi.org/10.1609/aaai.v33i01.33014295" title="Evolutionary Manytasking Optimization Based on Symbiosis in Biocoenosis">Link</a></td>
@@ -3962,7 +3962,7 @@
 <tr>
 <td>2023</td>
 <td><a href="../MTO/Algorithms/Multi-objective%20Single-task/Constraint%20Handling/CMOCSO/CMOCSO.m"><code>CMOCSO</code></a> (TEVC)</td>
-<td>Constraint handling</td>
+<td>Swarm intelligence / constraint handling</td>
 <td>Single-task · constrained</td>
 <td>Competitive and cooperative multiobjective swarm search.</td>
 <td><a href="https://doi.org/10.1109/TEVC.2022.3199775" title="A Competitive and Cooperative Swarm Optimizer for Constrained Multi-objective Optimization Problems">Link</a></td>
@@ -4042,7 +4042,7 @@
 <tr>
 <td>2020</td>
 <td><a href="../MTO/Algorithms/Multi-objective%20Single-task/Non-dominated%20Sort/LMOCSO/LMOCSO.m"><code>LMOCSO</code></a> (TCYB)</td>
-<td>Nondominated sorting</td>
+<td>Swarm intelligence</td>
 <td>Single-task · unconstrained / constrained</td>
 <td>Large-scale multiobjective competitive swarm search.</td>
 <td><a href="https://doi.org/10.1109/TCYB.2019.2906383" title="Efficient Large-Scale Multiobjective Optimization Based on a Competitive Swarm Optimizer">Link</a></td>
@@ -4069,7 +4069,7 @@
 <tr>
 <td>2018</td>
 <td><a href="../MTO/Algorithms/Multi-objective%20Single-task/Decomposition/AR-MOEA/AR_MOEA.m"><code>AR_MOEA</code></a> (TEVC)</td>
-<td>Decomposition</td>
+<td>Indicator-based selection</td>
 <td>Single-task · unconstrained / constrained</td>
 <td>Adaptive reference points for multiobjective search.</td>
 <td><a href="https://doi.org/10.1109/TEVC.2017.2749619" title="An Indicator-Based Multiobjective Evolutionary Algorithm With Reference Point Adaptation for Better Versatility">Link</a></td>
@@ -4096,7 +4096,7 @@
 <tr>
 <td>2016</td>
 <td><a href="../MTO/Algorithms/Multi-objective%20Single-task/Decomposition/RVEA/RVEA.m"><code>RVEA</code></a> (TEVC)</td>
-<td>Decomposition</td>
+<td>Reference-vector-guided evolution</td>
 <td>Single-task · unconstrained / constrained</td>
 <td>Reference-vector-guided evolution.</td>
 <td><a href="https://doi.org/10.1109/TEVC.2016.2519378" title="A Reference Vector Guided Evolutionary Algorithm for Many-Objective Optimization">Link</a></td>
@@ -4177,7 +4177,7 @@
 <tr>
 <td>2007</td>
 <td><a href="../MTO/Algorithms/Multi-objective%20Single-task/Non-dominated%20Sort/MO-CMA-ES/MO_CMA_ES.m"><code>MO_CMA_ES</code></a> (EC)</td>
-<td>Nondominated sorting</td>
+<td>Evolution strategy</td>
 <td>Single-task · unconstrained</td>
 <td>Multiobjective covariance-matrix adaptation.</td>
 <td><a href="https://doi.org/10.1162/evco.2007.15.1.1" title="Covariance Matrix Adaptation for Multi-objective Optimization">Link</a></td>
