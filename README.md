@@ -28,8 +28,14 @@ MToP is a user-friendly tool with a graphical user interface that makes it easy 
 [**[User Guide]**](./Doc/User-Guide.md)
 : Brief guide on how to use MToP.
 
-[**[Tables]**](./Doc/tables.pdf)
-: Tables of algorithms, problems, and metrics.
+[**[Algorithms]**](./Doc/Algorithms.md)
+: Algorithms by objective and task type, with years, venues, source links, and inline BibTeX.
+
+[**[Problems]**](./Doc/Problems.md)
+: Benchmarks and applications, with years, venues, problem-class links, and inline BibTeX.
+
+[**[Metrics]**](./Doc/Metrics.md)
+: Performance metrics with optimization directions, source links, and inline BibTeX.
 
 ### 💿 Data
 
@@ -49,18 +55,24 @@ In order to enhance reproducibility and avoid unnecessary repeated experiments, 
 
 ## Copyright
 
-> Copyright (c) Yanchi Li. You are free to use the MToP for research purposes. All publications which use this platform should acknowledge the use of MToP and cite as "Y. Li, W. Gong, T. Zhang, F. Ming, S. Li, Q. Gu, and Y.-S. Ong, MToP: A MATLAB Benchmarking Platform for Evolutionary Multitasking, ACM Trans. Evol. Learn. Optim., 2026"
+> Copyright (c) Yanchi Li. You are free to use the MToP for research purposes. All publications which use this platform should acknowledge the use of MToP and cite as "Y. Li, W. Gong, T. Zhang, F. Ming, S. Li, Q. Gu, and Y.-S. Ong, MToP: A MATLAB Benchmarking Platform for Evolutionary Multitasking, ACM Trans. Evol. Learn. Optim., vol. 6, no. 3, Art. 23, pp. 1–30, Sep. 2026"
 
-```
-@Article{Li2026MToP,
-  title   = {{MToP}: A {MATLAB} Benchmarking Platform for Evolutionary Multitasking},
-  author  = {Li, Yanchi and Gong, Wenyin and Zhang, Tingyu and Ming, Fei and Li, Shuijia and Gu, Qiong and Ong, Yew-Soon},
-  journal = {ACM Transactions on Evolutionary Learning and Optimization}, 
-  year    = {2026},
-  publisher = {Association for Computing Machinery}, 
-  address = {New York, NY, USA}, 
-  issn = {2688-299X}, 
-  doi = {10.1145/3812535},
+```bibtex
+@article{Li2026MToP,
+  address   = {New York, NY, USA},
+  articleno = {23},
+  author    = {Li, Yanchi and Gong, Wenyin and Zhang, Tingyu and Ming, Fei and Li, Shuijia and Gu, Qiong and Ong, Yew-Soon},
+  doi       = {10.1145/3812535},
+  issn      = {2688-299X},
+  journal   = {ACM Transactions on Evolutionary Learning and Optimization},
+  month     = sep,
+  number    = {3},
+  numpages  = {30},
+  pages     = {1--30},
+  publisher = {Association for Computing Machinery},
+  title     = {{MToP}: A {MATLAB} Benchmarking Platform for Evolutionary Multitasking},
+  volume    = {6},
+  year      = {2026}
 }
 ```
 
